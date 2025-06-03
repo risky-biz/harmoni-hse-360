@@ -1,0 +1,53 @@
+# Development Dockerfile with hot reload support
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+WORKDIR /src
+
+# Install Node.js for React development
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+# Install dotnet-ef tool for migrations
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Install development tools
+RUN apt-get update && apt-get install -y \
+    procps \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy solution and project files for dependency restore
+COPY ["HarmoniHSE360.sln", "./"]
+COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "src/HarmoniHSE360.Web/"]
+COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "src/HarmoniHSE360.Application/"]
+COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "src/HarmoniHSE360.Domain/"]
+COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "src/HarmoniHSE360.Infrastructure/"]
+
+# Restore .NET dependencies
+RUN dotnet restore
+
+# Copy package.json for npm dependencies
+COPY ["src/HarmoniHSE360.Web/ClientApp/package*.json", "src/HarmoniHSE360.Web/ClientApp/"]
+
+# Install npm dependencies
+WORKDIR /src/src/HarmoniHSE360.Web/ClientApp
+RUN npm ci
+
+# Set working directory
+WORKDIR /src
+
+# Expose ports (5000 for API, 5173 for Vite)
+EXPOSE 5000 5173
+
+# Create script to run both backend and frontend
+RUN echo '#!/bin/bash\n\
+# Start frontend dev server\n\
+cd /src/src/HarmoniHSE360.Web/ClientApp && npm run dev -- --host 0.0.0.0 &\n\
+# Wait for frontend to start\n\
+sleep 5\n\
+# Start backend API\n\
+cd /src/src/HarmoniHSE360.Web && dotnet watch run --urls "http://+:5000" --no-launch-profile\n\
+' > /start.sh && chmod +x /start.sh
+
+# Start both services
+CMD ["/start.sh"]
