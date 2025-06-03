@@ -22,7 +22,7 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
 
     public async Task<IncidentDto> Handle(CreateIncidentCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating incident: {Title} for reporter {ReporterId}", 
+        _logger.LogInformation("Creating incident: {Title} for reporter {ReporterId}",
             request.Title, request.ReporterId);
 
         var incident = Incident.Create(

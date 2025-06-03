@@ -12,15 +12,15 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
     public DateTime? CompletedDate { get; private set; }
     public ActionStatus Status { get; private set; }
     public string? CompletionNotes { get; private set; }
-    
+
     // Audit fields
     public DateTime CreatedAt { get; private set; }
     public string CreatedBy { get; private set; } = string.Empty;
     public DateTime? LastModifiedAt { get; private set; }
     public string? LastModifiedBy { get; private set; }
-    
+
     protected CorrectiveAction() { } // For EF Core
-    
+
     public static CorrectiveAction Create(
         int incidentId,
         string description,
@@ -39,14 +39,14 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
             CreatedBy = createdBy
         };
     }
-    
+
     public void StartProgress(string modifiedBy)
     {
         Status = ActionStatus.InProgress;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifiedBy;
     }
-    
+
     public void Complete(string completionNotes, string modifiedBy)
     {
         Status = ActionStatus.Completed;
@@ -55,13 +55,13 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifiedBy;
     }
-    
+
     public void UpdateDueDate(DateTime newDueDate, string modifiedBy)
     {
         DueDate = newDueDate;
         LastModifiedAt = DateTime.UtcNow;
         LastModifiedBy = modifiedBy;
-        
+
         if (DateTime.UtcNow > DueDate && Status != ActionStatus.Completed)
         {
             Status = ActionStatus.Overdue;

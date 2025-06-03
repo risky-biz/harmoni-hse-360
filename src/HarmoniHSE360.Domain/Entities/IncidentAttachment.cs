@@ -10,9 +10,9 @@ public class IncidentAttachment : BaseEntity
     public long FileSize { get; private set; }
     public string UploadedBy { get; private set; } = string.Empty;
     public DateTime UploadedAt { get; private set; }
-    
+
     protected IncidentAttachment() { } // For EF Core
-    
+
     public IncidentAttachment(int incidentId, string fileName, string filePath, long fileSize, string uploadedBy)
     {
         IncidentId = incidentId;

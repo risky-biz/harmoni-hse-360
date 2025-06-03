@@ -50,7 +50,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? ""))
         };
-        
+
         // Support SignalR authentication
         options.Events = new JwtBearerEvents
         {
@@ -58,12 +58,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 var accessToken = context.Request.Query["access_token"];
                 var path = context.HttpContext.Request.Path;
-                
+
                 if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
                 {
                     context.Token = accessToken;
                 }
-                
+
                 return Task.CompletedTask;
             }
         };
@@ -148,13 +148,13 @@ app.MapHealthChecks("/health");
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "ClientApp";
-    
+
     if (app.Environment.IsDevelopment())
     {
         // Only use SPA proxy if the frontend is not running separately
         // For separate frontend development, this will be handled by Vite proxy
         var useViteProxy = app.Configuration.GetValue<bool>("UseSpaProxy", false);
-        
+
         if (useViteProxy)
         {
             spa.UseProxyToSpaDevelopmentServer("http://localhost:5173");
@@ -169,9 +169,9 @@ using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
+
         logger.LogInformation("Checking database migrations...");
-        
+
         // Check if database exists and create/migrate if needed
         var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
         if (pendingMigrations.Any())
@@ -184,7 +184,7 @@ using (var scope = app.Services.CreateScope())
         {
             logger.LogInformation("Database is up to date");
         }
-        
+
         // Only seed if in development and tables exist
         if (app.Environment.IsDevelopment())
         {
@@ -202,7 +202,7 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while migrating or seeding the database");
-        
+
         // Don't crash the app if migration fails - let the user run migrations manually
         if (!app.Environment.IsDevelopment())
         {

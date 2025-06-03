@@ -44,7 +44,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         // Verify password using hashed password
         var isValidPassword = _passwordService.VerifyPassword(request.Password, user.PasswordHash);
-        
+
         if (!isValidPassword)
         {
             _logger.LogWarning("Login attempt failed for email: {Email} - Invalid password", request.Email);

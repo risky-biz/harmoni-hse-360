@@ -12,7 +12,7 @@ public class LocalFileStorageService : IFileStorageService
     {
         _environment = environment;
         _uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-        
+
         // Ensure uploads directory exists
         if (!Directory.Exists(_uploadsPath))
         {
@@ -52,7 +52,7 @@ public class LocalFileStorageService : IFileStorageService
     public async Task<Stream> DownloadAsync(string filePath)
     {
         var fullPath = Path.Combine(_uploadsPath, filePath);
-        
+
         if (!File.Exists(fullPath))
         {
             throw new FileNotFoundException($"File not found: {filePath}");
@@ -64,7 +64,7 @@ public class LocalFileStorageService : IFileStorageService
     public Task DeleteAsync(string filePath)
     {
         var fullPath = Path.Combine(_uploadsPath, filePath);
-        
+
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);

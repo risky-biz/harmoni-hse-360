@@ -9,9 +9,9 @@ public class IncidentInvolvedPerson : BaseEntity
     public User Person { get; private set; } = null!;
     public InvolvementType InvolvementType { get; private set; }
     public string? InjuryDescription { get; private set; }
-    
+
     protected IncidentInvolvedPerson() { } // For EF Core
-    
+
     public IncidentInvolvedPerson(int incidentId, int personId, InvolvementType involvementType, string? injuryDescription = null)
     {
         IncidentId = incidentId;

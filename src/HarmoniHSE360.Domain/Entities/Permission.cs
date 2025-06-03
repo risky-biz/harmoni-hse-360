@@ -8,7 +8,7 @@ public class Permission : BaseEntity
     public string DisplayName { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public string Category { get; private set; } = string.Empty;
-    
+
     private readonly List<Role> _roles = new();
     public IReadOnlyCollection<Role> Roles => _roles.AsReadOnly();
 

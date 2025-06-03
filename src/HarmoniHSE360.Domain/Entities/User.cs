@@ -11,12 +11,12 @@ public class User : BaseEntity
     public string Department { get; private set; } = string.Empty;
     public string Position { get; private set; } = string.Empty;
     public bool IsActive { get; private set; }
-    
+
     private readonly List<UserRole> _userRoles = new();
     public IReadOnlyCollection<UserRole> UserRoles => _userRoles.AsReadOnly();
-    
+
     protected User() { } // For EF Core
-    
+
     public static User Create(
         string email,
         string passwordHash,
@@ -36,34 +36,34 @@ public class User : BaseEntity
             IsActive = true
         };
     }
-    
+
     public void UpdateProfile(string name, string department, string position)
     {
         Name = name;
         Department = department;
         Position = position;
     }
-    
+
     public void Deactivate()
     {
         IsActive = false;
     }
-    
+
     public void Activate()
     {
         IsActive = true;
     }
-    
+
     public void UpdatePassword(string passwordHash)
     {
         PasswordHash = passwordHash;
     }
-    
+
     public void AssignRole(Role role)
     {
         if (_userRoles.Any(ur => ur.RoleId == role.Id))
             return;
-            
+
         _userRoles.Add(new UserRole(Id, role.Id));
     }
 }

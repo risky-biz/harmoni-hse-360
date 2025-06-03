@@ -28,10 +28,10 @@ public class DataSeeder : IDataSeeder
         {
             await SeedRolesAndPermissionsAsync();
             await _context.SaveChangesAsync(); // Save roles first
-            
+
             await SeedUsersAsync();
             await _context.SaveChangesAsync(); // Save users
-            
+
             _logger.LogInformation("Database seeding completed successfully");
         }
         catch (Exception ex)
@@ -45,13 +45,13 @@ public class DataSeeder : IDataSeeder
     {
         var roleCount = await _context.Roles.CountAsync();
         _logger.LogInformation("Current role count: {RoleCount}", roleCount);
-        
+
         if (roleCount > 0)
         {
             _logger.LogInformation("Roles already exist, skipping seeding");
             return;
         }
-        
+
         _logger.LogInformation("Starting role and permission seeding...");
 
         var adminRole = Role.Create("Admin", "System Administrator");
@@ -60,7 +60,7 @@ public class DataSeeder : IDataSeeder
 
         await _context.Roles.AddRangeAsync(adminRole, hseManagerRole, employeeRole);
         await _context.SaveChangesAsync(); // Save roles first to get IDs
-        
+
         // Create unique permissions first
         var allPermissions = new List<Permission>
         {
@@ -97,7 +97,7 @@ public class DataSeeder : IDataSeeder
         adminRole.AddPermission(usersManage);
         adminRole.AddPermission(reportsView);
         adminRole.AddPermission(reportsCreate);
-        
+
         // HSE Manager gets incident and report permissions
         hseManagerRole.AddPermission(incidentsView);
         hseManagerRole.AddPermission(incidentsCreate);
@@ -105,7 +105,7 @@ public class DataSeeder : IDataSeeder
         hseManagerRole.AddPermission(incidentsInvestigate);
         hseManagerRole.AddPermission(reportsView);
         hseManagerRole.AddPermission(reportsCreate);
-        
+
         // Employee gets basic incident permissions
         employeeRole.AddPermission(incidentsView);
         employeeRole.AddPermission(incidentsCreate);
@@ -122,7 +122,7 @@ public class DataSeeder : IDataSeeder
 
         // Hash demo passwords for production use
         var passwordHashService = new PasswordHashService();
-        
+
         var users = new List<User>
         {
             User.Create("admin@bsj.sch.id", passwordHashService.HashPassword("Admin123!"), "System Administrator", "ADM001", "IT", "System Administrator"),

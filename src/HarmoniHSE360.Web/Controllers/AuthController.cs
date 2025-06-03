@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
         try
         {
             _logger.LogInformation("Login attempt for email: {Email}", request?.Email ?? "null");
-            
+
             if (request == null)
             {
                 _logger.LogWarning("Login request is null");
@@ -63,9 +63,9 @@ public class AuthController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            
+
             _logger.LogInformation("User {Email} logged in successfully", request.Email);
-            
+
             return Ok(result);
         }
         catch (AuthenticationException ex)
@@ -93,7 +93,7 @@ public class AuthController : ControllerBase
         try
         {
             var result = await _tokenService.RefreshTokenAsync(request.Token, request.RefreshToken);
-            
+
             return Ok(new LoginResponse
             {
                 Token = result.Token,
@@ -125,7 +125,7 @@ public class AuthController : ControllerBase
             }
 
             _logger.LogInformation("User {Email} logged out", _currentUserService.Email);
-            
+
             return Ok(new { message = "Logged out successfully" });
         }
         catch (Exception ex)
@@ -198,9 +198,10 @@ public class AuthController : ControllerBase
             new { email = "jane.smith@bsj.sch.id", password = "Employee123!", role = "Employee", name = "Jane Smith" }
         };
 
-        return Ok(new { 
+        return Ok(new
+        {
             message = "Demo user credentials for testing",
-            users = demoUsers 
+            users = demoUsers
         });
     }
 }

@@ -48,9 +48,9 @@ public class IncidentController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            
+
             _logger.LogInformation("Incident created successfully with ID: {IncidentId}", result.Id);
-            
+
             return CreatedAtAction(nameof(GetIncident), new { id = result.Id }, result);
         }
         catch (Exception ex)
@@ -72,7 +72,7 @@ public class IncidentController : ControllerBase
         {
             // TODO: Implement GetIncidentQuery when query handlers are created
             _logger.LogInformation("Getting incident {IncidentId}", id);
-            
+
             // For now, return a placeholder response
             return NotFound(new { message = "Incident not found or access denied" });
         }
@@ -97,9 +97,9 @@ public class IncidentController : ControllerBase
         try
         {
             // TODO: Implement GetIncidentsQuery when query handlers are created
-            _logger.LogInformation("Getting incidents for user {UserId}, page {Page}, pageSize {PageSize}", 
+            _logger.LogInformation("Getting incidents for user {UserId}, page {Page}, pageSize {PageSize}",
                 _currentUserService.UserId, page, pageSize);
-            
+
             // For now, return empty list
             return Ok(new List<IncidentDto>());
         }
@@ -123,7 +123,7 @@ public class IncidentController : ControllerBase
         {
             // TODO: Implement UpdateIncidentCommand when update handlers are created
             _logger.LogInformation("Updating incident {IncidentId} by user {UserId}", id, _currentUserService.UserId);
-            
+
             return NotFound(new { message = "Incident not found or access denied" });
         }
         catch (Exception ex)
@@ -144,7 +144,7 @@ public class IncidentController : ControllerBase
         {
             // TODO: Implement GetMyIncidentsQuery when query handlers are created
             _logger.LogInformation("Getting my incidents for user {UserId}", _currentUserService.UserId);
-            
+
             // For now, return empty list
             return Ok(new List<IncidentDto>());
         }
@@ -166,7 +166,7 @@ public class IncidentController : ControllerBase
         {
             // TODO: Implement incident statistics query
             _logger.LogInformation("Getting incident statistics");
-            
+
             // Return mock statistics for now
             var stats = new
             {
@@ -176,7 +176,7 @@ public class IncidentController : ControllerBase
                 CriticalIncidents = 0,
                 IncidentsByMonth = new object[] { }
             };
-            
+
             return Ok(stats);
         }
         catch (Exception ex)
