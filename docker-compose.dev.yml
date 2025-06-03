@@ -1,0 +1,107 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: harmonihse360-db-dev
+    environment:
+      POSTGRES_DB: HarmoniHSE360_Dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./scripts/sql/init:/docker-entrypoint-initdb.d
+    networks:
+      - harmonihse360-dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: harmonihse360-cache-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - harmonihse360-dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # HarmoniHSE360 Development Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: harmonihse360-app-dev
+    ports:
+      - "5000:5000"  # Backend API
+      - "5173:5173"  # Vite dev server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HarmoniHSE360_Dev;Username=postgres;Password=postgres123
+      - Jwt__Key=YourSuperSecretDevelopmentJwtKeyThatIsAtLeast32CharactersLong!
+      - Jwt__Issuer=HarmoniHSE360
+      - Jwt__Audience=HarmoniHSE360Users
+      - Jwt__ExpirationMinutes=1440  # 24 hours for dev
+      - Jwt__RefreshTokenExpirationDays=30
+      - DOTNET_WATCH_SUPPRESS_MSBUILD_INCREMENTALISM=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - harmonihse360-dev
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/src/src:cached
+      - ./HarmoniHSE360.sln:/src/HarmoniHSE360.sln:cached
+      # Exclude node_modules and build directories
+      - /src/src/HarmoniHSE360.Web/ClientApp/node_modules
+      - /src/src/HarmoniHSE360.Web/ClientApp/dist
+      - /src/src/HarmoniHSE360.Web/bin
+      - /src/src/HarmoniHSE360.Web/obj
+      - /src/src/HarmoniHSE360.Application/bin
+      - /src/src/HarmoniHSE360.Application/obj
+      - /src/src/HarmoniHSE360.Domain/bin
+      - /src/src/HarmoniHSE360.Domain/obj
+      - /src/src/HarmoniHSE360.Infrastructure/bin
+      - /src/src/HarmoniHSE360.Infrastructure/obj
+    stdin_open: true
+    tty: true
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: harmonihse360-pgadmin-dev
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=dev@harmonihse360.com
+      - PGADMIN_DEFAULT_PASSWORD=DevPassword123!
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    networks:
+      - harmonihse360-dev
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_dev_data:
+  pgadmin_dev_data:
+
+networks:
+  harmonihse360-dev:
+    driver: bridge

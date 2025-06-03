@@ -1,0 +1,86 @@
+**/.dockerignore
+**/.env
+**/.env.*
+!**/.env.example
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+**/.idea
+**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/azds.yaml
+**/bin
+**/charts
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/dist
+**/build
+**/.DS_Store
+LICENSE
+README.md
+
+# Test files
+**/*.Tests
+**/*.IntegrationTests
+**/tests
+
+# Documentation
+docs/
+*.md
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Client app specifics
+**/ClientApp/node_modules
+**/ClientApp/dist
+**/ClientApp/.env
+**/ClientApp/.env.local
+**/ClientApp/.env.development.local
+**/ClientApp/.env.test.local
+**/ClientApp/.env.production.local
+**/ClientApp/npm-debug.log*
+**/ClientApp/yarn-debug.log*
+**/ClientApp/yarn-error.log*

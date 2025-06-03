@@ -1,0 +1,141 @@
+name: HarmoniHSE360 CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: timescale/timescaledb-ha:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: harmonihse360_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --configuration Release --collect:"XPlat Code Coverage"
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Install dotnet-format
+      run: dotnet tool install -g dotnet-format
+    
+    - name: Check formatting
+      run: dotnet format --verify-no-changes
+
+  docker-build:
+    needs: [test, code-quality]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push API Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/API/HarmoniHSE360.Api/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}-api
+        labels: ${{ steps.meta.outputs.labels }}
+    
+    - name: Build and push Blazor Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/Web/HarmoniHSE360.BlazorServer/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}-blazor
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-staging:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Deploy to staging
+      run: |
+        echo "Deploy to staging environment"
+        # Add your staging deployment steps here
+
+  deploy-production:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "Deploy to production environment"
+        # Add your production deployment steps here
