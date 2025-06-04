@@ -20,7 +20,7 @@ import {
   cilClipboard,
 } from '@coreui/icons';
 
-// @ts-ignore - These icons exist but TypeScript definitions might be outdated
+// @ts-expect-error - These icons exist but TypeScript definitions might be outdated
 import { cilLibraryAdd, cilChevronRight } from '@coreui/icons';
 
 import { useAuth } from '../hooks/useAuth';

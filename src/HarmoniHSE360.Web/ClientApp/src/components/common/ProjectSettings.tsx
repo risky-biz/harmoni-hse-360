@@ -20,6 +20,7 @@ interface ProjectSettingsProps {
 const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => {
   const { user } = useAuth();
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
 
   // Check if user has system configuration permissions
   const hasSystemAccess = user?.roles?.some(role => 
@@ -65,8 +66,6 @@ const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => 
       icon: 'faFileAlt',
     },
   ];
-
-  const navigate = useNavigate();
   
   const handleModuleClick = (path: string) => {
     setVisible(false);

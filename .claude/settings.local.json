@@ -70,7 +70,13 @@
       "Bash(dotnet:*)",
       "Bash(npm cache clean:*)",
       "Bash(npm run dev:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run lint)",
+      "Bash(npm audit:*)",
+      "Bash(npm update:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm run test:*)"
     ]
   },
   "enableAllProjectMcpServers": false
