@@ -1,1 +1,0 @@
-import{j as s,F as e}from"./index-CEPkdG4-.js";import{w as n}from"./coreui-vendor-BHlqdV6q.js";const j=({icon:o,size:t="sm",className:r=""})=>{if(o&&typeof o=="object"&&"iconName"in o){const m=t==="sm"?"1x":t==="lg"?"2x":t;return s.jsx(e,{icon:o,size:m,className:r})}return s.jsx(n,{icon:o,size:t,className:r})};export{j as I};
