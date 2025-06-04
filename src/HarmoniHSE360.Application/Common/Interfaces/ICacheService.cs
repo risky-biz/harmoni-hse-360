@@ -35,7 +35,7 @@ public class CacheService : ICacheService
     public Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, params string[] tags) where T : class
     {
         var options = new MemoryCacheEntryOptions();
-        
+
         if (expiration.HasValue)
         {
             options.AbsoluteExpirationRelativeToNow = expiration;
@@ -61,7 +61,7 @@ public class CacheService : ICacheService
             lock (_lockObject)
             {
                 _keyToTags[key] = new HashSet<string>(tags);
-                
+
                 foreach (var tag in tags)
                 {
                     if (!_tagToKeys.ContainsKey(tag))

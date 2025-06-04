@@ -35,7 +35,7 @@ public class MultiChannelReportingController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Quick report received via {Channel} from {Reporter}", 
+            _logger.LogInformation("Quick report received via {Channel} from {Reporter}",
                 request.ReportingChannel, request.IsAnonymous ? "Anonymous" : request.ReporterEmail);
 
             var command = new CreateQuickIncidentCommand
@@ -190,7 +190,7 @@ public class MultiChannelReportingController : ControllerBase
                     MediaId = m.MediaId,
                     MediaType = m.MediaType,
                     Caption = m.Caption,
-                    MediaData = !string.IsNullOrEmpty(m.MediaDataBase64) ? 
+                    MediaData = !string.IsNullOrEmpty(m.MediaDataBase64) ?
                         Convert.FromBase64String(m.MediaDataBase64) : null,
                     FileName = m.FileName,
                     MimeType = m.MimeType,
@@ -281,7 +281,7 @@ public class MultiChannelReportingController : ControllerBase
     private string GenerateNextStepsMessage(string channel, bool isAnonymous)
     {
         var message = "Your incident report has been successfully submitted. ";
-        
+
         if (isAnonymous)
         {
             message += "As this is an anonymous report, updates will not be sent directly to you. ";

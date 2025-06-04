@@ -31,10 +31,10 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
         {
             // Parse WhatsApp message content
             var incidentDetails = ParseWhatsAppMessage(request);
-            
+
             // Find user by phone number or create external reporter
             var user = await GetUserByPhoneNumber(request.FromPhoneNumber, cancellationToken);
-            
+
             // Create incident
             var incident = Incident.Create(
                 title: incidentDetails.Title,
@@ -74,7 +74,7 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, "Failed to process WhatsApp media {MediaId} for incident {IncidentId}", 
+                        _logger.LogWarning(ex, "Failed to process WhatsApp media {MediaId} for incident {IncidentId}",
                             media.MediaId, incident.Id);
                     }
                 }
@@ -83,7 +83,7 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Successfully created incident {IncidentId} from WhatsApp report", incident.Id);
-            
+
             return incident.Id;
         }
         catch (Exception ex)
@@ -97,10 +97,10 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
     {
         // Note: This would require adding phone number field to User entity
         // For now, we'll try to match by a pattern or return null for external users
-        
+
         // Clean phone number
         var cleanPhone = Regex.Replace(phoneNumber, @"[^\d]", "");
-        
+
         // Try to find user by phone number (this would need to be implemented in the User entity)
         // For now, return null to treat all WhatsApp reports as external
         return Task.FromResult<User?>(null);
@@ -109,7 +109,7 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
     private ParsedWhatsAppIncident ParseWhatsAppMessage(CreateIncidentFromWhatsAppCommand request)
     {
         var messageBody = request.MessageBody;
-        
+
         var details = new ParsedWhatsAppIncident
         {
             Title = ExtractTitleFromWhatsApp(messageBody),
@@ -161,10 +161,10 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
         description += $"\n\n--- WhatsApp Report Details ---";
         description += $"\nFrom: {request.FromName} ({request.FromPhoneNumber})";
         description += $"\nReceived: {request.ReceivedAt:yyyy-MM-dd HH:mm:ss} UTC";
-        
+
         if (!string.IsNullOrEmpty(request.MessageId))
             description += $"\nMessage ID: {request.MessageId}";
-        
+
         if (request.MediaAttachments.Any())
         {
             description += $"\nMedia Attachments: {request.MediaAttachments.Count}";
@@ -184,11 +184,11 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
         var upperMessage = message.ToUpperInvariant();
 
         // Check for urgency indicators
-        if (upperMessage.Contains("URGENT") || upperMessage.Contains("EMERGENCY") || 
+        if (upperMessage.Contains("URGENT") || upperMessage.Contains("EMERGENCY") ||
             upperMessage.Contains("CRITICAL") || upperMessage.Contains("!!!"))
             return IncidentSeverity.Critical;
 
-        if (upperMessage.Contains("SERIOUS") || upperMessage.Contains("INJURY") || 
+        if (upperMessage.Contains("SERIOUS") || upperMessage.Contains("INJURY") ||
             upperMessage.Contains("HURT") || upperMessage.Contains("BLOOD"))
             return IncidentSeverity.Serious;
 
@@ -217,19 +217,19 @@ public class CreateIncidentFromWhatsAppCommandHandler : IRequestHandler<CreateIn
             if (match.Success)
             {
                 var matchValue = match.Value.ToLowerInvariant();
-                
+
                 if (matchValue.Contains("today") || matchValue.Contains("now") || matchValue.Contains("just"))
                     return now;
-                
+
                 if (matchValue.Contains("yesterday"))
                     return now.AddDays(-1);
-                
+
                 if (matchValue.Contains("morning"))
                     return now.Date.AddHours(9);
-                
+
                 if (matchValue.Contains("afternoon"))
                     return now.Date.AddHours(14);
-                
+
                 if (matchValue.Contains("evening"))
                     return now.Date.AddHours(19);
             }

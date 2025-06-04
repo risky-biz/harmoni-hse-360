@@ -29,7 +29,7 @@ public class DeleteCorrectiveActionCommandHandler : IRequestHandler<DeleteCorrec
 
         // Log audit trail before deletion
         await _auditService.LogCorrectiveActionRemovedAsync(correctiveAction.IncidentId, correctiveAction.Description);
-        
+
         _context.CorrectiveActions.Remove(correctiveAction);
         await _context.SaveChangesAsync(cancellationToken);
 

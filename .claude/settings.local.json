@@ -69,7 +69,8 @@
       "Bash(docker inspect:*)",
       "Bash(dotnet:*)",
       "Bash(npm cache clean:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)"
     ]
   },
   "enableAllProjectMcpServers": false

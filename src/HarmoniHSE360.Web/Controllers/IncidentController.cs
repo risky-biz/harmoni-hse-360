@@ -91,7 +91,7 @@ public class IncidentController : ControllerBase
                 await _incidentHub.Clients.Group($"location-{result.Location}")
                     .SendAsync("IncidentCreated", result.Id);
             }
-            
+
             // Ensure server-side cache is also invalidated for immediate consistency
             await _cacheService.InvalidateAllIncidentCachesAsync();
             _logger.LogInformation("Server-side incident caches invalidated after creating incident {IncidentId}", result.Id);
@@ -119,7 +119,7 @@ public class IncidentController : ControllerBase
 
             var query = new GetIncidentByIdQuery { Id = id };
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
             {
                 return NotFound(new { message = "Incident not found or access denied" });
@@ -148,7 +148,7 @@ public class IncidentController : ControllerBase
 
             var query = new GetIncidentDetailQuery { Id = id };
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
             {
                 return NotFound(new { message = "Incident not found or access denied" });
@@ -211,14 +211,14 @@ public class IncidentController : ControllerBase
         try
         {
             _logger.LogInformation("Updating incident {IncidentId} by user {UserId}", id, _currentUserService.UserId);
-            _logger.LogInformation("Request data: Title={Title}, Description={Description}, Severity={Severity}, Status={Status}, Location={Location}", 
+            _logger.LogInformation("Request data: Title={Title}, Description={Description}, Severity={Severity}, Status={Status}, Location={Location}",
                 request?.Title, request?.Description, request?.Severity, request?.Status, request?.Location);
-            
+
             if (request == null)
             {
                 return BadRequest(new { message = "Request body is required" });
             }
-            
+
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("ModelState validation failed: {@ModelState}", ModelState);
@@ -230,7 +230,7 @@ public class IncidentController : ControllerBase
             {
                 severity = IncidentSeverity.Minor;
             }
-            
+
             if (!Enum.TryParse<IncidentStatus>(request.Status, out var status))
             {
                 status = IncidentStatus.Reported;
@@ -247,7 +247,7 @@ public class IncidentController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            
+
             if (result == null)
             {
                 return NotFound(new { message = "Incident not found or access denied" });
@@ -259,13 +259,13 @@ public class IncidentController : ControllerBase
             // If status changed, send specific notification
             if (request.Status != null)
             {
-                await _incidentHub.Clients.All.SendAsync("IncidentStatusChanged", new 
-                { 
-                    incidentId = result.Id, 
-                    newStatus = result.Status 
+                await _incidentHub.Clients.All.SendAsync("IncidentStatusChanged", new
+                {
+                    incidentId = result.Id,
+                    newStatus = result.Status
                 });
             }
-            
+
             // Ensure server-side cache is also invalidated for immediate consistency
             await _cacheService.InvalidateAllIncidentCachesAsync();
             _logger.LogInformation("Server-side incident caches invalidated after updating incident {IncidentId}", result.Id);
@@ -331,7 +331,7 @@ public class IncidentController : ControllerBase
 
             var command = new DeleteIncidentCommand { Id = id };
             var result = await _mediator.Send(command);
-            
+
             if (!result)
             {
                 return NotFound(new { message = "Incident not found or access denied" });
@@ -412,8 +412,8 @@ public class IncidentController : ControllerBase
 
             var result = await _mediator.Send(command);
 
-            return Ok(new 
-            { 
+            return Ok(new
+            {
                 attachments = result.Attachments,
                 message = result.Message
             });
@@ -482,7 +482,7 @@ public class IncidentController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error downloading attachment {AttachmentId} for incident {IncidentId}", 
+            _logger.LogError(ex, "Error downloading attachment {AttachmentId} for incident {IncidentId}",
                 attachmentId, incidentId);
             return BadRequest(new { message = "An error occurred while downloading the file" });
         }
@@ -516,18 +516,18 @@ public class IncidentController : ControllerBase
 
             // Log audit trail for attachment removal
             await _auditService.LogAttachmentRemovedAsync(incidentId, attachment.FileName);
-            
+
             // Save audit trail entry
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Deleted attachment {AttachmentId} ({FileName}) for incident {IncidentId}", 
+            _logger.LogInformation("Deleted attachment {AttachmentId} ({FileName}) for incident {IncidentId}",
                 attachmentId, attachment.FileName, incidentId);
 
             return Ok(new { message = "Attachment deleted successfully" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting attachment {AttachmentId} for incident {IncidentId}", 
+            _logger.LogError(ex, "Error deleting attachment {AttachmentId} for incident {IncidentId}",
                 attachmentId, incidentId);
             return BadRequest(new { message = "An error occurred while deleting the attachment" });
         }

@@ -50,7 +50,7 @@ public class GetIncidentDetailQueryHandler : IRequestHandler<GetIncidentDetailQu
             EmergencyServicesContacted = incident.EmergencyServicesContacted,
             WitnessNames = incident.WitnessNames,
             ImmediateActionsTaken = incident.ImmediateActionsTaken,
-            InvolvedPersons = incident.InvolvedPersons.Select(ip => 
+            InvolvedPersons = incident.InvolvedPersons.Select(ip =>
             {
                 var nameParts = ip.Person.Name.Split(' ');
                 return new InvolvedPersonDto

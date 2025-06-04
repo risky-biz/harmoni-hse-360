@@ -11,7 +11,7 @@ public class LocalFileStorageService : IFileStorageService
     {
         // Get uploads path from configuration, with fallback to default
         _uploadsPath = configuration["FileStorage:UploadsPath"] ?? "uploads";
-        
+
         // Note: Directory creation is handled in Program.cs since we need access to WebRootPath
     }
 

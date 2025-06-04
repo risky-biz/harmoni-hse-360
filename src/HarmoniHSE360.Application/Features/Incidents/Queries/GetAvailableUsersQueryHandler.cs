@@ -22,14 +22,14 @@ public class GetAvailableUsersQueryHandler : IRequestHandler<GetAvailableUsersQu
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(u => 
-                u.Name.Contains(request.SearchTerm) || 
+            query = query.Where(u =>
+                u.Name.Contains(request.SearchTerm) ||
                 u.Email.Contains(request.SearchTerm));
         }
 
         var users = await query
             .OrderBy(u => u.Name)
-            .Select(u => new 
+            .Select(u => new
             {
                 u.Id,
                 u.Name,
@@ -38,7 +38,7 @@ public class GetAvailableUsersQueryHandler : IRequestHandler<GetAvailableUsersQu
             .Take(50) // Limit results
             .ToListAsync(cancellationToken);
 
-        return users.Select(u => 
+        return users.Select(u =>
         {
             var nameParts = u.Name.Split(' ');
             return new UserDto

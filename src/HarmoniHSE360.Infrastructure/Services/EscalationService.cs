@@ -57,7 +57,7 @@ public class EscalationService : IEscalationService
                 await ProcessEscalationRuleAsync(incident, rule, cancellationToken);
             }
 
-            _logger.LogInformation("Completed processing {RuleCount} escalation rules for incident {IncidentId}", 
+            _logger.LogInformation("Completed processing {RuleCount} escalation rules for incident {IncidentId}",
                 applicableRules.Count, incidentId);
         }
         catch (Exception ex)
@@ -79,7 +79,7 @@ public class EscalationService : IEscalationService
             // Get incidents that are overdue for initial response
             var overdueIncidents = await _context.Incidents
                 .Where(i => i.Status == IncidentStatus.Open || i.Status == IncidentStatus.InProgress)
-                .Where(i => i.CreatedAt < overdueThreshold && 
+                .Where(i => i.CreatedAt < overdueThreshold &&
                            (i.LastResponseAt == null || i.LastResponseAt < overdueThreshold))
                 .ToListAsync(cancellationToken);
 
@@ -102,7 +102,7 @@ public class EscalationService : IEscalationService
                 await TriggerOverdueEscalationAsync(incident, "Critical incident requires immediate attention", cancellationToken);
             }
 
-            _logger.LogInformation("Processed {OverdueCount} overdue and {CriticalCount} critical incidents", 
+            _logger.LogInformation("Processed {OverdueCount} overdue and {CriticalCount} critical incidents",
                 overdueIncidents.Count, criticalIncidents.Count);
         }
         catch (Exception ex)
@@ -116,7 +116,7 @@ public class EscalationService : IEscalationService
     {
         try
         {
-            _logger.LogInformation("Triggering manual escalation for incident {IncidentId} by {EscalatedBy}", 
+            _logger.LogInformation("Triggering manual escalation for incident {IncidentId} by {EscalatedBy}",
                 incidentId, escalatedBy);
 
             var incident = await _context.Incidents
@@ -143,8 +143,8 @@ public class EscalationService : IEscalationService
             await NotifyEscalationTargetsAsync(incident, managementTargets, reason, escalatedBy, cancellationToken);
 
             // Record escalation history
-            await RecordEscalationHistoryAsync(incidentId, null, "Manual Escalation", 
-                EscalationActionType.EscalateToManager, string.Join(", ", managementTargets), 
+            await RecordEscalationHistoryAsync(incidentId, null, "Manual Escalation",
+                EscalationActionType.EscalateToManager, string.Join(", ", managementTargets),
                 reason, true, escalatedBy, cancellationToken);
 
             // Publish domain event
@@ -252,8 +252,8 @@ public class EscalationService : IEscalationService
             if (rule.TriggerAfterDuration.HasValue)
             {
                 var timeSinceCreation = DateTime.UtcNow - incident.CreatedAt;
-                var timeSinceResponse = incident.LastResponseAt.HasValue 
-                    ? DateTime.UtcNow - incident.LastResponseAt.Value 
+                var timeSinceResponse = incident.LastResponseAt.HasValue
+                    ? DateTime.UtcNow - incident.LastResponseAt.Value
                     : timeSinceCreation;
 
                 if (timeSinceResponse < rule.TriggerAfterDuration.Value)
@@ -293,7 +293,7 @@ public class EscalationService : IEscalationService
     {
         try
         {
-            _logger.LogInformation("Processing escalation rule {RuleName} for incident {IncidentId}", 
+            _logger.LogInformation("Processing escalation rule {RuleName} for incident {IncidentId}",
                 rule.Name, incident.Id);
 
             foreach (var action in rule.Actions)
@@ -318,10 +318,10 @@ public class EscalationService : IEscalationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process escalation rule {RuleName} for incident {IncidentId}", 
+            _logger.LogError(ex, "Failed to process escalation rule {RuleName} for incident {IncidentId}",
                 rule.Name, incident.Id);
-            
-            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name, 
+
+            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name,
                 EscalationActionType.NotifyUser, "System", ex.Message, false, "system", cancellationToken);
         }
     }
@@ -361,15 +361,15 @@ public class EscalationService : IEscalationService
                     break;
             }
 
-            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name, action.Type, 
+            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name, action.Type,
                 action.Target, "Action executed successfully", true, "system", cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to execute escalation action {ActionType} for incident {IncidentId}", 
+            _logger.LogError(ex, "Failed to execute escalation action {ActionType} for incident {IncidentId}",
                 action.Type, incident.Id);
-            
-            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name, action.Type, 
+
+            await RecordEscalationHistoryAsync(incident.Id, rule.Id, rule.Name, action.Type,
                 action.Target, ex.Message, false, "system", cancellationToken);
         }
     }
@@ -473,7 +473,7 @@ public class EscalationService : IEscalationService
 
         // Send immediate notifications to emergency contacts
         var emergencyContacts = await GetEmergencyContactsAsync(cancellationToken);
-        
+
         foreach (var contact in emergencyContacts)
         {
             var emergencyAction = new EscalationAction
@@ -500,7 +500,7 @@ public class EscalationService : IEscalationService
 
         // Notify regulatory team
         var regulatoryTeam = await GetRegulatoryTeamAsync(cancellationToken);
-        
+
         foreach (var teamMember in regulatoryTeam)
         {
             var regulatoryAction = new EscalationAction
@@ -554,14 +554,14 @@ public class EscalationService : IEscalationService
         }
     }
 
-    private async Task RecordEscalationHistoryAsync(int incidentId, int? ruleId, string ruleName, 
-        EscalationActionType actionType, string actionTarget, string actionDetails, bool isSuccessful, 
+    private async Task RecordEscalationHistoryAsync(int incidentId, int? ruleId, string ruleName,
+        EscalationActionType actionType, string actionTarget, string actionDetails, bool isSuccessful,
         string executedBy, CancellationToken cancellationToken)
     {
         // In a real implementation, save to EscalationHistory table
-        _logger.LogInformation("Escalation history: Incident={IncidentId}, Rule={RuleName}, Action={ActionType}, Target={ActionTarget}, Success={IsSuccessful}", 
+        _logger.LogInformation("Escalation history: Incident={IncidentId}, Rule={RuleName}, Action={ActionType}, Target={ActionTarget}, Success={IsSuccessful}",
             incidentId, ruleName, actionType, actionTarget, isSuccessful);
-        
+
         await Task.CompletedTask;
     }
 

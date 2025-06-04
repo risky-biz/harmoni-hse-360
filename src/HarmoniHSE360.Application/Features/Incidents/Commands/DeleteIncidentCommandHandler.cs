@@ -26,7 +26,7 @@ public class DeleteIncidentCommandHandler : IRequestHandler<DeleteIncidentComman
 
     public async Task<bool> Handle(DeleteIncidentCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Deleting incident {IncidentId} by user {UserEmail}", 
+        _logger.LogInformation("Deleting incident {IncidentId} by user {UserEmail}",
             request.Id, _currentUserService.Email);
 
         var incident = await _context.Incidents

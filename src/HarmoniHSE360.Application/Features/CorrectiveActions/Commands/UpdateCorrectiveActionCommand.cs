@@ -66,7 +66,7 @@ public class UpdateCorrectiveActionCommandHandler : IRequestHandler<UpdateCorrec
 
         // Log audit trail
         await _auditService.LogCorrectiveActionUpdatedAsync(correctiveAction.IncidentId, request.Description);
-        
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;

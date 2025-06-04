@@ -29,7 +29,7 @@ public class NotificationTemplateService : INotificationTemplateService
         // Fallback to English if specific language not found
         if (language != "en" && _templates.TryGetValue($"{templateId}_en", out var englishTemplate))
         {
-            _logger.LogWarning("Template {TemplateId} not found for language {Language}, falling back to English", 
+            _logger.LogWarning("Template {TemplateId} not found for language {Language}, falling back to English",
                 templateId, language);
             return englishTemplate;
         }
@@ -53,7 +53,7 @@ public class NotificationTemplateService : INotificationTemplateService
     {
         try
         {
-            _logger.LogInformation("Generating notification content for template {TemplateId} in language {Language}", 
+            _logger.LogInformation("Generating notification content for template {TemplateId} in language {Language}",
                 request.TemplateId, request.Language);
 
             var template = await GetTemplateAsync(request.TemplateId, request.Language, cancellationToken);
@@ -80,20 +80,20 @@ public class NotificationTemplateService : INotificationTemplateService
             {
                 Subject = RenderTemplate(template.SubjectTemplate, mergedData),
                 Body = RenderTemplate(template.BodyTemplate, mergedData),
-                HtmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate) 
-                    ? RenderTemplate(template.HtmlBodyTemplate, mergedData) 
+                HtmlBody = !string.IsNullOrEmpty(template.HtmlBodyTemplate)
+                    ? RenderTemplate(template.HtmlBodyTemplate, mergedData)
                     : null,
-                SmsMessage = !string.IsNullOrEmpty(template.SmsTemplate) 
-                    ? RenderTemplate(template.SmsTemplate, mergedData) 
+                SmsMessage = !string.IsNullOrEmpty(template.SmsTemplate)
+                    ? RenderTemplate(template.SmsTemplate, mergedData)
                     : RenderTemplate(template.BodyTemplate, mergedData),
-                WhatsAppMessage = !string.IsNullOrEmpty(template.WhatsAppTemplate) 
-                    ? RenderTemplate(template.WhatsAppTemplate, mergedData) 
+                WhatsAppMessage = !string.IsNullOrEmpty(template.WhatsAppTemplate)
+                    ? RenderTemplate(template.WhatsAppTemplate, mergedData)
                     : RenderTemplate(template.BodyTemplate, mergedData),
-                PushTitle = !string.IsNullOrEmpty(template.PushTitleTemplate) 
-                    ? RenderTemplate(template.PushTitleTemplate, mergedData) 
+                PushTitle = !string.IsNullOrEmpty(template.PushTitleTemplate)
+                    ? RenderTemplate(template.PushTitleTemplate, mergedData)
                     : RenderTemplate(template.SubjectTemplate, mergedData),
-                PushBody = !string.IsNullOrEmpty(template.PushBodyTemplate) 
-                    ? RenderTemplate(template.PushBodyTemplate, mergedData) 
+                PushBody = !string.IsNullOrEmpty(template.PushBodyTemplate)
+                    ? RenderTemplate(template.PushBodyTemplate, mergedData)
                     : RenderTemplate(template.BodyTemplate, mergedData),
                 Metadata = new Dictionary<string, string>
                 {
@@ -129,7 +129,7 @@ public class NotificationTemplateService : INotificationTemplateService
             {
                 return value?.ToString() ?? string.Empty;
             }
-            
+
             _logger.LogWarning("Template variable {Variable} not found in data", key);
             return match.Value; // Return original placeholder if not found
         });

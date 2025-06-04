@@ -30,7 +30,7 @@ public class UpdateIncidentCommandHandler : IRequestHandler<UpdateIncidentComman
 
     public async Task<IncidentDto?> Handle(UpdateIncidentCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Updating incident {IncidentId} by user {UserEmail}", 
+        _logger.LogInformation("Updating incident {IncidentId} by user {UserEmail}",
             request.Id, _currentUserService.Email);
 
         var incident = await _context.Incidents
@@ -54,7 +54,7 @@ public class UpdateIncidentCommandHandler : IRequestHandler<UpdateIncidentComman
 
         // Update basic details
         incident.UpdateDetails(request.Title, request.Description, _currentUserService.Email!);
-        
+
         // Log title change
         if (oldTitle != request.Title)
         {
@@ -64,7 +64,7 @@ public class UpdateIncidentCommandHandler : IRequestHandler<UpdateIncidentComman
         // Log description change
         if (oldDescription != request.Description)
         {
-            await _auditService.LogFieldChangeAsync(incident.Id, "Description", 
+            await _auditService.LogFieldChangeAsync(incident.Id, "Description",
                 oldDescription.Length > 100 ? oldDescription.Substring(0, 100) + "..." : oldDescription,
                 request.Description.Length > 100 ? request.Description.Substring(0, 100) + "..." : request.Description);
         }
@@ -97,7 +97,7 @@ public class UpdateIncidentCommandHandler : IRequestHandler<UpdateIncidentComman
         }
 
         await _context.SaveChangesAsync(cancellationToken);
-        
+
         // Invalidate incident caches to ensure fresh data
         await InvalidateIncidentCaches(incident.ReporterId?.ToString() ?? "unknown");
 
@@ -132,7 +132,7 @@ public class UpdateIncidentCommandHandler : IRequestHandler<UpdateIncidentComman
             LastModifiedBy = incident.LastModifiedBy
         };
     }
-    
+
     private async Task InvalidateIncidentCaches(string reporterId)
     {
         await _cache.RemoveByTagAsync("incidents");

@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload Trivy filesystem scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-fs-results.sarif') != ''
         with:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-filesystem'
@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload Trivy configuration scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-config-results.sarif') != ''
         with:
           sarif_file: 'trivy-config-results.sarif'
           category: 'trivy-config'
@@ -138,7 +138,7 @@ jobs:
 
       - name: Upload Trivy container scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-container-results.sarif') != ''
         with:
           sarif_file: 'trivy-container-results.sarif'
           category: 'trivy-container'

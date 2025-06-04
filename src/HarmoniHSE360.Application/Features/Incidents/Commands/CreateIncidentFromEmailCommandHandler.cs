@@ -31,10 +31,10 @@ public class CreateIncidentFromEmailCommandHandler : IRequestHandler<CreateIncid
         {
             // Extract incident details from email content
             var incidentDetails = ParseEmailContent(request);
-            
+
             // Find or create user based on email
             var user = await GetOrCreateUserFromEmail(request.FromEmail, request.FromName, cancellationToken);
-            
+
             // Create incident
             var incident = Incident.Create(
                 title: incidentDetails.Title,
@@ -85,7 +85,7 @@ public class CreateIncidentFromEmailCommandHandler : IRequestHandler<CreateIncid
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, "Failed to store attachment {FileName} for incident {IncidentId}", 
+                        _logger.LogWarning(ex, "Failed to store attachment {FileName} for incident {IncidentId}",
                             attachment.FileName, incident.Id);
                     }
                 }
@@ -94,7 +94,7 @@ public class CreateIncidentFromEmailCommandHandler : IRequestHandler<CreateIncid
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Successfully created incident {IncidentId} from email report", incident.Id);
-            
+
             return incident.Id;
         }
         catch (Exception ex)
@@ -156,7 +156,7 @@ public class CreateIncidentFromEmailCommandHandler : IRequestHandler<CreateIncid
         foreach (var line in lines)
         {
             var trimmedLine = line.Trim();
-            
+
             // Skip quoted text
             if (trimmedLine.StartsWith(">") || trimmedLine.StartsWith("On ") && trimmedLine.Contains(" wrote:"))
             {
@@ -183,11 +183,11 @@ public class CreateIncidentFromEmailCommandHandler : IRequestHandler<CreateIncid
     {
         var upperContent = content.ToUpperInvariant();
 
-        if (upperContent.Contains("CRITICAL") || upperContent.Contains("EMERGENCY") || 
+        if (upperContent.Contains("CRITICAL") || upperContent.Contains("EMERGENCY") ||
             upperContent.Contains("FATAL") || upperContent.Contains("DEATH"))
             return IncidentSeverity.Critical;
 
-        if (upperContent.Contains("SERIOUS") || upperContent.Contains("SEVERE") || 
+        if (upperContent.Contains("SERIOUS") || upperContent.Contains("SEVERE") ||
             upperContent.Contains("MAJOR") || upperContent.Contains("INJURY"))
             return IncidentSeverity.Serious;
 

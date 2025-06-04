@@ -30,7 +30,7 @@ public class CorrectiveActionsController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<int>> CreateCorrectiveAction(
-        int incidentId, 
+        int incidentId,
         [FromBody] CreateCorrectiveActionRequest request)
     {
         var command = new CreateCorrectiveActionCommand
@@ -49,8 +49,8 @@ public class CorrectiveActionsController : ControllerBase
 
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateCorrectiveAction(
-        int incidentId, 
-        int id, 
+        int incidentId,
+        int id,
         [FromBody] UpdateCorrectiveActionRequest request)
     {
         var command = new UpdateCorrectiveActionCommand

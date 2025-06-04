@@ -27,13 +27,13 @@ public class RemoveInvolvedPersonCommandHandler : IRequestHandler<RemoveInvolved
         }
 
         var personName = involvedPerson.Person?.Name ?? $"Person ID {request.PersonId}";
-        
+
         _context.IncidentInvolvedPersons.Remove(involvedPerson);
         await _context.SaveChangesAsync(cancellationToken);
 
         // Log audit trail
         await _auditService.LogActionAsync(request.IncidentId, $"Involved person removed: {personName}");
-        
+
         // Save audit trail entry
         await _context.SaveChangesAsync(cancellationToken);
 

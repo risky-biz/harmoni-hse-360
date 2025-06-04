@@ -84,7 +84,7 @@ public static class NotificationTemplates
     public const string INCIDENT_CLOSED_ID = "incident_closed";
     public const string EMERGENCY_ALERT_ID = "emergency_alert";
     public const string WEEKLY_DIGEST_ID = "weekly_digest";
-    
+
     // Multi-language support
     public const string LANG_ENGLISH = "en";
     public const string LANG_BAHASA = "id";

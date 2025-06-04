@@ -18,7 +18,7 @@ public class GeoLocation : ValueObject
         Latitude = latitude;
         Longitude = longitude;
     }
-    
+
     public static GeoLocation Create(double latitude, double longitude)
     {
         return new GeoLocation(latitude, longitude);

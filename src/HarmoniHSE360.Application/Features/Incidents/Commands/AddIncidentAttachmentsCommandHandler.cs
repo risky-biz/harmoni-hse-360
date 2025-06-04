@@ -14,9 +14,9 @@ public class AddIncidentAttachmentsCommandHandler : IRequestHandler<AddIncidentA
     private readonly IIncidentAuditService _auditService;
 
     private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx", ".txt", ".mp4", ".avi", ".mov" };
-    private static readonly string[] AllowedContentTypes = { 
-        "image/jpeg", "image/png", "image/gif", 
-        "application/pdf", 
+    private static readonly string[] AllowedContentTypes = {
+        "image/jpeg", "image/png", "image/gif",
+        "application/pdf",
         "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/plain",
         "video/mp4", "video/avi", "video/quicktime"
@@ -39,7 +39,7 @@ public class AddIncidentAttachmentsCommandHandler : IRequestHandler<AddIncidentA
     {
         try
         {
-            _logger.LogInformation("Adding {FileCount} attachments to incident {IncidentId}", 
+            _logger.LogInformation("Adding {FileCount} attachments to incident {IncidentId}",
                 request.Files.Count, request.IncidentId);
 
             // Verify incident exists
@@ -66,9 +66,9 @@ public class AddIncidentAttachmentsCommandHandler : IRequestHandler<AddIncidentA
                 // Upload file
                 using var fileStream = file.OpenReadStream();
                 var uploadResult = await _fileStorageService.UploadAsync(
-                    fileStream, 
-                    uniqueFileName, 
-                    file.ContentType, 
+                    fileStream,
+                    uniqueFileName,
+                    file.ContentType,
                     folder);
 
                 // Create attachment entity
@@ -86,7 +86,7 @@ public class AddIncidentAttachmentsCommandHandler : IRequestHandler<AddIncidentA
 
                 // Log audit trail for attachment
                 await _auditService.LogAttachmentAddedAsync(request.IncidentId, file.FileName);
-                
+
                 // Save audit trail entry
                 await _context.SaveChangesAsync(cancellationToken);
 
@@ -99,7 +99,7 @@ public class AddIncidentAttachmentsCommandHandler : IRequestHandler<AddIncidentA
                     UploadedAt = attachment.UploadedAt
                 });
 
-                _logger.LogInformation("Successfully uploaded attachment {FileName} ({FileSize} bytes) for incident {IncidentId}", 
+                _logger.LogInformation("Successfully uploaded attachment {FileName} ({FileSize} bytes) for incident {IncidentId}",
                     file.FileName, uploadResult.Size, request.IncidentId);
             }
 

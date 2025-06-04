@@ -152,7 +152,7 @@ public class DataSeeder : IDataSeeder
     {
         // Check if we should re-seed users even if they exist
         var reSeedUsers = _configuration["DataSeeding:ReSeedUsers"] == "true";
-        
+
         if (!reSeedUsers && await _context.Users.AnyAsync())
         {
             _logger.LogInformation("Users already exist and ReSeedUsers is false, skipping user seeding");
@@ -204,7 +204,7 @@ public class DataSeeder : IDataSeeder
     {
         // Check if we should re-seed incidents even if they exist
         var reSeedIncidents = _configuration["DataSeeding:ReSeedIncidents"] == "true";
-        
+
         if (!reSeedIncidents && await _context.Incidents.AnyAsync())
         {
             _logger.LogInformation("Incidents already exist and ReSeedIncidents is false, skipping incident seeding");

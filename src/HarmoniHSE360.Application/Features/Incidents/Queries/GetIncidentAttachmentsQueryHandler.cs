@@ -40,7 +40,7 @@ public class GetIncidentAttachmentsQueryHandler : IRequestHandler<GetIncidentAtt
                 })
                 .ToListAsync(cancellationToken);
 
-            _logger.LogInformation("Found {AttachmentCount} attachments for incident {IncidentId}", 
+            _logger.LogInformation("Found {AttachmentCount} attachments for incident {IncidentId}",
                 attachments.Count, request.IncidentId);
 
             return attachments;

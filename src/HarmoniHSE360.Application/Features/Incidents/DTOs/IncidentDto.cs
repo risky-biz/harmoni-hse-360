@@ -13,30 +13,30 @@ public class IncidentDto
     public string Location { get; set; } = string.Empty;
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
-    
+
     // Reporter info (simplified for list view)
     public string ReporterName { get; set; } = string.Empty;
     public string? ReporterEmail { get; set; }
     public string? ReporterDepartment { get; set; }
-    
+
     // Injury details
     public string? InjuryType { get; set; }
     public bool? MedicalTreatmentProvided { get; set; }
     public bool? EmergencyServicesContacted { get; set; }
     public string? WitnessNames { get; set; }
     public string? ImmediateActionsTaken { get; set; }
-    
+
     // Related counts
     public int AttachmentsCount { get; set; }
     public int InvolvedPersonsCount { get; set; }
     public int CorrectiveActionsCount { get; set; }
-    
+
     // Audit fields
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? LastModifiedAt { get; set; }
     public string? LastModifiedBy { get; set; }
-    
+
     // Full reporter/investigator objects (optional, for detail views)
     public UserDto? Reporter { get; set; }
     public UserDto? Investigator { get; set; }

@@ -45,7 +45,7 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
             CreatedBy = createdBy
         };
     }
-    
+
     public void MarkAsCompleted(DateTime completedDate, string completionNotes)
     {
         CompletedDate = completedDate;

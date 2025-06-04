@@ -38,7 +38,7 @@ public static class DependencyInjection
         // Register cache services
         services.AddSingleton<ICacheService, CacheService>();
         services.AddScoped<IIncidentCacheService, IncidentCacheService>();
-        
+
         // Register incident-specific services here
         return services;
     }

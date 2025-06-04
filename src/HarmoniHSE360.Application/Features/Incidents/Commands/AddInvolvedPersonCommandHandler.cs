@@ -39,12 +39,12 @@ public class AddInvolvedPersonCommandHandler : IRequestHandler<AddInvolvedPerson
 
         // Use the domain method to add involved person
         incident.AddInvolvedPerson(request.PersonId, request.InvolvementType, request.InjuryDescription);
-        
+
         await _context.SaveChangesAsync(cancellationToken);
 
         // Log audit trail
         await _auditService.LogActionAsync(request.IncidentId, $"Involved person added: {personName} ({request.InvolvementType})");
-        
+
         // Save audit trail entry
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -22,7 +22,7 @@ public class GetIncidentsQueryHandler : IRequestHandler<GetIncidentsQuery, GetIn
     public async Task<GetIncidentsResponse> Handle(GetIncidentsQuery request, CancellationToken cancellationToken)
     {
         // Generate cache key based on query parameters
-        var cacheKey = _cache.GenerateKey(INCIDENTS_CACHE_KEY_PREFIX, 
+        var cacheKey = _cache.GenerateKey(INCIDENTS_CACHE_KEY_PREFIX,
             request.PageNumber, request.PageSize, request.Status ?? "", request.Severity ?? "", request.SearchTerm ?? "");
 
         // Try to get from cache first
@@ -42,7 +42,7 @@ public class GetIncidentsQueryHandler : IRequestHandler<GetIncidentsQuery, GetIn
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTermLower = request.SearchTerm.ToLower();
-            query = query.Where(i => 
+            query = query.Where(i =>
                 i.Title.ToLower().Contains(searchTermLower) ||
                 i.Description.ToLower().Contains(searchTermLower) ||
                 i.Location.ToLower().Contains(searchTermLower));

@@ -52,10 +52,10 @@ public class CreateCorrectiveActionCommandHandler : IRequestHandler<CreateCorrec
             request.AssignedToId);
 
         _context.CorrectiveActions.Add(correctiveAction);
-        
+
         // Log audit trail before saving
         await _auditService.LogCorrectiveActionAddedAsync(request.IncidentId, request.Description);
-        
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return correctiveAction.Id;

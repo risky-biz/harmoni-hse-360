@@ -26,7 +26,7 @@ public class NotificationRequiredEventHandler : INotificationHandler<Notificatio
     {
         try
         {
-            _logger.LogInformation("Processing notification required event for incident {IncidentId} with template {TemplateId}", 
+            _logger.LogInformation("Processing notification required event for incident {IncidentId} with template {TemplateId}",
                 notification.IncidentId, notification.TemplateId);
 
             var notificationRequest = new NotificationRequest
@@ -81,7 +81,7 @@ public class EscalationTriggeredEventHandler : INotificationHandler<EscalationTr
     {
         try
         {
-            _logger.LogInformation("Processing escalation triggered event for incident {IncidentId} with rule {EscalationRuleId}", 
+            _logger.LogInformation("Processing escalation triggered event for incident {IncidentId} with rule {EscalationRuleId}",
                 notification.IncidentId, notification.EscalationRuleId);
 
             var escalationData = new Dictionary<string, object>
@@ -148,7 +148,7 @@ public class RegulatoryReportRequiredEventHandler : INotificationHandler<Regulat
     {
         try
         {
-            _logger.LogInformation("Processing regulatory report required event for incident {IncidentId}", 
+            _logger.LogInformation("Processing regulatory report required event for incident {IncidentId}",
                 notification.IncidentId);
 
             var regulatoryData = new Dictionary<string, object>
@@ -226,7 +226,7 @@ public class EmergencyAlertTriggeredEventHandler : INotificationHandler<Emergenc
     {
         try
         {
-            _logger.LogInformation("Processing emergency alert triggered event for incident {IncidentId}", 
+            _logger.LogInformation("Processing emergency alert triggered event for incident {IncidentId}",
                 notification.IncidentId);
 
             var emergencyData = new Dictionary<string, object>
@@ -284,7 +284,7 @@ public class EmergencyAlertTriggeredEventHandler : INotificationHandler<Emergenc
     {
         // Placeholder - in real implementation, query emergency contacts from database
         await Task.CompletedTask;
-        
+
         return contactGroup switch
         {
             "emergency_team" => new() { "emergency_coordinator", "site_safety_officer", "medical_officer" },
@@ -315,7 +315,7 @@ public class DeadlineApproachingEventHandler : INotificationHandler<DeadlineAppr
     {
         try
         {
-            _logger.LogInformation("Processing deadline approaching event for incident {IncidentId}", 
+            _logger.LogInformation("Processing deadline approaching event for incident {IncidentId}",
                 notification.IncidentId);
 
             var deadlineData = new Dictionary<string, object>
@@ -363,10 +363,10 @@ public class DeadlineApproachingEventHandler : INotificationHandler<DeadlineAppr
     {
         if (timeRemaining.TotalDays >= 1)
             return $"{timeRemaining.Days} day(s)";
-        
+
         if (timeRemaining.TotalHours >= 1)
             return $"{timeRemaining.Hours} hour(s)";
-        
+
         return $"{timeRemaining.Minutes} minute(s)";
     }
 }

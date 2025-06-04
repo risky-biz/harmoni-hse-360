@@ -7,20 +7,20 @@ public class EscalationRule : BaseEntity, IAuditableEntity
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
-    
+
     // Trigger conditions
     public List<IncidentSeverity> TriggerSeverities { get; set; } = new();
     public List<IncidentStatus> TriggerStatuses { get; set; } = new();
     public TimeSpan? TriggerAfterDuration { get; set; }
     public List<string> TriggerDepartments { get; set; } = new();
     public List<string> TriggerLocations { get; set; } = new();
-    
+
     // Escalation actions
     public List<EscalationAction> Actions { get; set; } = new();
-    
+
     // Timing and priority
     public int Priority { get; set; } = 100; // Lower number = higher priority
-    
+
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = string.Empty;
@@ -38,7 +38,7 @@ public class EscalationAction
     public Dictionary<string, string> Parameters { get; set; } = new();
     public TimeSpan? Delay { get; set; }
     public List<NotificationChannel> Channels { get; set; } = new();
-    
+
     // Navigation property
     public EscalationRule EscalationRule { get; set; } = null!;
 }
@@ -55,11 +55,11 @@ public class EscalationHistory : BaseEntity, IAuditableEntity
     public string? ErrorMessage { get; set; }
     public DateTime ExecutedAt { get; set; } = DateTime.UtcNow;
     public string? ExecutedBy { get; set; }
-    
+
     // Navigation properties
     public Incident Incident { get; set; } = null!;
     public EscalationRule? EscalationRule { get; set; }
-    
+
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = string.Empty;
@@ -83,10 +83,10 @@ public class NotificationHistory : BaseEntity, IAuditableEntity
     public DateTime? DeliveredAt { get; set; }
     public DateTime? ReadAt { get; set; }
     public Dictionary<string, string> Metadata { get; set; } = new();
-    
+
     // Navigation properties
     public Incident Incident { get; set; } = null!;
-    
+
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = string.Empty;

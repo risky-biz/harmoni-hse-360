@@ -28,14 +28,14 @@ public class UpdateInvolvedPersonCommandHandler : IRequestHandler<UpdateInvolved
 
         var personName = involvedPerson.Person?.Name ?? $"Person ID {request.PersonId}";
         var oldInvolvementType = involvedPerson.InvolvementType.ToString();
-        
+
         involvedPerson.UpdateDetails(request.InvolvementType, request.InjuryDescription);
 
         await _context.SaveChangesAsync(cancellationToken);
 
         // Log audit trail
         await _auditService.LogActionAsync(request.IncidentId, $"Involved person updated: {personName} (changed from {oldInvolvementType} to {request.InvolvementType})");
-        
+
         // Save audit trail entry
         await _context.SaveChangesAsync(cancellationToken);
 

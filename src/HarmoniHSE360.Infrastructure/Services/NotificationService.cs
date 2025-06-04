@@ -27,12 +27,12 @@ public class NotificationService : INotificationService
     {
         try
         {
-            _logger.LogInformation("Sending email notification to {To} with subject {Subject}", 
+            _logger.LogInformation("Sending email notification to {To} with subject {Subject}",
                 notification.To, notification.Subject);
 
             var message = new MailMessage
             {
-                From = new MailAddress(_configuration["Email:FromAddress"] ?? "noreply@harmonihse360.com", 
+                From = new MailAddress(_configuration["Email:FromAddress"] ?? "noreply@harmonihse360.com",
                                      _configuration["Email:FromName"] ?? "HarmoniHSE360"),
                 Subject = notification.Subject,
                 Body = notification.HtmlBody ?? notification.Body,
@@ -90,11 +90,11 @@ public class NotificationService : INotificationService
 
             if (string.IsNullOrEmpty(smsGatewayUrl))
             {
-                _logger.LogWarning("SMS gateway not configured. SMS notification to {PhoneNumber} will be logged only", 
+                _logger.LogWarning("SMS gateway not configured. SMS notification to {PhoneNumber} will be logged only",
                     notification.PhoneNumber);
-                
+
                 // Log the SMS for development/testing
-                _logger.LogInformation("SMS Content: To={PhoneNumber}, Message={Message}", 
+                _logger.LogInformation("SMS Content: To={PhoneNumber}, Message={Message}",
                     notification.PhoneNumber, notification.Message);
                 return;
             }
@@ -107,7 +107,7 @@ public class NotificationService : INotificationService
                 priority = notification.Priority.ToString()
             };
 
-            var content = new StringContent(JsonSerializer.Serialize(smsPayload), 
+            var content = new StringContent(JsonSerializer.Serialize(smsPayload),
                 System.Text.Encoding.UTF8, "application/json");
 
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
@@ -119,7 +119,7 @@ public class NotificationService : INotificationService
             }
             else
             {
-                _logger.LogError("Failed to send SMS notification to {PhoneNumber}. Status: {StatusCode}", 
+                _logger.LogError("Failed to send SMS notification to {PhoneNumber}. Status: {StatusCode}",
                     notification.PhoneNumber, response.StatusCode);
             }
         }
@@ -142,17 +142,17 @@ public class NotificationService : INotificationService
 
             if (string.IsNullOrEmpty(whatsappApiUrl))
             {
-                _logger.LogWarning("WhatsApp API not configured. Notification to {PhoneNumber} will be logged only", 
+                _logger.LogWarning("WhatsApp API not configured. Notification to {PhoneNumber} will be logged only",
                     notification.PhoneNumber);
-                
+
                 // Log the WhatsApp message for development/testing
-                _logger.LogInformation("WhatsApp Content: To={PhoneNumber}, Message={Message}", 
+                _logger.LogInformation("WhatsApp Content: To={PhoneNumber}, Message={Message}",
                     notification.PhoneNumber, notification.Message);
                 return;
             }
 
             using var httpClient = new HttpClient();
-            
+
             object whatsappPayload;
 
             if (!string.IsNullOrEmpty(notification.TemplateId))
@@ -187,7 +187,7 @@ public class NotificationService : INotificationService
                 };
             }
 
-            var content = new StringContent(JsonSerializer.Serialize(whatsappPayload), 
+            var content = new StringContent(JsonSerializer.Serialize(whatsappPayload),
                 System.Text.Encoding.UTF8, "application/json");
 
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -200,7 +200,7 @@ public class NotificationService : INotificationService
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogError("Failed to send WhatsApp notification to {PhoneNumber}. Status: {StatusCode}, Error: {Error}", 
+                _logger.LogError("Failed to send WhatsApp notification to {PhoneNumber}. Status: {StatusCode}, Error: {Error}",
                     notification.PhoneNumber, response.StatusCode, errorContent);
             }
         }
@@ -227,11 +227,11 @@ public class NotificationService : INotificationService
 
             if (string.IsNullOrEmpty(fcmServerKey))
             {
-                _logger.LogWarning("Push notification service not configured. Notification to {UserId} will be logged only", 
+                _logger.LogWarning("Push notification service not configured. Notification to {UserId} will be logged only",
                     notification.UserId);
-                
+
                 // Log the push notification for development/testing
-                _logger.LogInformation("Push Notification: UserId={UserId}, Title={Title}, Body={Body}", 
+                _logger.LogInformation("Push Notification: UserId={UserId}, Title={Title}, Body={Body}",
                     notification.UserId, notification.Title, notification.Body);
                 return Task.CompletedTask;
             }
@@ -242,7 +242,7 @@ public class NotificationService : INotificationService
             // 3. Handle token refresh and invalid tokens
 
             _logger.LogInformation("Push notification prepared for user {UserId}", notification.UserId);
-            
+
             return Task.CompletedTask;
         }
         catch (Exception ex)
@@ -256,7 +256,7 @@ public class NotificationService : INotificationService
     {
         try
         {
-            _logger.LogInformation("Sending multi-channel notification to user {UserId} via {ChannelCount} channels", 
+            _logger.LogInformation("Sending multi-channel notification to user {UserId} via {ChannelCount} channels",
                 notification.UserId, notification.Channels.Count);
 
             var tasks = new List<Task>();
@@ -320,7 +320,7 @@ public class NotificationService : INotificationService
     {
         // In a real implementation, look up user's email from database
         var userEmail = await GetUserEmailAsync(notification.UserId, cancellationToken);
-        
+
         if (!string.IsNullOrEmpty(userEmail))
         {
             var emailNotification = new EmailNotification
@@ -340,7 +340,7 @@ public class NotificationService : INotificationService
     {
         // In a real implementation, look up user's phone from database
         var userPhone = await GetUserPhoneAsync(notification.UserId, cancellationToken);
-        
+
         if (!string.IsNullOrEmpty(userPhone))
         {
             var smsNotification = new SmsNotification
@@ -359,7 +359,7 @@ public class NotificationService : INotificationService
     {
         // In a real implementation, look up user's WhatsApp number from database
         var userWhatsApp = await GetUserWhatsAppAsync(notification.UserId, cancellationToken);
-        
+
         if (!string.IsNullOrEmpty(userWhatsApp))
         {
             var whatsappNotification = new WhatsAppNotification

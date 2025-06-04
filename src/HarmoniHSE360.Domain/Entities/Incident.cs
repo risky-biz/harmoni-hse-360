@@ -18,11 +18,11 @@ public class Incident : BaseEntity, IAuditableEntity
     public string ReporterName { get; private set; } = string.Empty;
     public string ReporterEmail { get; private set; } = string.Empty;
     public string ReporterDepartment { get; private set; } = string.Empty;
-    
+
     // Additional fields for escalation
     public string Department => ReporterDepartment;
     public DateTime? LastResponseAt { get; private set; }
-    
+
     // Injury and incident details
     public InjuryType? InjuryType { get; private set; }
     public bool MedicalTreatmentProvided { get; private set; }
@@ -119,24 +119,24 @@ public class Incident : BaseEntity, IAuditableEntity
     {
         GeoLocation = GeoLocation.Create(latitude, longitude);
     }
-    
+
     public void UpdateInjuryDetails(InjuryType? injuryType, bool medicalTreatmentProvided, bool emergencyServicesContacted)
     {
         InjuryType = injuryType;
         MedicalTreatmentProvided = medicalTreatmentProvided;
         EmergencyServicesContacted = emergencyServicesContacted;
     }
-    
+
     public void AddWitnessInformation(string witnessNames)
     {
         WitnessNames = witnessNames;
     }
-    
+
     public void RecordImmediateActions(string immediateActionsTaken)
     {
         ImmediateActionsTaken = immediateActionsTaken;
     }
-    
+
     public void UpdateStatus(IncidentStatus status)
     {
         Status = status;
@@ -154,7 +154,7 @@ public class Incident : BaseEntity, IAuditableEntity
         Location = location;
         LastModifiedAt = DateTime.UtcNow;
     }
-    
+
     public void RecordResponse()
     {
         LastResponseAt = DateTime.UtcNow;

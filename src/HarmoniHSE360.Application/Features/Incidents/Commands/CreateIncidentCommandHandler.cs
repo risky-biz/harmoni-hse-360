@@ -50,8 +50,8 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
             user.Name,
             user.Email,
             user.Department,
-            request.Latitude.HasValue && request.Longitude.HasValue 
-                ? Domain.ValueObjects.GeoLocation.Create(request.Latitude.Value, request.Longitude.Value) 
+            request.Latitude.HasValue && request.Longitude.HasValue
+                ? Domain.ValueObjects.GeoLocation.Create(request.Latitude.Value, request.Longitude.Value)
                 : null,
             user.Id
         );
@@ -69,7 +69,7 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
         }
 
         _context.Incidents.Add(incident);
-        
+
         // We need to save first to get the incident ID
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -81,9 +81,9 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
 
         // Invalidate incident list caches to ensure fresh data
         await InvalidateIncidentCaches(user.Id.ToString());
-        
+
         _logger.LogInformation("Invalidated incident caches after creating incident {IncidentId}", incident.Id);
-        
+
         // Return DTO
         return new IncidentDto
         {
@@ -108,7 +108,7 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
             CorrectiveActionsCount = 0
         };
     }
-    
+
     private async Task InvalidateIncidentCaches(string userId)
     {
         await _cache.RemoveByTagAsync("incidents");

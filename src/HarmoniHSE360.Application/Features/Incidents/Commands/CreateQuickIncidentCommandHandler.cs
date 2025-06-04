@@ -25,7 +25,7 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
 
     public async Task<int> Handle(CreateQuickIncidentCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating quick incident report via {Channel} by {Reporter}", 
+        _logger.LogInformation("Creating quick incident report via {Channel} by {Reporter}",
             request.ReportingChannel, request.IsAnonymous ? "Anonymous" : request.ReporterEmail);
 
         try
@@ -61,7 +61,7 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
                 await _context.SaveChangesAsync(cancellationToken);
             }
 
-            _logger.LogInformation("Successfully created quick incident {IncidentId} via {Channel}", 
+            _logger.LogInformation("Successfully created quick incident {IncidentId} via {Channel}",
                 incident.Id, request.ReportingChannel);
 
             return incident.Id;
@@ -80,7 +80,7 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
             // For now, simulate QR code location lookup
             // In production, this would query a QrCodeLocation table
             var locationName = ExtractLocationFromQrId(qrCodeId);
-            
+
             return Task.FromResult(new LocationInfo
             {
                 DisplayName = locationName,
@@ -101,7 +101,7 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
     {
         // Convert QR ID like "loc_building_a_floor_2" to readable location
         var parts = qrCodeId.Replace("loc_", "").Split('_');
-        return string.Join(" ", parts.Select(part => 
+        return string.Join(" ", parts.Select(part =>
             char.ToUpper(part[0]) + part.Substring(1)));
     }
 
@@ -112,13 +112,13 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
         // Add metadata about the report
         description += $"\n\n--- Report Metadata ---";
         description += $"\nReporting Channel: {request.ReportingChannel}";
-        
+
         if (!string.IsNullOrEmpty(request.QrCodeId))
             description += $"\nQR Code ID: {request.QrCodeId}";
-        
+
         if (!string.IsNullOrEmpty(request.DeviceInfo))
             description += $"\nDevice: {request.DeviceInfo}";
-        
+
         if (request.IsAnonymous)
             description += $"\nAnonymous Report: Yes";
 
@@ -185,7 +185,7 @@ public class CreateQuickIncidentCommandHandler : IRequestHandler<CreateQuickInci
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to process quick photo {Index} for incident {IncidentId}", 
+                _logger.LogWarning(ex, "Failed to process quick photo {Index} for incident {IncidentId}",
                     i + 1, incident.Id);
             }
         }
