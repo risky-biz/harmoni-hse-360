@@ -7,12 +7,26 @@ The application includes seeded demo users for immediate testing:
 
 | Role | Email | Password | Permissions |
 |------|-------|----------|-------------|
+| **Super Admin** | superadmin@bsj.sch.id | SuperAdmin123! | Full system access including configuration |
+| **Developer** | developer@bsj.sch.id | Developer123! | System configuration and module management |
 | **Admin** | admin@bsj.sch.id | Admin123! | Full system access |
 | **HSE Manager** | hse.manager@bsj.sch.id | HSE123! | HSE management |
 | **Employee** | john.doe@bsj.sch.id | Employee123! | Basic access |
 | **Employee** | jane.smith@bsj.sch.id | Employee123! | Basic access |
 
 ## 🚀 Quick Login Examples
+
+### Super Admin Access
+```
+Email: superadmin@bsj.sch.id
+Password: SuperAdmin123!
+```
+
+### Developer Access
+```
+Email: developer@bsj.sch.id
+Password: Developer123!
+```
 
 ### Admin Access
 ```

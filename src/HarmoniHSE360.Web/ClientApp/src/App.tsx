@@ -20,6 +20,9 @@ import AuthLayout from './layouts/AuthLayout';
 // Guards
 import PrivateRoute from './components/auth/PrivateRoute';
 
+// Hooks
+import { useSignalR } from './hooks/useSignalR';
+
 // Lazy load pages with better error handling
 const Dashboard = React.lazy(() => import('./pages/Dashboard').catch(err => {
   console.error('Failed to load Dashboard:', err);
@@ -36,6 +39,26 @@ const IncidentList = React.lazy(() => import('./pages/incidents/IncidentList').c
 const CreateIncident = React.lazy(() => import('./pages/incidents/CreateIncident').catch(err => {
   console.error('Failed to load CreateIncident:', err);
   return { default: () => <div>Error loading Create Incident. Please refresh.</div> };
+}));
+const IncidentDetail = React.lazy(() => import('./pages/incidents/IncidentDetail').catch(err => {
+  console.error('Failed to load IncidentDetail:', err);
+  return { default: () => <div>Error loading Incident Detail. Please refresh.</div> };
+}));
+const EditIncident = React.lazy(() => import('./pages/incidents/EditIncident').catch(err => {
+  console.error('Failed to load EditIncident:', err);
+  return { default: () => <div>Error loading Edit Incident. Please refresh.</div> };
+}));
+const MyReports = React.lazy(() => import('./pages/incidents/MyReports').catch(err => {
+  console.error('Failed to load MyReports:', err);
+  return { default: () => <div>Error loading My Reports. Please refresh.</div> };
+}));
+const QuickReport = React.lazy(() => import('./pages/incidents/QuickReport').catch(err => {
+  console.error('Failed to load QuickReport:', err);
+  return { default: () => <div>Error loading Quick Report. Please refresh.</div> };
+}));
+const QrScanner = React.lazy(() => import('./pages/incidents/QrScanner').catch(err => {
+  console.error('Failed to load QrScanner:', err);
+  return { default: () => <div>Error loading QR Scanner. Please refresh.</div> };
 }));
 
 // Loading component
@@ -57,6 +80,12 @@ const RouteChangeHandler = () => {
     console.log('Route changed to:', location.pathname);
   }, [location]);
   
+  return null;
+};
+
+// SignalR Connection Manager
+const SignalRConnectionManager = () => {
+  useSignalR();
   return null;
 };
 
@@ -115,12 +144,18 @@ function App() {
       <Provider store={store}>
         <BrowserRouter>
           <RouteChangeHandler />
+          <SignalRConnectionManager />
           <Suspense fallback={<Loading />}>
             <Routes>
             {/* Auth Routes */}
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<Login />} />
             </Route>
+
+            {/* Public Reporting Routes (No Authentication Required) */}
+            <Route path="/report/qr/:qrId" element={<QuickReport />} />
+            <Route path="/report/anonymous" element={<QuickReport />} />
+            <Route path="/report/quick" element={<QuickReport />} />
             
             {/* Protected Routes */}
             <Route element={<PrivateRoute><DefaultLayout /></PrivateRoute>}>
@@ -130,7 +165,11 @@ function App() {
               {/* Incident Management */}
               <Route path="/incidents" element={<IncidentList />} />
               <Route path="/incidents/create" element={<CreateIncident />} />
-              <Route path="/incidents/my-reports" element={<IncidentList />} />
+              <Route path="/incidents/quick-report" element={<QuickReport />} />
+              <Route path="/incidents/qr-scanner" element={<QrScanner />} />
+              <Route path="/incidents/:id" element={<IncidentDetail />} />
+              <Route path="/incidents/:id/edit" element={<EditIncident />} />
+              <Route path="/incidents/my-reports" element={<MyReports />} />
               
               {/* Profile & Settings (placeholder pages) */}
               <Route path="/profile" element={<div className="p-4"><h2>Profile Page</h2><p>Coming soon...</p></div>} />

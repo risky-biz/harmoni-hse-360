@@ -1,23 +1,18 @@
 using HarmoniHSE360.Application.Common.Interfaces;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace HarmoniHSE360.Infrastructure.Services;
 
 public class LocalFileStorageService : IFileStorageService
 {
-    private readonly IHostEnvironment _environment;
     private readonly string _uploadsPath;
 
-    public LocalFileStorageService(IHostEnvironment environment)
+    public LocalFileStorageService(IConfiguration configuration)
     {
-        _environment = environment;
-        _uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-
-        // Ensure uploads directory exists
-        if (!Directory.Exists(_uploadsPath))
-        {
-            Directory.CreateDirectory(_uploadsPath);
-        }
+        // Get uploads path from configuration, with fallback to default
+        _uploadsPath = configuration["FileStorage:UploadsPath"] ?? "uploads";
+        
+        // Note: Directory creation is handled in Program.cs since we need access to WebRootPath
     }
 
     public async Task<FileUploadResult> UploadAsync(Stream fileStream, string fileName, string contentType, string folder)
@@ -49,7 +44,7 @@ public class LocalFileStorageService : IFileStorageService
         };
     }
 
-    public async Task<Stream> DownloadAsync(string filePath)
+    public Task<Stream> DownloadAsync(string filePath)
     {
         var fullPath = Path.Combine(_uploadsPath, filePath);
 
@@ -58,7 +53,7 @@ public class LocalFileStorageService : IFileStorageService
             throw new FileNotFoundException($"File not found: {filePath}");
         }
 
-        return new FileStream(fullPath, FileMode.Open, FileAccess.Read);
+        return Task.FromResult<Stream>(new FileStream(fullPath, FileMode.Open, FileAccess.Read));
     }
 
     public Task DeleteAsync(string filePath)

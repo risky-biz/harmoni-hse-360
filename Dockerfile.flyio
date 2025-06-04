@@ -1,0 +1,49 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+
+# Install Node.js for React build
+RUN apk add --no-cache nodejs npm
+
+# Copy csproj files and restore
+COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
+COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "HarmoniHSE360.Application/"]
+COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "HarmoniHSE360.Domain/"]
+COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "HarmoniHSE360.Infrastructure/"]
+RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+
+# Copy everything else
+COPY src/ .
+
+# Build React app
+WORKDIR /src/HarmoniHSE360.Web/ClientApp
+RUN npm ci --only=production
+RUN npm run build
+
+# Build .NET app
+WORKDIR /src/HarmoniHSE360.Web
+RUN dotnet publish "HarmoniHSE360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+WORKDIR /app
+
+# Install cultures for globalization
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy published files
+COPY --from=build /app/publish .
+
+# Create uploads directory and set permissions
+RUN mkdir -p uploads && chown -R appuser:appgroup uploads
+
+# Set user
+USER appuser
+
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]

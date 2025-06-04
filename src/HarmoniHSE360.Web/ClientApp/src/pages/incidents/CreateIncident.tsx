@@ -35,6 +35,9 @@ import {
   cilTask,
   cilSpeedometer,
 } from '@coreui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapPin } from '@fortawesome/free-solid-svg-icons';
+import { useCreateIncidentMutation, useUploadIncidentAttachmentsMutation, CreateIncidentRequest } from '../../features/incidents/incidentApi';
 
 // Validation schema based on FRQ-INC-001 requirements
 const schema = yup.object({
@@ -93,10 +96,12 @@ interface IncidentFormData {
 
 const CreateIncident: React.FC = () => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createIncident, { isLoading: isSubmitting }] = useCreateIncidentMutation();
+  const [uploadAttachments, { isLoading: isUploading }] = useUploadIncidentAttachmentsMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [locationInputMode, setLocationInputMode] = useState<'dropdown' | 'text'>('dropdown');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {
@@ -162,6 +167,7 @@ const CreateIncident: React.FC = () => {
   // Get current location
   const getCurrentLocation = () => {
     setLocationLoading(true);
+    setLocationInputMode('text');
     
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -169,18 +175,20 @@ const CreateIncident: React.FC = () => {
           setValue('latitude', position.coords.latitude);
           setValue('longitude', position.coords.longitude);
           
-          // Reverse geocoding simulation (replace with actual service)
-          setValue('location', `GPS: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
+          // Set coordinates as text in the location field
+          setValue('location', `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
           setLocationLoading(false);
         },
         (error) => {
           console.error('Geolocation error:', error);
           setLocationLoading(false);
+          setLocationInputMode('dropdown'); // Revert to dropdown on error
           alert('Unable to get your location. Please enter the location manually.');
         }
       );
     } else {
       setLocationLoading(false);
+      setLocationInputMode('dropdown'); // Revert to dropdown if not supported
       alert('Geolocation is not supported by this browser.');
     }
   };
@@ -210,15 +218,39 @@ const CreateIncident: React.FC = () => {
 
   // Submit form
   const onSubmit = async (data: IncidentFormData) => {
-    setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      // Simulate API call (replace with actual implementation)
-      console.log('Submitting incident:', data);
-      console.log('Uploaded files:', uploadedFiles);
+      // Prepare the request data
+      const createRequest: CreateIncidentRequest = {
+        title: data.title,
+        description: data.description,
+        severity: data.severity,
+        incidentDate: new Date(data.incidentDate).toISOString(),
+        location: data.location,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        witnessNames: data.involvedPersons || undefined,
+        immediateActionsTaken: data.immediateActions || undefined,
+      };
+
+      // Submit to API
+      const result = await createIncident(createRequest).unwrap();
       
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Upload files if any
+      if (uploadedFiles.length > 0) {
+        try {
+          await uploadAttachments({
+            incidentId: result.id,
+            files: uploadedFiles
+          }).unwrap();
+          console.log(`Successfully uploaded ${uploadedFiles.length} files for incident ${result.id}`);
+        } catch (uploadError) {
+          console.error('Failed to upload files:', uploadError);
+          // Continue with success flow - incident was created successfully
+          // File upload failure is not critical
+        }
+      }
       
       // Clear draft after successful submission
       localStorage.removeItem('incident_draft');
@@ -230,11 +262,18 @@ const CreateIncident: React.FC = () => {
           type: 'success'
         }
       });
-    } catch (error) {
-      setSubmitError('Failed to submit incident report. Please try again.');
+    } catch (error: any) {
+      // Handle API error
+      if (error.data?.message) {
+        setSubmitError(error.data.message);
+      } else if (error.data?.errors) {
+        // Handle validation errors
+        const errorMessages = Object.values(error.data.errors).flat().join(', ');
+        setSubmitError(errorMessages);
+      } else {
+        setSubmitError('Failed to submit incident report. Please try again.');
+      }
       console.error('Submit error:', error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -430,18 +469,28 @@ const CreateIncident: React.FC = () => {
                       <CCol md={6}>
                         <CFormLabel htmlFor="location">Location *</CFormLabel>
                         <CInputGroup>
-                          <CFormSelect
-                            id="location"
-                            {...register('location')}
-                            invalid={!!errors.location}
-                          >
-                            <option value="">Select location...</option>
-                            {campusLocations.map(location => (
-                              <option key={location} value={location}>
-                                {location}
-                              </option>
-                            ))}
-                          </CFormSelect>
+                          {locationInputMode === 'dropdown' ? (
+                            <CFormSelect
+                              id="location"
+                              {...register('location')}
+                              invalid={!!errors.location}
+                            >
+                              <option value="">Select location...</option>
+                              {campusLocations.map(location => (
+                                <option key={location} value={location}>
+                                  {location}
+                                </option>
+                              ))}
+                            </CFormSelect>
+                          ) : (
+                            <CFormInput
+                              id="location"
+                              {...register('location')}
+                              invalid={!!errors.location}
+                              placeholder="Enter coordinates or location details"
+                              readOnly={locationLoading}
+                            />
+                          )}
                           <CButton
                             type="button"
                             color="primary"
@@ -452,15 +501,33 @@ const CreateIncident: React.FC = () => {
                             {locationLoading ? (
                               <CSpinner size="sm" />
                             ) : (
-                              <CIcon icon={cilWarning} />
+                              <FontAwesomeIcon icon={faMapPin} />
                             )}
                           </CButton>
+                          {locationInputMode === 'text' && (
+                            <CButton
+                              type="button"
+                              color="secondary"
+                              variant="outline"
+                              onClick={() => {
+                                setLocationInputMode('dropdown');
+                                setValue('location', '');
+                                setValue('latitude', undefined);
+                                setValue('longitude', undefined);
+                              }}
+                              title="Switch back to dropdown"
+                            >
+                              ↩
+                            </CButton>
+                          )}
                         </CInputGroup>
                         {errors.location && (
                           <div className="invalid-feedback d-block">{errors.location.message}</div>
                         )}
                         <small className="text-muted">
-                          Click the location button to use GPS coordinates
+                          {locationInputMode === 'dropdown' 
+                            ? 'Click the location button to use GPS coordinates' 
+                            : 'GPS coordinates will be stored in the database. Click ↩ to use dropdown again.'}
                         </small>
                       </CCol>
                     </CRow>
@@ -578,13 +645,18 @@ const CreateIncident: React.FC = () => {
                   <CButton
                     type="submit"
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isUploading}
                     className="d-flex align-items-center"
                   >
                     {isSubmitting ? (
                       <>
                         <CSpinner size="sm" className="me-2" />
                         Submitting...
+                      </>
+                    ) : isUploading ? (
+                      <>
+                        <CSpinner size="sm" className="me-2" />
+                        Uploading files...
                       </>
                     ) : (
                       <>

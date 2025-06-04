@@ -1,4 +1,4 @@
-name: HarmoniHSE360 CI/CD
+name: HarmoniHSE360 CI/CD (Legacy)
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
   DOCKER_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: timescale/timescaledb-ha:pg16
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -29,25 +30,60 @@ jobs:
         ports:
           - 5432:5432
 
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
-    - name: Restore dependencies
+        cache: true
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+
+    - name: Restore .NET dependencies
       run: dotnet restore
-    
-    - name: Build
+
+    - name: Install Node.js dependencies
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm ci
+
+    - name: Build .NET application
       run: dotnet build --no-restore --configuration Release
-    
-    - name: Test
+
+    - name: Build React application
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm run build
+
+    - name: Run .NET tests
       run: dotnet test --no-build --verbosity normal --configuration Release --collect:"XPlat Code Coverage"
-    
+      env:
+        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=test;Password=test"
+        ConnectionStrings__Redis: "localhost:6379"
+        Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
+
+    - name: Run Frontend tests
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm test -- --coverage --watchAll=false
+
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
+      continue-on-error: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -55,37 +91,59 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
-    - name: Install dotnet-format
-      run: dotnet tool install -g dotnet-format
-    
-    - name: Check formatting
-      run: dotnet format --verify-no-changes
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+
+    - name: Restore .NET dependencies
+      run: dotnet restore
+
+    - name: Install Node.js dependencies
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm ci
+
+    - name: Check .NET formatting
+      run: dotnet format --verify-no-changes --verbosity diagnostic
+
+    - name: Run ESLint
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm run lint
+
+    - name: Run Prettier check
+      working-directory: src/HarmoniHSE360.Web/ClientApp
+      run: npm run format:check
 
   docker-build:
     needs: [test, code-quality]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    
+
     permissions:
       contents: read
       packages: write
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Log in to the Container registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -94,48 +152,61 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
           type=raw,value=latest,enable={{is_default_branch}}
-    
-    - name: Build and push API Docker image
+
+    - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./src/API/HarmoniHSE360.Api/Dockerfile
+        file: ./Dockerfile.flyio
         push: true
-        tags: ${{ steps.meta.outputs.tags }}-api
+        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-    
-    - name: Build and push Blazor Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./src/Web/HarmoniHSE360.BlazorServer/Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}-blazor
-        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
 
   deploy-staging:
     needs: docker-build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
-    environment: staging
-    
+
     steps:
-    - name: Deploy to staging
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Fly CLI
+      uses: superfly/flyctl-actions/setup-flyctl@master
+
+    - name: Deploy to Fly.io Staging
+      run: flyctl deploy --config fly.staging.toml
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN_STAGING }}
+
+    - name: Health check
       run: |
-        echo "Deploy to staging environment"
-        # Add your staging deployment steps here
+        sleep 30
+        curl -f https://harmonihse360-staging.fly.dev/health || exit 1
 
   deploy-production:
     needs: docker-build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    environment: production
-    
+
     steps:
-    - name: Deploy to production
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Fly CLI
+      uses: superfly/flyctl-actions/setup-flyctl@master
+
+    - name: Deploy to Fly.io Production
+      run: flyctl deploy --config fly.toml
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    - name: Health check
       run: |
-        echo "Deploy to production environment"
-        # Add your production deployment steps here
+        sleep 30
+        curl -f https://harmonihse360-app.fly.dev/health || exit 1
