@@ -89,6 +89,133 @@ export interface IncidentStatistics {
   }>;
 }
 
+// Dashboard types
+export interface IncidentDashboardDto {
+  overallStats: IncidentOverallStatsDto;
+  statusStats: IncidentStatusStatsDto[];
+  severityStats: IncidentSeverityStatsDto[];
+  responseTimeStats: IncidentResponseTimeStatsDto;
+  resolutionTimeStats: IncidentResolutionTimeStatsDto;
+  trendData: IncidentTrendDataDto[];
+  categoryStats: IncidentCategoryStatsDto[];
+  recentIncidents: RecentIncidentDto[];
+  performanceMetrics: IncidentPerformanceMetricsDto;
+  departmentStats: IncidentDepartmentStatsDto[];
+}
+
+export interface IncidentOverallStatsDto {
+  totalIncidents: number;
+  openIncidents: number;
+  closedIncidents: number;
+  criticalIncidents: number;
+  incidentsThisMonth: number;
+  incidentsLastMonth: number;
+  monthOverMonthChange: number;
+  overdueIncidents: number;
+  incidentsAwaitingAction: number;
+}
+
+export interface IncidentStatusStatsDto {
+  status: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+export interface IncidentSeverityStatsDto {
+  severity: string;
+  count: number;
+  percentage: number;
+  color: string;
+  thisMonth: number;
+  lastMonth: number;
+}
+
+export interface IncidentResponseTimeStatsDto {
+  averageResponseTimeHours: number;
+  medianResponseTimeHours: number;
+  incidentsWithinSLA: number;
+  totalIncidentsWithResponse: number;
+  slaCompliancePercentage: number;
+  criticalIncidentsAvgResponseHours: number;
+  responseTimeTrends: ResponseTimeTrendDto[];
+}
+
+export interface IncidentResolutionTimeStatsDto {
+  averageResolutionTimeDays: number;
+  medianResolutionTimeDays: number;
+  resolvedIncidents: number;
+  pendingResolution: number;
+  resolutionRate: number;
+  resolutionTimeTrends: ResolutionTimeTrendDto[];
+}
+
+export interface IncidentTrendDataDto {
+  period: string;
+  periodLabel: string;
+  totalIncidents: number;
+  criticalIncidents: number;
+  resolvedIncidents: number;
+  averageResolutionDays: number;
+}
+
+export interface IncidentCategoryStatsDto {
+  category: string;
+  count: number;
+  percentage: number;
+  criticalCount: number;
+  averageResolutionDays: number;
+}
+
+export interface RecentIncidentDto {
+  id: number;
+  title: string;
+  severity: string;
+  status: string;
+  incidentDate: string;
+  createdAt: string;
+  reporterName: string;
+  location: string;
+  daysOpen: number;
+  isOverdue: boolean;
+}
+
+export interface IncidentPerformanceMetricsDto {
+  incidentPreventionRate: number;
+  repeatIncidentRate: number;
+  correctiveActionCompletionRate: number;
+  averageCorrectiveActionsPerIncident: number;
+  employeeReportingEngagement: number;
+  uniqueReportersThisMonth: number;
+}
+
+export interface IncidentDepartmentStatsDto {
+  department: string;
+  incidentCount: number;
+  criticalCount: number;
+  averageResolutionDays: number;
+  complianceScore: number;
+}
+
+export interface ResponseTimeTrendDto {
+  period: string;
+  averageHours: number;
+  incidentCount: number;
+}
+
+export interface ResolutionTimeTrendDto {
+  period: string;
+  averageDays: number;
+  resolvedCount: number;
+}
+
+export interface IncidentDashboardParams {
+  fromDate?: string;
+  toDate?: string;
+  department?: string;
+  includeResolved?: boolean;
+}
+
 export interface UserDto {
   id: number;
   firstName: string;
@@ -290,6 +417,25 @@ export const incidentApi = createApi({
         method: 'GET',
       }),
       providesTags: ['IncidentStatistics'],
+    }),
+
+    // Get incident dashboard data
+    getIncidentDashboard: builder.query<IncidentDashboardDto, IncidentDashboardParams | void>({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        
+        if (params.fromDate) searchParams.append('fromDate', params.fromDate);
+        if (params.toDate) searchParams.append('toDate', params.toDate);
+        if (params.department) searchParams.append('department', params.department);
+        if (params.includeResolved !== undefined) 
+          searchParams.append('includeResolved', params.includeResolved.toString());
+
+        return {
+          url: `/dashboard${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['IncidentDashboard', 'IncidentStatistics'],
     }),
 
     // Delete incident
@@ -558,6 +704,7 @@ export const {
   useDeleteIncidentMutation,
   useGetMyIncidentsQuery,
   useGetIncidentStatisticsQuery,
+  useGetIncidentDashboardQuery,
   useUploadIncidentAttachmentsMutation,
   useGetIncidentAttachmentsQuery,
   useDeleteIncidentAttachmentMutation,

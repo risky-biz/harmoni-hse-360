@@ -1,4 +1,4 @@
-// Use Sass modules instead of @import
+// Use Sass modules and imports must come first
 @use 'sass:color';
 
 // Harmoni HSE 360 Branding Colors
@@ -18,6 +18,9 @@ $charcoal: #212121;
   $body-bg: $soft-grey,
   $body-color: $charcoal
 );
+
+// Import dashboard styles after variables and CoreUI
+@import './dashboard.scss';
 
 // Custom styles following Harmoni branding
 :root {
@@ -615,21 +618,29 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Project Settings component styling
-.project-settings {
+// Application Settings component styling
+.application-settings {
   position: sticky;
   bottom: 0;
   background-color: #2d2d30;
   border-top: 1px solid #3a3a3c;
   padding: 8px;
+  z-index: 1000; // Ensure proper layering
   
-  .project-settings-toggle {
+  // Ensure container stability during interactions
+  contain: layout style; // CSS containment for performance
+  transform: translateZ(0); // Force hardware acceleration
+  
+  .application-settings-toggle {
     border: none !important;
     background-color: transparent !important;
     color: #e3e3e3 !important;
     padding: 12px 16px;
     border-radius: 0 !important;
     font-size: 14px;
+    width: 100%;
+    text-align: left;
+    transition: all 0.15s ease-in-out !important; // Faster, smoother transition
     
     // Remove CoreUI's default dropdown arrow
     &::after {
@@ -643,10 +654,16 @@ h1, h2, h3, h4, h5, h6 {
     
     &:focus {
       box-shadow: 0 0 0 2px var(--harmoni-teal) !important;
+      outline: none !important;
+    }
+    
+    &:active {
+      transform: none !important; // Prevent jump on click
     }
     
     .transition-transform {
-      transition: transform 0.2s ease-in-out;
+      transition: transform 0.15s ease-in-out !important; // Faster transition
+      will-change: transform; // Optimize for animation
     }
     
     .rotate-180 {
@@ -654,11 +671,59 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
   
-  .project-settings-menu {
+  .application-settings-menu {
     background-color: #2d2d30;
     border: 1px solid #3a3a3c;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     min-width: 280px;
+    max-height: 400px; // Prevent menu from being too tall
+    overflow-y: auto; // Enable scrolling if needed
+    border-radius: 4px; // Slight rounding for better appearance
+    animation: fadeInUp 0.15s ease-out; // Smooth entrance animation
+    
+    // Enhanced smooth scrolling properties
+    scroll-behavior: smooth;
+    overflow-anchor: none; // Prevent scroll anchoring issues
+    overscroll-behavior: contain; // Keep scroll within menu
+    -webkit-overflow-scrolling: touch; // iOS smooth scrolling
+    scrollbar-width: thin; // Firefox thin scrollbar
+    scrollbar-color: #3a3a3c #2d2d30; // Firefox scrollbar colors
+    
+    // Position stability during scroll
+    position: relative;
+    will-change: scroll-position; // Optimize for scroll performance
+    transform: translateZ(0); // Create new stacking context for stability
+    
+    // Custom scrollbar for webkit browsers
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #2d2d30;
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #3a3a3c;
+      border-radius: 3px;
+      
+      &:hover {
+        background: #484848;
+      }
+    }
+    
+    // Special state for smooth scrolling
+    &.is-scrolling {
+      // Disable pointer events during scroll to prevent conflicts
+      pointer-events: none;
+      
+      .application-settings-item {
+        // Temporarily disable hover effects during scroll
+        transform: none !important;
+        transition: none !important;
+      }
+    }
     
     .dropdown-header {
       background-color: #252526;
@@ -668,6 +733,7 @@ h1, h2, h3, h4, h5, h6 {
       text-transform: uppercase;
       letter-spacing: 0.5px;
       padding: 8px 16px;
+      border-radius: 4px 4px 0 0; // Round top corners
     }
     
     .dropdown-divider {
@@ -675,15 +741,48 @@ h1, h2, h3, h4, h5, h6 {
       margin: 4px 0;
     }
     
-    .project-settings-item {
+    .application-settings-item {
       color: #e3e3e3;
       padding: 12px 16px;
       border: none;
       background-color: transparent;
+      cursor: pointer;
+      position: relative;
       
-      &:hover {
+      // Smooth transitions that won't conflict with scrolling
+      transition: 
+        background-color 0.15s ease-out,
+        color 0.15s ease-out,
+        box-shadow 0.15s ease-out;
+      
+      // Use pseudo-element for smooth slide effect instead of transform
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: linear-gradient(90deg, var(--harmoni-teal), transparent);
+        transition: width 0.2s ease-out;
+        z-index: -1;
+      }
+      
+      // Standard hover state (will be overridden during scroll)
+      &:hover:not(.is-scrolling *) {
         background-color: #3a3a3c;
         color: #ffffff;
+        
+        &::before {
+          width: 3px; // Subtle left border effect
+        }
+      }
+      
+      // Enhanced hover state using JavaScript class
+      &.item-hover {
+        background-color: #3a3a3c;
+        color: #ffffff;
+        box-shadow: inset 3px 0 0 var(--harmoni-teal);
       }
       
       &:focus {
@@ -691,17 +790,97 @@ h1, h2, h3, h4, h5, h6 {
         color: #ffffff;
         outline: 2px solid var(--harmoni-teal);
         outline-offset: -2px;
+        
+        &::before {
+          width: 3px;
+        }
+      }
+      
+      &:active {
+        background-color: #404042; // Slightly different color for press
+        
+        &::before {
+          width: 0; // Reset on press
+        }
       }
       
       .fw-semibold {
         font-weight: 500;
         margin-bottom: 2px;
+        transition: inherit; // Inherit smooth transitions
       }
       
       small {
         font-size: 12px;
         line-height: 1.3;
+        opacity: 0.8;
+        transition: inherit; // Inherit smooth transitions
       }
+      
+      // Ensure text remains accessible during all states
+      &:hover,
+      &.item-hover,
+      &:focus {
+        small {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+// Animation for smooth dropdown entrance
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Enhanced scroll handling for mobile and touch devices
+@media (hover: none) and (pointer: coarse) {
+  .application-settings-menu {
+    // On touch devices, prioritize scroll performance
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; // Disable smooth scroll on mobile for better performance
+    
+    .application-settings-item {
+      // Simplify hover effects on touch devices
+      &:hover {
+        transform: none !important;
+      }
+      
+      // Use active state instead of hover on touch
+      &:active {
+        background-color: #3a3a3c;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// Reduce motion for users who prefer it
+@media (prefers-reduced-motion: reduce) {
+  .application-settings-menu {
+    scroll-behavior: auto; // Disable smooth scroll for accessibility
+    animation: none; // Disable entrance animation
+    
+    .application-settings-item {
+      transition: none !important; // Disable all transitions
+      
+      &::before {
+        transition: none !important;
+      }
+    }
+  }
+  
+  .application-settings-toggle {
+    .transition-transform {
+      transition: none !important;
     }
   }
 }

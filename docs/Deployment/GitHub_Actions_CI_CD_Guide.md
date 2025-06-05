@@ -90,13 +90,19 @@ gh api repos/:owner/:repo/branches/main/protection \
 
 ### 1. Fly.io API Tokens
 
-Create separate deploy tokens for staging and production:
+Create a deploy token for both staging and production:
 
+```bash
+# Single token for both environments (recommended for simplicity)
+fly tokens create deploy -x 999999h --name "github-actions-deploy"
+```
+
+**Alternative:** Create separate tokens for staging and production:
 ```bash
 # Production token
 fly tokens create deploy -x 999999h --name "github-actions-production"
 
-# Staging token  
+# Staging token
 fly tokens create deploy -x 999999h --name "github-actions-staging"
 ```
 
@@ -106,9 +112,10 @@ Navigate to **Settings > Secrets and variables > Actions** and add:
 
 | Secret Name | Description | Example Value |
 |-------------|-------------|---------------|
-| `FLY_API_TOKEN` | Production Fly.io deploy token | `FlyV1 fm2_xxx...` |
-| `FLY_API_TOKEN_STAGING` | Staging Fly.io deploy token | `FlyV1 fm2_xxx...` |
+| `FLY_API_TOKEN` | Fly.io deploy token (used for both staging and production) | `FlyV1 fm2_xxx...` |
 | `SLACK_WEBHOOK_URL` | Slack notifications webhook | `https://hooks.slack.com/...` |
+
+**Note:** Using a single `FLY_API_TOKEN` for both environments simplifies management and is suitable for most use cases.
 
 ### 3. Environment Variables
 

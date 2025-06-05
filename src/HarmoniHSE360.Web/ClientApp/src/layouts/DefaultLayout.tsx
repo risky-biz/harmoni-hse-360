@@ -41,7 +41,7 @@ import { useAppDispatch } from '../store/hooks';
 import { useAuth } from '../hooks/useAuth';
 import { useLogoutMutation } from '../features/auth/authApi';
 import { logout } from '../features/auth/authSlice';
-import ProjectSettings from '../components/common/ProjectSettings';
+import ApplicationSettings from '../components/common/ApplicationSettings';
 
 // Navigation configuration
 const navigation = [
@@ -63,6 +63,11 @@ const navigation = [
       <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />
     ),
     items: [
+      {
+        component: CNavItem,
+        name: 'Incident Dashboard',
+        to: '/incidents/dashboard',
+      },
       {
         component: CNavItem,
         name: 'Report Incident',
@@ -107,6 +112,33 @@ const navigation = [
     name: 'Risk Register',
     to: '/risks/register',
     icon: <FontAwesomeIcon icon={CONTEXT_ICONS.reports} className="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'PPE Management',
+  },
+  {
+    component: CNavGroup,
+    name: 'PPE',
+    to: '#ppe',
+    icon: <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'PPE Dashboard',
+        to: '/ppe/dashboard',
+      },
+      {
+        component: CNavItem,
+        name: 'PPE Inventory',
+        to: '/ppe',
+      },
+      {
+        component: CNavItem,
+        name: 'Add PPE Item',
+        to: '/ppe/create',
+      },
+    ],
   },
   {
     component: CNavTitle,
@@ -205,7 +237,7 @@ const DefaultLayout: React.FC = () => {
                       <NavLink
                         to={subItem.to}
                         className="nav-link"
-                        end={subItem.to === '/incidents'}
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe'}
                       >
                         {subItem.name}
                       </NavLink>
@@ -230,7 +262,7 @@ const DefaultLayout: React.FC = () => {
           })}
         </CSidebarNav>
 
-        <ProjectSettings />
+        <ApplicationSettings />
       </CSidebar>
 
       <div

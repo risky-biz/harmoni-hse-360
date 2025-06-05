@@ -29,6 +29,17 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<EscalationAction> EscalationActions => Set<EscalationAction>();
     public DbSet<EscalationHistory> EscalationHistories => Set<EscalationHistory>();
     public DbSet<NotificationHistory> NotificationHistories => Set<NotificationHistory>();
+    
+    // PPE Management
+    public DbSet<PPECategory> PPECategories => Set<PPECategory>();
+    public DbSet<PPESize> PPESizes => Set<PPESize>();
+    public DbSet<PPEStorageLocation> PPEStorageLocations => Set<PPEStorageLocation>();
+    public DbSet<PPEItem> PPEItems => Set<PPEItem>();
+    public DbSet<PPEAssignment> PPEAssignments => Set<PPEAssignment>();
+    public DbSet<PPEInspection> PPEInspections => Set<PPEInspection>();
+    public DbSet<PPERequest> PPERequests => Set<PPERequest>();
+    public DbSet<PPERequestItem> PPERequestItems => Set<PPERequestItem>();
+    public DbSet<PPEComplianceRequirement> PPEComplianceRequirements => Set<PPEComplianceRequirement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
