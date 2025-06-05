@@ -17,7 +17,7 @@ declare module '@coreui/icons' {
 
 declare module '@coreui/icons-react' {
   import { ComponentType } from 'react';
-  
+
   const CIcon: ComponentType<any>;
   export default CIcon;
 }

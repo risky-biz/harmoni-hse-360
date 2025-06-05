@@ -15,6 +15,8 @@ public record CreateIncidentCommand : IRequest<IncidentDto>
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }
     public int ReporterId { get; init; }
+    public string? WitnessNames { get; init; }
+    public string? ImmediateActionsTaken { get; init; }
     public List<IFormFile> Attachments { get; init; } = new();
     public List<int> InvolvedPersonIds { get; init; } = new();
 }

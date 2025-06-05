@@ -142,13 +142,13 @@ public class AuthController : ControllerBase
     [Authorize]
     [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<UserProfileDto>> GetCurrentUser()
+    public Task<ActionResult<UserProfileDto>> GetCurrentUser()
     {
         try
         {
             if (!_currentUserService.IsAuthenticated)
             {
-                return Unauthorized();
+                return Task.FromResult<ActionResult<UserProfileDto>>(Unauthorized());
             }
 
             // For demo purposes, return basic user info from current user service
@@ -161,12 +161,12 @@ public class AuthController : ControllerBase
                 Roles = _currentUserService.Roles.ToList()
             };
 
-            return Ok(userProfile);
+            return Task.FromResult<ActionResult<UserProfileDto>>(Ok(userProfile));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Get current user error");
-            return BadRequest(new { message = "An error occurred while fetching user profile" });
+            return Task.FromResult<ActionResult<UserProfileDto>>(BadRequest(new { message = "An error occurred while fetching user profile" }));
         }
     }
 
@@ -192,6 +192,8 @@ public class AuthController : ControllerBase
     {
         var demoUsers = new[]
         {
+            new { email = "superadmin@bsj.sch.id", password = "SuperAdmin123!", role = "Super Admin", name = "Super Administrator" },
+            new { email = "developer@bsj.sch.id", password = "Developer123!", role = "Developer", name = "System Developer" },
             new { email = "admin@bsj.sch.id", password = "Admin123!", role = "Admin", name = "System Administrator" },
             new { email = "hse.manager@bsj.sch.id", password = "HSE123!", role = "HSE Manager", name = "HSE Manager" },
             new { email = "john.doe@bsj.sch.id", password = "Employee123!", role = "Employee", name = "John Doe" },

@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.FileProviders;
 using Serilog;
 using System.Text;
 using HarmoniHSE360.Infrastructure.Persistence;
@@ -24,6 +28,26 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 // Add services
 builder.Services.AddControllers();
+
+// Configure file upload size limits
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 100 * 1024 * 1024; // 100MB
+});
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100MB
+});
+
+// Configure form options for file uploads
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 100 * 1024 * 1024; // 100MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -75,9 +99,24 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Employee", policy => policy.RequireRole("Employee", "HSEManager", "Admin"));
 });
 
+// Add CORS for development
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevelopmentCors", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:5000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Add Application and Infrastructure layers
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add memory caching for incident list
+builder.Services.AddMemoryCache();
 
 // Add SignalR
 builder.Services.AddSignalR(options =>
@@ -103,6 +142,10 @@ builder.Services.AddHealthChecks();
 // Build app
 var app = builder.Build();
 
+// Set uploads path for file storage service
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? app.Environment.ContentRootPath, "uploads");
+app.Configuration["FileStorage:UploadsPath"] = uploadsPath;
+
 // Configure pipeline
 // app.UseResponseCompression(); // Temporarily disabled to fix chunked encoding issue
 
@@ -119,8 +162,34 @@ else
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 
+// Add CORS for development
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("DevelopmentCors");
+}
+
 // Serve static files for React app
 app.UseStaticFiles();
+
+// Create uploads directory if it doesn't exist (use the same path we set in configuration)
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+    app.Logger.LogInformation("Created uploads directory at: {UploadsPath}", uploadsPath);
+}
+
+// Serve uploaded files (with authentication requirement)
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads",
+    OnPrepareResponse = ctx =>
+    {
+        // Add cache control for uploaded files
+        ctx.Context.Response.Headers["Cache-Control"] = "private, max-age=3600";
+    }
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseSpaStaticFiles();

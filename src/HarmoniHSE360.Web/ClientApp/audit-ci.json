@@ -1,0 +1,20 @@
+{
+  "moderate": true,
+  "high": true,
+  "critical": true,
+  "allowlist": [
+    
+  ],
+  "report-type": "full",
+  "output-format": "json",
+  "skip-dev": false,
+  "advisories": [
+    
+  ],
+  "whitelist": [
+    
+  ],
+  "path-whitelist": [
+    
+  ]
+}

@@ -31,7 +31,7 @@ public class JwtTokenService : IJwtTokenService
         _refreshTokenExpirationDays = int.Parse(_configuration["Jwt:RefreshTokenExpirationDays"] ?? "7");
     }
 
-    public async Task<TokenResult> GenerateTokenAsync(int userId, string email, string name, IList<string> roles)
+    public Task<TokenResult> GenerateTokenAsync(int userId, string email, string name, IList<string> roles)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_secretKey);
@@ -71,15 +71,15 @@ public class JwtTokenService : IJwtTokenService
 
         _logger.LogInformation("JWT token generated for user {UserId}", userId);
 
-        return new TokenResult
+        return Task.FromResult(new TokenResult
         {
             Token = tokenString,
             RefreshToken = refreshToken,
             ExpiresAt = expiresAt
-        };
+        });
     }
 
-    public async Task<Application.Features.Authentication.DTOs.TokenValidationResult> ValidateTokenAsync(string token)
+    public Task<Application.Features.Authentication.DTOs.TokenValidationResult> ValidateTokenAsync(string token)
     {
         try
         {
@@ -106,21 +106,21 @@ public class JwtTokenService : IJwtTokenService
 
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                return new Application.Features.Authentication.DTOs.TokenValidationResult { IsValid = false };
+                return Task.FromResult(new Application.Features.Authentication.DTOs.TokenValidationResult { IsValid = false });
             }
 
-            return new Application.Features.Authentication.DTOs.TokenValidationResult
+            return Task.FromResult(new Application.Features.Authentication.DTOs.TokenValidationResult
             {
                 IsValid = true,
                 UserId = userId,
                 Email = emailClaim ?? string.Empty,
                 Roles = roles
-            };
+            });
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Token validation failed");
-            return new Application.Features.Authentication.DTOs.TokenValidationResult { IsValid = false };
+            return Task.FromResult(new Application.Features.Authentication.DTOs.TokenValidationResult { IsValid = false });
         }
     }
 

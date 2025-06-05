@@ -14,9 +14,25 @@ public class Incident : BaseEntity, IAuditableEntity
     public string Location { get; private set; } = string.Empty;
     public GeoLocation? GeoLocation { get; private set; }
 
+    // Reporter details (stored directly for quick access)
+    public string ReporterName { get; private set; } = string.Empty;
+    public string ReporterEmail { get; private set; } = string.Empty;
+    public string ReporterDepartment { get; private set; } = string.Empty;
+
+    // Additional fields for escalation
+    public string Department => ReporterDepartment;
+    public DateTime? LastResponseAt { get; private set; }
+
+    // Injury and incident details
+    public InjuryType? InjuryType { get; private set; }
+    public bool MedicalTreatmentProvided { get; private set; }
+    public bool EmergencyServicesContacted { get; private set; }
+    public string? WitnessNames { get; private set; }
+    public string? ImmediateActionsTaken { get; private set; }
+
     // Navigation properties
-    public int ReporterId { get; private set; }
-    public User Reporter { get; private set; } = null!;
+    public int? ReporterId { get; private set; }
+    public User? Reporter { get; private set; }
 
     public int? InvestigatorId { get; private set; }
     public User? Investigator { get; private set; }
@@ -44,8 +60,11 @@ public class Incident : BaseEntity, IAuditableEntity
         IncidentSeverity severity,
         DateTime incidentDate,
         string location,
-        int reporterId,
-        string createdBy)
+        string reporterName,
+        string reporterEmail,
+        string reporterDepartment,
+        GeoLocation? geoLocation = null,
+        int? reporterId = null)
     {
         var incident = new Incident
         {
@@ -55,9 +74,15 @@ public class Incident : BaseEntity, IAuditableEntity
             Status = IncidentStatus.Reported,
             IncidentDate = incidentDate,
             Location = location,
+            ReporterName = reporterName,
+            ReporterEmail = reporterEmail,
+            ReporterDepartment = reporterDepartment,
+            GeoLocation = geoLocation,
             ReporterId = reporterId,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = createdBy
+            CreatedBy = reporterEmail,
+            MedicalTreatmentProvided = false,
+            EmergencyServicesContacted = false
         };
 
         incident.AddDomainEvent(new IncidentCreatedEvent(incident));
@@ -92,7 +117,48 @@ public class Incident : BaseEntity, IAuditableEntity
 
     public void SetGeoLocation(double latitude, double longitude)
     {
-        GeoLocation = new GeoLocation(latitude, longitude);
+        GeoLocation = GeoLocation.Create(latitude, longitude);
+    }
+
+    public void UpdateInjuryDetails(InjuryType? injuryType, bool medicalTreatmentProvided, bool emergencyServicesContacted)
+    {
+        InjuryType = injuryType;
+        MedicalTreatmentProvided = medicalTreatmentProvided;
+        EmergencyServicesContacted = emergencyServicesContacted;
+    }
+
+    public void AddWitnessInformation(string witnessNames)
+    {
+        WitnessNames = witnessNames;
+    }
+
+    public void RecordImmediateActions(string immediateActionsTaken)
+    {
+        ImmediateActionsTaken = immediateActionsTaken;
+    }
+
+    public void UpdateStatus(IncidentStatus status)
+    {
+        Status = status;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateSeverity(IncidentSeverity severity)
+    {
+        Severity = severity;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateLocation(string location)
+    {
+        Location = location;
+        LastModifiedAt = DateTime.UtcNow;
+    }
+
+    public void RecordResponse()
+    {
+        LastResponseAt = DateTime.UtcNow;
+        LastModifiedAt = DateTime.UtcNow;
     }
 
     public void AddAttachment(string fileName, string filePath, long fileSize, string uploadedBy)
@@ -107,11 +173,9 @@ public class Incident : BaseEntity, IAuditableEntity
         _involvedPersons.Add(involvedPerson);
     }
 
-    public void AddCorrectiveAction(string description, int assignedToId, DateTime dueDate, string createdBy)
+    public void AddCorrectiveAction(CorrectiveAction action)
     {
-        var action = CorrectiveAction.Create(Id, description, assignedToId, dueDate, createdBy);
         _correctiveActions.Add(action);
-
         AddDomainEvent(new CorrectiveActionAddedEvent(this, action));
     }
 
@@ -134,17 +198,21 @@ public enum IncidentSeverity
 {
     Minor = 1,
     Moderate = 2,
-    Serious = 3,
-    Critical = 4
+    Major = 3,
+    Serious = 4,
+    Critical = 5,
+    Emergency = 6
 }
 
 public enum IncidentStatus
 {
-    Reported = 1,
-    UnderInvestigation = 2,
-    AwaitingAction = 3,
-    Resolved = 4,
-    Closed = 5
+    Open = 1,
+    Reported = 2,
+    InProgress = 3,
+    UnderInvestigation = 4,
+    AwaitingAction = 5,
+    Resolved = 6,
+    Closed = 7
 }
 
 public enum InvolvementType
@@ -160,4 +228,15 @@ public enum ActionStatus
     InProgress = 2,
     Completed = 3,
     Overdue = 4
+}
+
+public enum InjuryType
+{
+    None = 1,
+    Cut = 2,
+    Bruise = 3,
+    Burn = 4,
+    Fracture = 5,
+    Sprain = 6,
+    Other = 7
 }

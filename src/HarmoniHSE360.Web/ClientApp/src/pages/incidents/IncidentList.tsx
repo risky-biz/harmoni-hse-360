@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CCard,
   CCardBody,
@@ -12,7 +12,6 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CBadge,
   CButton,
   CFormSelect,
   CInputGroup,
@@ -26,165 +25,73 @@ import {
   CDropdownMenu,
   CDropdownItem,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import {
-  cilFile,
-  cilWarning,
-  cilClipboard,
-  cilTask,
-  cilShieldAlt,
-} from '@coreui/icons';
-
-// Types
-interface Incident {
-  id: number;
-  title: string;
-  description: string;
-  severity: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
-  status: 'Reported' | 'UnderInvestigation' | 'AwaitingAction' | 'Resolved' | 'Closed';
-  incidentDate: string;
-  location: string;
-  reporterName: string;
-  createdAt: string;
-}
+  useGetIncidentsQuery,
+  useDeleteIncidentMutation,
+} from '../../features/incidents/incidentApi';
+// import type { IncidentDto } from '../../features/incidents/incidentApi';
+import {
+  getSeverityBadge,
+  getStatusBadge,
+  formatDate,
+} from '../../utils/incidentUtils';
 
 const IncidentList: React.FC = () => {
   const navigate = useNavigate();
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [severityFilter, setSeverityFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // Use RTK Query to fetch incidents
+  const { data, error, isLoading, refetch } = useGetIncidentsQuery(
+    {
+      pageNumber: currentPage,
+      pageSize: itemsPerPage,
+      status: statusFilter || undefined,
+      severity: severityFilter || undefined,
+      searchTerm: searchTerm || undefined,
+    },
+    {
+      // Ensure we refetch when the component mounts
+      refetchOnMountOrArgChange: true,
+      // Refetch when the window regains focus
+      refetchOnFocus: true,
+    }
+  );
 
-  // Debug logging
-  console.log('IncidentList component rendering');
+  const [deleteIncident, { isLoading: isDeleting }] =
+    useDeleteIncidentMutation();
 
-  // Mock data for demonstration
+  // Extract incidents from response
+  const incidents = data?.incidents || [];
+  const totalCount = data?.totalCount || 0;
+  const totalPages = data?.totalPages || 0;
+
+  // Handle success message from navigation state
   useEffect(() => {
-    const loadIncidents = async () => {
-      try {
-        setLoading(true);
-        
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data (replace with actual API call)
-        const mockIncidents: Incident[] = [
-          {
-            id: 1,
-            title: 'Student injured in Chemistry Lab',
-            description: 'Student suffered minor burns during experiment',
-            severity: 'Moderate',
-            status: 'UnderInvestigation',
-            incidentDate: '2025-06-02T14:30:00Z',
-            location: 'Chemistry Lab - Room 205',
-            reporterName: 'Dr. Sarah Johnson',
-            createdAt: '2025-06-02T14:35:00Z'
-          },
-          {
-            id: 2,
-            title: 'Slip and fall in hallway',
-            description: 'Wet floor caused student to slip near entrance',
-            severity: 'Minor',
-            status: 'Resolved',
-            incidentDate: '2025-06-01T09:15:00Z',
-            location: 'Main Building - Ground Floor',
-            reporterName: 'Mr. David Wilson',
-            createdAt: '2025-06-01T09:20:00Z'
-          },
-          {
-            id: 3,
-            title: 'Fire alarm system malfunction',
-            description: 'False alarm triggered evacuating entire building',
-            severity: 'Serious',
-            status: 'AwaitingAction',
-            incidentDate: '2025-05-30T11:45:00Z',
-            location: 'East Wing - 3rd Floor',
-            reporterName: 'Ms. Emily Chen',
-            createdAt: '2025-05-30T11:50:00Z'
-          }
-        ];
-        
-        setIncidents(mockIncidents);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load incidents. Please try again.');
-        console.error('Error loading incidents:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      // Clear the navigation state
+      window.history.replaceState({}, document.title);
+      // Auto-hide message after 5 seconds
+      const timer = setTimeout(() => setSuccessMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
-    loadIncidents();
-  }, []);
+  // Helper functions (removed - now imported from incidentUtils)
 
-  // Helper functions
-  const getSeverityBadge = (severity: string) => {
-    const variants = {
-      Minor: 'success',
-      Moderate: 'warning',
-      Serious: 'danger',
-      Critical: 'dark'
-    };
-    return <CBadge color={variants[severity as keyof typeof variants]}>{severity}</CBadge>;
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      Reported: 'info',
-      UnderInvestigation: 'warning',
-      AwaitingAction: 'danger',
-      Resolved: 'success',
-      Closed: 'secondary'
-    };
-    const icons = {
-      Reported: cilClipboard,
-      UnderInvestigation: cilWarning,
-      AwaitingAction: cilWarning,
-      Resolved: cilTask,
-      Closed: cilShieldAlt
-    };
-    
+  if (isLoading) {
     return (
-      <CBadge color={variants[status as keyof typeof variants]}>
-        <CIcon icon={icons[status as keyof typeof icons]} size="sm" className="me-1" />
-        {status.replace(/([A-Z])/g, ' $1').trim()}
-      </CBadge>
-    );
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // Filter incidents
-  const filteredIncidents = incidents.filter(incident => {
-    const matchesSearch = incident.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || incident.status === statusFilter;
-    const matchesSeverity = !severityFilter || incident.severity === severityFilter;
-    
-    return matchesSearch && matchesStatus && matchesSeverity;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredIncidents.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedIncidents = filteredIncidents.slice(startIndex, startIndex + itemsPerPage);
-
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
         <CSpinner size="sm" className="text-primary" />
         <span className="ms-2">Loading incidents...</span>
       </div>
@@ -197,25 +104,62 @@ const IncidentList: React.FC = () => {
         <CCard className="shadow-sm">
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="mb-0" style={{ color: 'var(--harmoni-charcoal)', fontFamily: 'Poppins, sans-serif' }}>
+              <h4
+                className="mb-0"
+                style={{
+                  color: 'var(--harmoni-charcoal)',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              >
                 Incident Reports
               </h4>
-              <small className="text-muted">Manage and track all incident reports</small>
+              <small className="text-muted">
+                Manage and track all incident reports
+              </small>
             </div>
-            <CButton
-              color="primary"
-              onClick={() => navigate('/incidents/create')}
-              className="d-flex align-items-center"
-            >
-              <CIcon icon={cilClipboard} size="sm" className="me-2" />
-              Report Incident
-            </CButton>
+            <div className="d-flex gap-2">
+              <CButton
+                color="secondary"
+                variant="outline"
+                onClick={() => {
+                  console.log('Manual refresh triggered');
+                  refetch();
+                }}
+                title="Refresh incident list"
+              >
+                🔄 Refresh
+              </CButton>
+              <CButton
+                color="primary"
+                onClick={() => navigate('/incidents/create')}
+                className="d-flex align-items-center"
+              >
+                <FontAwesomeIcon
+                  icon={ACTION_ICONS.create}
+                  size="sm"
+                  className="me-2"
+                />
+                Report Incident
+              </CButton>
+            </div>
           </CCardHeader>
-          
+
           <CCardBody>
+            {successMessage && (
+              <CAlert
+                color="success"
+                dismissible
+                onClose={() => setSuccessMessage(null)}
+              >
+                {successMessage}
+              </CAlert>
+            )}
+
             {error && (
-              <CAlert color="danger" dismissible onClose={() => setError(null)}>
-                {error}
+              <CAlert color="danger" dismissible onClose={() => refetch()}>
+                {typeof error === 'string'
+                  ? error
+                  : 'Failed to load incidents. Please try again.'}
               </CAlert>
             )}
 
@@ -229,7 +173,7 @@ const IncidentList: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   <CButton type="button" color="primary" variant="outline">
-                    <CIcon icon={cilFile} />
+                    <FontAwesomeIcon icon={ACTION_ICONS.search} />
                   </CButton>
                 </CInputGroup>
               </CCol>
@@ -240,7 +184,9 @@ const IncidentList: React.FC = () => {
                 >
                   <option value="">All Statuses</option>
                   <option value="Reported">Reported</option>
-                  <option value="UnderInvestigation">Under Investigation</option>
+                  <option value="UnderInvestigation">
+                    Under Investigation
+                  </option>
                   <option value="AwaitingAction">Awaiting Action</option>
                   <option value="Resolved">Resolved</option>
                   <option value="Closed">Closed</option>
@@ -270,16 +216,24 @@ const IncidentList: React.FC = () => {
                     setCurrentPage(1);
                   }}
                 >
-                  <CIcon icon={cilFile} size="sm" className="me-2" />
+                  <FontAwesomeIcon
+                    icon={ACTION_ICONS.cancel}
+                    size="sm"
+                    className="me-2"
+                  />
                   Clear
                 </CButton>
               </CCol>
             </CRow>
 
             {/* Incidents Table */}
-            {filteredIncidents.length === 0 ? (
+            {incidents.length === 0 ? (
               <div className="text-center py-5">
-                <CIcon icon={cilWarning} className="text-muted mb-3" style={{ fontSize: '3rem' }} />
+                <FontAwesomeIcon
+                  icon={CONTEXT_ICONS.incident}
+                  className="text-muted mb-3"
+                  style={{ fontSize: '3rem' }}
+                />
                 <h5 className="text-muted">No incidents found</h5>
                 <p className="text-muted">
                   {searchTerm || statusFilter || severityFilter
@@ -291,7 +245,11 @@ const IncidentList: React.FC = () => {
                   onClick={() => navigate('/incidents/create')}
                   className="mt-3"
                 >
-                  <CIcon icon={cilClipboard} size="sm" className="me-2" />
+                  <FontAwesomeIcon
+                    icon={ACTION_ICONS.create}
+                    size="sm"
+                    className="me-2"
+                  />
                   Report First Incident
                 </CButton>
               </div>
@@ -310,7 +268,7 @@ const IncidentList: React.FC = () => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {paginatedIncidents.map((incident) => (
+                    {incidents.map((incident) => (
                       <CTableRow key={incident.id}>
                         <CTableDataCell>
                           <div>
@@ -323,8 +281,12 @@ const IncidentList: React.FC = () => {
                             </small>
                           </div>
                         </CTableDataCell>
-                        <CTableDataCell>{getSeverityBadge(incident.severity)}</CTableDataCell>
-                        <CTableDataCell>{getStatusBadge(incident.status)}</CTableDataCell>
+                        <CTableDataCell>
+                          {getSeverityBadge(incident.severity)}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          {getStatusBadge(incident.status)}
+                        </CTableDataCell>
                         <CTableDataCell>{incident.location}</CTableDataCell>
                         <CTableDataCell>{incident.reporterName}</CTableDataCell>
                         <CTableDataCell>
@@ -338,21 +300,73 @@ const IncidentList: React.FC = () => {
                         </CTableDataCell>
                         <CTableDataCell>
                           <CDropdown>
-                            <CDropdownToggle color="light" size="sm" caret={false}>
-                              <CIcon icon={cilTask} />
+                            <CDropdownToggle
+                              color="light"
+                              size="sm"
+                              caret={false}
+                            >
+                              <FontAwesomeIcon icon={ACTION_ICONS.menu} />
                             </CDropdownToggle>
                             <CDropdownMenu>
-                              <CDropdownItem onClick={() => navigate(`/incidents/${incident.id}`)}>
-                                <CIcon icon={cilFile} size="sm" className="me-2" />
+                              <CDropdownItem
+                                onClick={() =>
+                                  navigate(`/incidents/${incident.id}`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.view}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 View Details
                               </CDropdownItem>
-                              <CDropdownItem onClick={() => navigate(`/incidents/${incident.id}/edit`)}>
-                                <CIcon icon={cilFile} size="sm" className="me-2" />
+                              <CDropdownItem
+                                onClick={() =>
+                                  navigate(`/incidents/${incident.id}/edit`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.edit}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 Edit
                               </CDropdownItem>
-                              <CDropdownItem style={{ borderTop: '1px solid #dee2e6' }}></CDropdownItem>
-                              <CDropdownItem className="text-danger">
-                                <CIcon icon={cilWarning} size="sm" className="me-2" />
+                              <CDropdownItem
+                                style={{ borderTop: '1px solid #dee2e6' }}
+                              ></CDropdownItem>
+                              <CDropdownItem
+                                className="text-danger"
+                                onClick={async () => {
+                                  if (
+                                    window.confirm(
+                                      `Are you sure you want to delete "${incident.title}"? This action cannot be undone.`
+                                    )
+                                  ) {
+                                    try {
+                                      await deleteIncident(
+                                        incident.id
+                                      ).unwrap();
+                                      // Optimistic update should handle immediate UI update
+                                      // Force refresh as backup only if needed
+                                    } catch (error) {
+                                      console.error(
+                                        'Failed to delete incident:',
+                                        error
+                                      );
+                                      alert(
+                                        'Failed to delete incident. Please try again.'
+                                      );
+                                    }
+                                  }
+                                }}
+                                disabled={isDeleting}
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.delete}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 Delete
                               </CDropdownItem>
                             </CDropdownMenu>
@@ -367,7 +381,9 @@ const IncidentList: React.FC = () => {
                 {totalPages > 1 && (
                   <div className="d-flex justify-content-between align-items-center mt-4">
                     <div className="text-muted">
-                      Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredIncidents.length)} of {filteredIncidents.length} incidents
+                      Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
+                      {Math.min(currentPage * itemsPerPage, totalCount)} of{' '}
+                      {totalCount} incidents
                     </div>
                     <CPagination aria-label="Incidents pagination">
                       <CPaginationItem

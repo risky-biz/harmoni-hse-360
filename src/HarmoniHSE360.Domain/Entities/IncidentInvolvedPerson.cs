@@ -19,4 +19,10 @@ public class IncidentInvolvedPerson : BaseEntity
         InvolvementType = involvementType;
         InjuryDescription = injuryDescription;
     }
+
+    public void UpdateDetails(InvolvementType involvementType, string? injuryDescription)
+    {
+        InvolvementType = involvementType;
+        InjuryDescription = injuryDescription;
+    }
 }

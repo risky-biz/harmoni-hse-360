@@ -1,0 +1,288 @@
+name: Security Scanning
+
+on:
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
+
+jobs:
+  # Comprehensive Security Scanning
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+
+      # Trivy filesystem scan
+      - name: Run Trivy vulnerability scanner (filesystem)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      - name: Upload Trivy filesystem scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('trivy-fs-results.sarif') != ''
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+          category: 'trivy-filesystem'
+
+      # Trivy configuration scan
+      - name: Run Trivy configuration scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-config-results.sarif'
+
+      - name: Upload Trivy configuration scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('trivy-config-results.sarif') != ''
+        with:
+          sarif_file: 'trivy-config-results.sarif'
+          category: 'trivy-config'
+
+      # .NET security scanning
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      - name: Install .NET security scanning tools
+        run: |
+          dotnet tool install --global security-scan --version 5.6.7
+          dotnet tool install --global dotnet-outdated-tool
+
+      - name: Run .NET security scan
+        run: |
+          security-scan --project src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj --export security-scan-results.json
+        continue-on-error: true
+
+      - name: Check for outdated .NET packages
+        run: |
+          dotnet outdated --output outdated-packages.json
+        continue-on-error: true
+
+      # Node.js security scanning
+      - name: Install Node.js dependencies
+        working-directory: src/HarmoniHSE360.Web/ClientApp
+        run: npm ci
+
+      - name: Run npm audit
+        working-directory: src/HarmoniHSE360.Web/ClientApp
+        run: |
+          npm audit --audit-level moderate --json > npm-audit-results.json
+        continue-on-error: true
+
+      - name: Install audit-ci for enhanced npm security checking
+        run: npm install -g audit-ci
+
+      - name: Run enhanced npm security audit
+        working-directory: src/HarmoniHSE360.Web/ClientApp
+        run: |
+          audit-ci --config audit-ci.json --output-format json --output audit-ci-results.json
+        continue-on-error: true
+
+      # Secret scanning
+      - name: Run TruffleHog secret scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified --json --output trufflehog-results.json
+
+      # Docker image security scanning
+      - name: Build Docker image for scanning
+        run: |
+          docker build -f Dockerfile.flyio -t harmonihse360:security-scan .
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'harmonihse360:security-scan'
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+
+      - name: Upload Trivy container scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('trivy-container-results.sarif') != ''
+        with:
+          sarif_file: 'trivy-container-results.sarif'
+          category: 'trivy-container'
+
+      # Upload all security scan results as artifacts
+      - name: Upload security scan artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-scan-results-${{ github.run_number }}
+          path: |
+            trivy-*.sarif
+            security-scan-results.json
+            outdated-packages.json
+            npm-audit-results.json
+            audit-ci-results.json
+            trufflehog-results.json
+          retention-days: 30
+
+  # CodeQL Analysis
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp', 'javascript' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Setup .NET (for C# analysis)
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js (for JavaScript analysis)
+        if: matrix.language == 'javascript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+
+      - name: Build .NET application
+        if: matrix.language == 'csharp'
+        run: |
+          dotnet restore
+          dotnet build --no-restore --configuration Release
+
+      - name: Build JavaScript application
+        if: matrix.language == 'javascript'
+        working-directory: src/HarmoniHSE360.Web/ClientApp
+        run: |
+          npm ci
+          npm run build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # License compliance check
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+
+      - name: Install license checking tools
+        run: |
+          npm install -g license-checker
+          dotnet tool install --global dotnet-project-licenses
+
+      - name: Check .NET licenses
+        run: |
+          dotnet restore
+          dotnet-project-licenses --input . --output-format json --output dotnet-licenses.json
+        continue-on-error: true
+
+      - name: Check Node.js licenses
+        working-directory: src/HarmoniHSE360.Web/ClientApp
+        run: |
+          npm ci
+          license-checker --json --out ../../../nodejs-licenses.json
+        continue-on-error: true
+
+      - name: Upload license reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: license-reports-${{ github.run_number }}
+          path: |
+            dotnet-licenses.json
+            nodejs-licenses.json
+          retention-days: 30
+
+  # Security notification
+  security-notification:
+    name: Security Scan Notification
+    runs-on: ubuntu-latest
+    needs: [security-scan, codeql-analysis, license-check]
+    if: always() && (needs.security-scan.result == 'failure' || needs.codeql-analysis.result == 'failure')
+    
+    steps:
+      - name: Notify security team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            🚨 Security scan detected issues in HarmoniHSE360!
+            
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            
+            Please review the security findings in the GitHub Security tab.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SECURITY_SLACK_WEBHOOK_URL }}

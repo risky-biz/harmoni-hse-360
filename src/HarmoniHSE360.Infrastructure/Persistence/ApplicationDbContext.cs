@@ -24,6 +24,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<IncidentAttachment> IncidentAttachments => Set<IncidentAttachment>();
     public DbSet<IncidentInvolvedPerson> IncidentInvolvedPersons => Set<IncidentInvolvedPerson>();
     public DbSet<CorrectiveAction> CorrectiveActions => Set<CorrectiveAction>();
+    public DbSet<IncidentAuditLog> IncidentAuditLogs => Set<IncidentAuditLog>();
+    public DbSet<EscalationRule> EscalationRules => Set<EscalationRule>();
+    public DbSet<EscalationAction> EscalationActions => Set<EscalationAction>();
+    public DbSet<EscalationHistory> EscalationHistories => Set<EscalationHistory>();
+    public DbSet<NotificationHistory> NotificationHistories => Set<NotificationHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

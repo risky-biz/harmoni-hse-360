@@ -58,6 +58,12 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<IDataSeeder, DataSeeder>();
+        services.AddScoped<IIncidentAuditService, IncidentAuditService>();
+
+        // Add notification and escalation services
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
+        services.AddScoped<IEscalationService, EscalationService>();
 
         return services;
     }

@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<IncidentAttachment> IncidentAttachments { get; }
     DbSet<IncidentInvolvedPerson> IncidentInvolvedPersons { get; }
     DbSet<CorrectiveAction> CorrectiveActions { get; }
+    DbSet<IncidentAuditLog> IncidentAuditLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

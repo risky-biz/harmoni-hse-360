@@ -30,25 +30,33 @@ namespace HarmoniHSE360.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssignedToId")
+                    b.Property<string>("AssignedToDepartment")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("AssignedToId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("CompletedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CompletionNotes")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
@@ -60,18 +68,218 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedToId");
 
+                    b.HasIndex("DueDate");
+
                     b.HasIndex("IncidentId");
 
-                    b.ToTable("CorrectiveActions");
+                    b.HasIndex("Status");
+
+                    b.ToTable("CorrectiveActions", (string)null);
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Channels")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<double?>("Delay")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("EscalationRuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Parameters")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<string>("Target")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("TemplateId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EscalationRuleId");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("EscalationActions");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionDetails")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("ActionTarget")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ActionType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int?>("EscalationRuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExecutedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExecutedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsSuccessful")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RuleName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EscalationRuleId");
+
+                    b.HasIndex("ExecutedAt");
+
+                    b.HasIndex("IncidentId");
+
+                    b.HasIndex("IsSuccessful");
+
+                    b.ToTable("EscalationHistories");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(100);
+
+                    b.Property<double?>("TriggerAfterDuration")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("TriggerDepartments")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<string>("TriggerLocations")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<string>("TriggerSeverities")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<string>("TriggerStatuses")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Priority");
+
+                    b.ToTable("EscalationRules");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.Incident", b =>
@@ -95,8 +303,17 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<bool>("EmergencyServicesContacted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ImmediateActionsTaken")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("IncidentDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("InjuryType")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("InvestigatorId")
                         .HasColumnType("integer");
@@ -108,13 +325,31 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<DateTime?>("LastResponseAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int>("ReporterId")
+                    b.Property<bool>("MedicalTreatmentProvided")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReporterDepartment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReporterEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ReporterId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ReporterName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Severity")
                         .IsRequired()
@@ -128,6 +363,9 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<string>("WitnessNames")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -182,6 +420,58 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.ToTable("IncidentAttachments");
                 });
 
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.IncidentAuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ChangeDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FieldName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedAt");
+
+                    b.HasIndex("IncidentId");
+
+                    b.HasIndex("IncidentId", "ChangedAt");
+
+                    b.ToTable("IncidentAuditLogs", (string)null);
+                });
+
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.IncidentInvolvedPerson", b =>
                 {
                     b.Property<int>("Id")
@@ -209,6 +499,100 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("IncidentInvolvedPersons");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.NotificationHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("IncidentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RecipientId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RecipientType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TemplateId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Channel");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IncidentId");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("IncidentId", "RecipientId");
+
+                    b.ToTable("NotificationHistories");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.Permission", b =>
@@ -368,8 +752,7 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.HasOne("HarmoniHSE360.Domain.Entities.User", "AssignedTo")
                         .WithMany()
                         .HasForeignKey("AssignedToId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HarmoniHSE360.Domain.Entities.Incident", null)
                         .WithMany("CorrectiveActions")
@@ -378,6 +761,35 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("AssignedTo");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationAction", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.EscalationRule", "EscalationRule")
+                        .WithMany("Actions")
+                        .HasForeignKey("EscalationRuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EscalationRule");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationHistory", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.EscalationRule", "EscalationRule")
+                        .WithMany()
+                        .HasForeignKey("EscalationRuleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.Incident", "Incident")
+                        .WithMany()
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EscalationRule");
+
+                    b.Navigation("Incident");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.Incident", b =>
@@ -390,8 +802,7 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.HasOne("HarmoniHSE360.Domain.Entities.User", "Reporter")
                         .WithMany()
                         .HasForeignKey("ReporterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("HarmoniHSE360.Domain.ValueObjects.GeoLocation", "GeoLocation", b1 =>
                         {
@@ -432,6 +843,17 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.IncidentAuditLog", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.Incident", "Incident")
+                        .WithMany()
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
+                });
+
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.IncidentInvolvedPerson", b =>
                 {
                     b.HasOne("HarmoniHSE360.Domain.Entities.Incident", null)
@@ -447,6 +869,17 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.NotificationHistory", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.Incident", "Incident")
+                        .WithMany()
+                        .HasForeignKey("IncidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Incident");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.UserRole", b =>
@@ -479,6 +912,11 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.EscalationRule", b =>
+                {
+                    b.Navigation("Actions");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.Incident", b =>
