@@ -1,5 +1,5 @@
 # Development Dockerfile with hot reload support
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:9.0
 WORKDIR /src
 
 # Install Node.js for React development
