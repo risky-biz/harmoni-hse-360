@@ -1,0 +1,56 @@
+name: Test Fly.io Token
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  test-token:
+    name: Test Fly.io Authentication
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Test Fly.io Authentication
+        run: |
+          echo "Testing Fly.io authentication..."
+          flyctl auth whoami
+          echo "✅ Authentication successful!"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Test App Access (Staging)
+        if: github.event.inputs.environment == 'staging'
+        run: |
+          echo "Testing access to staging app..."
+          flyctl status --config fly.staging.toml
+          echo "✅ Staging app access successful!"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Test App Access (Production)
+        if: github.event.inputs.environment == 'production'
+        run: |
+          echo "Testing access to production app..."
+          flyctl status --config fly.toml
+          echo "✅ Production app access successful!"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "🎉 Fly.io token test completed successfully!"
+          echo "The FLY_API_TOKEN secret is working correctly for ${{ github.event.inputs.environment }} environment."

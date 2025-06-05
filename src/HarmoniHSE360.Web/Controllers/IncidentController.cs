@@ -84,6 +84,9 @@ public class IncidentController : ControllerBase
 
             // Notify all connected clients about the new incident
             await _incidentHub.Clients.All.SendAsync("IncidentCreated", result.Id);
+            
+            // Notify dashboard should be updated
+            await _incidentHub.Clients.All.SendAsync("DashboardUpdate");
 
             // Also notify location-specific group if location is specified
             if (!string.IsNullOrEmpty(result.Location))
@@ -255,6 +258,9 @@ public class IncidentController : ControllerBase
 
             // Notify all connected clients about the updated incident
             await _incidentHub.Clients.All.SendAsync("IncidentUpdated", result.Id);
+            
+            // Notify dashboard should be updated
+            await _incidentHub.Clients.All.SendAsync("DashboardUpdate");
 
             // If status changed, send specific notification
             if (request.Status != null)
@@ -339,6 +345,9 @@ public class IncidentController : ControllerBase
 
             // Notify all connected clients about the deleted incident
             await _incidentHub.Clients.All.SendAsync("IncidentDeleted", id);
+            
+            // Notify dashboard should be updated
+            await _incidentHub.Clients.All.SendAsync("DashboardUpdate");
 
             return NoContent();
         }
@@ -377,6 +386,40 @@ public class IncidentController : ControllerBase
         {
             _logger.LogError(ex, "Error retrieving incident statistics");
             return Task.FromResult<ActionResult<object>>(BadRequest(new { message = "An error occurred while retrieving statistics" }));
+        }
+    }
+
+    /// <summary>
+    /// Get comprehensive incident dashboard data
+    /// </summary>
+    [HttpGet("dashboard")]
+    [ProducesResponseType(typeof(IncidentDashboardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IncidentDashboardDto>> GetIncidentDashboard(
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] string? department = null,
+        [FromQuery] bool includeResolved = true)
+    {
+        try
+        {
+            _logger.LogInformation("Getting incident dashboard data");
+
+            var query = new GetIncidentDashboardQuery
+            {
+                FromDate = fromDate,
+                ToDate = toDate,
+                Department = department,
+                IncludeResolved = includeResolved
+            };
+
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving incident dashboard data");
+            return BadRequest(new { message = "An error occurred while retrieving dashboard data" });
         }
     }
 

@@ -17,7 +17,7 @@ namespace HarmoniHSE360.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -595,6 +595,723 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.ToTable("NotificationHistories");
                 });
 
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("AssignedToId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("PPEItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Purpose")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ReturnNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ReturnedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("ReturnedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedDate");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("PPEItemId");
+
+                    b.HasIndex("ReturnedDate");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("PPEItemId", "Status");
+
+                    b.ToTable("PPEAssignments");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPECategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ComplianceStandard")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int?>("DefaultExpiryDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int?>("InspectionIntervalDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("RequiresCertification")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresExpiry")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresInspection")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PPECategories_Code");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_PPECategories_IsActive");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_PPECategories_Name");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("IX_PPECategories_Type");
+
+                    b.ToTable("PPECategories", (string)null);
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEComplianceRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ComplianceNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int?>("MinimumQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ReplacementIntervalDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("RequiresTraining")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RiskAssessmentReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TrainingRequirements")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsMandatory");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("RoleId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("PPEComplianceRequirements");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEInspection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CorrectiveActions")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Findings")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("InspectionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InspectorId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("MaintenanceNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("NextInspectionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PPEItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhotoPathsJson")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("PhotoPaths");
+
+                    b.Property<string>("RecommendedCondition")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("RequiresMaintenance")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionDate");
+
+                    b.HasIndex("InspectorId");
+
+                    b.HasIndex("NextInspectionDate");
+
+                    b.HasIndex("PPEItemId");
+
+                    b.HasIndex("Result");
+
+                    b.HasIndex("PPEItemId", "InspectionDate");
+
+                    b.ToTable("PPEInspections");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AssignedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Condition")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Cost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ItemCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Manufacturer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("SizeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("StorageLocationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Condition");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("ExpiryDate");
+
+                    b.HasIndex("ItemCode")
+                        .IsUnique();
+
+                    b.HasIndex("SizeId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("StorageLocationId");
+
+                    b.HasIndex("Status", "CategoryId");
+
+                    b.ToTable("PPEItems");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPERequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("FulfilledBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("FulfilledDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("FulfilledPPEItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Justification")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RequestNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RequiredDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ReviewedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ReviewerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("FulfilledPPEItemId");
+
+                    b.HasIndex("Priority");
+
+                    b.HasIndex("RequestDate");
+
+                    b.HasIndex("RequestNumber")
+                        .IsUnique();
+
+                    b.HasIndex("RequesterId");
+
+                    b.HasIndex("RequiredDate");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Status", "Priority");
+
+                    b.ToTable("PPERequests");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPERequestItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ItemDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Size")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("SpecialRequirements")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("PPERequestItems");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPESize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PPESizes_Code");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_PPESizes_IsActive");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_PPESizes_Name");
+
+                    b.HasIndex("SortOrder")
+                        .HasDatabaseName("IX_PPESizes_SortOrder");
+
+                    b.ToTable("PPESizes", (string)null);
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEStorageLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Capacity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1000);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("CurrentStock")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PPEStorageLocations_Code");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_PPEStorageLocations_IsActive");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_PPEStorageLocations_Name");
+
+                    b.ToTable("PPEStorageLocations", (string)null);
+                });
+
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -882,6 +1599,212 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.Navigation("Incident");
                 });
 
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEAssignment", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.User", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPEItem", "PPEItem")
+                        .WithMany("AssignmentHistory")
+                        .HasForeignKey("PPEItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssignedTo");
+
+                    b.Navigation("PPEItem");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEComplianceRequirement", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPECategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEInspection", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.User", "Inspector")
+                        .WithMany()
+                        .HasForeignKey("InspectorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPEItem", "PPEItem")
+                        .WithMany("Inspections")
+                        .HasForeignKey("PPEItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inspector");
+
+                    b.Navigation("PPEItem");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEItem", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.User", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPECategory", "Category")
+                        .WithMany("PPEItems")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPESize", "Size")
+                        .WithMany("PPEItems")
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPEStorageLocation", "StorageLocation")
+                        .WithMany("PPEItems")
+                        .HasForeignKey("StorageLocationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.OwnsOne("HarmoniHSE360.Domain.ValueObjects.CertificationInfo", "Certification", b1 =>
+                        {
+                            b1.Property<int>("PPEItemId")
+                                .HasColumnType("integer");
+
+                            b1.Property<DateTime>("CertificationDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("CertificationDate");
+
+                            b1.Property<string>("CertificationNumber")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("CertificationNumber");
+
+                            b1.Property<string>("CertifyingBody")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("CertifyingBody");
+
+                            b1.Property<DateTime>("ExpiryDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("CertificationExpiryDate");
+
+                            b1.Property<string>("Standard")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("CertificationStandard");
+
+                            b1.HasKey("PPEItemId");
+
+                            b1.ToTable("PPEItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PPEItemId");
+                        });
+
+                    b.OwnsOne("HarmoniHSE360.Domain.ValueObjects.MaintenanceSchedule", "MaintenanceInfo", b1 =>
+                        {
+                            b1.Property<int>("PPEItemId")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("IntervalDays")
+                                .HasColumnType("integer")
+                                .HasColumnName("MaintenanceIntervalDays");
+
+                            b1.Property<DateTime?>("LastMaintenanceDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("LastMaintenanceDate");
+
+                            b1.Property<string>("MaintenanceInstructions")
+                                .HasMaxLength(1000)
+                                .HasColumnType("character varying(1000)")
+                                .HasColumnName("MaintenanceInstructions");
+
+                            b1.Property<DateTime?>("NextMaintenanceDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("NextMaintenanceDate");
+
+                            b1.HasKey("PPEItemId");
+
+                            b1.ToTable("PPEItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PPEItemId");
+                        });
+
+                    b.Navigation("AssignedTo");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Certification");
+
+                    b.Navigation("MaintenanceInfo");
+
+                    b.Navigation("Size");
+
+                    b.Navigation("StorageLocation");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPERequest", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPECategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPEItem", "FulfilledPPEItem")
+                        .WithMany()
+                        .HasForeignKey("FulfilledPPEItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HarmoniHSE360.Domain.Entities.User", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+
+                    b.Navigation("FulfilledPPEItem");
+
+                    b.Navigation("Requester");
+
+                    b.Navigation("Reviewer");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPERequestItem", b =>
+                {
+                    b.HasOne("HarmoniHSE360.Domain.Entities.PPERequest", "Request")
+                        .WithMany("RequestItems")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.UserRole", b =>
                 {
                     b.HasOne("HarmoniHSE360.Domain.Entities.Role", "Role")
@@ -926,6 +1849,33 @@ namespace HarmoniHSE360.Infrastructure.Migrations
                     b.Navigation("CorrectiveActions");
 
                     b.Navigation("InvolvedPersons");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPECategory", b =>
+                {
+                    b.Navigation("PPEItems");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEItem", b =>
+                {
+                    b.Navigation("AssignmentHistory");
+
+                    b.Navigation("Inspections");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPERequest", b =>
+                {
+                    b.Navigation("RequestItems");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPESize", b =>
+                {
+                    b.Navigation("PPEItems");
+                });
+
+            modelBuilder.Entity("HarmoniHSE360.Domain.Entities.PPEStorageLocation", b =>
+                {
+                    b.Navigation("PPEItems");
                 });
 
             modelBuilder.Entity("HarmoniHSE360.Domain.Entities.User", b =>

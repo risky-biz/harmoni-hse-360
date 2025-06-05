@@ -160,6 +160,24 @@ class SignalRService {
       }
     );
 
+    // Handle dashboard updates
+    this.hubConnection.on('DashboardUpdate', async () => {
+      console.log('SignalR: Dashboard update received');
+      // Invalidate dashboard cache to trigger refetch
+      store.dispatch(
+        incidentApi.util.invalidateTags(['IncidentDashboard', 'IncidentStatistics'])
+      );
+      // Also invalidate PPE dashboard
+      try {
+        const { ppeApi } = await import('../features/ppe/ppeApi');
+        store.dispatch(
+          ppeApi.util.invalidateTags(['PPEDashboard'])
+        );
+      } catch (error) {
+        console.warn('Failed to invalidate PPE dashboard cache:', error);
+      }
+    });
+
     // Handle connection events
     this.hubConnection.onclose((error) => {
       console.log('SignalR Disconnected', error);

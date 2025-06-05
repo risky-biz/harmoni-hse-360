@@ -50,35 +50,28 @@ echo "✅ Authenticated with GitHub as: $GH_USER"
 
 # Generate tokens
 echo ""
-echo "🔑 Generating Fly.io API tokens..."
+echo "🔑 Generating Fly.io API token..."
 
 DATE_SUFFIX=$(date +%Y%m%d)
 
-echo "Creating production deploy token..."
-PROD_TOKEN=$(fly tokens create deploy -x 8760h --name "github-actions-production-$DATE_SUFFIX" --json | jq -r .token)
+echo "Creating deploy token for both staging and production..."
+DEPLOY_TOKEN=$(fly tokens create deploy -x 8760h --name "github-actions-deploy-$DATE_SUFFIX" --json | jq -r .token)
 
-echo "Creating staging deploy token..."
-STAGING_TOKEN=$(fly tokens create deploy -x 8760h --name "github-actions-staging-$DATE_SUFFIX" --json | jq -r .token)
-
-if [ -z "$PROD_TOKEN" ] || [ -z "$STAGING_TOKEN" ]; then
-    echo "❌ Failed to generate tokens"
+if [ -z "$DEPLOY_TOKEN" ] || [ "$DEPLOY_TOKEN" = "null" ]; then
+    echo "❌ Failed to generate token"
     exit 1
 fi
 
-echo "✅ Production token generated"
-echo "✅ Staging token generated"
+echo "✅ Deploy token generated"
 
 # Set GitHub secrets
 echo ""
-echo "🔒 Setting GitHub repository secrets..."
+echo "🔒 Setting GitHub repository secret..."
 
-echo "Setting FLY_API_TOKEN (production)..."
-echo "$PROD_TOKEN" | gh secret set FLY_API_TOKEN
+echo "Setting FLY_API_TOKEN (used for both staging and production)..."
+echo "$DEPLOY_TOKEN" | gh secret set FLY_API_TOKEN
 
-echo "Setting FLY_API_TOKEN_STAGING..."
-echo "$STAGING_TOKEN" | gh secret set FLY_API_TOKEN_STAGING
-
-echo "✅ GitHub secrets configured"
+echo "✅ GitHub secret configured"
 
 # Verify setup
 echo ""
@@ -91,31 +84,24 @@ echo ""
 echo "Fly.io tokens:"
 fly tokens list | grep github-actions
 
-# Test tokens
+# Test token
 echo ""
-echo "🧪 Testing tokens..."
+echo "🧪 Testing token..."
 
-echo "Testing production token..."
-if FLY_API_TOKEN="$PROD_TOKEN" fly auth whoami &>/dev/null; then
-    echo "✅ Production token works"
+echo "Testing deploy token..."
+if FLY_API_TOKEN="$DEPLOY_TOKEN" fly auth whoami &>/dev/null; then
+    echo "✅ Deploy token works"
 else
-    echo "❌ Production token failed"
-fi
-
-echo "Testing staging token..."
-if FLY_API_TOKEN="$STAGING_TOKEN" fly auth whoami &>/dev/null; then
-    echo "✅ Staging token works"
-else
-    echo "❌ Staging token failed"
+    echo "❌ Deploy token failed"
 fi
 
 # Security recommendations
 echo ""
 echo "🔒 Security Recommendations"
 echo "=========================="
-echo "1. ✅ Separate tokens for staging and production"
+echo "1. ✅ Single token for both environments (simplified management)"
 echo "2. ✅ Limited to deploy permissions only"
-echo "3. ✅ Tokens expire in 1 year (8760 hours)"
+echo "3. ✅ Token expires in 1 year (8760 hours)"
 echo "4. ⚠️  Set up token rotation reminder for $(date -d '+1 year' '+%B %Y')"
 echo "5. ⚠️  Monitor token usage in Fly.io dashboard"
 echo "6. ⚠️  Enable GitHub secret scanning alerts"
@@ -156,5 +142,4 @@ echo "  - develop branch → staging environment"
 echo "  - main branch → production environment"
 
 # Clean up sensitive variables
-unset PROD_TOKEN
-unset STAGING_TOKEN
+unset DEPLOY_TOKEN
