@@ -24,6 +24,13 @@ public interface IApplicationDbContext
     DbSet<PPERequest> PPERequests { get; }
     DbSet<PPERequestItem> PPERequestItems { get; }
     DbSet<PPEComplianceRequirement> PPEComplianceRequirements { get; }
+    
+    // Hazard Management
+    DbSet<Hazard> Hazards { get; }
+    DbSet<HazardAttachment> HazardAttachments { get; }
+    DbSet<RiskAssessment> RiskAssessments { get; }
+    DbSet<HazardMitigationAction> HazardMitigationActions { get; }
+    DbSet<HazardReassessment> HazardReassessments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

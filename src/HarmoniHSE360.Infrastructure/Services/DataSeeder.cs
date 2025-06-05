@@ -60,6 +60,14 @@ public class DataSeeder : IDataSeeder
                 await _context.SaveChangesAsync(); // Save PPE items
             }
 
+            // Seed hazards if enabled in configuration
+            var seedHazards = _configuration["DataSeeding:SeedHazards"] != "false";
+            if (seedHazards)
+            {
+                await SeedHazardsAsync();
+                await _context.SaveChangesAsync(); // Save hazards
+            }
+
             _logger.LogInformation("Database seeding completed successfully");
         }
         catch (Exception ex)
@@ -610,5 +618,307 @@ public class DataSeeder : IDataSeeder
     {
         var random = new Random();
         return array[random.Next(array.Length)];
+    }
+
+    private async Task SeedHazardsAsync()
+    {
+        var hazardCount = await _context.Hazards.CountAsync();
+        _logger.LogInformation("Current hazard count: {HazardCount}", hazardCount);
+
+        if (hazardCount > 0)
+        {
+            _logger.LogInformation("Hazards already exist, skipping seeding");
+            return;
+        }
+
+        _logger.LogInformation("Starting hazard seeding...");
+
+        // Get a user to use as reporter (preferably HSE Manager or Admin)
+        var reporterUser = await _context.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "HSEManager" || ur.Role.Name == "Admin"))
+            .FirstOrDefaultAsync() ?? await _context.Users.FirstAsync();
+
+        var hazards = new List<Hazard>();
+        var random = new Random();
+
+        // Sample hazard data representing common school hazards
+        var hazardTemplates = new[]
+        {
+            new { Title = "Wet floor in main corridor", Category = HazardCategory.Physical, Type = HazardType.Slip, Severity = HazardSeverity.Moderate, Location = "Main Corridor - Building A", Description = "Water accumulation from roof leak creates slippery conditions during rainy weather" },
+            new { Title = "Loose handrail on staircase", Category = HazardCategory.Physical, Type = HazardType.Fall, Severity = HazardSeverity.Major, Location = "Science Building - 2nd Floor Staircase", Description = "Handrail is loose and wobbles when pressure is applied, creating fall risk" },
+            new { Title = "Chemical storage ventilation inadequate", Category = HazardCategory.Chemical, Type = HazardType.Exposure, Severity = HazardSeverity.Major, Location = "Chemistry Lab - Room 201", Description = "Ventilation system not functioning properly for chemical storage area" },
+            new { Title = "Electrical outlet sparking", Category = HazardCategory.Electrical, Type = HazardType.Burn, Severity = HazardSeverity.Major, Location = "IT Lab - Room 105", Description = "Electrical outlet showing signs of arcing and sparking when devices are plugged in" },
+            new { Title = "Heavy equipment storage unstable", Category = HazardCategory.Mechanical, Type = HazardType.Collision, Severity = HazardSeverity.Major, Location = "Maintenance Workshop", Description = "Heavy equipment stored on unstable shelving that could fall" },
+            new { Title = "Fire exit blocked by equipment", Category = HazardCategory.Fire, Type = HazardType.Fire, Severity = HazardSeverity.Major, Location = "Gymnasium - Emergency Exit", Description = "Sports equipment blocking emergency exit preventing safe evacuation" },
+            new { Title = "Poor lighting in parking area", Category = HazardCategory.Physical, Type = HazardType.Trip, Severity = HazardSeverity.Minor, Location = "Staff Parking Area", Description = "Several light fixtures not working creating poor visibility in evening hours" },
+            new { Title = "Asbestos in ceiling tiles", Category = HazardCategory.Environmental, Type = HazardType.Exposure, Severity = HazardSeverity.Catastrophic, Location = "Old Library Building - Main Hall", Description = "Potential asbestos-containing materials identified in deteriorating ceiling tiles" },
+            new { Title = "Playground equipment wear", Category = HazardCategory.Mechanical, Type = HazardType.Cut, Severity = HazardSeverity.Moderate, Location = "Primary School Playground", Description = "Sharp edges and worn surfaces on playground equipment pose injury risk" },
+            new { Title = "Kitchen equipment overheating", Category = HazardCategory.Physical, Type = HazardType.Burn, Severity = HazardSeverity.Moderate, Location = "Main Kitchen - Cooking Area", Description = "Industrial oven running hotter than normal and lacks proper insulation" },
+            new { Title = "Mold growth in storage room", Category = HazardCategory.Biological, Type = HazardType.Exposure, Severity = HazardSeverity.Moderate, Location = "Storage Room - Basement Level", Description = "Visible mold growth due to moisture issues in basement storage area" },
+            new { Title = "Ergonomic issues in computer lab", Category = HazardCategory.Ergonomic, Type = HazardType.Other, Severity = HazardSeverity.Minor, Location = "Computer Lab - Room 301", Description = "Improperly adjusted workstations causing strain for students and staff" }
+        };
+
+        var departments = new[] { "Facilities", "Academic", "Administration", "Safety", "Maintenance" };
+
+        foreach (var template in hazardTemplates)
+        {
+            var geoLocation = random.NextDouble() < 0.7 ? 
+                GeoLocation.Create(-6.2 + (random.NextDouble() * 0.01), 106.8 + (random.NextDouble() * 0.01)) : 
+                null; // 70% chance of having geo location
+
+            var hazard = Hazard.Create(
+                title: template.Title,
+                description: template.Description,
+                category: template.Category,
+                type: template.Type,
+                location: template.Location,
+                severity: template.Severity,
+                reporterId: reporterUser.Id,
+                reporterDepartment: GetRandomElement(departments),
+                geoLocation: geoLocation
+            );
+
+            // Add some variety to creation dates (last 30 days)
+            var daysAgo = random.Next(1, 31);
+            var createdDate = DateTime.UtcNow.AddDays(-daysAgo);
+            
+            // Use reflection to set the creation date for variety in testing
+            var createdAtProperty = typeof(Hazard).GetProperty("CreatedAt");
+            createdAtProperty?.SetValue(hazard, createdDate);
+
+            hazards.Add(hazard);
+        }
+
+        await _context.Hazards.AddRangeAsync(hazards);
+        _logger.LogInformation("Seeded {Count} hazards", hazards.Count);
+
+        // Save hazards first to get IDs
+        await _context.SaveChangesAsync();
+
+        // Now create risk assessments for some hazards
+        await SeedRiskAssessmentsAsync(hazards);
+        
+        // Create mitigation actions for some hazards
+        await SeedMitigationActionsAsync(hazards);
+    }
+
+    private async Task SeedRiskAssessmentsAsync(List<Hazard> hazards)
+    {
+        _logger.LogInformation("Starting risk assessment seeding...");
+
+        // Get an HSE Manager or Admin to use as assessor
+        var assessorUser = await _context.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "HSEManager" || ur.Role.Name == "Admin"))
+            .FirstOrDefaultAsync() ?? await _context.Users.FirstAsync();
+
+        var random = new Random();
+        var riskAssessments = new List<RiskAssessment>();
+
+        // Create risk assessments for 70% of hazards
+        var hazardsToAssess = hazards.Take((int)(hazards.Count * 0.7)).ToList();
+
+        foreach (var hazard in hazardsToAssess)
+        {
+            var probabilityScore = hazard.Severity switch
+            {
+                HazardSeverity.Catastrophic => random.Next(3, 6), // 3-5
+                HazardSeverity.Major => random.Next(2, 5), // 2-4
+                HazardSeverity.Moderate => random.Next(2, 4), // 2-3
+                HazardSeverity.Minor => random.Next(1, 3), // 1-2
+                _ => random.Next(1, 4) // 1-3
+            };
+
+            var severityScore = hazard.Severity switch
+            {
+                HazardSeverity.Catastrophic => 5,
+                HazardSeverity.Major => 4,
+                HazardSeverity.Moderate => 3,
+                HazardSeverity.Minor => 2,
+                _ => 1
+            };
+
+            var assessmentType = GetRandomElement(new[] { 
+                RiskAssessmentType.General, 
+                RiskAssessmentType.HIRA, 
+                RiskAssessmentType.JSA 
+            });
+
+            var potentialConsequences = hazard.Category switch
+            {
+                HazardCategory.Chemical => "Chemical exposure, respiratory issues, skin irritation, potential long-term health effects",
+                HazardCategory.Physical => "Slips, trips, falls, bruises, fractures, sprains",
+                HazardCategory.Fire => "Burns, smoke inhalation, property damage, potential fatalities",
+                HazardCategory.Electrical => "Electric shock, burns, cardiac arrest, equipment damage",
+                HazardCategory.Biological => "Infections, allergic reactions, respiratory problems",
+                HazardCategory.Environmental => "Long-term health effects, respiratory issues, environmental contamination",
+                _ => "Physical injury, property damage, operational disruption"
+            };
+
+            var existingControls = hazard.Category switch
+            {
+                HazardCategory.Chemical => "PPE required, ventilation systems, chemical storage protocols, MSDS available",
+                HazardCategory.Physical => "Warning signs posted, regular inspections, maintenance schedules",
+                HazardCategory.Fire => "Fire detection systems, extinguishers available, evacuation procedures",
+                HazardCategory.Electrical => "Circuit breakers, electrical inspections, lockout procedures",
+                _ => "Regular inspections, staff training, safety procedures in place"
+            };
+
+            var recommendedActions = GenerateRecommendedActions(hazard);
+
+            var riskAssessment = RiskAssessment.Create(
+                hazardId: hazard.Id,
+                type: assessmentType,
+                assessorId: assessorUser.Id,
+                probabilityScore: probabilityScore,
+                severityScore: severityScore,
+                potentialConsequences: potentialConsequences,
+                existingControls: existingControls,
+                recommendedActions: recommendedActions,
+                additionalNotes: $"Assessment completed as part of routine {assessmentType} evaluation for {hazard.Category} hazards."
+            );
+
+            // 80% chance of approval for completed assessments
+            if (random.NextDouble() < 0.8)
+            {
+                riskAssessment.Approve(assessorUser.Id, "Assessment reviewed and approved - actions recommended for implementation");
+            }
+
+            riskAssessments.Add(riskAssessment);
+        }
+
+        await _context.RiskAssessments.AddRangeAsync(riskAssessments);
+        _logger.LogInformation("Seeded {Count} risk assessments", riskAssessments.Count);
+    }
+
+    private async Task SeedMitigationActionsAsync(List<Hazard> hazards)
+    {
+        _logger.LogInformation("Starting mitigation action seeding...");
+
+        // Get users to assign actions to
+        var users = await _context.Users.ToListAsync();
+        var random = new Random();
+        var mitigationActions = new List<HazardMitigationAction>();
+
+        // Create mitigation actions for 60% of hazards
+        var hazardsWithActions = hazards.Take((int)(hazards.Count * 0.6)).ToList();
+
+        foreach (var hazard in hazardsWithActions)
+        {
+            var actionsForHazard = GenerateMitigationActionsForHazard(hazard, users, random);
+            mitigationActions.AddRange(actionsForHazard);
+        }
+
+        await _context.HazardMitigationActions.AddRangeAsync(mitigationActions);
+        _logger.LogInformation("Seeded {Count} mitigation actions", mitigationActions.Count);
+    }
+
+    private static string GenerateRecommendedActions(Hazard hazard)
+    {
+        return hazard.Category switch
+        {
+            HazardCategory.Chemical => "Improve ventilation system, enhance PPE requirements, provide additional training on chemical handling, review storage procedures",
+            HazardCategory.Physical => "Install better lighting, repair/replace damaged surfaces, improve signage, implement regular maintenance schedule",
+            HazardCategory.Fire => "Clear fire exits, improve fire detection systems, conduct fire drills, review evacuation procedures",
+            HazardCategory.Electrical => "Immediate electrical inspection, repair/replacement of faulty equipment, implement lockout procedures",
+            HazardCategory.Biological => "Professional remediation, improve ventilation, implement regular cleaning protocols, health monitoring",
+            HazardCategory.Environmental => "Professional assessment and remediation, air quality monitoring, implement containment measures",
+            _ => "Immediate safety assessment, implement interim controls, develop long-term mitigation strategy, staff training"
+        };
+    }
+
+    private static List<HazardMitigationAction> GenerateMitigationActionsForHazard(Hazard hazard, List<User> users, Random random)
+    {
+        var actions = new List<HazardMitigationAction>();
+        var assignedUser = GetRandomElement(users.ToArray());
+
+        // Primary mitigation action based on hazard category
+        var primaryAction = hazard.Category switch
+        {
+            HazardCategory.Chemical => HazardMitigationAction.Create(
+                hazard.Id,
+                "Upgrade ventilation system and implement proper chemical storage procedures",
+                MitigationActionType.Engineering,
+                DateTime.UtcNow.AddDays(30),
+                assignedUser.Id,
+                MitigationPriority.High,
+                estimatedCost: 5000m,
+                requiresVerification: true
+            ),
+            HazardCategory.Physical => HazardMitigationAction.Create(
+                hazard.Id,
+                "Repair structural issues and improve surface conditions",
+                MitigationActionType.Engineering,
+                DateTime.UtcNow.AddDays(14),
+                assignedUser.Id,
+                MitigationPriority.Medium,
+                estimatedCost: 2000m
+            ),
+            HazardCategory.Fire => HazardMitigationAction.Create(
+                hazard.Id,
+                "Clear fire exits and install additional fire safety equipment",
+                MitigationActionType.Engineering,
+                DateTime.UtcNow.AddDays(7),
+                assignedUser.Id,
+                MitigationPriority.Critical,
+                estimatedCost: 3000m,
+                requiresVerification: true
+            ),
+            HazardCategory.Electrical => HazardMitigationAction.Create(
+                hazard.Id,
+                "Complete electrical inspection and repair/replace faulty equipment",
+                MitigationActionType.Engineering,
+                DateTime.UtcNow.AddDays(3),
+                assignedUser.Id,
+                MitigationPriority.Critical,
+                estimatedCost: 1500m,
+                requiresVerification: true
+            ),
+            _ => HazardMitigationAction.Create(
+                hazard.Id,
+                "Implement immediate safety controls and develop long-term solution",
+                MitigationActionType.Administrative,
+                DateTime.UtcNow.AddDays(21),
+                assignedUser.Id,
+                MitigationPriority.Medium,
+                estimatedCost: 500m
+            )
+        };
+
+        actions.Add(primaryAction);
+
+        // Add administrative action for training/procedures
+        var adminAction = HazardMitigationAction.Create(
+            hazard.Id,
+            "Provide safety training and update procedures for staff",
+            MitigationActionType.Administrative,
+            DateTime.UtcNow.AddDays(14),
+            GetRandomElement(users.ToArray()).Id,
+            MitigationPriority.Medium,
+            estimatedCost: 200m
+        );
+
+        actions.Add(adminAction);
+
+        // 50% chance of adding PPE requirement
+        if (random.NextDouble() < 0.5)
+        {
+            var ppeAction = HazardMitigationAction.Create(
+                hazard.Id,
+                "Provide and enforce use of appropriate personal protective equipment",
+                MitigationActionType.PPE,
+                DateTime.UtcNow.AddDays(7),
+                GetRandomElement(users.ToArray()).Id,
+                MitigationPriority.High,
+                estimatedCost: 300m
+            );
+
+            actions.Add(ppeAction);
+        }
+
+        return actions;
     }
 }

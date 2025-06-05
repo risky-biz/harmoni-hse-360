@@ -42,6 +42,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLogoutMutation } from '../features/auth/authApi';
 import { logout } from '../features/auth/authSlice';
 import ApplicationSettings from '../components/common/ApplicationSettings';
+import NotificationBell from '../components/notifications/NotificationBell';
 
 // Navigation configuration
 const navigation = [
@@ -91,27 +92,52 @@ const navigation = [
   },
   {
     component: CNavGroup,
-    name: 'Hazards',
-    to: '/hazards',
+    name: 'Hazard Reporting',
+    to: '#hazards',
     icon: <FontAwesomeIcon icon={faExclamationTriangle} className="nav-icon" />,
     items: [
       {
         component: CNavItem,
+        name: 'Hazard Dashboard',
+        to: '/hazards/dashboard',
+      },
+      {
+        component: CNavItem,
         name: 'Report Hazard',
-        to: '/hazards/report',
+        to: '/hazards/create',
       },
       {
         component: CNavItem,
         name: 'Hazard Register',
-        to: '/hazards/register',
+        to: '/hazards',
+      },
+      {
+        component: CNavItem,
+        name: 'My Hazards',
+        to: '/hazards/my-hazards',
+      },
+      {
+        component: CNavItem,
+        name: 'Risk Assessments',
+        to: '/hazards/assessments',
+      },
+      {
+        component: CNavItem,
+        name: 'Location Mapping',
+        to: '/hazards/mapping',
+      },
+      {
+        component: CNavItem,
+        name: 'Mobile Report',
+        to: '/hazards/mobile-report',
       },
     ],
   },
   {
     component: CNavItem,
-    name: 'Risk Register',
-    to: '/risks/register',
-    icon: <FontAwesomeIcon icon={CONTEXT_ICONS.reports} className="nav-icon" />,
+    name: 'Risk Analytics',
+    to: '/hazards/analytics',
+    icon: <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -282,41 +308,7 @@ const DefaultLayout: React.FC = () => {
             </CHeaderBrand>
 
             <CHeaderNav className="ms-auto">
-              <CDropdown variant="nav-item" placement="bottom-end">
-                <CDropdownToggle caret={false}>
-                  <FontAwesomeIcon icon={faBell} size="lg" />
-                  <CBadge
-                    color="danger"
-                    position="top-end"
-                    shape="rounded-pill"
-                    className="p-1"
-                  >
-                    3
-                  </CBadge>
-                </CDropdownToggle>
-                <CDropdownMenu className="pt-0">
-                  <CDropdownHeader className="bg-light fw-semibold py-2">
-                    You have 3 notifications
-                  </CDropdownHeader>
-                  <CDropdownItem>
-                    <div className="d-flex">
-                      <div className="flex-grow-1">
-                        <h6 className="mb-1">New incident reported</h6>
-                        <p className="mb-1 small text-medium-emphasis">
-                          Safety incident in Chemistry Lab
-                        </p>
-                        <small className="text-medium-emphasis">
-                          2 min ago
-                        </small>
-                      </div>
-                    </div>
-                  </CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#" className="text-center fw-semibold">
-                    View all notifications
-                  </CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
+              <NotificationBell className="me-3" />
 
               <CDropdown variant="nav-item" placement="bottom-end">
                 <CDropdownToggle className="py-0" caret={false}>

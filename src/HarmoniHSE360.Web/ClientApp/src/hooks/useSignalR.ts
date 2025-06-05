@@ -36,7 +36,9 @@ export const useSignalR = () => {
   }, [isAuthenticated, token]);
 
   return {
+    connection: signalRService.getConnection(),
     connectionState: signalRService.getConnectionState(),
+    isConnected: signalRService.getConnectionState() === 'Connected',
     joinLocationGroup: signalRService.joinLocationGroup.bind(signalRService),
     leaveLocationGroup: signalRService.leaveLocationGroup.bind(signalRService),
   };

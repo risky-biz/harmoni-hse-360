@@ -110,6 +110,96 @@ const QrScanner = React.lazy(() =>
   })
 );
 
+// Hazard Management Pages
+const HazardDashboard = React.lazy(() =>
+  import('./pages/hazards/HazardDashboard').catch((err) => {
+    console.error('Failed to load HazardDashboard:', err);
+    return {
+      default: () => <div>Error loading Hazard Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const CreateHazard = React.lazy(() =>
+  import('./pages/hazards/CreateHazard').catch((err) => {
+    console.error('Failed to load CreateHazard:', err);
+    return {
+      default: () => <div>Error loading Create Hazard. Please refresh.</div>,
+    };
+  })
+);
+const HazardList = React.lazy(() =>
+  import('./pages/hazards/HazardList').catch((err) => {
+    console.error('Failed to load HazardList:', err);
+    return {
+      default: () => <div>Error loading Hazard List. Please refresh.</div>,
+    };
+  })
+);
+const HazardDetail = React.lazy(() =>
+  import('./pages/hazards/HazardDetail').catch((err) => {
+    console.error('Failed to load HazardDetail:', err);
+    return {
+      default: () => <div>Error loading Hazard Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditHazard = React.lazy(() =>
+  import('./pages/hazards/EditHazard').catch((err) => {
+    console.error('Failed to load EditHazard:', err);
+    return {
+      default: () => <div>Error loading Edit Hazard. Please refresh.</div>,
+    };
+  })
+);
+const MyHazards = React.lazy(() =>
+  import('./pages/hazards/MyHazards').catch((err) => {
+    console.error('Failed to load MyHazards:', err);
+    return {
+      default: () => <div>Error loading My Hazards. Please refresh.</div>,
+    };
+  })
+);
+const RiskAssessments = React.lazy(() =>
+  import('./pages/hazards/RiskAssessments').catch((err) => {
+    console.error('Failed to load RiskAssessments:', err);
+    return {
+      default: () => <div>Error loading Risk Assessments. Please refresh.</div>,
+    };
+  })
+);
+const HazardAnalytics = React.lazy(() =>
+  import('./pages/hazards/HazardAnalytics').catch((err) => {
+    console.error('Failed to load HazardAnalytics:', err);
+    return {
+      default: () => <div>Error loading Hazard Analytics. Please refresh.</div>,
+    };
+  })
+);
+const MitigationActions = React.lazy(() =>
+  import('./pages/hazards/MitigationActions').catch((err) => {
+    console.error('Failed to load MitigationActions:', err);
+    return {
+      default: () => <div>Error loading Mitigation Actions. Please refresh.</div>,
+    };
+  })
+);
+const HazardMapping = React.lazy(() =>
+  import('./pages/hazards/HazardMapping').catch((err) => {
+    console.error('Failed to load HazardMapping:', err);
+    return {
+      default: () => <div>Error loading Hazard Mapping. Please refresh.</div>,
+    };
+  })
+);
+const MobileHazardReport = React.lazy(() =>
+  import('./pages/hazards/MobileHazardReport').catch((err) => {
+    console.error('Failed to load MobileHazardReport:', err);
+    return {
+      default: () => <div>Error loading Mobile Hazard Report. Please refresh.</div>,
+    };
+  })
+);
+
 // PPE Management Pages
 const PPEDashboard = React.lazy(() =>
   import('./pages/ppe/PPEDashboard').catch((err) => {
@@ -282,6 +372,19 @@ function App() {
                 <Route path="/incidents/:id" element={<IncidentDetail />} />
                 <Route path="/incidents/:id/edit" element={<EditIncident />} />
                 <Route path="/incidents/my-reports" element={<MyReports />} />
+
+                {/* Hazard Management */}
+                <Route path="/hazards" element={<HazardList />} />
+                <Route path="/hazards/dashboard" element={<HazardDashboard />} />
+                <Route path="/hazards/create" element={<CreateHazard />} />
+                <Route path="/hazards/mobile-report" element={<MobileHazardReport />} />
+                <Route path="/hazards/my-hazards" element={<MyHazards />} />
+                <Route path="/hazards/assessments" element={<RiskAssessments />} />
+                <Route path="/hazards/analytics" element={<HazardAnalytics />} />
+                <Route path="/hazards/mapping" element={<HazardMapping />} />
+                <Route path="/hazards/:hazardId/mitigation-actions" element={<MitigationActions />} />
+                <Route path="/hazards/:id" element={<HazardDetail />} />
+                <Route path="/hazards/:id/edit" element={<EditHazard />} />
 
                 {/* PPE Management */}
                 <Route path="/ppe" element={<PPEList />} />

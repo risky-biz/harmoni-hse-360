@@ -46,13 +46,13 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
           <>
             <CProgress 
               color={color} 
-              value={percentage} 
+              value={isNaN(percentage) ? 0 : percentage} 
               className="mb-2"
               height={size === 'sm' ? 6 : size === 'lg' ? 12 : 8}
             />
             <div className="d-flex justify-content-between align-items-center">
               <span className={`fw-semibold text-${color}`}>
-                {percentage.toFixed(1)}%
+                {isNaN(percentage) ? '0.0' : percentage.toFixed(1)}%
               </span>
               {description && (
                 <small className="text-medium-emphasis">{description}</small>

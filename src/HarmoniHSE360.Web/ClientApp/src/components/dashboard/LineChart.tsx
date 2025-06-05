@@ -22,11 +22,14 @@ const LineChart: React.FC<LineChartProps> = ({
   showGrid = true,
   className = ''
 }) => {
-  if (data.length === 0) {
+  // Validate and clean data
+  const validData = data.filter(d => d && typeof d.value === 'number' && !isNaN(d.value) && d.label);
+  
+  if (validData.length === 0) {
     return (
       <div className={`line-chart ${className}`} style={{ height }}>
         <div className="d-flex justify-content-center align-items-center h-100">
-          <span className="text-medium-emphasis">No data available</span>
+          <span className="text-medium-emphasis">No valid data available</span>
         </div>
       </div>
     );
@@ -36,15 +39,20 @@ const LineChart: React.FC<LineChartProps> = ({
   const chartWidth = 100; // percentage
   const chartHeight = height - 2 * padding;
   
-  const maxValue = Math.max(...data.map(d => d.value)) || 1;
-  const minValue = Math.min(...data.map(d => d.value)) || 0;
+  const maxValue = Math.max(...validData.map(d => d.value)) || 1;
+  const minValue = Math.min(...validData.map(d => d.value)) || 0;
   const valueRange = maxValue - minValue || 1;
   
   // Calculate points
-  const points = data.map((item, index) => {
-    const x = (index / (data.length - 1)) * chartWidth + padding;
+  const points = validData.map((item, index) => {
+    const x = validData.length === 1 ? 50 : (index / (validData.length - 1)) * chartWidth + padding;
     const y = padding + ((maxValue - item.value) / valueRange) * chartHeight;
-    return { x, y, value: item.value, label: item.label };
+    return { 
+      x: isNaN(x) ? padding : x, 
+      y: isNaN(y) ? padding : y, 
+      value: item.value, 
+      label: item.label 
+    };
   });
   
   // Create path

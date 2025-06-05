@@ -5,6 +5,7 @@ import { authApi } from '../features/auth/authApi';
 import { incidentApi } from '../features/incidents/incidentApi';
 import { ppeApi } from '../features/ppe/ppeApi';
 import { ppeManagementApi } from '../features/ppe/ppeManagementApi';
+import { hazardApi } from '../features/hazards/hazardApi';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [incidentApi.reducerPath]: incidentApi.reducer,
     [ppeApi.reducerPath]: ppeApi.reducer,
     [ppeManagementApi.reducerPath]: ppeManagementApi.reducer,
+    [hazardApi.reducerPath]: hazardApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -23,7 +25,8 @@ export const store = configureStore({
       authApi.middleware, 
       incidentApi.middleware, 
       ppeApi.middleware,
-      ppeManagementApi.middleware
+      ppeManagementApi.middleware,
+      hazardApi.middleware
     ),
 });
 
