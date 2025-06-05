@@ -28,8 +28,17 @@ import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser, cilInfo } from '@coreui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { useLoginMutation, useGetDemoUsersQuery } from '../../features/auth/authApi';
-import { loginStart, loginSuccess, loginFailure, selectAuth, clearError } from '../../features/auth/authSlice';
+import {
+  useLoginMutation,
+  useGetDemoUsersQuery,
+} from '../../features/auth/authApi';
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  selectAuth,
+  clearError,
+} from '../../features/auth/authSlice';
 import type { LoginRequest } from '../../types/auth';
 
 // Validation schema
@@ -49,7 +58,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAppSelector(selectAuth);
-  
+
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const { data: demoUsers } = useGetDemoUsersQuery();
   const [showDemoUsers, setShowDemoUsers] = useState(false);
@@ -106,7 +115,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center" style={{ backgroundColor: 'var(--harmoni-grey)' }}>
+    <div
+      className="bg-light min-vh-100 d-flex flex-row align-items-center"
+      style={{ backgroundColor: 'var(--harmoni-grey)' }}
+    >
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8} lg={6}>
@@ -116,28 +128,41 @@ const Login: React.FC = () => {
                   <CForm onSubmit={handleSubmit(onSubmit)}>
                     <div className="text-center mb-4">
                       <div className="mb-3">
-                        <img 
-                          src="/Harmoni_HSE_360_Logo.png" 
+                        <img
+                          src="/Harmoni_HSE_360_Logo.png"
                           alt="HarmoniHSE360 Logo"
-                          style={{ 
-                            width: '120px', 
+                          style={{
+                            width: '120px',
                             height: 'auto',
-                            maxHeight: '80px'
+                            maxHeight: '80px',
                           }}
                         />
                       </div>
-                      <p className="text-medium-emphasis" style={{ fontSize: '14px', marginTop: '16px' }}>
+                      <p
+                        className="text-medium-emphasis"
+                        style={{ fontSize: '14px', marginTop: '16px' }}
+                      >
                         Complete Safety. Seamless Harmony.
                       </p>
                     </div>
 
-                    <h3 className="mb-3" style={{ color: 'var(--harmoni-charcoal)', fontFamily: 'Poppins, sans-serif' }}>Welcome Back</h3>
-                    <p className="text-medium-emphasis mb-4">Sign in to your account to continue</p>
+                    <h3
+                      className="mb-3"
+                      style={{
+                        color: 'var(--harmoni-charcoal)',
+                        fontFamily: 'Poppins, sans-serif',
+                      }}
+                    >
+                      Welcome Back
+                    </h3>
+                    <p className="text-medium-emphasis mb-4">
+                      Sign in to your account to continue
+                    </p>
 
                     {auth.error && (
-                      <CAlert 
-                        color="danger" 
-                        dismissible 
+                      <CAlert
+                        color="danger"
+                        dismissible
                         onClose={handleClearError}
                         className="d-flex align-items-center"
                       >
@@ -160,7 +185,9 @@ const Login: React.FC = () => {
                       />
                     </CInputGroup>
                     {errors.email && (
-                      <div className="text-danger small mb-2">{errors.email.message}</div>
+                      <div className="text-danger small mb-2">
+                        {errors.email.message}
+                      </div>
                     )}
 
                     <CInputGroup className="mb-4">
@@ -177,7 +204,9 @@ const Login: React.FC = () => {
                       />
                     </CInputGroup>
                     {errors.password && (
-                      <div className="text-danger small mb-3">{errors.password.message}</div>
+                      <div className="text-danger small mb-3">
+                        {errors.password.message}
+                      </div>
                     )}
 
                     <CFormCheck
@@ -200,7 +229,7 @@ const Login: React.FC = () => {
                             borderRadius: '8px',
                             fontWeight: '500',
                             fontSize: '16px',
-                            color: 'white'
+                            color: 'white',
                           }}
                         >
                           {isLoginLoading ? (
@@ -214,7 +243,7 @@ const Login: React.FC = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton 
+                        <CButton
                           className="px-0"
                           onClick={() => setShowDemoUsers(!showDemoUsers)}
                           style={{
@@ -222,7 +251,7 @@ const Login: React.FC = () => {
                             textDecoration: 'none',
                             background: 'none',
                             border: 'none',
-                            fontSize: '14px'
+                            fontSize: '14px',
                           }}
                         >
                           Demo Users
@@ -233,56 +262,100 @@ const Login: React.FC = () => {
                 </CCardBody>
               </CCard>
 
-              <CCard 
-                className="text-white py-5" 
-                style={{ 
-                  width: '44%', 
-                  background: 'linear-gradient(135deg, var(--harmoni-teal) 0%, var(--harmoni-blue) 100%)',
-                  borderRadius: '12px'
+              <CCard
+                className="text-white py-5"
+                style={{
+                  width: '44%',
+                  background:
+                    'linear-gradient(135deg, var(--harmoni-teal) 0%, var(--harmoni-blue) 100%)',
+                  borderRadius: '12px',
                 }}
               >
                 <CCardBody className="text-center">
                   <div>
-                    <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '600' }}>Welcome to HarmoniHSE360</h2>
-                    <p className="mb-4" style={{ fontSize: '16px', opacity: '0.9' }}>
+                    <h2
+                      style={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: '600',
+                      }}
+                    >
+                      Welcome to HarmoniHSE360
+                    </h2>
+                    <p
+                      className="mb-4"
+                      style={{ fontSize: '16px', opacity: '0.9' }}
+                    >
                       360° Coverage for a Safer School Environment
                     </p>
                     <div className="mt-4">
                       <div className="feature-highlight mb-4">
                         <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div 
+                          <div
                             className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{ width: '40px', height: '40px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              backgroundColor: 'rgba(255,255,255,0.2)',
+                            }}
                           >
                             🛡️
                           </div>
-                          <h5 className="mb-0" style={{ fontFamily: 'Poppins, sans-serif' }}>Safety First</h5>
+                          <h5
+                            className="mb-0"
+                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                          >
+                            Safety First
+                          </h5>
                         </div>
-                        <p className="small" style={{ opacity: '0.8' }}>Complete incident reporting and management</p>
+                        <p className="small" style={{ opacity: '0.8' }}>
+                          Complete incident reporting and management
+                        </p>
                       </div>
                       <div className="feature-highlight mb-4">
                         <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div 
+                          <div
                             className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{ width: '40px', height: '40px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              backgroundColor: 'rgba(255,255,255,0.2)',
+                            }}
                           >
                             📊
                           </div>
-                          <h5 className="mb-0" style={{ fontFamily: 'Poppins, sans-serif' }}>Real-time Analytics</h5>
+                          <h5
+                            className="mb-0"
+                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                          >
+                            Real-time Analytics
+                          </h5>
                         </div>
-                        <p className="small" style={{ opacity: '0.8' }}>Live dashboards and reporting</p>
+                        <p className="small" style={{ opacity: '0.8' }}>
+                          Live dashboards and reporting
+                        </p>
                       </div>
                       <div className="feature-highlight">
                         <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div 
+                          <div
                             className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{ width: '40px', height: '40px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              backgroundColor: 'rgba(255,255,255,0.2)',
+                            }}
                           >
                             🌿
                           </div>
-                          <h5 className="mb-0" style={{ fontFamily: 'Poppins, sans-serif' }}>Environmental Care</h5>
+                          <h5
+                            className="mb-0"
+                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                          >
+                            Environmental Care
+                          </h5>
                         </div>
-                        <p className="small" style={{ opacity: '0.8' }}>Sustainable practices tracking</p>
+                        <p className="small" style={{ opacity: '0.8' }}>
+                          Sustainable practices tracking
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -296,8 +369,10 @@ const Login: React.FC = () => {
                 <CCol>
                   <CCallout color="info">
                     <h5>Demo User Accounts</h5>
-                    <p>Click on any user below to auto-fill login credentials:</p>
-                    
+                    <p>
+                      Click on any user below to auto-fill login credentials:
+                    </p>
+
                     <CAccordion>
                       {demoUsers.users.map((user: any, index: number) => (
                         <CAccordionItem key={index} itemKey={index}>
@@ -307,14 +382,22 @@ const Login: React.FC = () => {
                           <CAccordionBody>
                             <div className="d-flex justify-content-between align-items-center">
                               <div>
-                                <p className="mb-1"><strong>Email:</strong> {user.email}</p>
-                                <p className="mb-1"><strong>Password:</strong> {user.password}</p>
-                                <p className="mb-0"><strong>Role:</strong> {user.role}</p>
+                                <p className="mb-1">
+                                  <strong>Email:</strong> {user.email}
+                                </p>
+                                <p className="mb-1">
+                                  <strong>Password:</strong> {user.password}
+                                </p>
+                                <p className="mb-0">
+                                  <strong>Role:</strong> {user.role}
+                                </p>
                               </div>
                               <CButton
                                 color="primary"
                                 size="sm"
-                                onClick={() => fillDemoCredentials(user.email, user.password)}
+                                onClick={() =>
+                                  fillDemoCredentials(user.email, user.password)
+                                }
                               >
                                 Use Credentials
                               </CButton>

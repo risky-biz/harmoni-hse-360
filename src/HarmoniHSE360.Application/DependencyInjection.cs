@@ -3,6 +3,7 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using HarmoniHSE360.Application.Common.Behaviors;
+using HarmoniHSE360.Application.Common.Interfaces;
 
 namespace HarmoniHSE360.Application;
 
@@ -34,6 +35,10 @@ public static class DependencyInjection
 
     private static IServiceCollection AddIncidentModule(this IServiceCollection services)
     {
+        // Register cache services
+        services.AddSingleton<ICacheService, CacheService>();
+        services.AddScoped<IIncidentCacheService, IncidentCacheService>();
+
         // Register incident-specific services here
         return services;
     }

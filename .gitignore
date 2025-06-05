@@ -191,3 +191,33 @@ _Pvt_Extensions
 # TimescaleDB data
 timescale_data/
 redis_data/
+
+# File uploads and attachments
+src/HarmoniHSE360.Web/wwwroot/uploads/
+**/uploads/**
+**/attachments/**
+
+# Frontend build output
+**/dist/**
+**/build/**
+src/HarmoniHSE360.Web/ClientApp/dist/
+
+# Large files and media
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.mov
+*.avi
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.zip
+*.rar
+
+# Keep placeholder files but ignore actual uploads
+!**/uploads/.gitkeep
+!**/attachments/.gitkeep

@@ -1,0 +1,42 @@
+name: Test Fly.io Tokens
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-tokens:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Test Production Token
+        run: |
+          echo "Testing production token..."
+          fly auth whoami
+          echo "Production token works!"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Test Staging Token
+        run: |
+          echo "Testing staging token..."
+          fly auth whoami
+          echo "Staging token works!"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN_STAGING }}
+
+      - name: List Apps (Production)
+        run: |
+          echo "Apps accessible with production token:"
+          fly apps list
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: List Apps (Staging)
+        run: |
+          echo "Apps accessible with staging token:"
+          fly apps list
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN_STAGING }}

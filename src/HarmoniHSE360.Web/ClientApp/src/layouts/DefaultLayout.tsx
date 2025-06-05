@@ -5,7 +5,6 @@ import {
   CSidebar,
   CSidebarBrand,
   CSidebarNav,
-  CSidebarToggler,
   CNavItem,
   CNavGroup,
   CNavTitle,
@@ -23,26 +22,26 @@ import {
   CBadge,
   CFooter,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  cilBell,
-  cilMenu,
-  cilSpeedometer,
-  cilWarning,
-  cilTask,
-  cilFile,
-  cilClipboard,
-  cilShieldAlt,
-  cilChartLine,
-  cilSettings,
-  cilAccountLogout,
-  cilUser,
-} from '@coreui/icons';
+  faBell,
+  faBars,
+  faTachometerAlt,
+  faExclamationTriangle,
+  faFileAlt,
+  faShieldAlt,
+  faChartLine,
+  faCog,
+  faSignOutAlt,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
+import { CONTEXT_ICONS } from '../utils/iconMappings';
 
 import { useAppDispatch } from '../store/hooks';
 import { useAuth } from '../hooks/useAuth';
 import { useLogoutMutation } from '../features/auth/authApi';
 import { logout } from '../features/auth/authSlice';
+import ApplicationSettings from '../components/common/ApplicationSettings';
 
 // Navigation configuration
 const navigation = [
@@ -50,7 +49,7 @@ const navigation = [
     component: CNavItem,
     name: 'Dashboard',
     to: '/dashboard',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={faTachometerAlt} className="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -59,9 +58,16 @@ const navigation = [
   {
     component: CNavGroup,
     name: 'Incidents',
-    to: '/incidents',
-    icon: <CIcon icon={cilWarning} customClassName="nav-icon" />,
+    to: '#incidents',
+    icon: (
+      <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />
+    ),
     items: [
+      {
+        component: CNavItem,
+        name: 'Incident Dashboard',
+        to: '/incidents/dashboard',
+      },
       {
         component: CNavItem,
         name: 'Report Incident',
@@ -87,7 +93,7 @@ const navigation = [
     component: CNavGroup,
     name: 'Hazards',
     to: '/hazards',
-    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={faExclamationTriangle} className="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -105,7 +111,34 @@ const navigation = [
     component: CNavItem,
     name: 'Risk Register',
     to: '/risks/register',
-    icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={CONTEXT_ICONS.reports} className="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'PPE Management',
+  },
+  {
+    component: CNavGroup,
+    name: 'PPE',
+    to: '#ppe',
+    icon: <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'PPE Dashboard',
+        to: '/ppe/dashboard',
+      },
+      {
+        component: CNavItem,
+        name: 'PPE Inventory',
+        to: '/ppe',
+      },
+      {
+        component: CNavItem,
+        name: 'Add PPE Item',
+        to: '/ppe/create',
+      },
+    ],
   },
   {
     component: CNavTitle,
@@ -115,13 +148,13 @@ const navigation = [
     component: CNavItem,
     name: 'Audits',
     to: '/audits',
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Training',
     to: '/training',
-    icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -131,7 +164,7 @@ const navigation = [
     component: CNavItem,
     name: 'Reports',
     to: '/reports',
-    icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
+    icon: <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
   },
 ];
 
@@ -169,13 +202,23 @@ const DefaultLayout: React.FC = () => {
       >
         <CSidebarBrand className="d-none d-md-flex" href="/">
           <div className="sidebar-brand-full">
-            <strong>HarmoniHSE360</strong>
+            <img
+              src="/Harmoni_HSE_360_Logo.png"
+              alt="Harmoni HSE 360"
+              className="sidebar-logo"
+              height="32"
+            />
           </div>
           <div className="sidebar-brand-minimized">
-            <strong>HSE</strong>
+            <img
+              src="/Harmoni_HSE_360_Logo.png"
+              alt="HSE"
+              className="sidebar-logo-minimized"
+              height="24"
+            />
           </div>
         </CSidebarBrand>
-        
+
         <CSidebarNav>
           {navigation.map((item, index) => {
             if (item.component === CNavGroup) {
@@ -191,7 +234,11 @@ const DefaultLayout: React.FC = () => {
                 >
                   {item.items?.map((subItem, subIndex) => (
                     <CNavItem key={subIndex}>
-                      <NavLink to={subItem.to} className="nav-link">
+                      <NavLink
+                        to={subItem.to}
+                        className="nav-link"
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe'}
+                      >
                         {subItem.name}
                       </NavLink>
                     </CNavItem>
@@ -203,7 +250,7 @@ const DefaultLayout: React.FC = () => {
             } else if (item.to) {
               return (
                 <CNavItem key={index}>
-                  <NavLink to={item.to} className="nav-link">
+                  <NavLink to={item.to} className="nav-link" end>
                     {item.icon}
                     {item.name}
                   </NavLink>
@@ -214,31 +261,30 @@ const DefaultLayout: React.FC = () => {
             }
           })}
         </CSidebarNav>
-        
-        <CSidebarToggler
-          className="d-none d-lg-flex"
-          onClick={() => setSidebarShow(!sidebarShow)}
-        />
+
+        <ApplicationSettings />
       </CSidebar>
-      
-      <div className="wrapper d-flex flex-column min-vh-100">
+
+      <div
+        className={`wrapper d-flex flex-column min-vh-100 ${sidebarShow ? 'sidebar-visible' : 'sidebar-hidden'}`}
+      >
         <CHeader position="sticky" className="mb-4 p-0 ps-2">
           <CContainer fluid className="px-4">
             <CHeaderToggler
               onClick={() => setSidebarShow(!sidebarShow)}
               style={{ marginInlineStart: '-14px' }}
             >
-              <CIcon icon={cilMenu} size="lg" />
+              <FontAwesomeIcon icon={faBars} size="lg" />
             </CHeaderToggler>
-            
+
             <CHeaderBrand className="mx-auto d-md-none" href="/">
               HarmoniHSE360
             </CHeaderBrand>
-            
+
             <CHeaderNav className="ms-auto">
               <CDropdown variant="nav-item" placement="bottom-end">
                 <CDropdownToggle caret={false}>
-                  <CIcon icon={cilBell} size="lg" />
+                  <FontAwesomeIcon icon={faBell} size="lg" />
                   <CBadge
                     color="danger"
                     position="top-end"
@@ -259,7 +305,9 @@ const DefaultLayout: React.FC = () => {
                         <p className="mb-1 small text-medium-emphasis">
                           Safety incident in Chemistry Lab
                         </p>
-                        <small className="text-medium-emphasis">2 min ago</small>
+                        <small className="text-medium-emphasis">
+                          2 min ago
+                        </small>
                       </div>
                     </div>
                   </CDropdownItem>
@@ -269,14 +317,10 @@ const DefaultLayout: React.FC = () => {
                   </CDropdownItem>
                 </CDropdownMenu>
               </CDropdown>
-              
+
               <CDropdown variant="nav-item" placement="bottom-end">
                 <CDropdownToggle className="py-0" caret={false}>
-                  <CAvatar 
-                    size="md" 
-                    color="primary" 
-                    textColor="white"
-                  >
+                  <CAvatar size="md" color="primary" textColor="white">
                     {user.name.charAt(0).toUpperCase()}
                   </CAvatar>
                 </CDropdownToggle>
@@ -294,16 +338,16 @@ const DefaultLayout: React.FC = () => {
                   </CDropdownItem>
                   <CDropdownDivider />
                   <CDropdownItem onClick={() => navigate('/profile')}>
-                    <CIcon icon={cilUser} className="me-2" />
+                    <FontAwesomeIcon icon={faUser} className="me-2" />
                     Profile
                   </CDropdownItem>
                   <CDropdownItem onClick={() => navigate('/settings')}>
-                    <CIcon icon={cilSettings} className="me-2" />
+                    <FontAwesomeIcon icon={faCog} className="me-2" />
                     Settings
                   </CDropdownItem>
                   <CDropdownDivider />
                   <CDropdownItem onClick={handleLogout}>
-                    <CIcon icon={cilAccountLogout} className="me-2" />
+                    <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
                     Logout
                   </CDropdownItem>
                 </CDropdownMenu>
@@ -311,23 +355,31 @@ const DefaultLayout: React.FC = () => {
             </CHeaderNav>
           </CContainer>
         </CHeader>
-        
+
         <div className="body flex-grow-1 px-4">
           <CContainer lg>
             <Outlet />
           </CContainer>
         </div>
-        
+
         <CFooter>
           <div>
-            <a href="https://bsj.sch.id" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://bsj.sch.id"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               British School Jakarta
             </a>
             <span className="ms-1">&copy; 2025 HarmoniHSE360</span>
           </div>
           <div className="ms-auto">
             <span className="me-1">Powered by</span>
-            <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://coreui.io/react"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               CoreUI React
             </a>
           </div>

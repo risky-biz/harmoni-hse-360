@@ -13,11 +13,11 @@ export const useAuth = () => {
   };
 
   const hasAnyRole = (roles: string[]): boolean => {
-    return roles.some(role => hasRole(role));
+    return roles.some((role) => hasRole(role));
   };
 
   const hasAnyPermission = (permissions: string[]): boolean => {
-    return permissions.some(permission => hasPermission(permission));
+    return permissions.some((permission) => hasPermission(permission));
   };
 
   return {

@@ -7,7 +7,7 @@ public class GeoLocation : ValueObject
     public double Latitude { get; }
     public double Longitude { get; }
 
-    public GeoLocation(double latitude, double longitude)
+    private GeoLocation(double latitude, double longitude)
     {
         if (latitude < -90 || latitude > 90)
             throw new ArgumentOutOfRangeException(nameof(latitude), "Latitude must be between -90 and 90 degrees");
@@ -17,6 +17,11 @@ public class GeoLocation : ValueObject
 
         Latitude = latitude;
         Longitude = longitude;
+    }
+
+    public static GeoLocation Create(double latitude, double longitude)
+    {
+        return new GeoLocation(latitude, longitude);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

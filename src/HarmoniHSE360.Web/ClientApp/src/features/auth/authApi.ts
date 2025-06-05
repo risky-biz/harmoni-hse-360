@@ -41,7 +41,10 @@ export const authApi = createApi({
       }),
       providesTags: ['Auth'],
     }),
-    refreshToken: builder.mutation<LoginResponse, { token: string; refreshToken: string }>({
+    refreshToken: builder.mutation<
+      LoginResponse,
+      { token: string; refreshToken: string }
+    >({
       query: (tokens) => ({
         url: 'refresh',
         method: 'POST',

@@ -1,0 +1,46 @@
+# HarmoniHSE360 Code Owners
+# This file defines who must review changes to specific parts of the codebase
+
+# Global owners - these users will be requested for review on all PRs
+* @risky-biz
+
+# Backend/API code
+src/HarmoniHSE360.Application/ @risky-biz
+src/HarmoniHSE360.Domain/ @risky-biz
+src/HarmoniHSE360.Infrastructure/ @risky-biz
+src/HarmoniHSE360.Web/Controllers/ @risky-biz
+src/HarmoniHSE360.Web/Services/ @risky-biz
+
+# Frontend code
+src/HarmoniHSE360.Web/ClientApp/ @risky-biz
+
+# Database migrations
+src/HarmoniHSE360.Infrastructure/Migrations/ @risky-biz
+
+# Configuration files
+*.json @risky-biz
+*.yml @risky-biz
+*.yaml @risky-biz
+*.toml @risky-biz
+
+# Docker and deployment
+Dockerfile* @risky-biz
+docker-compose* @risky-biz
+fly.toml @risky-biz
+fly.*.toml @risky-biz
+
+# CI/CD workflows
+.github/ @risky-biz
+
+# Documentation
+docs/ @risky-biz
+README.md @risky-biz
+
+# Security-sensitive files
+.github/workflows/security-scan.yml @risky-biz
+src/HarmoniHSE360.Web/appsettings*.json @risky-biz
+
+# Package management
+package*.json @risky-biz
+*.csproj @risky-biz
+*.sln @risky-biz
