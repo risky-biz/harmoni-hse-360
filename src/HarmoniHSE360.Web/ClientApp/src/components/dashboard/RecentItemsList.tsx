@@ -85,7 +85,18 @@ const RecentItemsList: React.FC<RecentItemsListProps> = ({
                     </div>
                   )}
                   <div className="text-muted small mt-1">
-                    {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
+                    {item.timestamp ? (
+                      (() => {
+                        try {
+                          const date = new Date(item.timestamp);
+                          return isNaN(date.getTime()) 
+                            ? 'Unknown date' 
+                            : formatDistanceToNow(date, { addSuffix: true });
+                        } catch {
+                          return 'Unknown date';
+                        }
+                      })()
+                    ) : 'Unknown date'}
                   </div>
                 </div>
                 <CBadge color={item.statusColor} className="ms-2">

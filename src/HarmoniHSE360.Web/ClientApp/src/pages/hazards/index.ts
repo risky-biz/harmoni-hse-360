@@ -1,0 +1,11 @@
+export { default as CreateHazard } from './CreateHazard';
+export { default as EditHazard } from './EditHazard';
+export { default as HazardAnalytics } from './HazardAnalytics';
+export { default as HazardDashboard } from './HazardDashboard';
+export { default as HazardDetail } from './HazardDetail';
+export { default as HazardList } from './HazardList';
+export { default as HazardMapping } from './HazardMapping';
+export { default as MitigationActions } from './MitigationActions';
+export { default as MobileHazardReport } from './MobileHazardReport';
+export { default as MyHazards } from './MyHazards';
+export { default as RiskAssessments } from './RiskAssessments';

@@ -8,23 +8,32 @@ This directory contains comprehensive deployment documentation for the HarmoniHS
 
 | Document | Description | Audience |
 |----------|-------------|----------|
-| [Fly.io Deployment Guide](./Fly_io_Deployment_Guide.md) | Complete step-by-step manual deployment to Fly.io | DevOps, Developers |
-| [GitHub Actions CI/CD Guide](./GitHub_Actions_CI_CD_Guide.md) | **Automated CI/CD pipeline implementation with workflow fixes** | **DevOps, Developers** |
-| [Comprehensive Troubleshooting Guide](./Troubleshooting_Guide.md) | **All deployment and CI/CD issues with monitoring procedures** | **All Users** |
-| [Fly.io Token Documentation Summary](./Flyio_Token_Documentation_Summary.md) | Complete overview of all token-related documentation | All Users |
-| [Quick Reference](./Quick_Reference.md) | Essential commands and troubleshooting | All Users |
-| [Demo Preparation Guide](./Demo_Preparation_Guide.md) | Client demo setup and scenarios | Sales, Management |
-| [Deployment Checklist](./Deployment_Checklist.md) | Comprehensive verification checklist | DevOps, QA |
+| **[Infrastructure Overview](./Infrastructure_Overview.md)** | **Complete system architecture and deployment strategy** | **DevOps Engineers, Architects** |
+| **[Docker Configuration Guide](./Docker_Configuration_Guide.md)** | **Comprehensive Docker setup and containerization** | **Developers, DevOps Engineers** |
+| **[Manual Deployment Guide](./Manual_Deployment_Guide.md)** | **Step-by-step manual deployment process** | **DevOps Engineers, Developers** |
+| **[Automated Deployment Guide](./Automated_Deployment_Guide.md)** | **Complete CI/CD pipeline setup and configuration** | **DevOps Engineers** |
+| **[Environment Configuration](./Environment_Configuration.md)** | **Environment variables and secrets management** | **DevOps Engineers, Developers** |
+| **[Security Best Practices](./Security_Best_Practices.md)** | **Security considerations and compliance guidelines** | **Security Engineers, DevOps** |
+| [Fly.io Deployment Guide](./Fly_io_Deployment_Guide.md) | Legacy manual deployment guide | DevOps, Developers |
+| [GitHub Actions CI/CD Guide](./GitHub_Actions_CI_CD_Guide.md) | Legacy CI/CD pipeline documentation | DevOps, Developers |
+| [Troubleshooting Guide](./Troubleshooting_Guide.md) | Common issues and solutions | All Users |
+| [Quick Reference](./Quick_Reference.md) | Essential commands and shortcuts | All Users |
+| [Deployment Checklist](./Deployment_Checklist.md) | Pre-deployment verification checklist | DevOps, QA |
 
-## 🚀 Quick Start
+## 🚀 Quick Start Options
 
-### Prerequisites
-- Fly.io account with payment method
-- Docker Desktop installed
-- .NET 8 SDK installed
-- Node.js 20+ installed
+### 1. Automated CI/CD Deployment (Recommended)
+```bash
+# Setup GitHub Actions pipeline
+# 1. Configure FLY_API_TOKEN secret in GitHub repository
+# 2. Push to develop branch → deploys to staging automatically
+# 3. Push to main branch → deploys to production with approval
 
-### Automated Deployment (Manual)
+# Manual trigger via GitHub CLI
+gh workflow run deploy.yml --ref main -f environment=production
+```
+
+### 2. One-Command Script Deployment
 ```bash
 # Linux/macOS
 chmod +x scripts/deploy-flyio.sh
@@ -34,42 +43,53 @@ chmod +x scripts/deploy-flyio.sh
 .\scripts\deploy-flyio.ps1
 ```
 
-### CI/CD Automated Deployment
-```bash
-# Set up GitHub Actions CI/CD pipeline
-# 1. Configure repository secrets
-# 2. Push to develop branch (deploys to staging)
-# 3. Push to main branch (deploys to production)
+### 3. Manual Step-by-Step Deployment
+Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete control.
 
-# Manual trigger
-gh workflow run deploy.yml --ref main
-```
+### Prerequisites
+- [Fly.io CLI](https://fly.io/docs/hands-on/install-flyctl/) with authenticated account
+- [Docker](https://docs.docker.com/get-docker/) (20.10+)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js](https://nodejs.org/) (20.x LTS)
+- Payment method configured in Fly.io account
 
-### Manual Deployment
-Follow the [Fly.io Deployment Guide](./Fly_io_Deployment_Guide.md) for detailed instructions.
-
-## 🏗️ Architecture Overview
+## 🏗️ Infrastructure Architecture
 
 ### Technology Stack
-- **Backend:** .NET 8 ASP.NET Core
-- **Frontend:** React 18 + TypeScript
-- **Database:** PostgreSQL 15+
-- **Cache:** Redis 7.2
-- **Real-time:** SignalR
-- **Containerization:** Docker with Alpine Linux
+- **Backend:** .NET 8 ASP.NET Core Web API
+- **Frontend:** React 18 + TypeScript SPA
+- **Database:** PostgreSQL 15+ with Entity Framework Core
+- **Cache:** Redis 7.2 for session and data caching
+- **Real-time:** SignalR for live notifications
+- **Containerization:** Docker with Alpine Linux (multi-stage builds)
+- **Deployment:** Fly.io with global edge deployment
+- **CI/CD:** GitHub Actions with automated testing and security scanning
 
-### Deployment Architecture
+### Deployment Environments
+
+| Environment | URL | Branch | Auto-Deploy | Resources |
+|-------------|-----|--------|-------------|-----------|
+| **Staging** | `harmonihse360-staging.fly.dev` | `develop` | ✅ | 1 CPU, 512MB |
+| **Production** | `harmonihse360-app.fly.dev` | `main` | ✅ (with approval) | 1 CPU, 1GB |
+
+### System Architecture
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Fly.io App    │    │  PostgreSQL DB  │    │   Redis Cache   │
-│  (Container)    │◄──►│   (Fly.io)      │    │   (Upstash)     │
-│                 │    │                 │    │                 │
+│   Fly.io CDN    │    │  GitHub Actions │    │   Monitoring    │
+│ (Global Edge)   │    │    (CI/CD)      │    │   & Logging     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ HarmoniHSE360   │    │  PostgreSQL DB  │    │   Redis Cache   │
+│   Container     │◄──►│   (Fly.io)      │    │   (Fly.io)      │
+│ (.NET + React)  │    │                 │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │
          ▼
 ┌─────────────────┐
 │ Persistent Vol  │
-│   (Uploads)     │
+│ (File Uploads)  │
 └─────────────────┘
 ```
 

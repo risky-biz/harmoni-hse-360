@@ -205,6 +205,10 @@ class SignalRService {
     return this.hubConnection?.state || null;
   }
 
+  getConnection(): signalR.HubConnection | null {
+    return this.hubConnection;
+  }
+
   async joinLocationGroup(location: string) {
     if (
       this.hubConnection &&

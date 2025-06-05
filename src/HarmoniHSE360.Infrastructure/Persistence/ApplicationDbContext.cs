@@ -40,6 +40,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PPERequest> PPERequests => Set<PPERequest>();
     public DbSet<PPERequestItem> PPERequestItems => Set<PPERequestItem>();
     public DbSet<PPEComplianceRequirement> PPEComplianceRequirements => Set<PPEComplianceRequirement>();
+    
+    // Hazard Management
+    public DbSet<Hazard> Hazards => Set<Hazard>();
+    public DbSet<HazardAttachment> HazardAttachments => Set<HazardAttachment>();
+    public DbSet<RiskAssessment> RiskAssessments => Set<RiskAssessment>();
+    public DbSet<HazardMitigationAction> HazardMitigationActions => Set<HazardMitigationAction>();
+    public DbSet<HazardReassessment> HazardReassessments => Set<HazardReassessment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
