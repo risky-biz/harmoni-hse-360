@@ -17,17 +17,22 @@ interface ProjectSettingsProps {
   className?: string;
 }
 
-const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => {
+const ProjectSettings: React.FC<ProjectSettingsProps> = ({
+  className = '',
+}) => {
   const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
   // Check if user has system configuration permissions
-  const hasSystemAccess = user?.roles?.some(role => 
-    role === 'SuperAdmin' || role === 'Developer'
-  ) || user?.permissions?.some(permission =>
-    permission === 'system.configure' || permission === 'system.modules'
-  );
+  const hasSystemAccess =
+    user?.roles?.some(
+      (role) => role === 'SuperAdmin' || role === 'Developer'
+    ) ||
+    user?.permissions?.some(
+      (permission) =>
+        permission === 'system.configure' || permission === 'system.modules'
+    );
 
   // Don't render if user doesn't have access
   if (!hasSystemAccess) {
@@ -66,7 +71,7 @@ const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => 
       icon: 'faFileAlt',
     },
   ];
-  
+
   const handleModuleClick = (path: string) => {
     setVisible(false);
     navigate(path);
@@ -74,7 +79,7 @@ const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => 
 
   return (
     <div className={`project-settings ${className}`}>
-      <CDropdown 
+      <CDropdown
         placement="top-start"
         visible={visible}
         onShow={() => setVisible(true)}
@@ -90,21 +95,21 @@ const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => 
             <FontAwesomeIcon icon={faCog} className="me-2" />
             <span>Project Settings</span>
           </div>
-          <FontAwesomeIcon 
-            icon={faChevronUp} 
+          <FontAwesomeIcon
+            icon={faChevronUp}
             className={`transition-transform ${visible ? 'rotate-180' : ''}`}
             style={{ fontSize: '12px' }}
           />
         </CDropdownToggle>
-        
+
         <CDropdownMenu className="project-settings-menu">
           <CDropdownHeader>
             <strong>System Modules</strong>
           </CDropdownHeader>
           <CDropdownDivider />
-          
+
           {modules.map((module, index) => (
-            <CDropdownItem 
+            <CDropdownItem
               key={index}
               onClick={() => handleModuleClick(module.path)}
               className="project-settings-item"
@@ -115,9 +120,9 @@ const ProjectSettings: React.FC<ProjectSettingsProps> = ({ className = '' }) => 
               </div>
             </CDropdownItem>
           ))}
-          
+
           <CDropdownDivider />
-          
+
           <CDropdownItem className="text-muted small">
             Available to: {user?.roles?.join(', ')}
           </CDropdownItem>

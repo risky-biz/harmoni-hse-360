@@ -70,7 +70,8 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
   allowEdit = true,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [editingAction, setEditingAction] = useState<CorrectiveActionDto | null>(null);
+  const [editingAction, setEditingAction] =
+    useState<CorrectiveActionDto | null>(null);
   const [formData, setFormData] = useState<CorrectiveActionFormData>({
     description: '',
     assignedToDepartment: '',
@@ -82,17 +83,20 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
   });
   const [searchTerm] = useState('');
 
-  const { 
-    data: correctiveActions = [], 
-    isLoading, 
-    error 
+  const {
+    data: correctiveActions = [],
+    isLoading,
+    error,
   } = useGetCorrectiveActionsQuery(incidentId);
 
   const { data: availableUsers = [] } = useGetAvailableUsersQuery(searchTerm);
 
-  const [createAction, { isLoading: isCreating }] = useCreateCorrectiveActionMutation();
-  const [updateAction, { isLoading: isUpdating }] = useUpdateCorrectiveActionMutation();
-  const [deleteAction, { isLoading: isDeleting }] = useDeleteCorrectiveActionMutation();
+  const [createAction, { isLoading: isCreating }] =
+    useCreateCorrectiveActionMutation();
+  const [updateAction, { isLoading: isUpdating }] =
+    useUpdateCorrectiveActionMutation();
+  const [deleteAction, { isLoading: isDeleting }] =
+    useDeleteCorrectiveActionMutation();
 
   const handleOpenModal = (action?: CorrectiveActionDto) => {
     if (action) {
@@ -128,7 +132,7 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (editingAction) {
         const updateData: UpdateCorrectiveActionRequest = {
@@ -140,7 +144,7 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
           status: formData.status,
           completionNotes: formData.completionNotes,
         };
-        
+
         await updateAction({
           incidentId,
           actionId: editingAction.id,
@@ -154,13 +158,13 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
           dueDate: formData.dueDate,
           priority: formData.priority,
         };
-        
+
         await createAction({
           incidentId,
           data: createData,
         }).unwrap();
       }
-      
+
       handleCloseModal();
     } catch (error) {
       console.error('Failed to save corrective action:', error);
@@ -178,7 +182,6 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
       console.error('Failed to delete corrective action:', error);
     }
   };
-
 
   const isOverdue = (dueDate: string, status: string) => {
     return status !== 'Completed' && new Date(dueDate) < new Date();
@@ -220,46 +223,66 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
             </CButton>
           )}
         </CCardHeader>
-        
+
         <CCardBody>
           {correctiveActions.length === 0 ? (
             <div className="text-center text-muted py-3">
-              <FontAwesomeIcon icon={CONTEXT_ICONS.incident} size="2x" className="mb-2 opacity-50" />
+              <FontAwesomeIcon
+                icon={CONTEXT_ICONS.incident}
+                size="2x"
+                className="mb-2 opacity-50"
+              />
               <p className="mb-0">No corrective actions defined yet</p>
               {allowEdit && (
-                <p className="small">Add corrective actions to track follow-up tasks</p>
+                <p className="small">
+                  Add corrective actions to track follow-up tasks
+                </p>
               )}
             </div>
           ) : (
             <CListGroup flush>
               {correctiveActions.map((action) => (
-                <CListGroupItem key={action.id} className="d-flex justify-content-between align-items-start">
+                <CListGroupItem
+                  key={action.id}
+                  className="d-flex justify-content-between align-items-start"
+                >
                   <div className="flex-grow-1">
                     <div className="d-flex align-items-center mb-2">
-                      <CBadge 
-                        color={STATUS_CONFIG[action.status]?.color || 'secondary'} 
+                      <CBadge
+                        color={
+                          STATUS_CONFIG[action.status]?.color || 'secondary'
+                        }
                         className="me-2"
                       >
                         {STATUS_CONFIG[action.status]?.label || action.status}
                       </CBadge>
-                      <CBadge 
-                        color={PRIORITY_CONFIG[action.priority]?.color || 'secondary'}
+                      <CBadge
+                        color={
+                          PRIORITY_CONFIG[action.priority]?.color || 'secondary'
+                        }
                         className="me-2"
                       >
-                        {PRIORITY_CONFIG[action.priority]?.label || action.priority}
+                        {PRIORITY_CONFIG[action.priority]?.label ||
+                          action.priority}
                       </CBadge>
                       {isOverdue(action.dueDate, action.status) && (
                         <CBadge color="danger">OVERDUE</CBadge>
                       )}
                     </div>
-                    
+
                     <h6 className="mb-1">{action.description}</h6>
-                    
+
                     <div className="text-muted small">
-                      <div>Assigned to: {action.assignedTo?.fullName || action.assignedToDepartment}</div>
+                      <div>
+                        Assigned to:{' '}
+                        {action.assignedTo?.fullName ||
+                          action.assignedToDepartment}
+                      </div>
                       <div>Due: {formatDateTime(action.dueDate)}</div>
                       {action.completedDate && (
-                        <div>Completed: {formatDateTime(action.completedDate)}</div>
+                        <div>
+                          Completed: {formatDateTime(action.completedDate)}
+                        </div>
                       )}
                       {action.completionNotes && (
                         <div className="mt-1">
@@ -268,7 +291,7 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                       )}
                     </div>
                   </div>
-                  
+
                   {allowEdit && (
                     <div className="d-flex gap-2">
                       <CButton
@@ -305,7 +328,7 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
             {editingAction ? 'Edit Corrective Action' : 'Add Corrective Action'}
           </CModalTitle>
         </CModalHeader>
-        
+
         <CForm onSubmit={handleSubmit}>
           <CModalBody>
             <CRow>
@@ -315,7 +338,9 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                   <CFormTextarea
                     rows={3}
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Describe the corrective action required..."
                     required
                   />
@@ -329,22 +354,31 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                   <CFormLabel>Assigned Department *</CFormLabel>
                   <CFormInput
                     value={formData.assignedToDepartment}
-                    onChange={(e) => setFormData({ ...formData, assignedToDepartment: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignedToDepartment: e.target.value,
+                      })
+                    }
                     placeholder="e.g., Safety Department"
                     required
                   />
                 </div>
               </CCol>
-              
+
               <CCol md={6}>
                 <div className="mb-3">
                   <CFormLabel>Assigned Person (Optional)</CFormLabel>
                   <CFormSelect
                     value={formData.assignedToId || ''}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      assignedToId: e.target.value ? Number(e.target.value) : undefined 
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignedToId: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
                   >
                     <option value="">Select a person...</option>
                     {availableUsers.map((user) => (
@@ -364,22 +398,30 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                   <CFormInput
                     type="date"
                     value={formData.dueDate}
-                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dueDate: e.target.value })
+                    }
                     min={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </div>
               </CCol>
-              
+
               <CCol md={4}>
                 <div className="mb-3">
                   <CFormLabel>Priority *</CFormLabel>
                   <CFormSelect
                     value={formData.priority}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      priority: e.target.value as 'Low' | 'Medium' | 'High' | 'Critical'
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        priority: e.target.value as
+                          | 'Low'
+                          | 'Medium'
+                          | 'High'
+                          | 'Critical',
+                      })
+                    }
                     required
                   >
                     <option value="Low">Low</option>
@@ -389,17 +431,23 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                   </CFormSelect>
                 </div>
               </CCol>
-              
+
               {editingAction && (
                 <CCol md={4}>
                   <div className="mb-3">
                     <CFormLabel>Status</CFormLabel>
                     <CFormSelect
                       value={formData.status}
-                      onChange={(e) => setFormData({ 
-                        ...formData, 
-                        status: e.target.value as 'Pending' | 'InProgress' | 'Completed' | 'Overdue'
-                      })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          status: e.target.value as
+                            | 'Pending'
+                            | 'InProgress'
+                            | 'Completed'
+                            | 'Overdue',
+                        })
+                      }
                     >
                       <option value="Pending">Pending</option>
                       <option value="InProgress">In Progress</option>
@@ -418,7 +466,12 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
                     <CFormTextarea
                       rows={3}
                       value={formData.completionNotes}
-                      onChange={(e) => setFormData({ ...formData, completionNotes: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          completionNotes: e.target.value,
+                        })
+                      }
                       placeholder="Describe how the action was completed..."
                     />
                   </div>
@@ -426,13 +479,13 @@ const CorrectiveActionsManager: React.FC<CorrectiveActionsManagerProps> = ({
               </CRow>
             )}
           </CModalBody>
-          
+
           <CModalFooter>
             <CButton color="secondary" onClick={handleCloseModal}>
               Cancel
             </CButton>
-            <CButton 
-              color="primary" 
+            <CButton
+              color="primary"
               type="submit"
               disabled={isCreating || isUpdating}
             >

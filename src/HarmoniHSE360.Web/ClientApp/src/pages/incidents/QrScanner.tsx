@@ -12,7 +12,12 @@ import {
   CBadge,
 } from '@coreui/react';
 import { Icon } from '../../components/common/Icon';
-import { faQrcode, faCamera, faArrowLeft, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
+import {
+  faQrcode,
+  faCamera,
+  faArrowLeft,
+  faLocationArrow,
+} from '@fortawesome/free-solid-svg-icons';
 
 const QrScanner: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +33,7 @@ const QrScanner: React.FC = () => {
     return () => {
       // Cleanup camera stream when component unmounts
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [stream]);
@@ -42,8 +47,8 @@ const QrScanner: React.FC = () => {
         video: {
           facingMode: 'environment', // Use back camera
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
+          height: { ideal: 720 },
+        },
       });
 
       setStream(mediaStream);
@@ -51,14 +56,16 @@ const QrScanner: React.FC = () => {
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         videoRef.current.play();
-        
+
         // Start scanning for QR codes
         videoRef.current.onloadedmetadata = () => {
           startQrDetection();
         };
       }
     } catch (err) {
-      setError('Failed to access camera. Please ensure you have granted camera permissions.');
+      setError(
+        'Failed to access camera. Please ensure you have granted camera permissions.'
+      );
       setIsScanning(false);
       console.error('Camera error:', err);
     }
@@ -66,7 +73,7 @@ const QrScanner: React.FC = () => {
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
     setIsScanning(false);
@@ -95,7 +102,7 @@ const QrScanner: React.FC = () => {
 
       // Get image data for QR code detection
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      
+
       // In a real implementation, you would use a QR code detection library here
       // For this demo, we'll simulate QR code detection
       simulateQrDetection(imageData);
@@ -112,19 +119,20 @@ const QrScanner: React.FC = () => {
     // This is a placeholder for actual QR code detection
     // In production, you would use a library like qr-scanner or jsQR
     // _imageData would be processed here to detect QR codes
-    
+
     // Simulate finding a QR code after some time
     const mockDetection = Math.random() > 0.98; // 2% chance per frame
-    
+
     if (mockDetection && !detectedCode) {
-      const mockQrData = "https://harmonihse360.app/report/qr/loc_building_a_floor_2";
+      const mockQrData =
+        'https://harmonihse360.app/report/qr/loc_building_a_floor_2';
       handleQrDetected(mockQrData);
     }
   };
 
   const handleQrDetected = (qrData: string) => {
     setDetectedCode(qrData);
-    
+
     try {
       // Parse QR code URL to extract location information
       const url = new URL(qrData);
@@ -133,16 +141,20 @@ const QrScanner: React.FC = () => {
 
       if (qrCodeId && qrCodeId.startsWith('loc_')) {
         setSuccess(`QR Code detected! Redirecting to incident report...`);
-        
+
         // Stop camera
         stopCamera();
-        
+
         // Navigate to quick report with QR code data
         setTimeout(() => {
-          navigate(`/incidents/quick-report?qr=${qrCodeId}&location=${extractLocationFromQrId(qrCodeId)}`);
+          navigate(
+            `/incidents/quick-report?qr=${qrCodeId}&location=${extractLocationFromQrId(qrCodeId)}`
+          );
         }, 1500);
       } else {
-        setError('Invalid QR code. Please scan a valid incident reporting QR code.');
+        setError(
+          'Invalid QR code. Please scan a valid incident reporting QR code.'
+        );
         setDetectedCode(null);
       }
     } catch (err) {
@@ -154,9 +166,9 @@ const QrScanner: React.FC = () => {
   const extractLocationFromQrId = (qrId: string): string => {
     // Convert QR ID like "loc_building_a_floor_2" to readable location
     const parts = qrId.replace('loc_', '').split('_');
-    return parts.map(part => 
-      part.charAt(0).toUpperCase() + part.slice(1)
-    ).join(' ');
+    return parts
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
   };
 
   const handleManualEntry = () => {
@@ -170,7 +182,9 @@ const QrScanner: React.FC = () => {
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
               <h4 className="mb-0">QR Code Scanner</h4>
-              <small className="text-muted">Scan location QR codes for quick reporting</small>
+              <small className="text-muted">
+                Scan location QR codes for quick reporting
+              </small>
             </div>
             <CButton
               color="light"
@@ -201,7 +215,8 @@ const QrScanner: React.FC = () => {
                   <Icon icon={faQrcode} size="4x" className="text-muted mb-3" />
                   <h5>Ready to Scan</h5>
                   <p className="text-muted">
-                    Position your camera over a QR code to automatically start incident reporting for that location.
+                    Position your camera over a QR code to automatically start
+                    incident reporting for that location.
                   </p>
                 </div>
               ) : (
@@ -213,24 +228,25 @@ const QrScanner: React.FC = () => {
                     muted
                     playsInline
                   />
-                  <canvas
-                    ref={canvasRef}
-                    style={{ display: 'none' }}
-                  />
-                  
+                  <canvas ref={canvasRef} style={{ display: 'none' }} />
+
                   {/* Scanning overlay */}
                   <div className="position-absolute top-50 start-50 translate-middle">
-                    <div 
+                    <div
                       className="border border-primary border-3 rounded"
-                      style={{ 
-                        width: '200px', 
+                      style={{
+                        width: '200px',
                         height: '200px',
                         background: 'rgba(255,255,255,0.1)',
-                        animation: 'pulse 2s infinite'
+                        animation: 'pulse 2s infinite',
                       }}
                     >
                       <div className="d-flex align-items-center justify-content-center h-100">
-                        <Icon icon={faQrcode} size="2x" className="text-primary" />
+                        <Icon
+                          icon={faQrcode}
+                          size="2x"
+                          className="text-primary"
+                        />
                       </div>
                     </div>
                   </div>
@@ -251,15 +267,11 @@ const QrScanner: React.FC = () => {
             <div className="d-grid gap-2">
               {!isScanning ? (
                 <>
-                  <CButton
-                    color="primary"
-                    size="lg"
-                    onClick={startCamera}
-                  >
+                  <CButton color="primary" size="lg" onClick={startCamera}>
                     <Icon icon={faCamera} className="me-2" />
                     Start Camera
                   </CButton>
-                  
+
                   <CButton
                     color="secondary"
                     variant="outline"
@@ -290,11 +302,17 @@ const QrScanner: React.FC = () => {
             {/* Instructions */}
             <div className="mt-4 text-center">
               <small className="text-muted">
-                <strong>How to use:</strong><br />
-                1. Click "Start Camera" to activate your device's camera<br />
-                2. Point your camera at a QR code posted at incident locations<br />
-                3. The app will automatically detect the code and pre-fill location details<br />
-                4. Complete your incident report with location information already filled in
+                <strong>How to use:</strong>
+                <br />
+                1. Click "Start Camera" to activate your device's camera
+                <br />
+                2. Point your camera at a QR code posted at incident locations
+                <br />
+                3. The app will automatically detect the code and pre-fill
+                location details
+                <br />
+                4. Complete your incident report with location information
+                already filled in
               </small>
             </div>
           </CCardBody>

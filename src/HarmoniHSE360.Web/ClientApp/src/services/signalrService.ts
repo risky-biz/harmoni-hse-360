@@ -11,7 +11,10 @@ class SignalRService {
 
   async startConnection(token: string) {
     // Don't attempt connection if already connected or connecting
-    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+    if (
+      this.hubConnection &&
+      this.hubConnection.state === signalR.HubConnectionState.Connected
+    ) {
       return;
     }
 
@@ -30,8 +33,10 @@ class SignalRService {
       this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl('/hubs/incidents', {
           accessTokenFactory: () => token,
-          transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents,
-          skipNegotiation: false
+          transport:
+            signalR.HttpTransportType.WebSockets |
+            signalR.HttpTransportType.ServerSentEvents,
+          skipNegotiation: false,
         })
         .withAutomaticReconnect({
           nextRetryDelayInMilliseconds: (retryContext) => {
@@ -40,7 +45,7 @@ class SignalRService {
               return Math.pow(2, retryContext.previousRetryCount) * 2000;
             }
             return 30000;
-          }
+          },
         })
         .configureLogging(signalR.LogLevel.Warning) // Reduce logging to warnings only
         .build();
@@ -53,19 +58,22 @@ class SignalRService {
       console.log('SignalR Connection State:', this.hubConnection.state);
       this.reconnectAttempts = 0;
       this.isConnecting = false;
-      
+
       // Test if we can send a message (optional)
       try {
         await this.hubConnection.invoke('JoinGroup', 'incident-updates');
         console.log('SignalR: Successfully joined incident-updates group');
       } catch (err) {
-        console.warn('SignalR: Failed to join group, but connection is still active:', err);
+        console.warn(
+          'SignalR: Failed to join group, but connection is still active:',
+          err
+        );
       }
     } catch (err) {
       console.warn('SignalR Connection failed:', err);
       this.isConnecting = false;
       this.hubConnection = null;
-      
+
       // Don't throw the error - just log it and continue
       // This prevents SignalR connection issues from blocking incident creation
       this.scheduleReconnect(token);
@@ -74,15 +82,24 @@ class SignalRService {
 
   private scheduleReconnect(token: string) {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.warn('SignalR: Maximum reconnection attempts reached. Real-time updates disabled.');
+      console.warn(
+        'SignalR: Maximum reconnection attempts reached. Real-time updates disabled.'
+      );
       return;
     }
 
     this.reconnectAttempts++;
-    console.log(`SignalR: Scheduling reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${this.reconnectInterval}ms`);
-    
+    console.log(
+      `SignalR: Scheduling reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${this.reconnectInterval}ms`
+    );
+
     setTimeout(() => {
-      if ((!this.hubConnection || this.hubConnection.state === signalR.HubConnectionState.Disconnected) && !this.isConnecting) {
+      if (
+        (!this.hubConnection ||
+          this.hubConnection.state ===
+            signalR.HubConnectionState.Disconnected) &&
+        !this.isConnecting
+      ) {
         this.startConnection(token).catch(() => {
           // Ignore errors during reconnection
         });
@@ -110,7 +127,7 @@ class SignalRService {
         incidentApi.util.invalidateTags([
           { type: 'Incident', id: incidentId },
           'Incident',
-          'IncidentStatistics'
+          'IncidentStatistics',
         ])
       );
     });
@@ -123,22 +140,25 @@ class SignalRService {
         incidentApi.util.invalidateTags([
           { type: 'Incident', id: incidentId },
           'Incident',
-          'IncidentStatistics'
+          'IncidentStatistics',
         ])
       );
     });
 
     // Handle status changed
-    this.hubConnection.on('IncidentStatusChanged', (data: { incidentId: number; newStatus: string }) => {
-      console.log('Incident status changed:', data);
-      // Invalidate cache
-      store.dispatch(
-        incidentApi.util.invalidateTags([
-          { type: 'Incident', id: data.incidentId },
-          'Incident'
-        ])
-      );
-    });
+    this.hubConnection.on(
+      'IncidentStatusChanged',
+      (data: { incidentId: number; newStatus: string }) => {
+        console.log('Incident status changed:', data);
+        // Invalidate cache
+        store.dispatch(
+          incidentApi.util.invalidateTags([
+            { type: 'Incident', id: data.incidentId },
+            'Incident',
+          ])
+        );
+      }
+    );
 
     // Handle connection events
     this.hubConnection.onclose((error) => {
@@ -168,7 +188,10 @@ class SignalRService {
   }
 
   async joinLocationGroup(location: string) {
-    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+    if (
+      this.hubConnection &&
+      this.hubConnection.state === signalR.HubConnectionState.Connected
+    ) {
       try {
         await this.hubConnection.invoke('JoinLocationGroup', location);
         console.log(`Joined location group: ${location}`);
@@ -179,7 +202,10 @@ class SignalRService {
   }
 
   async leaveLocationGroup(location: string) {
-    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+    if (
+      this.hubConnection &&
+      this.hubConnection.state === signalR.HubConnectionState.Connected
+    ) {
       try {
         await this.hubConnection.invoke('LeaveLocationGroup', location);
         console.log(`Left location group: ${location}`);

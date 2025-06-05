@@ -18,7 +18,10 @@ import {
 } from '@coreui/react';
 import { Icon } from '../../components/common/Icon';
 import { faArrowLeft, faSave } from '@fortawesome/free-solid-svg-icons';
-import { useGetIncidentQuery, useUpdateIncidentMutation } from '../../features/incidents/incidentApi';
+import {
+  useGetIncidentQuery,
+  useUpdateIncidentMutation,
+} from '../../features/incidents/incidentApi';
 import AttachmentManager from '../../components/common/AttachmentManager';
 import { formatDateTime } from '../../utils/dateUtils';
 
@@ -33,9 +36,14 @@ interface EditIncidentFormData {
 const EditIncident: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const { data: incident, error: loadError, isLoading } = useGetIncidentQuery(Number(id));
-  const [updateIncident, { isLoading: isUpdating, error: updateError }] = useUpdateIncidentMutation();
+
+  const {
+    data: incident,
+    error: loadError,
+    isLoading,
+  } = useGetIncidentQuery(Number(id));
+  const [updateIncident, { isLoading: isUpdating, error: updateError }] =
+    useUpdateIncidentMutation();
 
   // Campus locations dropdown options
   const campusLocations = [
@@ -84,11 +92,20 @@ const EditIncident: React.FC = () => {
         id: Number(id),
         incident: {
           ...data,
-          severity: data.severity as 'Minor' | 'Moderate' | 'Serious' | 'Critical',
-          status: data.status as 'Reported' | 'UnderInvestigation' | 'AwaitingAction' | 'Resolved' | 'Closed',
+          severity: data.severity as
+            | 'Minor'
+            | 'Moderate'
+            | 'Serious'
+            | 'Critical',
+          status: data.status as
+            | 'Reported'
+            | 'UnderInvestigation'
+            | 'AwaitingAction'
+            | 'Resolved'
+            | 'Closed',
         },
       }).unwrap();
-      
+
       navigate(`/incidents/${id}`);
     } catch (error) {
       console.error('Failed to update incident:', error);
@@ -97,7 +114,10 @@ const EditIncident: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
         <CSpinner size="sm" className="text-primary" />
         <span className="ms-2">Loading incident...</span>
       </div>
@@ -155,7 +175,9 @@ const EditIncident: React.FC = () => {
                     <CFormTextarea
                       id="description"
                       rows={4}
-                      {...register('description', { required: 'Description is required' })}
+                      {...register('description', {
+                        required: 'Description is required',
+                      })}
                       invalid={!!errors.description}
                     />
                     {errors.description && (
@@ -171,7 +193,9 @@ const EditIncident: React.FC = () => {
                         <CFormLabel htmlFor="severity">Severity *</CFormLabel>
                         <CFormSelect
                           id="severity"
-                          {...register('severity', { required: 'Severity is required' })}
+                          {...register('severity', {
+                            required: 'Severity is required',
+                          })}
                           invalid={!!errors.severity}
                         >
                           <option value="Minor">Minor</option>
@@ -192,12 +216,18 @@ const EditIncident: React.FC = () => {
                         <CFormLabel htmlFor="status">Status *</CFormLabel>
                         <CFormSelect
                           id="status"
-                          {...register('status', { required: 'Status is required' })}
+                          {...register('status', {
+                            required: 'Status is required',
+                          })}
                           invalid={!!errors.status}
                         >
                           <option value="Reported">Reported</option>
-                          <option value="UnderInvestigation">Under Investigation</option>
-                          <option value="AwaitingAction">Awaiting Action</option>
+                          <option value="UnderInvestigation">
+                            Under Investigation
+                          </option>
+                          <option value="AwaitingAction">
+                            Awaiting Action
+                          </option>
                           <option value="Resolved">Resolved</option>
                           <option value="Closed">Closed</option>
                         </CFormSelect>
@@ -214,11 +244,13 @@ const EditIncident: React.FC = () => {
                     <CFormLabel htmlFor="location">Location *</CFormLabel>
                     <CFormSelect
                       id="location"
-                      {...register('location', { required: 'Location is required' })}
+                      {...register('location', {
+                        required: 'Location is required',
+                      })}
                       invalid={!!errors.location}
                     >
                       <option value="">Select location...</option>
-                      {campusLocations.map(location => (
+                      {campusLocations.map((location) => (
                         <option key={location} value={location}>
                           {location}
                         </option>
@@ -270,11 +302,7 @@ const EditIncident: React.FC = () => {
                   <Icon icon={faArrowLeft} className="me-2" />
                   Cancel
                 </CButton>
-                <CButton
-                  color="primary"
-                  type="submit"
-                  disabled={isUpdating}
-                >
+                <CButton color="primary" type="submit" disabled={isUpdating}>
                   {isUpdating ? (
                     <>
                       <CSpinner size="sm" className="me-2" />

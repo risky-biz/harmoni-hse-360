@@ -18,7 +18,12 @@ export interface IncidentDetailDto {
   title: string;
   description: string;
   severity: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
-  status: 'Reported' | 'UnderInvestigation' | 'AwaitingAction' | 'Resolved' | 'Closed';
+  status:
+    | 'Reported'
+    | 'UnderInvestigation'
+    | 'AwaitingAction'
+    | 'Resolved'
+    | 'Closed';
   incidentDate: string;
   location: string;
   reporterId?: number;

@@ -24,15 +24,28 @@ import {
 import { Icon } from '../../../components/common/Icon';
 import { useGetAvailableUsersQuery } from '../incidentApi';
 import { InvolvedPersonDto } from '../../../types/incident';
-import { faNotesMedical, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
+import {
+  faNotesMedical,
+  faEdit,
+  faTrash,
+  faSearch,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface InvolvedPersonsModalProps {
   visible: boolean;
   onClose: () => void;
   incidentId: number;
   involvedPersons: InvolvedPersonDto[];
-  onAdd: (personId: number, involvementType: string, injuryDescription?: string) => Promise<void>;
-  onUpdate: (personId: number, involvementType: string, injuryDescription?: string) => Promise<void>;
+  onAdd: (
+    personId: number,
+    involvementType: string,
+    injuryDescription?: string
+  ) => Promise<void>;
+  onUpdate: (
+    personId: number,
+    involvementType: string,
+    injuryDescription?: string
+  ) => Promise<void>;
   onRemove: (personId: number) => Promise<void>;
 }
 
@@ -52,12 +65,14 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: availableUsers, isLoading: usersLoading } = useGetAvailableUsersQuery(searchTerm);
+  const { data: availableUsers, isLoading: usersLoading } =
+    useGetAvailableUsersQuery(searchTerm);
 
   // Filter out already involved persons
-  const filteredUsers = availableUsers?.filter(
-    user => !involvedPersons.some(ip => ip.person.id === user.id)
-  ) || [];
+  const filteredUsers =
+    availableUsers?.filter(
+      (user) => !involvedPersons.some((ip) => ip.person.id === user.id)
+    ) || [];
 
   const handleAdd = async () => {
     if (!selectedPersonId) return;
@@ -65,7 +80,11 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
     setLoading(true);
     setError(null);
     try {
-      await onAdd(selectedPersonId, involvementType, injuryDescription || undefined);
+      await onAdd(
+        selectedPersonId,
+        involvementType,
+        injuryDescription || undefined
+      );
       resetForm();
     } catch (err) {
       setError('Failed to add involved person. Please try again.');
@@ -80,7 +99,11 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
     setLoading(true);
     setError(null);
     try {
-      await onUpdate(selectedPersonId, involvementType, injuryDescription || undefined);
+      await onUpdate(
+        selectedPersonId,
+        involvementType,
+        injuryDescription || undefined
+      );
       resetForm();
     } catch (err) {
       setError('Failed to update involved person. Please try again.');
@@ -148,22 +171,32 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
 
         {/* Current Involved Persons */}
         <div className="mb-4">
-          <h6 className="mb-3">Current Involved Persons ({involvedPersons.length})</h6>
+          <h6 className="mb-3">
+            Current Involved Persons ({involvedPersons.length})
+          </h6>
           <CListGroup>
             {involvedPersons.length === 0 ? (
               <CListGroupItem>
-                <em className="text-muted">No persons involved in this incident yet.</em>
+                <em className="text-muted">
+                  No persons involved in this incident yet.
+                </em>
               </CListGroupItem>
             ) : (
               involvedPersons.map((person) => (
-                <CListGroupItem key={person.person.id} className="d-flex justify-content-between align-items-start">
+                <CListGroupItem
+                  key={person.person.id}
+                  className="d-flex justify-content-between align-items-start"
+                >
                   <div>
                     <div className="fw-bold">{person.person.fullName}</div>
-                    <div className="text-muted small">{person.person.email}</div>
+                    <div className="text-muted small">
+                      {person.person.email}
+                    </div>
                     {person.injuryDescription && (
                       <div className="mt-1">
                         <small className="text-danger">
-                          <Icon icon={faNotesMedical} /> {person.injuryDescription}
+                          <Icon icon={faNotesMedical} />{' '}
+                          {person.injuryDescription}
                         </small>
                       </div>
                     )}
@@ -197,7 +230,9 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
 
         {/* Add/Edit Form */}
         <div className="border-top pt-4">
-          <h6 className="mb-3">{isEditing ? 'Edit Involved Person' : 'Add Involved Person'}</h6>
+          <h6 className="mb-3">
+            {isEditing ? 'Edit Involved Person' : 'Add Involved Person'}
+          </h6>
           <CForm>
             <CRow>
               <CCol md={6}>
@@ -218,7 +253,9 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
                       </CInputGroup>
                       <CFormSelect
                         value={selectedPersonId || ''}
-                        onChange={(e) => setSelectedPersonId(Number(e.target.value))}
+                        onChange={(e) =>
+                          setSelectedPersonId(Number(e.target.value))
+                        }
                         disabled={usersLoading}
                       >
                         <option value="">Select a person...</option>
@@ -231,7 +268,11 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
                     </>
                   ) : (
                     <CFormInput
-                      value={involvedPersons.find(p => p.person.id === selectedPersonId)?.person.fullName || ''}
+                      value={
+                        involvedPersons.find(
+                          (p) => p.person.id === selectedPersonId
+                        )?.person.fullName || ''
+                      }
                       disabled
                     />
                   )}
@@ -274,7 +315,11 @@ export const InvolvedPersonsModal: React.FC<InvolvedPersonsModalProps> = ({
                   >
                     {loading ? <CSpinner size="sm" /> : 'Update Person'}
                   </CButton>
-                  <CButton color="secondary" onClick={resetForm} disabled={loading}>
+                  <CButton
+                    color="secondary"
+                    onClick={resetForm}
+                    disabled={loading}
+                  >
                     Cancel
                   </CButton>
                 </>

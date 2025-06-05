@@ -3,9 +3,12 @@
  * Standard format: 'dd MMM yyyy hh:mm tt' (e.g., "15 Jan 2025 02:30 PM")
  */
 
-export const formatDate = (date: string | Date, includeTime: boolean = true): string => {
+export const formatDate = (
+  date: string | Date,
+  includeTime: boolean = true
+): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(dateObj.getTime())) {
     return 'Invalid Date';
   }
@@ -14,17 +17,17 @@ export const formatDate = (date: string | Date, includeTime: boolean = true): st
   const day = dateObj.getDate().toString().padStart(2, '0');
   const month = dateObj.toLocaleDateString('en-US', { month: 'short' });
   const year = dateObj.getFullYear();
-  
+
   if (!includeTime) {
     return `${day} ${month} ${year}`;
   }
-  
+
   // Get time components
   const hours12 = dateObj.getHours() % 12 || 12;
   const minutes = dateObj.getMinutes().toString().padStart(2, '0');
   const ampm = dateObj.getHours() >= 12 ? 'PM' : 'AM';
   const hours12Padded = hours12.toString().padStart(2, '0');
-  
+
   return `${day} ${month} ${year} ${hours12Padded}:${minutes} ${ampm}`;
 };
 

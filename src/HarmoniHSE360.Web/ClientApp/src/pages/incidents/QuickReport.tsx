@@ -18,7 +18,11 @@ import {
   CCallout,
 } from '@coreui/react';
 import { Icon } from '../../components/common/Icon';
-import { faQrcode, faMapMarkerAlt, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import {
+  faQrcode,
+  faMapMarkerAlt,
+  faPaperPlane,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface QuickReportData {
   title: string;
@@ -47,10 +51,14 @@ const QuickReport: React.FC = () => {
     reporterName: '',
     reporterEmail: '',
     isAnonymous: false,
-    photos: []
+    photos: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] = useState<{type: 'success' | 'error', message: string, referenceNumber?: string} | null>(null);
+  const [submitResult, setSubmitResult] = useState<{
+    type: 'success' | 'error';
+    message: string;
+    referenceNumber?: string;
+  } | null>(null);
   const [useLocation, setUseLocation] = useState(false);
 
   useEffect(() => {
@@ -61,7 +69,7 @@ const QuickReport: React.FC = () => {
     const lng = searchParams.get('lng');
 
     if (qrId) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         qrCodeId: qrId,
         location: location || prev.location,
@@ -74,7 +82,7 @@ const QuickReport: React.FC = () => {
     if (navigator.geolocation && useLocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -87,14 +95,19 @@ const QuickReport: React.FC = () => {
     }
   }, [searchParams, useLocation]);
 
-  const handleInputChange = (field: keyof QuickReportData, value: string | boolean) => {
-    setFormData(prev => ({
+  const handleInputChange = (
+    field: keyof QuickReportData,
+    value: string | boolean
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const handlePhotoCapture = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoCapture = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files) return;
 
@@ -111,9 +124,9 @@ const QuickReport: React.FC = () => {
       }
     }
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photos: [...prev.photos, ...newPhotos].slice(0, 5) // Max 5 photos
+      photos: [...prev.photos, ...newPhotos].slice(0, 5), // Max 5 photos
     }));
   };
 
@@ -132,9 +145,9 @@ const QuickReport: React.FC = () => {
   };
 
   const removePhoto = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photos: prev.photos.filter((_, i) => i !== index)
+      photos: prev.photos.filter((_, i) => i !== index),
     }));
   };
 
@@ -150,7 +163,9 @@ const QuickReport: React.FC = () => {
         severity: formData.severity,
         location: formData.location,
         incidentDate: new Date(formData.incidentDate).toISOString(),
-        reporterName: formData.isAnonymous ? 'Anonymous Reporter' : formData.reporterName,
+        reporterName: formData.isAnonymous
+          ? 'Anonymous Reporter'
+          : formData.reporterName,
         reporterEmail: formData.isAnonymous ? '' : formData.reporterEmail,
         isAnonymous: formData.isAnonymous,
         qrCodeId: formData.qrCodeId,
@@ -158,11 +173,13 @@ const QuickReport: React.FC = () => {
         longitude: formData.longitude,
         reportingChannel: formData.qrCodeId ? 'QR' : 'QuickWeb',
         deviceInfo: navigator.userAgent,
-        photoBase64: formData.photos
+        photoBase64: formData.photos,
       };
 
-      const endpoint = formData.isAnonymous ? '/api/multichannel-reporting/anonymous' : '/api/multichannel-reporting/quick-report';
-      
+      const endpoint = formData.isAnonymous
+        ? '/api/multichannel-reporting/anonymous'
+        : '/api/multichannel-reporting/quick-report';
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -176,7 +193,7 @@ const QuickReport: React.FC = () => {
         setSubmitResult({
           type: 'success',
           message: result.message || 'Report submitted successfully!',
-          referenceNumber: result.referenceNumber
+          referenceNumber: result.referenceNumber,
         });
 
         // Clear form after successful submission
@@ -189,19 +206,20 @@ const QuickReport: React.FC = () => {
           reporterName: '',
           reporterEmail: '',
           isAnonymous: false,
-          photos: []
+          photos: [],
         });
       } else {
         const error = await response.json();
         setSubmitResult({
           type: 'error',
-          message: error.message || 'Failed to submit report. Please try again.'
+          message:
+            error.message || 'Failed to submit report. Please try again.',
         });
       }
     } catch (error) {
       setSubmitResult({
         type: 'error',
-        message: 'Network error. Please check your connection and try again.'
+        message: 'Network error. Please check your connection and try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -210,10 +228,14 @@ const QuickReport: React.FC = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Critical': return 'danger';
-      case 'Serious': return 'warning';
-      case 'Moderate': return 'info';
-      default: return 'success';
+      case 'Critical':
+        return 'danger';
+      case 'Serious':
+        return 'warning';
+      case 'Moderate':
+        return 'info';
+      default:
+        return 'success';
     }
   };
 
@@ -224,7 +246,9 @@ const QuickReport: React.FC = () => {
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
               <h4 className="mb-0">Quick Incident Report</h4>
-              <small className="text-muted">Fast and easy incident reporting</small>
+              <small className="text-muted">
+                Fast and easy incident reporting
+              </small>
             </div>
             {formData.qrCodeId && (
               <CBadge color="info">
@@ -236,15 +260,19 @@ const QuickReport: React.FC = () => {
 
           <CCardBody>
             {submitResult && (
-              <CAlert 
+              <CAlert
                 color={submitResult.type === 'success' ? 'success' : 'danger'}
                 dismissible
                 onClose={() => setSubmitResult(null)}
               >
-                <strong>{submitResult.type === 'success' ? 'Success!' : 'Error!'}</strong> {submitResult.message}
+                <strong>
+                  {submitResult.type === 'success' ? 'Success!' : 'Error!'}
+                </strong>{' '}
+                {submitResult.message}
                 {submitResult.referenceNumber && (
                   <div className="mt-2">
-                    <strong>Reference Number:</strong> {submitResult.referenceNumber}
+                    <strong>Reference Number:</strong>{' '}
+                    {submitResult.referenceNumber}
                   </div>
                 )}
               </CAlert>
@@ -252,8 +280,10 @@ const QuickReport: React.FC = () => {
 
             {formData.qrCodeId && (
               <CCallout color="info" className="mb-4">
-                <strong>Location detected from QR code</strong><br />
-                This form has been pre-filled with location information from the QR code you scanned.
+                <strong>Location detected from QR code</strong>
+                <br />
+                This form has been pre-filled with location information from the
+                QR code you scanned.
               </CCallout>
             )}
 
@@ -266,14 +296,17 @@ const QuickReport: React.FC = () => {
                     type="checkbox"
                     id="anonymousToggle"
                     checked={formData.isAnonymous}
-                    onChange={(e) => handleInputChange('isAnonymous', e.target.checked)}
+                    onChange={(e) =>
+                      handleInputChange('isAnonymous', e.target.checked)
+                    }
                   />
                   <label className="form-check-label" htmlFor="anonymousToggle">
                     Submit as anonymous report
                   </label>
                 </div>
                 <small className="text-muted">
-                  Anonymous reports are investigated but you won't receive status updates
+                  Anonymous reports are investigated but you won't receive
+                  status updates
                 </small>
               </div>
 
@@ -286,18 +319,24 @@ const QuickReport: React.FC = () => {
                       type="text"
                       id="reporterName"
                       value={formData.reporterName}
-                      onChange={(e) => handleInputChange('reporterName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('reporterName', e.target.value)
+                      }
                       required={!formData.isAnonymous}
                       placeholder="Enter your full name"
                     />
                   </CCol>
                   <CCol md={6}>
-                    <CFormLabel htmlFor="reporterEmail">Your Email *</CFormLabel>
+                    <CFormLabel htmlFor="reporterEmail">
+                      Your Email *
+                    </CFormLabel>
                     <CFormInput
                       type="email"
                       id="reporterEmail"
                       value={formData.reporterEmail}
-                      onChange={(e) => handleInputChange('reporterEmail', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('reporterEmail', e.target.value)
+                      }
                       required={!formData.isAnonymous}
                       placeholder="your.email@example.com"
                     />
@@ -324,7 +363,9 @@ const QuickReport: React.FC = () => {
                   id="description"
                   rows={4}
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange('description', e.target.value)
+                  }
                   required
                   placeholder="Provide detailed information about the incident..."
                 />
@@ -336,24 +377,33 @@ const QuickReport: React.FC = () => {
                   <CFormSelect
                     id="severity"
                     value={formData.severity}
-                    onChange={(e) => handleInputChange('severity', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('severity', e.target.value)
+                    }
                   >
                     <option value="Minor">Minor</option>
                     <option value="Moderate">Moderate</option>
                     <option value="Serious">Serious</option>
                     <option value="Critical">Critical</option>
                   </CFormSelect>
-                  <CBadge color={getSeverityColor(formData.severity)} className="mt-1">
+                  <CBadge
+                    color={getSeverityColor(formData.severity)}
+                    className="mt-1"
+                  >
                     {formData.severity}
                   </CBadge>
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="incidentDate">When did this occur?</CFormLabel>
+                  <CFormLabel htmlFor="incidentDate">
+                    When did this occur?
+                  </CFormLabel>
                   <CFormInput
                     type="datetime-local"
                     id="incidentDate"
                     value={formData.incidentDate}
-                    onChange={(e) => handleInputChange('incidentDate', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('incidentDate', e.target.value)
+                    }
                   />
                 </CCol>
               </CRow>
@@ -373,7 +423,9 @@ const QuickReport: React.FC = () => {
                   type="text"
                   id="location"
                   value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange('location', e.target.value)
+                  }
                   required
                   placeholder="Building, room, or area where incident occurred"
                 />
@@ -397,9 +449,11 @@ const QuickReport: React.FC = () => {
               <div className="mb-3">
                 <CFormLabel htmlFor="photos">
                   Photos ({formData.photos.length}/5)
-                  <small className="text-muted ms-2">Optional - Add visual evidence</small>
+                  <small className="text-muted ms-2">
+                    Optional - Add visual evidence
+                  </small>
                 </CFormLabel>
-                
+
                 {formData.photos.length < 5 && (
                   <div className="mb-2">
                     <input
@@ -421,14 +475,22 @@ const QuickReport: React.FC = () => {
                         <img
                           src={`data:image/jpeg;base64,${photo}`}
                           alt={`Incident photo ${index + 1}`}
-                          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                          style={{
+                            width: '80px',
+                            height: '80px',
+                            objectFit: 'cover',
+                          }}
                           className="rounded border"
                         />
                         <CButton
                           color="danger"
                           size="sm"
                           className="position-absolute top-0 end-0 rounded-circle"
-                          style={{ width: '24px', height: '24px', fontSize: '12px' }}
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            fontSize: '12px',
+                          }}
                           onClick={() => removePhoto(index)}
                         >
                           ×

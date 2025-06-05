@@ -26,8 +26,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import { Icon } from '../../components/common/Icon';
-import { useGetMyIncidentsQuery, IncidentDto } from '../../features/incidents/incidentApi';
-import { getSeverityBadge, getStatusBadge, formatDate } from '../../utils/incidentUtils';
+import {
+  useGetMyIncidentsQuery,
+  IncidentDto,
+} from '../../features/incidents/incidentApi';
+import {
+  getSeverityBadge,
+  getStatusBadge,
+  formatDate,
+} from '../../utils/incidentUtils';
 
 const MyReports: React.FC = () => {
   const navigate = useNavigate();
@@ -37,11 +44,11 @@ const MyReports: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [severityFilter, setSeverityFilter] = useState('');
 
-  const { 
-    data: myIncidentsResponse, 
-    isLoading, 
+  const {
+    data: myIncidentsResponse,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetMyIncidentsQuery({
     pageNumber,
     pageSize,
@@ -70,7 +77,10 @@ const MyReports: React.FC = () => {
 
   if (isLoading && !myIncidentsResponse) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
         <CSpinner size="sm" className="text-primary" />
         <span className="ms-2">Loading your reports...</span>
       </div>
@@ -97,8 +107,18 @@ const MyReports: React.FC = () => {
         <CCard className="shadow-sm">
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="mb-0" style={{ color: 'var(--harmoni-charcoal)', fontFamily: 'Poppins, sans-serif' }}>
-                <FontAwesomeIcon icon={CONTEXT_ICONS.reports} size="lg" className="me-2 text-primary" />
+              <h4
+                className="mb-0"
+                style={{
+                  color: 'var(--harmoni-charcoal)',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={CONTEXT_ICONS.reports}
+                  size="lg"
+                  className="me-2 text-primary"
+                />
                 My Incident Reports
               </h4>
               <small className="text-muted">
@@ -139,7 +159,9 @@ const MyReports: React.FC = () => {
                 >
                   <option value="">All Statuses</option>
                   <option value="Reported">Reported</option>
-                  <option value="UnderInvestigation">Under Investigation</option>
+                  <option value="UnderInvestigation">
+                    Under Investigation
+                  </option>
                   <option value="AwaitingAction">Awaiting Action</option>
                   <option value="Resolved">Resolved</option>
                   <option value="Closed">Closed</option>
@@ -162,9 +184,9 @@ const MyReports: React.FC = () => {
                   <Icon icon={ACTION_ICONS.search} size="sm" className="me-1" />
                   Search
                 </CButton>
-                <CButton 
-                  color="secondary" 
-                  variant="outline" 
+                <CButton
+                  color="secondary"
+                  variant="outline"
                   onClick={handleClearFilters}
                 >
                   Clear
@@ -174,16 +196,19 @@ const MyReports: React.FC = () => {
 
             {incidents.length === 0 ? (
               <CCallout color="info" className="text-center py-4">
-                <FontAwesomeIcon icon={CONTEXT_ICONS.incident} size="2xl" className="mb-3 text-muted" />
+                <FontAwesomeIcon
+                  icon={CONTEXT_ICONS.incident}
+                  size="2xl"
+                  className="mb-3 text-muted"
+                />
                 <h5>No incidents found</h5>
                 <p className="text-muted mb-3">
-                  {searchTerm || statusFilter || severityFilter 
-                    ? "No incidents match your current filters." 
-                    : "You haven't reported any incidents yet."
-                  }
+                  {searchTerm || statusFilter || severityFilter
+                    ? 'No incidents match your current filters.'
+                    : "You haven't reported any incidents yet."}
                 </p>
-                <CButton 
-                  color="primary" 
+                <CButton
+                  color="primary"
                   onClick={() => navigate('/incidents/create')}
                 >
                   <Icon icon={ACTION_ICONS.create} size="sm" className="me-2" />
@@ -212,10 +237,9 @@ const MyReports: React.FC = () => {
                             <strong>{incident.title}</strong>
                             {incident.description && (
                               <div className="text-muted small">
-                                {incident.description.length > 100 
+                                {incident.description.length > 100
                                   ? `${incident.description.substring(0, 100)}...`
-                                  : incident.description
-                                }
+                                  : incident.description}
                               </div>
                             )}
                           </div>
@@ -238,7 +262,9 @@ const MyReports: React.FC = () => {
                               color="info"
                               variant="outline"
                               size="sm"
-                              onClick={() => navigate(`/incidents/${incident.id}`)}
+                              onClick={() =>
+                                navigate(`/incidents/${incident.id}`)
+                              }
                               title="View Details"
                             >
                               <Icon icon={ACTION_ICONS.view} size="sm" />
@@ -247,7 +273,9 @@ const MyReports: React.FC = () => {
                               color="primary"
                               variant="outline"
                               size="sm"
-                              onClick={() => navigate(`/incidents/${incident.id}/edit`)}
+                              onClick={() =>
+                                navigate(`/incidents/${incident.id}/edit`)
+                              }
                               title="Edit"
                             >
                               <Icon icon={ACTION_ICONS.edit} size="sm" />
@@ -263,27 +291,34 @@ const MyReports: React.FC = () => {
                 {totalPages > 1 && (
                   <div className="d-flex justify-content-center mt-4">
                     <CPagination>
-                      <CPaginationItem 
+                      <CPaginationItem
                         disabled={pageNumber === 1}
                         onClick={() => setPageNumber(pageNumber - 1)}
                       >
                         Previous
                       </CPaginationItem>
-                      
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        const page = Math.max(1, Math.min(totalPages - 4, pageNumber - 2)) + i;
-                        return (
-                          <CPaginationItem
-                            key={page}
-                            active={page === pageNumber}
-                            onClick={() => setPageNumber(page)}
-                          >
-                            {page}
-                          </CPaginationItem>
-                        );
-                      })}
-                      
-                      <CPaginationItem 
+
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          const page =
+                            Math.max(
+                              1,
+                              Math.min(totalPages - 4, pageNumber - 2)
+                            ) + i;
+                          return (
+                            <CPaginationItem
+                              key={page}
+                              active={page === pageNumber}
+                              onClick={() => setPageNumber(page)}
+                            >
+                              {page}
+                            </CPaginationItem>
+                          );
+                        }
+                      )}
+
+                      <CPaginationItem
                         disabled={pageNumber === totalPages}
                         onClick={() => setPageNumber(pageNumber + 1)}
                       >

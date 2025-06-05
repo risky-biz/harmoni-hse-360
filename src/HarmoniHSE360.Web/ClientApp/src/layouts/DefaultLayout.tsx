@@ -59,7 +59,9 @@ const navigation = [
     component: CNavGroup,
     name: 'Incidents',
     to: '#incidents',
-    icon: <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />,
+    icon: (
+      <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />
+    ),
     items: [
       {
         component: CNavItem,
@@ -168,23 +170,23 @@ const DefaultLayout: React.FC = () => {
       >
         <CSidebarBrand className="d-none d-md-flex" href="/">
           <div className="sidebar-brand-full">
-            <img 
-              src="/Harmoni_HSE_360_Logo.png" 
-              alt="Harmoni HSE 360" 
+            <img
+              src="/Harmoni_HSE_360_Logo.png"
+              alt="Harmoni HSE 360"
               className="sidebar-logo"
               height="32"
             />
           </div>
           <div className="sidebar-brand-minimized">
-            <img 
-              src="/Harmoni_HSE_360_Logo.png" 
-              alt="HSE" 
+            <img
+              src="/Harmoni_HSE_360_Logo.png"
+              alt="HSE"
               className="sidebar-logo-minimized"
               height="24"
             />
           </div>
         </CSidebarBrand>
-        
+
         <CSidebarNav>
           {navigation.map((item, index) => {
             if (item.component === CNavGroup) {
@@ -200,8 +202,8 @@ const DefaultLayout: React.FC = () => {
                 >
                   {item.items?.map((subItem, subIndex) => (
                     <CNavItem key={subIndex}>
-                      <NavLink 
-                        to={subItem.to} 
+                      <NavLink
+                        to={subItem.to}
                         className="nav-link"
                         end={subItem.to === '/incidents'}
                       >
@@ -216,11 +218,7 @@ const DefaultLayout: React.FC = () => {
             } else if (item.to) {
               return (
                 <CNavItem key={index}>
-                  <NavLink 
-                    to={item.to} 
-                    className="nav-link"
-                    end
-                  >
+                  <NavLink to={item.to} className="nav-link" end>
                     {item.icon}
                     {item.name}
                   </NavLink>
@@ -231,11 +229,13 @@ const DefaultLayout: React.FC = () => {
             }
           })}
         </CSidebarNav>
-        
+
         <ProjectSettings />
       </CSidebar>
-      
-      <div className={`wrapper d-flex flex-column min-vh-100 ${sidebarShow ? 'sidebar-visible' : 'sidebar-hidden'}`}>
+
+      <div
+        className={`wrapper d-flex flex-column min-vh-100 ${sidebarShow ? 'sidebar-visible' : 'sidebar-hidden'}`}
+      >
         <CHeader position="sticky" className="mb-4 p-0 ps-2">
           <CContainer fluid className="px-4">
             <CHeaderToggler
@@ -244,11 +244,11 @@ const DefaultLayout: React.FC = () => {
             >
               <FontAwesomeIcon icon={faBars} size="lg" />
             </CHeaderToggler>
-            
+
             <CHeaderBrand className="mx-auto d-md-none" href="/">
               HarmoniHSE360
             </CHeaderBrand>
-            
+
             <CHeaderNav className="ms-auto">
               <CDropdown variant="nav-item" placement="bottom-end">
                 <CDropdownToggle caret={false}>
@@ -273,7 +273,9 @@ const DefaultLayout: React.FC = () => {
                         <p className="mb-1 small text-medium-emphasis">
                           Safety incident in Chemistry Lab
                         </p>
-                        <small className="text-medium-emphasis">2 min ago</small>
+                        <small className="text-medium-emphasis">
+                          2 min ago
+                        </small>
                       </div>
                     </div>
                   </CDropdownItem>
@@ -283,14 +285,10 @@ const DefaultLayout: React.FC = () => {
                   </CDropdownItem>
                 </CDropdownMenu>
               </CDropdown>
-              
+
               <CDropdown variant="nav-item" placement="bottom-end">
                 <CDropdownToggle className="py-0" caret={false}>
-                  <CAvatar 
-                    size="md" 
-                    color="primary" 
-                    textColor="white"
-                  >
+                  <CAvatar size="md" color="primary" textColor="white">
                     {user.name.charAt(0).toUpperCase()}
                   </CAvatar>
                 </CDropdownToggle>
@@ -325,23 +323,31 @@ const DefaultLayout: React.FC = () => {
             </CHeaderNav>
           </CContainer>
         </CHeader>
-        
+
         <div className="body flex-grow-1 px-4">
           <CContainer lg>
             <Outlet />
           </CContainer>
         </div>
-        
+
         <CFooter>
           <div>
-            <a href="https://bsj.sch.id" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://bsj.sch.id"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               British School Jakarta
             </a>
             <span className="ms-1">&copy; 2025 HarmoniHSE360</span>
           </div>
           <div className="ms-auto">
             <span className="me-1">Powered by</span>
-            <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://coreui.io/react"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               CoreUI React
             </a>
           </div>

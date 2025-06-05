@@ -39,45 +39,62 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  
+
   // Get authentication token from Redux store
   const token = useSelector((state: RootState) => state.auth.token);
 
-  const { data: attachments = [], isLoading, refetch } = useGetIncidentAttachmentsQuery(incidentId);
-  const [uploadAttachments, { isLoading: isUploading }] = useUploadIncidentAttachmentsMutation();
-  const [deleteAttachment, { isLoading: isDeleting }] = useDeleteIncidentAttachmentMutation();
+  const {
+    data: attachments = [],
+    isLoading,
+    refetch,
+  } = useGetIncidentAttachmentsQuery(incidentId);
+  const [uploadAttachments, { isLoading: isUploading }] =
+    useUploadIncidentAttachmentsMutation();
+  const [deleteAttachment, { isLoading: isDeleting }] =
+    useDeleteIncidentAttachmentMutation();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     const validFiles: File[] = [];
-    
+
     files.forEach((file) => {
       // Validate file type
-      const validTypes = ['image/', 'video/', 'application/pdf', 'application/msword', 'text/plain'];
-      const isValidType = validTypes.some(type => file.type.startsWith(type)) || 
-                         file.name.toLowerCase().endsWith('.docx');
-      
+      const validTypes = [
+        'image/',
+        'video/',
+        'application/pdf',
+        'application/msword',
+        'text/plain',
+      ];
+      const isValidType =
+        validTypes.some((type) => file.type.startsWith(type)) ||
+        file.name.toLowerCase().endsWith('.docx');
+
       // Validate file size (50MB limit)
       const maxSize = 50 * 1024 * 1024; // 50MB
-      
+
       if (!isValidType) {
-        setUploadError(`File "${file.name}" is not a supported type. Please upload images, videos, PDFs, or documents.`);
+        setUploadError(
+          `File "${file.name}" is not a supported type. Please upload images, videos, PDFs, or documents.`
+        );
         return;
       }
-      
+
       if (file.size > maxSize) {
-        setUploadError(`File "${file.name}" is too large. Maximum size is 50MB.`);
+        setUploadError(
+          `File "${file.name}" is too large. Maximum size is 50MB.`
+        );
         return;
       }
-      
+
       validFiles.push(file);
     });
-    
+
     if (validFiles.length > 0) {
-      setSelectedFiles(prev => [...prev, ...validFiles]);
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
       setUploadError(null);
     }
-    
+
     // Clear the input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -85,18 +102,18 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
   };
 
   const removeSelectedFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
-    
+
     try {
       await uploadAttachments({
         incidentId,
         files: selectedFiles,
       }).unwrap();
-      
+
       setSelectedFiles([]);
       setUploadError(null);
       refetch();
@@ -108,13 +125,13 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
 
   const handleDeleteAttachment = async (attachmentId: number) => {
     if (!confirm('Are you sure you want to delete this attachment?')) return;
-    
+
     try {
       await deleteAttachment({
         incidentId,
         attachmentId,
       }).unwrap();
-      
+
       refetch();
     } catch (error) {
       console.error('Delete error:', error);
@@ -132,34 +149,38 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
       const response = await fetch(attachment.fileUrl, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to download file: ${response.status} ${response.statusText}`
+        );
       }
 
       // Get the file blob
       const blob = await response.blob();
-      
+
       // Create a download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = attachment.fileName;
       link.target = '_blank';
-      
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
-      
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);
-      setUploadError(`Failed to download ${attachment.fileName}. Please try again.`);
+      setUploadError(
+        `Failed to download ${attachment.fileName}. Please try again.`
+      );
     }
   };
 
@@ -194,7 +215,11 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
       </CCardHeader>
       <CCardBody>
         {uploadError && (
-          <CAlert color="danger" dismissible onClose={() => setUploadError(null)}>
+          <CAlert
+            color="danger"
+            dismissible
+            onClose={() => setUploadError(null)}
+          >
             {uploadError}
           </CAlert>
         )}
@@ -217,7 +242,10 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                 >
-                  <FontAwesomeIcon icon={ACTION_ICONS.upload} className="me-2" />
+                  <FontAwesomeIcon
+                    icon={ACTION_ICONS.upload}
+                    className="me-2"
+                  />
                   Select Files
                 </CButton>
               </CInputGroup>
@@ -281,7 +309,11 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
           </div>
         ) : attachments.length === 0 ? (
           <div className="text-center text-muted py-3">
-            <FontAwesomeIcon icon={FILE_TYPE_ICONS.default} size="2x" className="mb-2 opacity-50" />
+            <FontAwesomeIcon
+              icon={FILE_TYPE_ICONS.default}
+              size="2x"
+              className="mb-2 opacity-50"
+            />
             <p className="mb-0">No attachments uploaded yet</p>
           </div>
         ) : (
@@ -292,11 +324,16 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({
                 className="d-flex justify-content-between align-items-center"
               >
                 <div className="d-flex align-items-center">
-                  <Icon icon={getFileIcon(attachment.fileName)} className="me-3 text-muted" />
+                  <Icon
+                    icon={getFileIcon(attachment.fileName)}
+                    className="me-3 text-muted"
+                  />
                   <div>
                     <div className="fw-medium">{attachment.fileName}</div>
                     <small className="text-muted">
-                      {attachment.fileSizeFormatted} • Uploaded by {attachment.uploadedBy} • {formatDateTime(attachment.uploadedAt)}
+                      {attachment.fileSizeFormatted} • Uploaded by{' '}
+                      {attachment.uploadedBy} •{' '}
+                      {formatDateTime(attachment.uploadedAt)}
                     </small>
                   </div>
                 </div>

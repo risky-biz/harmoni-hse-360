@@ -6,7 +6,12 @@ export interface IncidentDto {
   title: string;
   description: string;
   severity: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
-  status: 'Reported' | 'UnderInvestigation' | 'AwaitingAction' | 'Resolved' | 'Closed';
+  status:
+    | 'Reported'
+    | 'UnderInvestigation'
+    | 'AwaitingAction'
+    | 'Resolved'
+    | 'Closed';
   incidentDate: string;
   location: string;
   reporterId?: number;
@@ -48,7 +53,12 @@ export interface UpdateIncidentRequest {
   title?: string;
   description?: string;
   severity?: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
-  status?: 'Reported' | 'UnderInvestigation' | 'AwaitingAction' | 'Resolved' | 'Closed';
+  status?:
+    | 'Reported'
+    | 'UnderInvestigation'
+    | 'AwaitingAction'
+    | 'Resolved'
+    | 'Closed';
   location?: string;
 }
 
@@ -162,16 +172,22 @@ export const incidentApi = createApi({
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
-      
+
       // Don't set content-type for FormData uploads (RTK Query will set it automatically)
       if (endpoint !== 'uploadIncidentAttachments') {
         headers.set('content-type', 'application/json');
       }
-      
+
       return headers;
     },
   }),
-  tagTypes: ['Incident', 'IncidentStatistics', 'IncidentAttachment', 'CorrectiveAction', 'IncidentAudit'],
+  tagTypes: [
+    'Incident',
+    'IncidentStatistics',
+    'IncidentAttachment',
+    'CorrectiveAction',
+    'IncidentAudit',
+  ],
   endpoints: (builder) => ({
     // Create incident
     createIncident: builder.mutation<IncidentDto, CreateIncidentRequest>({
@@ -187,12 +203,15 @@ export const incidentApi = createApi({
     getIncidents: builder.query<GetIncidentsResponse, IncidentListParams>({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
-        
-        if (params.pageNumber) searchParams.append('pageNumber', params.pageNumber.toString());
-        if (params.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+
+        if (params.pageNumber)
+          searchParams.append('pageNumber', params.pageNumber.toString());
+        if (params.pageSize)
+          searchParams.append('pageSize', params.pageSize.toString());
         if (params.status) searchParams.append('status', params.status);
         if (params.severity) searchParams.append('severity', params.severity);
-        if (params.searchTerm) searchParams.append('searchTerm', params.searchTerm);
+        if (params.searchTerm)
+          searchParams.append('searchTerm', params.searchTerm);
 
         return {
           url: `?${searchParams.toString()}`,
@@ -201,7 +220,10 @@ export const incidentApi = createApi({
       },
       providesTags: (result) => [
         'Incident',
-        ...(result?.incidents.map(({ id }) => ({ type: 'Incident' as const, id })) ?? []),
+        ...(result?.incidents.map(({ id }) => ({
+          type: 'Incident' as const,
+          id,
+        })) ?? []),
       ],
     }),
 
@@ -224,7 +246,10 @@ export const incidentApi = createApi({
     }),
 
     // Update incident
-    updateIncident: builder.mutation<IncidentDto, { id: number; incident: UpdateIncidentRequest }>({
+    updateIncident: builder.mutation<
+      IncidentDto,
+      { id: number; incident: UpdateIncidentRequest }
+    >({
       query: ({ id, incident }) => ({
         url: `/${id}`,
         method: 'PUT',
@@ -242,9 +267,11 @@ export const incidentApi = createApi({
     getMyIncidents: builder.query<GetIncidentsResponse, IncidentListParams>({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
-        
-        if (params.pageNumber) searchParams.append('pageNumber', params.pageNumber.toString());
-        if (params.pageSize) searchParams.append('pageSize', params.pageSize.toString());
+
+        if (params.pageNumber)
+          searchParams.append('pageNumber', params.pageNumber.toString());
+        if (params.pageSize)
+          searchParams.append('pageSize', params.pageSize.toString());
         if (params.status) searchParams.append('status', params.status);
         if (params.severity) searchParams.append('severity', params.severity);
 
@@ -274,16 +301,22 @@ export const incidentApi = createApi({
       // Optimistic update: remove from cache immediately
       onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
         const patches: any[] = [];
-        
+
         try {
           // Update all getIncidents queries optimistically
           const patchResults = dispatch(
-            incidentApi.util.updateQueryData('getIncidents', {} as any, (draft) => {
-              if (draft && draft.incidents) {
-                draft.incidents = draft.incidents.filter(incident => incident.id !== id);
-                draft.totalCount = Math.max(0, draft.totalCount - 1);
+            incidentApi.util.updateQueryData(
+              'getIncidents',
+              {} as any,
+              (draft) => {
+                if (draft && draft.incidents) {
+                  draft.incidents = draft.incidents.filter(
+                    (incident) => incident.id !== id
+                  );
+                  draft.totalCount = Math.max(0, draft.totalCount - 1);
+                }
               }
-            })
+            )
           );
           patches.push(patchResults);
 
@@ -293,14 +326,20 @@ export const incidentApi = createApi({
             { pageNumber: 1, pageSize: 5 },
             { pageNumber: 1, pageSize: 20 },
             { pageNumber: 2, pageSize: 10 },
-          ].forEach(params => {
+          ].forEach((params) => {
             const patchResult = dispatch(
-              incidentApi.util.updateQueryData('getIncidents', params, (draft) => {
-                if (draft && draft.incidents) {
-                  draft.incidents = draft.incidents.filter(incident => incident.id !== id);
-                  draft.totalCount = Math.max(0, draft.totalCount - 1);
+              incidentApi.util.updateQueryData(
+                'getIncidents',
+                params,
+                (draft) => {
+                  if (draft && draft.incidents) {
+                    draft.incidents = draft.incidents.filter(
+                      (incident) => incident.id !== id
+                    );
+                    draft.totalCount = Math.max(0, draft.totalCount - 1);
+                  }
                 }
-              })
+              )
             );
             patches.push(patchResult);
           });
@@ -308,7 +347,7 @@ export const incidentApi = createApi({
           await queryFulfilled;
         } catch {
           // Revert optimistic updates on error
-          patches.forEach(patch => patch.undo());
+          patches.forEach((patch) => patch.undo());
         }
       },
       invalidatesTags: (_, error, id) => {
@@ -357,7 +396,10 @@ export const incidentApi = createApi({
     }),
 
     // Delete incident attachment
-    deleteIncidentAttachment: builder.mutation<void, { incidentId: number; attachmentId: number }>({
+    deleteIncidentAttachment: builder.mutation<
+      void,
+      { incidentId: number; attachmentId: number }
+    >({
       query: ({ incidentId, attachmentId }) => ({
         url: `/${incidentId}/attachments/${attachmentId}`,
         method: 'DELETE',
@@ -378,7 +420,10 @@ export const incidentApi = createApi({
     }),
 
     // Add involved person to incident
-    addInvolvedPerson: builder.mutation<void, { incidentId: number; data: AddInvolvedPersonRequest }>({
+    addInvolvedPerson: builder.mutation<
+      void,
+      { incidentId: number; data: AddInvolvedPersonRequest }
+    >({
       query: ({ incidentId, data }) => ({
         url: `/${incidentId}/involved-persons`,
         method: 'POST',
@@ -391,7 +436,14 @@ export const incidentApi = createApi({
     }),
 
     // Update involved person
-    updateInvolvedPerson: builder.mutation<void, { incidentId: number; personId: number; data: UpdateInvolvedPersonRequest }>({
+    updateInvolvedPerson: builder.mutation<
+      void,
+      {
+        incidentId: number;
+        personId: number;
+        data: UpdateInvolvedPersonRequest;
+      }
+    >({
       query: ({ incidentId, personId, data }) => ({
         url: `/${incidentId}/involved-persons/${personId}`,
         method: 'PUT',
@@ -404,7 +456,10 @@ export const incidentApi = createApi({
     }),
 
     // Remove involved person from incident
-    removeInvolvedPerson: builder.mutation<void, { incidentId: number; personId: number }>({
+    removeInvolvedPerson: builder.mutation<
+      void,
+      { incidentId: number; personId: number }
+    >({
       query: ({ incidentId, personId }) => ({
         url: `/${incidentId}/involved-persons/${personId}`,
         method: 'DELETE',
@@ -427,7 +482,10 @@ export const incidentApi = createApi({
     }),
 
     // Create corrective action
-    createCorrectiveAction: builder.mutation<{ id: number }, { incidentId: number; data: CreateCorrectiveActionRequest }>({
+    createCorrectiveAction: builder.mutation<
+      { id: number },
+      { incidentId: number; data: CreateCorrectiveActionRequest }
+    >({
       query: ({ incidentId, data }) => ({
         url: `/${incidentId}/corrective-actions`,
         method: 'POST',
@@ -441,7 +499,14 @@ export const incidentApi = createApi({
     }),
 
     // Update corrective action
-    updateCorrectiveAction: builder.mutation<void, { incidentId: number; actionId: number; data: UpdateCorrectiveActionRequest }>({
+    updateCorrectiveAction: builder.mutation<
+      void,
+      {
+        incidentId: number;
+        actionId: number;
+        data: UpdateCorrectiveActionRequest;
+      }
+    >({
       query: ({ incidentId, actionId, data }) => ({
         url: `/${incidentId}/corrective-actions/${actionId}`,
         method: 'PUT',
@@ -455,7 +520,10 @@ export const incidentApi = createApi({
     }),
 
     // Delete corrective action
-    deleteCorrectiveAction: builder.mutation<void, { incidentId: number; actionId: number }>({
+    deleteCorrectiveAction: builder.mutation<
+      void,
+      { incidentId: number; actionId: number }
+    >({
       query: ({ incidentId, actionId }) => ({
         url: `/${incidentId}/corrective-actions/${actionId}`,
         method: 'DELETE',

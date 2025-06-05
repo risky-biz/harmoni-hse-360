@@ -9,7 +9,10 @@ interface PrivateRouteProps {
   requiredRoles?: string[];
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRoles = [] }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  children,
+  requiredRoles = [],
+}) => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector(selectAuth);
   const location = useLocation();
@@ -37,7 +40,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRoles = [
 
   // Check role-based access if required roles are specified
   if (requiredRoles.length > 0 && auth.user) {
-    const hasRequiredRole = requiredRoles.some(role => 
+    const hasRequiredRole = requiredRoles.some((role) =>
       auth.user?.roles.includes(role)
     );
 

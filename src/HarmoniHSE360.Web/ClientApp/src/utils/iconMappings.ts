@@ -34,7 +34,7 @@ import {
   faUser,
   faUsers,
   faBuilding,
-  faIndustry
+  faIndustry,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Action Icons - Common actions across the incident management system
@@ -48,38 +48,38 @@ export const ACTION_ICONS = {
   remove: faTrash,
   view: faEye,
   details: faEye,
-  
+
   // Search and Filter
   search: faSearch,
   filter: faFilter,
   sort: faSort,
-  
+
   // Navigation
   back: faArrowLeft,
   next: faArrowRight,
   home: faHome,
-  
+
   // Form Actions
   save: faSave,
   cancel: faTimes,
   submit: faCheckCircle,
-  
+
   // File Operations
   upload: faUpload,
   download: faDownload,
   attach: faFile,
-  
+
   // UI Controls
   menu: faEllipsisV,
   options: faEllipsisV,
   refresh: faRefresh,
   loading: faSpinner,
-  
+
   // Status Actions
   approve: faCheckCircle,
   reject: faTimes,
   warning: faExclamationTriangle,
-  info: faInfoCircle
+  info: faInfoCircle,
 };
 
 // File Type Icons - For attachment management
@@ -90,7 +90,7 @@ export const FILE_TYPE_ICONS = {
   document: faFileWord,
   word: faFileWord,
   text: faFileAlt,
-  video: faFileVideo
+  video: faFileVideo,
 };
 
 // Context Icons - Specific to incident management context
@@ -100,12 +100,12 @@ export const CONTEXT_ICONS = {
   report: faClipboardList,
   reports: faClipboardList,
   dashboard: faHome,
-  
+
   // Location and Time
   location: faMapMarkerAlt,
   date: faCalendarAlt,
   time: faClock,
-  
+
   // People and Organization
   user: faUser,
   users: faUsers,
@@ -113,33 +113,33 @@ export const CONTEXT_ICONS = {
   investigator: faUser,
   department: faBuilding,
   company: faIndustry,
-  
+
   // Notifications
   notification: faBell,
-  alert: faExclamation
+  alert: faExclamation,
 };
 
 // Severity Icons - For incident severity levels
 export const SEVERITY_ICONS = {
   Critical: faExclamationTriangle,
-  Serious: faExclamationTriangle, 
+  Serious: faExclamationTriangle,
   Moderate: faInfoCircle,
-  Minor: faCheckCircle
+  Minor: faCheckCircle,
 };
 
-// Status Icons - For incident status levels  
+// Status Icons - For incident status levels
 export const STATUS_ICONS = {
   Reported: faClipboardList,
   UnderInvestigation: faClock,
   AwaitingAction: faExclamationTriangle,
   Resolved: faCheckCircle,
-  Closed: faCheckCircle
+  Closed: faCheckCircle,
 };
 
 // Helper function to get file type icon based on filename
 export const getFileTypeIcon = (fileName: string) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
-  
+
   switch (extension) {
     case 'pdf':
       return FILE_TYPE_ICONS.pdf;

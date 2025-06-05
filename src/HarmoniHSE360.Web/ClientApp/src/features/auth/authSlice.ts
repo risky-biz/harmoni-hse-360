@@ -25,7 +25,7 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
       state.error = null;
-      
+
       // Persist to localStorage
       localStorage.setItem('token', action.payload.token);
       localStorage.setItem('refreshToken', action.payload.refreshToken);
@@ -38,7 +38,7 @@ const authSlice = createSlice({
       state.token = null;
       state.refreshToken = null;
       state.error = action.payload;
-      
+
       // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
@@ -51,7 +51,7 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.error = null;
       state.isLoading = false;
-      
+
       // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
@@ -68,7 +68,7 @@ const authSlice = createSlice({
       const token = localStorage.getItem('token');
       const refreshToken = localStorage.getItem('refreshToken');
       const userStr = localStorage.getItem('user');
-      
+
       if (token && refreshToken && userStr) {
         try {
           const user = JSON.parse(userStr);
@@ -105,7 +105,9 @@ export default authSlice.reducer;
 
 // Selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectIsAuthenticated = (state: { auth: AuthState }) =>
+  state.auth.isAuthenticated;
 export const selectUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectIsLoading = (state: { auth: AuthState }) => state.auth.isLoading;
+export const selectIsLoading = (state: { auth: AuthState }) =>
+  state.auth.isLoading;
 export const selectError = (state: { auth: AuthState }) => state.auth.error;

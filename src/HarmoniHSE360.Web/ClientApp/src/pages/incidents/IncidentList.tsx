@@ -27,10 +27,16 @@ import {
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
-import { useGetIncidentsQuery, useDeleteIncidentMutation } from '../../features/incidents/incidentApi';
+import {
+  useGetIncidentsQuery,
+  useDeleteIncidentMutation,
+} from '../../features/incidents/incidentApi';
 // import type { IncidentDto } from '../../features/incidents/incidentApi';
-import { getSeverityBadge, getStatusBadge, formatDate } from '../../utils/incidentUtils';
-
+import {
+  getSeverityBadge,
+  getStatusBadge,
+  formatDate,
+} from '../../utils/incidentUtils';
 
 const IncidentList: React.FC = () => {
   const navigate = useNavigate();
@@ -42,25 +48,24 @@ const IncidentList: React.FC = () => {
   const [itemsPerPage] = useState(10);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   // Use RTK Query to fetch incidents
-  const { 
-    data, 
-    error, 
-    isLoading, 
-    refetch 
-  } = useGetIncidentsQuery({
-    pageNumber: currentPage,
-    pageSize: itemsPerPage,
-    status: statusFilter || undefined,
-    severity: severityFilter || undefined,
-    searchTerm: searchTerm || undefined,
-  }, {
-    // Ensure we refetch when the component mounts
-    refetchOnMountOrArgChange: true,
-    // Refetch when the window regains focus
-    refetchOnFocus: true,
-  });
-  
-  const [deleteIncident, { isLoading: isDeleting }] = useDeleteIncidentMutation();
+  const { data, error, isLoading, refetch } = useGetIncidentsQuery(
+    {
+      pageNumber: currentPage,
+      pageSize: itemsPerPage,
+      status: statusFilter || undefined,
+      severity: severityFilter || undefined,
+      searchTerm: searchTerm || undefined,
+    },
+    {
+      // Ensure we refetch when the component mounts
+      refetchOnMountOrArgChange: true,
+      // Refetch when the window regains focus
+      refetchOnFocus: true,
+    }
+  );
+
+  const [deleteIncident, { isLoading: isDeleting }] =
+    useDeleteIncidentMutation();
 
   // Extract incidents from response
   const incidents = data?.incidents || [];
@@ -78,13 +83,15 @@ const IncidentList: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
-  
 
   // Helper functions (removed - now imported from incidentUtils)
 
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
         <CSpinner size="sm" className="text-primary" />
         <span className="ms-2">Loading incidents...</span>
       </div>
@@ -97,10 +104,18 @@ const IncidentList: React.FC = () => {
         <CCard className="shadow-sm">
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="mb-0" style={{ color: 'var(--harmoni-charcoal)', fontFamily: 'Poppins, sans-serif' }}>
+              <h4
+                className="mb-0"
+                style={{
+                  color: 'var(--harmoni-charcoal)',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              >
                 Incident Reports
               </h4>
-              <small className="text-muted">Manage and track all incident reports</small>
+              <small className="text-muted">
+                Manage and track all incident reports
+              </small>
             </div>
             <div className="d-flex gap-2">
               <CButton
@@ -119,22 +134,32 @@ const IncidentList: React.FC = () => {
                 onClick={() => navigate('/incidents/create')}
                 className="d-flex align-items-center"
               >
-                <FontAwesomeIcon icon={ACTION_ICONS.create} size="sm" className="me-2" />
+                <FontAwesomeIcon
+                  icon={ACTION_ICONS.create}
+                  size="sm"
+                  className="me-2"
+                />
                 Report Incident
               </CButton>
             </div>
           </CCardHeader>
-          
+
           <CCardBody>
             {successMessage && (
-              <CAlert color="success" dismissible onClose={() => setSuccessMessage(null)}>
+              <CAlert
+                color="success"
+                dismissible
+                onClose={() => setSuccessMessage(null)}
+              >
                 {successMessage}
               </CAlert>
             )}
-            
+
             {error && (
               <CAlert color="danger" dismissible onClose={() => refetch()}>
-                {typeof error === 'string' ? error : 'Failed to load incidents. Please try again.'}
+                {typeof error === 'string'
+                  ? error
+                  : 'Failed to load incidents. Please try again.'}
               </CAlert>
             )}
 
@@ -159,7 +184,9 @@ const IncidentList: React.FC = () => {
                 >
                   <option value="">All Statuses</option>
                   <option value="Reported">Reported</option>
-                  <option value="UnderInvestigation">Under Investigation</option>
+                  <option value="UnderInvestigation">
+                    Under Investigation
+                  </option>
                   <option value="AwaitingAction">Awaiting Action</option>
                   <option value="Resolved">Resolved</option>
                   <option value="Closed">Closed</option>
@@ -189,7 +216,11 @@ const IncidentList: React.FC = () => {
                     setCurrentPage(1);
                   }}
                 >
-                  <FontAwesomeIcon icon={ACTION_ICONS.cancel} size="sm" className="me-2" />
+                  <FontAwesomeIcon
+                    icon={ACTION_ICONS.cancel}
+                    size="sm"
+                    className="me-2"
+                  />
                   Clear
                 </CButton>
               </CCol>
@@ -198,7 +229,11 @@ const IncidentList: React.FC = () => {
             {/* Incidents Table */}
             {incidents.length === 0 ? (
               <div className="text-center py-5">
-                <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="text-muted mb-3" style={{ fontSize: '3rem' }} />
+                <FontAwesomeIcon
+                  icon={CONTEXT_ICONS.incident}
+                  className="text-muted mb-3"
+                  style={{ fontSize: '3rem' }}
+                />
                 <h5 className="text-muted">No incidents found</h5>
                 <p className="text-muted">
                   {searchTerm || statusFilter || severityFilter
@@ -210,7 +245,11 @@ const IncidentList: React.FC = () => {
                   onClick={() => navigate('/incidents/create')}
                   className="mt-3"
                 >
-                  <FontAwesomeIcon icon={ACTION_ICONS.create} size="sm" className="me-2" />
+                  <FontAwesomeIcon
+                    icon={ACTION_ICONS.create}
+                    size="sm"
+                    className="me-2"
+                  />
                   Report First Incident
                 </CButton>
               </div>
@@ -242,8 +281,12 @@ const IncidentList: React.FC = () => {
                             </small>
                           </div>
                         </CTableDataCell>
-                        <CTableDataCell>{getSeverityBadge(incident.severity)}</CTableDataCell>
-                        <CTableDataCell>{getStatusBadge(incident.status)}</CTableDataCell>
+                        <CTableDataCell>
+                          {getSeverityBadge(incident.severity)}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          {getStatusBadge(incident.status)}
+                        </CTableDataCell>
                         <CTableDataCell>{incident.location}</CTableDataCell>
                         <CTableDataCell>{incident.reporterName}</CTableDataCell>
                         <CTableDataCell>
@@ -257,36 +300,73 @@ const IncidentList: React.FC = () => {
                         </CTableDataCell>
                         <CTableDataCell>
                           <CDropdown>
-                            <CDropdownToggle color="light" size="sm" caret={false}>
+                            <CDropdownToggle
+                              color="light"
+                              size="sm"
+                              caret={false}
+                            >
                               <FontAwesomeIcon icon={ACTION_ICONS.menu} />
                             </CDropdownToggle>
                             <CDropdownMenu>
-                              <CDropdownItem onClick={() => navigate(`/incidents/${incident.id}`)}>
-                                <FontAwesomeIcon icon={ACTION_ICONS.view} size="sm" className="me-2" />
+                              <CDropdownItem
+                                onClick={() =>
+                                  navigate(`/incidents/${incident.id}`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.view}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 View Details
                               </CDropdownItem>
-                              <CDropdownItem onClick={() => navigate(`/incidents/${incident.id}/edit`)}>
-                                <FontAwesomeIcon icon={ACTION_ICONS.edit} size="sm" className="me-2" />
+                              <CDropdownItem
+                                onClick={() =>
+                                  navigate(`/incidents/${incident.id}/edit`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.edit}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 Edit
                               </CDropdownItem>
-                              <CDropdownItem style={{ borderTop: '1px solid #dee2e6' }}></CDropdownItem>
-                              <CDropdownItem 
+                              <CDropdownItem
+                                style={{ borderTop: '1px solid #dee2e6' }}
+                              ></CDropdownItem>
+                              <CDropdownItem
                                 className="text-danger"
                                 onClick={async () => {
-                                  if (window.confirm(`Are you sure you want to delete "${incident.title}"? This action cannot be undone.`)) {
+                                  if (
+                                    window.confirm(
+                                      `Are you sure you want to delete "${incident.title}"? This action cannot be undone.`
+                                    )
+                                  ) {
                                     try {
-                                      await deleteIncident(incident.id).unwrap();
+                                      await deleteIncident(
+                                        incident.id
+                                      ).unwrap();
                                       // Optimistic update should handle immediate UI update
                                       // Force refresh as backup only if needed
                                     } catch (error) {
-                                      console.error('Failed to delete incident:', error);
-                                      alert('Failed to delete incident. Please try again.');
+                                      console.error(
+                                        'Failed to delete incident:',
+                                        error
+                                      );
+                                      alert(
+                                        'Failed to delete incident. Please try again.'
+                                      );
                                     }
                                   }
                                 }}
                                 disabled={isDeleting}
                               >
-                                <FontAwesomeIcon icon={ACTION_ICONS.delete} size="sm" className="me-2" />
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.delete}
+                                  size="sm"
+                                  className="me-2"
+                                />
                                 Delete
                               </CDropdownItem>
                             </CDropdownMenu>
@@ -301,7 +381,9 @@ const IncidentList: React.FC = () => {
                 {totalPages > 1 && (
                   <div className="d-flex justify-content-between align-items-center mt-4">
                     <div className="text-muted">
-                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} incidents
+                      Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
+                      {Math.min(currentPage * itemsPerPage, totalCount)} of{' '}
+                      {totalCount} incidents
                     </div>
                     <CPagination aria-label="Incidents pagination">
                       <CPaginationItem

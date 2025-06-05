@@ -13,12 +13,7 @@ import {
   CSpinner,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import {
-  cilWarning,
-  cilShieldAlt,
-  cilTask,
-  cilClipboard,
-} from '@coreui/icons';
+import { cilWarning, cilShieldAlt, cilTask, cilClipboard } from '@coreui/icons';
 
 // @ts-expect-error - These icons exist but TypeScript definitions might be outdated
 import { cilLibraryAdd, cilChevronRight } from '@coreui/icons';
@@ -29,10 +24,15 @@ import { useAuth } from '../hooks/useAuth';
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // Temporarily disable API call for debugging
   // const { data: stats, isLoading: statsLoading, error: statsError } = useGetIncidentStatisticsQuery();
-  const stats = { totalIncidents: 0, openIncidents: 0, closedIncidents: 0, criticalIncidents: 0 };
+  const stats = {
+    totalIncidents: 0,
+    openIncidents: 0,
+    closedIncidents: 0,
+    criticalIncidents: 0,
+  };
   const statsLoading = false;
   const statsError = null;
 
@@ -56,10 +56,11 @@ const Dashboard: React.FC = () => {
       <CAlert color="info" className="d-flex align-items-center">
         <CIcon icon={cilShieldAlt} className="flex-shrink-0 me-2" />
         <div>
-          <strong>Welcome to HarmoniHSE360!</strong> This system manages health, safety, and environmental data for British School Jakarta.
-          <CButton 
-            color="primary" 
-            size="sm" 
+          <strong>Welcome to HarmoniHSE360!</strong> This system manages health,
+          safety, and environmental data for British School Jakarta.
+          <CButton
+            color="primary"
+            size="sm"
             className="ms-3"
             onClick={() => navigate('/incidents/create')}
           >
@@ -71,7 +72,8 @@ const Dashboard: React.FC = () => {
 
       {statsError && (
         <CAlert color="warning" className="mb-4">
-          <strong>Unable to load statistics.</strong> Please ensure you're logged in and try refreshing the page.
+          <strong>Unable to load statistics.</strong> Please ensure you're
+          logged in and try refreshing the page.
         </CAlert>
       )}
 
@@ -86,9 +88,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <>
                   {stats?.totalIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">
-                    incidents
-                  </span>
+                  <span className="fs-6 fw-normal">incidents</span>
                 </>
               )
             }
@@ -114,21 +114,19 @@ const Dashboard: React.FC = () => {
               ) : (
                 <>
                   {stats?.openIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">
-                    open
-                  </span>
+                  <span className="fs-6 fw-normal">open</span>
                 </>
               )
             }
             title="Open Incidents"
             action={
-              <CIcon
-                icon={cilTask}
-                height={36}
-                className="my-4 text-white"
-              />
+              <CIcon icon={cilTask} height={36} className="my-4 text-white" />
             }
-            onClick={() => navigate('/incidents?status=Reported,UnderInvestigation,AwaitingAction')}
+            onClick={() =>
+              navigate(
+                '/incidents?status=Reported,UnderInvestigation,AwaitingAction'
+              )
+            }
             style={{ cursor: 'pointer' }}
           />
         </CCol>
@@ -142,9 +140,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <>
                   {stats?.criticalIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">
-                    critical
-                  </span>
+                  <span className="fs-6 fw-normal">critical</span>
                 </>
               )
             }
@@ -170,9 +166,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <>
                   {stats?.closedIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">
-                    resolved
-                  </span>
+                  <span className="fs-6 fw-normal">resolved</span>
                 </>
               )
             }
@@ -198,8 +192,8 @@ const Dashboard: React.FC = () => {
             </CCardHeader>
             <CCardBody>
               <div className="d-grid gap-3">
-                <CButton 
-                  color="primary" 
+                <CButton
+                  color="primary"
                   className="d-flex align-items-center justify-content-between"
                   onClick={() => navigate('/incidents/create')}
                 >
@@ -209,9 +203,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <CIcon icon={cilChevronRight} size="sm" />
                 </CButton>
-                
-                <CButton 
-                  color="secondary" 
+
+                <CButton
+                  color="secondary"
                   variant="outline"
                   className="d-flex align-items-center justify-content-between"
                   onClick={() => navigate('/incidents')}
@@ -222,9 +216,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <CIcon icon={cilChevronRight} size="sm" />
                 </CButton>
-                
-                <CButton 
-                  color="secondary" 
+
+                <CButton
+                  color="secondary"
                   variant="outline"
                   className="d-flex align-items-center justify-content-between"
                   onClick={() => navigate('/incidents/my-reports')}
@@ -235,9 +229,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <CIcon icon={cilChevronRight} size="sm" />
                 </CButton>
-                
-                <CButton 
-                  color="success" 
+
+                <CButton
+                  color="success"
                   variant="outline"
                   className="d-flex align-items-center justify-content-between"
                   disabled

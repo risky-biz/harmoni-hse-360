@@ -10,13 +10,23 @@ interface IconProps {
 }
 
 // Helper component that handles both CoreUI and FontAwesome icons
-export const Icon: React.FC<IconProps> = ({ icon, size = 'sm', className = '' }) => {
+export const Icon: React.FC<IconProps> = ({
+  icon,
+  size = 'sm',
+  className = '',
+}) => {
   // Check if it's a FontAwesome icon (has iconName property)
   if (icon && typeof icon === 'object' && 'iconName' in icon) {
     const faSize = size === 'sm' ? '1x' : size === 'lg' ? '2x' : size;
-    return <FontAwesomeIcon icon={icon as IconDefinition} size={faSize as any} className={className} />;
+    return (
+      <FontAwesomeIcon
+        icon={icon as IconDefinition}
+        size={faSize as any}
+        className={className}
+      />
+    );
   }
-  
+
   // Otherwise use CoreUI icon
   return <CIcon icon={icon} size={size} className={className} />;
 };
