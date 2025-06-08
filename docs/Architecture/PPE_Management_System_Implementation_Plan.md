@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive implementation plan for Epic 13: PPE (Personal Protective Equipment) Management System for the HarmoniHSE360 application. The PPE module will enable comprehensive tracking, management, and compliance monitoring of personal protective equipment across British School Jakarta.
+This document provides a comprehensive implementation plan for Epic 13: PPE (Personal Protective Equipment) Management System for the Harmoni360 application. The PPE module will enable comprehensive tracking, management, and compliance monitoring of personal protective equipment across British School Jakarta.
 
 ## System Overview
 
@@ -549,7 +549,7 @@ public record GetPPECategoriesQuery : IRequest<List<PPECategoryDto>>
 
 ### ✅ COMPLETED IMPLEMENTATION STATUS (90% Production Ready)
 
-The PPE Management System has achieved production-ready status with comprehensive CRUD operations, real-time updates, and complete integration with the HarmoniHSE360 architecture. All major components have been implemented and tested:
+The PPE Management System has achieved production-ready status with comprehensive CRUD operations, real-time updates, and complete integration with the Harmoni360 architecture. All major components have been implemented and tested:
 
 **✅ Backend Infrastructure - COMPLETE (100%)**
 - 8 PPE database tables with proper relationships and migrations
@@ -672,7 +672,7 @@ The PPE Management System has achieved production-ready status with comprehensiv
 The PPE Management System is fully deployed and accessible in the development environment.
 
 ### How to Access
-1. Login to HarmoniHSE360 with valid credentials
+1. Login to Harmoni360 with valid credentials
 2. Navigate to "PPE Management" in the sidebar
 3. Access available features:
    - PPE Dashboard: `/ppe/dashboard`
@@ -702,7 +702,7 @@ The PPE Management System is fully deployed and accessible in the development en
 
 ## Conclusion
 
-The PPE Management System implementation has successfully delivered core functionality for managing personal protective equipment at British School Jakarta. The system provides comprehensive inventory tracking, assignment management, and analytics capabilities while maintaining consistency with the HarmoniHSE360 architecture.
+The PPE Management System implementation has successfully delivered core functionality for managing personal protective equipment at British School Jakarta. The system provides comprehensive inventory tracking, assignment management, and analytics capabilities while maintaining consistency with the Harmoni360 architecture.
 
 Key achievements include:
 - Complete CRUD operations for all PPE entities

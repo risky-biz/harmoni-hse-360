@@ -1,4 +1,4 @@
-# 🎯 Branding Summary: HarmoniHSE360
+# 🎯 Branding Summary: Harmoni360
 
 ## 🏷️ Tagline Options
 
@@ -18,7 +18,7 @@ These focus on key values: safety, harmony, community, and completeness.
 
 ---
 
-## 🎨 Logo Concept for HarmoniHSE360
+## 🎨 Logo Concept for Harmoni360
 
 ### 1. Shape & Style
 
@@ -43,12 +43,12 @@ These focus on key values: safety, harmony, community, and completeness.
 * Include subtle **leaf elements** to represent environmental care
 * **Mobile-friendly icon** version: just the "H" in a circle with a shield or wave motif
 * **Optional bilingual lockup**:
-  **HarmoniHSE360**
+  **Harmoni360**
   *"Platform Keselamatan & Kesehatan Sekolah"*
 
 ---
 
-## 🧭 HarmoniHSE360 Style Guide for Developers
+## 🧭 Harmoni360 Style Guide for Developers
 
 ### 🎨 Color Palette
 
@@ -141,4 +141,4 @@ Use high contrast combinations for accessibility (WCAG 2.1 AA).
 
 ---
 
-**Note for Developers**: This style guide reflects the core branding and design principles of HarmoniHSE360. Follow these standards to ensure a consistent, professional, and user-centric experience throughout the app.
+**Note for Developers**: This style guide reflects the core branding and design principles of Harmoni360. Follow these standards to ensure a consistent, professional, and user-centric experience throughout the app.

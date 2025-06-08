@@ -1,7 +1,7 @@
 # Attachment Management - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for file attachment functionality in the HarmoniHSE360 incident management system.
+This document contains comprehensive test cases for file attachment functionality in the Harmoni360 incident management system.
 
 ---
 

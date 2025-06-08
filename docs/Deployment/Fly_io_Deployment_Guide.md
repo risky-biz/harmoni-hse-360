@@ -1,4 +1,4 @@
-# HarmoniHSE360 Fly.io Deployment Guide
+# Harmoni360 Fly.io Deployment Guide
 
 ## Table of Contents
 
@@ -66,7 +66,7 @@ Ensure you have the following installed:
 
 2. **Verify Local Build:**
    ```bash
-   docker build -t harmonihse360:local .
+   docker build -t harmoni360:local .
    ```
 
 ---
@@ -87,23 +87,23 @@ WORKDIR /src
 RUN apk add --no-cache nodejs npm
 
 # Copy csproj files and restore
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
-COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "HarmoniHSE360.Application/"]
-COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "HarmoniHSE360.Domain/"]
-COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "HarmoniHSE360.Infrastructure/"]
-RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
+COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "Harmoni360.Application/"]
+COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "Harmoni360.Domain/"]
+COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "Harmoni360.Infrastructure/"]
+RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
 
 # Copy everything else
 COPY src/ .
 
 # Build React app
-WORKDIR /src/HarmoniHSE360.Web/ClientApp
+WORKDIR /src/Harmoni360.Web/ClientApp
 RUN npm ci --only=production
 RUN npm run build
 
 # Build .NET app
-WORKDIR /src/HarmoniHSE360.Web
-RUN dotnet publish "HarmoniHSE360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+WORKDIR /src/Harmoni360.Web
+RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
@@ -127,7 +127,7 @@ USER appuser
 
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]
+ENTRYPOINT ["dotnet", "Harmoni360.Web.dll"]
 ```
 
 ### 2.2 Environment Variables Configuration
@@ -149,8 +149,8 @@ ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]
   },
   "Jwt": {
     "Key": "",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationMinutes": "60",
     "RefreshTokenExpirationDays": "7"
   }
@@ -163,7 +163,7 @@ ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]
 ```bash
 #!/bin/bash
 echo "Running database migrations..."
-dotnet ef database update --project src/HarmoniHSE360.Infrastructure --startup-project src/HarmoniHSE360.Web
+dotnet ef database update --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web
 echo "Database migrations completed."
 ```
 
@@ -175,7 +175,7 @@ echo "Database migrations completed."
 
 1. **Create PostgreSQL Cluster:**
    ```bash
-   fly postgres create --name harmonihse360-db --region sjc
+   fly postgres create --name harmoni360-db --region sjc
    ```
 
 2. **Note the Connection Details:**
@@ -184,14 +184,14 @@ echo "Database migrations completed."
 
 3. **Verify Database Connection:**
    ```bash
-   fly postgres connect -a harmonihse360-db
+   fly postgres connect -a harmoni360-db
    ```
 
 ### 3.2 Redis Setup via Upstash
 
 1. **Create Redis Instance:**
    ```bash
-   fly ext redis create --name harmonihse360-redis
+   fly ext redis create --name harmoni360-redis
    ```
 
 2. **Note Redis Connection String:**
@@ -210,12 +210,12 @@ The database and Redis will be automatically configured on Fly.io's private netw
 
 1. **Initialize Fly App:**
    ```bash
-   fly launch --no-deploy --name harmonihse360-app --region sjc
+   fly launch --no-deploy --name harmoni360-app --region sjc
    ```
 
 2. **Configure fly.toml:**
    ```toml
-   app = "harmonihse360-app"
+   app = "harmoni360-app"
    primary_region = "sjc"
 
    [build]
@@ -253,14 +253,14 @@ The database and Redis will be automatically configured on Fly.io's private netw
      tls_skip_verify = false
 
    [mounts]
-     source = "harmonihse360_uploads"
+     source = "harmoni360_uploads"
      destination = "/app/uploads"
    ```
 
 ### 4.2 Create Persistent Volume
 
 ```bash
-fly volumes create harmonihse360_uploads --region sjc --size 1
+fly volumes create harmoni360_uploads --region sjc --size 1
 ```
 
 ### 4.3 Configure Secrets
@@ -296,7 +296,7 @@ fly volumes create harmonihse360_uploads --region sjc --size 1
 
 1. **Add Custom Domain:**
    ```bash
-   fly certs create harmonihse360.yourdomain.com
+   fly certs create harmoni360.yourdomain.com
    ```
 
 2. **Configure DNS:**
@@ -357,7 +357,7 @@ fly restart
 **Issue: Database connection failed**
 ```bash
 # Verify database is running
-fly status -a harmonihse360-db
+fly status -a harmoni360-db
 
 # Check connection string
 fly secrets list
@@ -379,12 +379,12 @@ fly secrets list
 
 1. **Database Backup:**
    ```bash
-   fly postgres backup create -a harmonihse360-db
+   fly postgres backup create -a harmoni360-db
    ```
 
 2. **List Backups:**
    ```bash
-   fly postgres backup list -a harmonihse360-db
+   fly postgres backup list -a harmoni360-db
    ```
 
 ---
@@ -395,7 +395,7 @@ fly secrets list
 
 1. **Access Application Console:**
    ```bash
-   fly ssh console -a harmonihse360-app
+   fly ssh console -a harmoni360-app
    ```
 
 2. **Run Data Seeding:**
@@ -408,9 +408,9 @@ fly secrets list
 
 Create the following demo accounts:
 
-- **Admin User:** admin@harmonihse360.com / Admin123!
-- **Manager User:** manager@harmonihse360.com / Manager123!
-- **Employee User:** employee@harmonihse360.com / Employee123!
+- **Admin User:** admin@harmoni360.com / Admin123!
+- **Manager User:** manager@harmoni360.com / Manager123!
+- **Employee User:** employee@harmoni360.com / Employee123!
 
 ### 7.3 Testing Checklist
 
@@ -425,9 +425,9 @@ Create the following demo accounts:
 
 ### 7.4 Demo Environment URLs
 
-- **Application:** https://harmonihse360-app.fly.dev
-- **Custom Domain:** https://harmonihse360.yourdomain.com
-- **Health Check:** https://harmonihse360-app.fly.dev/health
+- **Application:** https://harmoni360-app.fly.dev
+- **Custom Domain:** https://harmoni360.yourdomain.com
+- **Health Check:** https://harmoni360-app.fly.dev/health
 
 ---
 
@@ -452,7 +452,7 @@ fly status
 
 **Access Database:**
 ```bash
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 ```
 
 ---
@@ -477,7 +477,7 @@ fly postgres connect -a harmonihse360-db
 - **Fly.io Status:** https://status.fly.io/
 
 ### Internal Resources
-- **HarmoniHSE360 Repository:** https://github.com/risky-biz/harmoni-hse-360
+- **Harmoni360 Repository:** https://github.com/risky-biz/harmoni-hse-360
 - **Getting Started Guide:** [../Guides/Getting_Started_Guide.md](../Guides/Getting_Started_Guide.md)
 - **Docker Guide:** [../Guides/Docker_Guide.md](../Guides/Docker_Guide.md)
 
@@ -485,4 +485,4 @@ fly postgres connect -a harmonihse360-db
 
 *Last Updated: January 2025*
 *Version: 1.0*
-*Part of HarmoniHSE360 Deployment Documentation Suite*
+*Part of Harmoni360 Deployment Documentation Suite*

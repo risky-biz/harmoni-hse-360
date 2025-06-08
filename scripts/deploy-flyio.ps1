@@ -1,16 +1,16 @@
-# HarmoniHSE360 Fly.io Deployment Script (PowerShell)
+# Harmoni360 Fly.io Deployment Script (PowerShell)
 # This script automates the deployment process to Fly.io
 
 param(
-    [string]$AppName = "harmonihse360-app",
-    [string]$DbName = "harmonihse360-db",
-    [string]$RedisName = "harmonihse360-redis",
+    [string]$AppName = "harmoni360-app",
+    [string]$DbName = "harmoni360-db",
+    [string]$RedisName = "harmoni360-redis",
     [string]$Region = "sjc"
 )
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚀 Starting HarmoniHSE360 Fly.io Deployment" -ForegroundColor Green
+Write-Host "🚀 Starting Harmoni360 Fly.io Deployment" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 
 # Check if fly CLI is installed
@@ -111,7 +111,7 @@ if (Test-AppExists $AppName) {
 
 # Step 4: Create volume if it doesn't exist
 Write-Host "💾 Setting up persistent volume..." -ForegroundColor Yellow
-$volumeName = "harmonihse360_uploads"
+$volumeName = "harmoni360_uploads"
 try {
     $volumes = fly volumes list -a $AppName --json | ConvertFrom-Json
     $volumeExists = $volumes | Where-Object { $_.name -eq $volumeName }
@@ -133,7 +133,7 @@ try {
 Write-Host "🔐 Setting up secrets..." -ForegroundColor Yellow
 
 # Generate JWT key
-$jwtKey = "HarmoniHSE360-Production-JWT-Key-$(Get-Date -Format 'yyyyMMddHHmmss')-$([System.Guid]::NewGuid().ToString('N').Substring(0,16))"
+$jwtKey = "Harmoni360-Production-JWT-Key-$(Get-Date -Format 'yyyyMMddHHmmss')-$([System.Guid]::NewGuid().ToString('N').Substring(0,16))"
 fly secrets set "Jwt__Key=$jwtKey" -a $AppName
 Write-Host "   ✅ JWT key set" -ForegroundColor Green
 

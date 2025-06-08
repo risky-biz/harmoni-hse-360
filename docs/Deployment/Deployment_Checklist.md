@@ -1,4 +1,4 @@
-# HarmoniHSE360 Deployment Checklist
+# Harmoni360 Deployment Checklist
 
 ## Pre-Deployment Checklist
 
@@ -14,7 +14,7 @@
 ### 📋 Code Preparation
 - [ ] Latest code pulled from repository
 - [ ] All tests passing locally
-- [ ] Docker build successful locally (`docker build -f Dockerfile.flyio -t harmonihse360:test .`)
+- [ ] Docker build successful locally (`docker build -f Dockerfile.flyio -t harmoni360:test .`)
 - [ ] Environment-specific configuration files created
 - [ ] Secrets and connection strings prepared
 
@@ -64,10 +64,10 @@
 ## Demo Preparation Checklist
 
 ### 👥 User Accounts
-- [ ] Admin user created (admin@harmonihse360.com)
-- [ ] Manager user created (manager@harmonihse360.com)
-- [ ] Officer user created (officer@harmonihse360.com)
-- [ ] Employee user created (employee@harmonihse360.com)
+- [ ] Admin user created (admin@harmoni360.com)
+- [ ] Manager user created (manager@harmoni360.com)
+- [ ] Officer user created (officer@harmoni360.com)
+- [ ] Employee user created (employee@harmoni360.com)
 - [ ] All demo passwords set and documented
 
 ### 📊 Sample Data
@@ -215,7 +215,7 @@
 
 ## Deployment Completion Certificate
 
-**Project:** HarmoniHSE360  
+**Project:** Harmoni360  
 **Environment:** Production (Fly.io)  
 **Deployment Date:** _______________  
 **Deployed By:** _______________  

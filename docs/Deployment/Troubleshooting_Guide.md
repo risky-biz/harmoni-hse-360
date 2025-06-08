@@ -1,6 +1,6 @@
-# HarmoniHSE360 Comprehensive Troubleshooting Guide
+# Harmoni360 Comprehensive Troubleshooting Guide
 
-This guide provides solutions for all deployment and CI/CD issues encountered with the HarmoniHSE360 application.
+This guide provides solutions for all deployment and CI/CD issues encountered with the Harmoni360 application.
 
 ## Table of Contents
 
@@ -24,13 +24,13 @@ This guide provides solutions for all deployment and CI/CD issues encountered wi
 **Diagnosis:**
 ```bash
 # Check application logs
-fly logs -a harmonihse360-app
+fly logs -a harmoni360-app
 
 # Check application status
-fly status -a harmonihse360-app
+fly status -a harmoni360-app
 
 # Check machine status
-fly machine list -a harmonihse360-app
+fly machine list -a harmoni360-app
 ```
 
 **Common Causes & Solutions:**
@@ -38,21 +38,21 @@ fly machine list -a harmonihse360-app
 #### Missing Environment Variables
 ```bash
 # Check current secrets
-fly secrets list -a harmonihse360-app
+fly secrets list -a harmoni360-app
 
 # Set missing secrets
-fly secrets set ConnectionStrings__DefaultConnection="your-db-connection" -a harmonihse360-app
-fly secrets set ConnectionStrings__Redis="your-redis-connection" -a harmonihse360-app
-fly secrets set Jwt__Key="your-jwt-key" -a harmonihse360-app
+fly secrets set ConnectionStrings__DefaultConnection="your-db-connection" -a harmoni360-app
+fly secrets set ConnectionStrings__Redis="your-redis-connection" -a harmoni360-app
+fly secrets set Jwt__Key="your-jwt-key" -a harmoni360-app
 ```
 
 #### Database Connection Issues
 ```bash
 # Test database connectivity
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Check database status
-fly status -a harmonihse360-db
+fly status -a harmoni360-db
 
 # Verify connection string format
 # Should be: postgres://username:password@hostname:5432/database
@@ -78,7 +78,7 @@ Ensure your `fly.toml` has correct port configuration:
 #### Manual Migration
 ```bash
 # Connect to application
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 
 # Run migrations manually
 cd /app
@@ -88,12 +88,12 @@ dotnet ef database update --verbose
 #### Reset Database (Development Only)
 ```bash
 # Drop and recreate database
-fly postgres connect -a harmonihse360-db
-DROP DATABASE harmonihse360;
-CREATE DATABASE harmonihse360;
+fly postgres connect -a harmoni360-db
+DROP DATABASE harmoni360;
+CREATE DATABASE harmoni360;
 
 # Run migrations again
-fly ssh console -a harmonihse360-app -C "cd /app && dotnet ef database update"
+fly ssh console -a harmoni360-app -C "cd /app && dotnet ef database update"
 ```
 
 ### 3. Redis Connection Issues
@@ -106,10 +106,10 @@ fly ssh console -a harmonihse360-app -C "cd /app && dotnet ef database update"
 **Diagnosis:**
 ```bash
 # Check Redis status
-fly ext redis status harmonihse360-redis
+fly ext redis status harmoni360-redis
 
 # Test Redis connection
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 redis-cli -u $ConnectionStrings__Redis ping
 ```
 
@@ -121,7 +121,7 @@ redis-cli -u $ConnectionStrings__Redis ping
 # Should be: redis://username:password@hostname:6379
 
 # Update Redis connection if needed
-fly secrets set ConnectionStrings__Redis="correct-redis-url" -a harmonihse360-app
+fly secrets set ConnectionStrings__Redis="correct-redis-url" -a harmoni360-app
 ```
 
 ### 4. Volume Mount Issues
@@ -134,10 +134,10 @@ fly secrets set ConnectionStrings__Redis="correct-redis-url" -a harmonihse360-ap
 **Diagnosis:**
 ```bash
 # Check volume status
-fly volumes list -a harmonihse360-app
+fly volumes list -a harmoni360-app
 
 # Check volume mounts
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 ls -la /app/uploads
 ```
 
@@ -145,7 +145,7 @@ ls -la /app/uploads
 
 #### Fix Volume Permissions
 ```bash
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 sudo chown -R appuser:appgroup /app/uploads
 sudo chmod 755 /app/uploads
 ```
@@ -153,13 +153,13 @@ sudo chmod 755 /app/uploads
 #### Recreate Volume
 ```bash
 # Destroy old volume (WARNING: Data loss)
-fly volumes destroy vol_xyz -a harmonihse360-app
+fly volumes destroy vol_xyz -a harmoni360-app
 
 # Create new volume
-fly volumes create harmonihse360_uploads --region sjc --size 1 -a harmonihse360-app
+fly volumes create harmoni360_uploads --region sjc --size 1 -a harmoni360-app
 
 # Redeploy application
-fly deploy -a harmonihse360-app
+fly deploy -a harmoni360-app
 ```
 
 ### 5. SSL Certificate Issues
@@ -172,10 +172,10 @@ fly deploy -a harmonihse360-app
 **Diagnosis:**
 ```bash
 # Check certificate status
-fly certs list -a harmonihse360-app
+fly certs list -a harmoni360-app
 
 # Check certificate details
-fly certs show yourdomain.com -a harmonihse360-app
+fly certs show yourdomain.com -a harmoni360-app
 ```
 
 **Solutions:**
@@ -183,10 +183,10 @@ fly certs show yourdomain.com -a harmonihse360-app
 #### Recreate Certificate
 ```bash
 # Remove old certificate
-fly certs remove yourdomain.com -a harmonihse360-app
+fly certs remove yourdomain.com -a harmoni360-app
 
 # Create new certificate
-fly certs create yourdomain.com -a harmonihse360-app
+fly certs create yourdomain.com -a harmoni360-app
 
 # Verify DNS configuration
 nslookup yourdomain.com
@@ -202,13 +202,13 @@ nslookup yourdomain.com
 **Diagnosis:**
 ```bash
 # Check resource usage
-fly metrics -a harmonihse360-app
+fly metrics -a harmoni360-app
 
 # Check machine specifications
-fly machine list -a harmonihse360-app
+fly machine list -a harmoni360-app
 
 # Monitor real-time performance
-fly logs -f -a harmonihse360-app
+fly logs -f -a harmoni360-app
 ```
 
 **Solutions:**
@@ -216,13 +216,13 @@ fly logs -f -a harmonihse360-app
 #### Scale Resources
 ```bash
 # Increase memory
-fly scale memory 1024 -a harmonihse360-app
+fly scale memory 1024 -a harmoni360-app
 
 # Add more instances
-fly scale count 2 -a harmonihse360-app
+fly scale count 2 -a harmoni360-app
 
 # Use performance CPU
-fly machine update --vm-cpu-kind performance -a harmonihse360-app
+fly machine update --vm-cpu-kind performance -a harmoni360-app
 ```
 
 ### 7. Build Failures
@@ -247,10 +247,10 @@ RUN dotnet publish -c Release --no-restore -o /app/publish
 #### Local Build Test
 ```bash
 # Test build locally
-docker build -f Dockerfile.flyio -t harmonihse360:test .
+docker build -f Dockerfile.flyio -t harmoni360:test .
 
 # Test run locally
-docker run -p 8080:8080 harmonihse360:test
+docker run -p 8080:8080 harmoni360:test
 ```
 
 ## Monitoring and Debugging
@@ -258,19 +258,19 @@ docker run -p 8080:8080 harmonihse360:test
 ### Real-time Monitoring
 ```bash
 # Follow logs in real-time
-fly logs -f -a harmonihse360-app
+fly logs -f -a harmoni360-app
 
 # Monitor specific machine
-fly logs -f -a harmonihse360-app -i machine_id
+fly logs -f -a harmoni360-app -i machine_id
 
 # Filter logs by level
-fly logs -f -a harmonihse360-app | grep ERROR
+fly logs -f -a harmoni360-app | grep ERROR
 ```
 
 ### Health Check Debugging
 ```bash
 # Test health endpoint manually
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 
 # Check health check configuration in fly.toml
 [[services.http_checks]]
@@ -285,10 +285,10 @@ curl https://harmonihse360-app.fly.dev/health
 ### Database Debugging
 ```bash
 # Connect to database
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Check database size
-SELECT pg_size_pretty(pg_database_size('harmonihse360'));
+SELECT pg_size_pretty(pg_database_size('harmoni360'));
 
 # Check active connections
 SELECT count(*) FROM pg_stat_activity;
@@ -305,36 +305,36 @@ LIMIT 10;
 ### Application Recovery
 ```bash
 # Restart application
-fly restart -a harmonihse360-app
+fly restart -a harmoni360-app
 
 # Rollback to previous version
-fly releases -a harmonihse360-app
-fly rollback -a harmonihse360-app --version X
+fly releases -a harmoni360-app
+fly rollback -a harmoni360-app --version X
 
 # Force redeploy
-fly deploy --force -a harmonihse360-app
+fly deploy --force -a harmoni360-app
 ```
 
 ### Database Recovery
 ```bash
 # List available backups
-fly postgres backup list -a harmonihse360-db
+fly postgres backup list -a harmoni360-db
 
 # Restore from backup
-fly postgres backup restore backup_id -a harmonihse360-db
+fly postgres backup restore backup_id -a harmoni360-db
 ```
 
 ### Complete Environment Reset
 ```bash
 # WARNING: This will destroy all data
 # Destroy application
-fly apps destroy harmonihse360-app
+fly apps destroy harmoni360-app
 
 # Destroy database
-fly postgres destroy harmonihse360-db
+fly postgres destroy harmoni360-db
 
 # Destroy Redis
-fly ext redis destroy harmonihse360-redis
+fly ext redis destroy harmoni360-redis
 
 # Redeploy from scratch
 ./scripts/deploy-flyio.sh
@@ -347,32 +347,32 @@ fly ext redis destroy harmonihse360-redis
 - **Documentation:** https://fly.io/docs/
 - **Status Page:** https://status.fly.io/
 
-### HarmoniHSE360 Support
+### Harmoni360 Support
 - **Repository Issues:** https://github.com/risky-biz/harmoni-hse-360/issues
 - **Documentation:** docs/README.md
 
 ### Useful Commands Reference
 ```bash
 # Application management
-fly status -a harmonihse360-app
-fly logs -a harmonihse360-app
-fly ssh console -a harmonihse360-app
-fly restart -a harmonihse360-app
+fly status -a harmoni360-app
+fly logs -a harmoni360-app
+fly ssh console -a harmoni360-app
+fly restart -a harmoni360-app
 
 # Database management
-fly postgres connect -a harmonihse360-db
-fly postgres backup create -a harmonihse360-db
-fly postgres backup list -a harmonihse360-db
+fly postgres connect -a harmoni360-db
+fly postgres backup create -a harmoni360-db
+fly postgres backup list -a harmoni360-db
 
 # Secrets management
-fly secrets list -a harmonihse360-app
-fly secrets set KEY=value -a harmonihse360-app
-fly secrets unset KEY -a harmonihse360-app
+fly secrets list -a harmoni360-app
+fly secrets set KEY=value -a harmoni360-app
+fly secrets unset KEY -a harmoni360-app
 
 # Scaling
-fly scale count 2 -a harmonihse360-app
-fly scale memory 1024 -a harmonihse360-app
-fly scale show -a harmonihse360-app
+fly scale count 2 -a harmoni360-app
+fly scale memory 1024 -a harmoni360-app
+fly scale show -a harmoni360-app
 ```
 
 ---
@@ -453,7 +453,7 @@ npm --version
       -- TestRunParameters.Parameter\(name=\"ConnectionString\",value=\"${{ env.TEST_CONNECTION_STRING }}\"\)
   env:
     ASPNETCORE_ENVIRONMENT: Testing
-    ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=postgres;Password=postgres"
+    ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=postgres;Password=postgres"
 ```
 
 ### Security Scan Issues
@@ -516,8 +516,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
 # Copy only necessary files first
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
-RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
+RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
 
 # Then copy everything else
 COPY src/ .
@@ -549,13 +549,13 @@ TestResults/
 
 ```bash
 # Check Fly.io app status
-fly status -a harmonihse360-app
+fly status -a harmoni360-app
 
 # View deployment logs
-fly logs -a harmonihse360-app
+fly logs -a harmoni360-app
 
 # Check machine status
-fly machine list -a harmonihse360-app
+fly machine list -a harmoni360-app
 
 # Manual deployment test
 fly deploy --config fly.toml --verbose
@@ -672,8 +672,8 @@ gh api repos/risky-biz/harmoni-hse-360/code-scanning/alerts | \
 
 ```bash
 # Quick rollback using Fly.io
-fly releases -a harmonihse360-app
-fly rollback -a harmonihse360-app --version <previous-version>
+fly releases -a harmoni360-app
+fly rollback -a harmoni360-app --version <previous-version>
 ```
 
 ### Disable Workflow
@@ -698,13 +698,13 @@ fly deploy --config fly.toml --image ghcr.io/risky-biz/harmoni-hse-360:latest
 ```bash
 # WARNING: This will destroy all data
 # Destroy application
-fly apps destroy harmonihse360-app
+fly apps destroy harmoni360-app
 
 # Destroy database
-fly postgres destroy harmonihse360-db
+fly postgres destroy harmoni360-db
 
 # Destroy Redis
-fly ext redis destroy harmonihse360-redis
+fly ext redis destroy harmoni360-redis
 
 # Redeploy from scratch
 ./scripts/deploy-flyio.sh

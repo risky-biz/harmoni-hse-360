@@ -28,7 +28,7 @@
 | `Dockerfile.flyio` | **Optimized Docker Build** | Docker configuration optimized for Fly.io deployment |
 | `.github/dependabot.yml` | **Dependency Management** | Automated dependency updates configuration |
 | `.github/CODEOWNERS` | **Code Review Rules** | Code ownership and review requirements |
-| `src/HarmoniHSE360.Web/ClientApp/audit-ci.json` | **Security Audit Config** | npm security audit configuration |
+| `src/Harmoni360.Web/ClientApp/audit-ci.json` | **Security Audit Config** | npm security audit configuration |
 
 ### **4. Automation Scripts**
 
@@ -367,7 +367,7 @@ docs/Deployment/
 
 ---
 
-*This comprehensive summary covers all Fly.io token configuration documentation and tooling created for the HarmoniHSE360 project's GitHub Actions CI/CD pipeline.*
+*This comprehensive summary covers all Fly.io token configuration documentation and tooling created for the Harmoni360 project's GitHub Actions CI/CD pipeline.*
 
 *Last Updated: January 2025*
 *Version: 2.0 - Consolidated Documentation Suite*

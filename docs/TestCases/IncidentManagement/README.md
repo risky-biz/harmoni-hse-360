@@ -1,7 +1,7 @@
 # Incident Management System - Manual Test Cases
 
 ## Overview
-This directory contains comprehensive manual test cases for the HarmoniHSE360 Incident Management System Module. The test cases are organized by functionality and cover all aspects of incident management including creation, updates, attachments, workflow, and access control.
+This directory contains comprehensive manual test cases for the Harmoni360 Incident Management System Module. The test cases are organized by functionality and cover all aspects of incident management including creation, updates, attachments, workflow, and access control.
 
 ## Test Case Organization
 

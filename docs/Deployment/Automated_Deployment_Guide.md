@@ -1,8 +1,8 @@
-# Automated Deployment Guide for HarmoniHSE360
+# Automated Deployment Guide for Harmoni360
 
 ## 📋 Overview
 
-This guide covers the complete setup and configuration of automated CI/CD pipelines for HarmoniHSE360 using GitHub Actions. The pipeline provides automated testing, security scanning, Docker image building, and deployment to both staging and production environments.
+This guide covers the complete setup and configuration of automated CI/CD pipelines for Harmoni360 using GitHub Actions. The pipeline provides automated testing, security scanning, Docker image building, and deployment to both staging and production environments.
 
 ## 🏗️ CI/CD Architecture
 
@@ -66,7 +66,7 @@ graph TB
 
 <augment_code_snippet path=".github/workflows/deploy.yml" mode="EXCERPT">
 ````yaml
-name: HarmoniHSE360 CI/CD Pipeline
+name: Harmoni360 CI/CD Pipeline
 
 on:
   push:
@@ -90,8 +90,8 @@ on:
 
 | Environment | Branch | Trigger | URL | Approval Required |
 |-------------|--------|---------|-----|-------------------|
-| **Staging** | `develop` | Automatic | `harmonihse360-staging.fly.dev` | No |
-| **Production** | `main` | Automatic | `harmonihse360-app.fly.dev` | Yes |
+| **Staging** | `develop` | Automatic | `harmoni360-staging.fly.dev` | No |
+| **Production** | `main` | Automatic | `harmoni360-app.fly.dev` | Yes |
 
 ## 🔐 Repository Secrets Setup
 
@@ -157,14 +157,14 @@ echo "✅ GitHub secret configured"
   with:
     node-version: ${{ env.NODE_VERSION }}
     cache: 'npm'
-    cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+    cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
 - name: Install Node.js dependencies
-  working-directory: src/HarmoniHSE360.Web/ClientApp
+  working-directory: src/Harmoni360.Web/ClientApp
   run: npm ci
 
 - name: Build React application
-  working-directory: src/HarmoniHSE360.Web/ClientApp
+  working-directory: src/Harmoni360.Web/ClientApp
   run: npm run build
 ```
 
@@ -178,12 +178,12 @@ echo "✅ GitHub secret configured"
       /p:CollectCoverage=true \
       /p:CoverletOutputFormat=cobertura
   env:
-    ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=postgres;Password=postgres"
+    ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=postgres;Password=postgres"
     ConnectionStrings__Redis: "localhost:6379"
     Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
 
 - name: Run Frontend tests
-  working-directory: src/HarmoniHSE360.Web/ClientApp
+  working-directory: src/Harmoni360.Web/ClientApp
   run: npm test -- --coverage --watchAll=false
 ```
 
@@ -212,7 +212,7 @@ echo "✅ GitHub secret configured"
   run: npm install -g audit-ci
 
 - name: Run npm audit
-  working-directory: src/HarmoniHSE360.Web/ClientApp
+  working-directory: src/Harmoni360.Web/ClientApp
   run: |
     npm audit --audit-level moderate || true
     audit-ci --config audit-ci.json || true
@@ -275,7 +275,7 @@ deploy-staging:
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmonihse360-staging.fly.dev/health || exit 1
+        curl -f https://harmoni360-staging.fly.dev/health || exit 1
 ```
 
 #### Production Deployment
@@ -302,7 +302,7 @@ deploy-production:
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmonihse360-app.fly.dev/health || exit 1
+        curl -f https://harmoni360-app.fly.dev/health || exit 1
 ```
 
 ## 🔄 Deployment Triggers
@@ -332,7 +332,7 @@ gh workflow run deploy.yml --ref main -f environment=production
 
 #### GitHub Web Interface
 1. Navigate to **Actions** tab
-2. Select **HarmoniHSE360 CI/CD Pipeline**
+2. Select **Harmoni360 CI/CD Pipeline**
 3. Click **Run workflow**
 4. Select branch and environment
 5. Click **Run workflow**
@@ -384,7 +384,7 @@ gh secret set SLACK_WEBHOOK_URL --body "https://hooks.slack.com/services/..."
   if: success()
   with:
     status: success
-    text: "🚀 HarmoniHSE360 successfully deployed to production!"
+    text: "🚀 Harmoni360 successfully deployed to production!"
   env:
     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -393,7 +393,7 @@ gh secret set SLACK_WEBHOOK_URL --body "https://hooks.slack.com/services/..."
   if: failure()
   with:
     status: failure
-    text: "❌ HarmoniHSE360 production deployment failed!"
+    text: "❌ Harmoni360 production deployment failed!"
   env:
     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 ```
@@ -430,7 +430,7 @@ Configure in **Settings > Branches > main**:
 #### 2. Deployment Failures
 ```bash
 # Check Fly.io deployment logs
-fly logs -a harmonihse360-app
+fly logs -a harmoni360-app
 
 # Common issues:
 # - Invalid secrets configuration

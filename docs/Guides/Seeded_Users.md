@@ -1,4 +1,4 @@
-# 🔑 HarmoniHSE360 - Seeded User Credentials
+# 🔑 Harmoni360 - Seeded User Credentials
 
 > **Quick Reference**: Default login credentials for testing and development
 
@@ -7,37 +7,42 @@ The application includes seeded demo users for immediate testing:
 
 | Role | Email | Password | Permissions |
 |------|-------|----------|-------------|
-| **Super Admin** | superadmin@bsj.sch.id | SuperAdmin123! | Full system access including configuration |
-| **Developer** | developer@bsj.sch.id | Developer123! | System configuration and module management |
-| **Admin** | admin@bsj.sch.id | Admin123! | Full system access |
-| **HSE Manager** | hse.manager@bsj.sch.id | HSE123! | HSE management |
-| **Employee** | john.doe@bsj.sch.id | Employee123! | Basic access |
-| **Employee** | jane.smith@bsj.sch.id | Employee123! | Basic access |
+| **Super Admin** | superadmin@harmoni360.com | SuperAdmin123! | Full system access including configuration |
+| **Developer** | developer@harmoni360.com | Developer123! | System configuration and module management |
+| **Admin** | admin@harmoni360.com | Admin123! | Full system access |
+| **Incident Manager** | incident.manager@harmoni360.com | IncidentMgr123! | Incident management specialist |
+| **Risk Manager** | risk.manager@harmoni360.com | RiskMgr123! | Risk assessment specialist |
+| **PPE Manager** | ppe.manager@harmoni360.com | PPEMgr123! | PPE management specialist |
+| **Health Monitor** | health.monitor@harmoni360.com | HealthMon123! | Health monitoring specialist |
+| **Reporter** | reporter@harmoni360.com | Reporter123! | Read-only access to reporting |
+| **Viewer** | viewer@harmoni360.com | Viewer123! | Read-only access to dashboards |
+| **Reporter** | john.doe@bsj.sch.id | Employee123! | Basic reporting access |
+| **Viewer** | jane.smith@bsj.sch.id | Employee123! | Basic viewing access |
 
 ## 🚀 Quick Login Examples
 
 ### Super Admin Access
 ```
-Email: superadmin@bsj.sch.id
+Email: superadmin@harmoni360.com
 Password: SuperAdmin123!
 ```
 
 ### Developer Access
 ```
-Email: developer@bsj.sch.id
+Email: developer@harmoni360.com
 Password: Developer123!
 ```
 
 ### Admin Access
 ```
-Email: admin@bsj.sch.id
+Email: admin@harmoni360.com
 Password: Admin123!
 ```
 
-### HSE Manager Access  
+### Incident Manager Access  
 ```
-Email: hse.manager@bsj.sch.id
-Password: HSE123!
+Email: incident.manager@harmoni360.com
+Password: IncidentMgr123!
 ```
 
 ### Regular Employee Access

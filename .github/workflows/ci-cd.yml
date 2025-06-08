@@ -1,4 +1,4 @@
-name: HarmoniHSE360 CI/CD (Legacy)
+name: Harmoni360 CI/CD (Legacy)
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-          POSTGRES_DB: harmonihse360_test
+          POSTGRES_DB: harmoni360_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -49,41 +49,41 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         cache: true
         cache-dependency-path: |
-          src/HarmoniHSE360.Application/packages.lock.json
-          src/HarmoniHSE360.Domain/packages.lock.json
-          src/HarmoniHSE360.Infrastructure/packages.lock.json
-          src/HarmoniHSE360.Web/packages.lock.json
+          src/Harmoni360.Application/packages.lock.json
+          src/Harmoni360.Domain/packages.lock.json
+          src/Harmoni360.Infrastructure/packages.lock.json
+          src/Harmoni360.Web/packages.lock.json
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+        cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
     - name: Restore .NET dependencies
       run: dotnet restore
 
     - name: Install Node.js dependencies
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm ci
 
     - name: Build .NET application
       run: dotnet build --no-restore --configuration Release
 
     - name: Build React application
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm run build
 
     - name: Run .NET tests
       run: dotnet test --no-build --verbosity normal --configuration Release --collect:"XPlat Code Coverage"
       env:
-        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=test;Password=test"
+        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=test;Password=test"
         ConnectionStrings__Redis: "localhost:6379"
         Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
 
     - name: Run Frontend tests
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm test -- --coverage --watchAll=false
 
     - name: Upload coverage reports to Codecov
@@ -103,34 +103,34 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         cache: true
         cache-dependency-path: |
-          src/HarmoniHSE360.Application/packages.lock.json
-          src/HarmoniHSE360.Domain/packages.lock.json
-          src/HarmoniHSE360.Infrastructure/packages.lock.json
-          src/HarmoniHSE360.Web/packages.lock.json
+          src/Harmoni360.Application/packages.lock.json
+          src/Harmoni360.Domain/packages.lock.json
+          src/Harmoni360.Infrastructure/packages.lock.json
+          src/Harmoni360.Web/packages.lock.json
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+        cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
     - name: Restore .NET dependencies
       run: dotnet restore
 
     - name: Install Node.js dependencies
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm ci
 
     - name: Check .NET formatting
       run: dotnet format --verify-no-changes --verbosity diagnostic
 
     - name: Run ESLint
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm run lint
 
     - name: Run Prettier check
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
       run: npm run format:check
 
   docker-build:
@@ -198,7 +198,7 @@ jobs:
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmonihse360-staging.fly.dev/health || exit 1
+        curl -f https://harmoni360-staging.fly.dev/health || exit 1
 
   deploy-production:
     needs: docker-build
@@ -220,4 +220,4 @@ jobs:
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmonihse360-app.fly.dev/health || exit 1
+        curl -f https://harmoni360-app.fly.dev/health || exit 1

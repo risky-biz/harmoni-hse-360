@@ -19,7 +19,7 @@
 -----
 ## <a name="executive-summary"></a>**1. Executive Summary**
 ### <a name="purpose"></a>**1.1 Purpose**
-This document specifies the functional requirements for the British School Jakarta (BSJ) Health, Safety, and Environment (HSE) Management System. The system will replace manual processes with a unified digital platform supporting all HSE activities across the campus.
+This document specifies the functional requirements for the British School Jakarta (BSJ) Health, Safety, Security, and Environment (HSE) Management System. The system will replace manual processes with a unified digital platform supporting all HSE activities across the campus.
 ### <a name="scope"></a>**1.2 Scope**
 The HSE Management System encompasses: - Incident and accident management - Hazard identification and risk assessment - Compliance and audit management - Document control and distribution - Permit-to-work processes - Training and certification tracking - Environmental monitoring - Analytics and reporting - Mobile accessibility - Multi-language support
 ### <a name="objectives"></a>**1.3 Objectives**
@@ -444,7 +444,7 @@ The system shall be implemented as a cloud-based Software-as-a-Service (SaaS) so
 ### <a name="appendix-a-glossary-of-terms"></a>**Appendix A: Glossary of Terms**
 - **BSJ**: British School Jakarta
 - **COBIS**: Council of British International Schools
-- **HSE**: Health, Safety, and Environment
+- **HSSE**: Health, Safety, Security, and Environment
 - **P2K3**: Panitia Pembina Keselamatan dan Kesehatan Kerja
 - **SMK3**: Sistem Manajemen Keselamatan dan Kesehatan Kerja
 - **TRIR**: Total Recordable Incident Rate

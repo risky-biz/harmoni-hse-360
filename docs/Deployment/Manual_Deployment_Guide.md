@@ -1,8 +1,8 @@
-# Manual Deployment Guide for HarmoniHSE360
+# Manual Deployment Guide for Harmoni360
 
 ## 📋 Overview
 
-This guide provides step-by-step instructions for manually deploying the HarmoniHSE360 application to Fly.io using Docker containers. This process is essential for understanding the deployment workflow and for emergency deployments.
+This guide provides step-by-step instructions for manually deploying the Harmoni360 application to Fly.io using Docker containers. This process is essential for understanding the deployment workflow and for emergency deployments.
 
 ## 🎯 Prerequisites
 
@@ -66,13 +66,13 @@ docker ps
 #### 2.1 Create PostgreSQL Database
 ```bash
 # Create PostgreSQL cluster
-fly postgres create --name harmonihse360-db --region sjc
+fly postgres create --name harmoni360-db --region sjc
 
 # Note the connection details provided
 # Example output:
 # Username: postgres
 # Password: [generated-password]
-# Hostname: harmonihse360-db.internal
+# Hostname: harmoni360-db.internal
 # Proxy port: 5432
 # Postgres port: 5433
 ```
@@ -80,10 +80,10 @@ fly postgres create --name harmonihse360-db --region sjc
 #### 2.2 Create Database Connection
 ```bash
 # Connect to database to verify
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Create application database (if needed)
-CREATE DATABASE harmonihse360_production;
+CREATE DATABASE harmoni360_production;
 \q
 ```
 
@@ -92,16 +92,16 @@ CREATE DATABASE harmonihse360_production;
 #### 3.1 Create Redis Instance
 ```bash
 # Create Redis instance via Upstash (Fly.io extension)
-fly ext redis create --name harmonihse360-redis
+fly ext redis create --name harmoni360-redis
 
 # Alternative: Create Redis app
-fly redis create --name harmonihse360-redis --region sjc
+fly redis create --name harmoni360-redis --region sjc
 ```
 
 #### 3.2 Get Redis Connection String
 ```bash
 # Get Redis connection details
-fly redis status harmonihse360-redis
+fly redis status harmoni360-redis
 
 # Note the connection string format:
 # redis://default:[password]@[hostname]:6379
@@ -121,7 +121,7 @@ nano fly.toml  # or use your preferred editor
 #### 4.2 Configure Application Settings
 ```toml
 # fly.toml configuration
-app = "harmonihse360-app"  # Change to your app name
+app = "harmoni360-app"  # Change to your app name
 primary_region = "sjc"     # Choose your region
 
 [build]
@@ -150,7 +150,7 @@ primary_region = "sjc"     # Choose your region
 #### 5.1 Set Database Connection
 ```bash
 # Set PostgreSQL connection string
-fly secrets set ConnectionStrings__DefaultConnection="Host=harmonihse360-db.internal;Port=5432;Database=harmonihse360_production;Username=postgres;Password=[your-db-password]"
+fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360_production;Username=postgres;Password=[your-db-password]"
 ```
 
 #### 5.2 Set Redis Connection
@@ -162,7 +162,7 @@ fly secrets set ConnectionStrings__Redis="redis://default:[redis-password]@[redi
 #### 5.3 Set JWT Configuration
 ```bash
 # Generate secure JWT key (32+ characters)
-JWT_KEY="HarmoniHSE360-Production-JWT-$(date +%s)-$(openssl rand -hex 16)"
+JWT_KEY="Harmoni360-Production-JWT-$(date +%s)-$(openssl rand -hex 16)"
 
 # Set JWT key
 fly secrets set Jwt__Key="$JWT_KEY"
@@ -179,7 +179,7 @@ fly secrets list
 #### 6.1 Create Persistent Volume
 ```bash
 # Create volume for file uploads
-fly volumes create harmonihse360_uploads --region sjc --size 1
+fly volumes create harmoni360_uploads --region sjc --size 1
 
 # Verify volume creation
 fly volumes list
@@ -190,7 +190,7 @@ fly volumes list
 #### 7.1 Initialize Fly Application
 ```bash
 # Initialize Fly app (if not already done)
-fly launch --no-deploy --name harmonihse360-app --region sjc
+fly launch --no-deploy --name harmoni360-app --region sjc
 
 # This creates the app without deploying
 ```
@@ -210,10 +210,10 @@ fly logs -f
 fly status
 
 # Test health endpoint
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 
 # Check application logs
-fly logs --app harmonihse360-app
+fly logs --app harmoni360-app
 ```
 
 ### Step 8: Database Migration
@@ -236,7 +236,7 @@ exit
 #### 8.2 Verify Database Schema
 ```bash
 # Connect to database
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Check tables
 \dt
@@ -289,7 +289,7 @@ curl -I https://yourdomain.com/health
 #### 1. Basic Health Check
 ```bash
 # Test health endpoint
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 
 # Expected response: HTTP 200 OK
 ```
@@ -315,7 +315,7 @@ fly logs | grep -i redis
 ```bash
 # Simple load test with curl
 for i in {1..10}; do
-  curl -w "%{time_total}\n" -o /dev/null -s https://harmonihse360-app.fly.dev/health
+  curl -w "%{time_total}\n" -o /dev/null -s https://harmoni360-app.fly.dev/health
 done
 ```
 
@@ -336,7 +336,7 @@ fly dashboard
 #### 1. Build Errors
 ```bash
 # Check build logs
-fly logs --app harmonihse360-app
+fly logs --app harmoni360-app
 
 # Common issues:
 # - Node.js version mismatch
@@ -360,7 +360,7 @@ fly logs -f
 #### 1. Connection Problems
 ```bash
 # Test database connectivity
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Check connection string format
 fly secrets list | grep ConnectionStrings
@@ -453,7 +453,7 @@ fly dashboard  # View billing information
 fly deploy  # Rebuilds with latest base images
 
 # Check for vulnerabilities
-docker scan harmonihse360:latest
+docker scan harmoni360:latest
 ```
 
 ---

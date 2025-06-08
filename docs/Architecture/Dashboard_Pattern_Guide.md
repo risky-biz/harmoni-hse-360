@@ -1,8 +1,8 @@
-# HarmoniHSE360 Dashboard Pattern Guide
+# Harmoni360 Dashboard Pattern Guide
 
 ## Overview
 
-This guide documents the standardized dashboard architecture and patterns used in HarmoniHSE360. The Incident Management Dashboard serves as the reference implementation for all module-specific dashboards.
+This guide documents the standardized dashboard architecture and patterns used in Harmoni360. The Incident Management Dashboard serves as the reference implementation for all module-specific dashboards.
 
 ## Dashboard Architecture
 
@@ -388,7 +388,7 @@ When creating a new module dashboard:
 
 ## References
 
-- [Incident Dashboard Implementation](/src/HarmoniHSE360.Web/ClientApp/src/pages/incidents/IncidentDashboard.tsx)
-- [Dashboard Components](/src/HarmoniHSE360.Web/ClientApp/src/components/dashboard/)
-- [Dashboard Styles](/src/HarmoniHSE360.Web/ClientApp/src/styles/dashboard.scss)
+- [Incident Dashboard Implementation](/src/Harmoni360.Web/ClientApp/src/pages/incidents/IncidentDashboard.tsx)
+- [Dashboard Components](/src/Harmoni360.Web/ClientApp/src/components/dashboard/)
+- [Dashboard Styles](/src/Harmoni360.Web/ClientApp/src/styles/dashboard.scss)
 - [API Documentation](/docs/api/dashboard-endpoints.md)

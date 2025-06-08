@@ -32,28 +32,28 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Restore .NET dependencies
         run: dotnet restore
 
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Run .NET code formatting check
         run: dotnet format --verify-no-changes --verbosity diagnostic
 
       - name: Run ESLint
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run lint
 
       - name: Run Prettier check
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run format:check
 
       - name: Run TypeScript type checking
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run type-check
 
   # Build and Test Validation
@@ -66,7 +66,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: harmonihse360_test
+          POSTGRES_DB: harmoni360_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -100,20 +100,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Restore .NET dependencies
         run: dotnet restore
 
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Build .NET application
         run: dotnet build --no-restore --configuration Release
 
       - name: Build React application
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run build
 
       - name: Run .NET unit tests
@@ -125,12 +125,12 @@ jobs:
             /p:CoverletOutputFormat=cobertura \
             /p:Threshold=80
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=postgres;Password=postgres"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=postgres;Password=postgres"
           ConnectionStrings__Redis: "localhost:6379"
           Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
 
       - name: Run Frontend tests
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm test -- --coverage --watchAll=false --coverageThreshold='{"global":{"branches":80,"functions":80,"lines":80,"statements":80}}'
 
       - name: Upload test results
@@ -140,7 +140,7 @@ jobs:
           name: pr-test-results-${{ github.event.number }}
           path: |
             TestResults/
-            src/HarmoniHSE360.Web/ClientApp/coverage/
+            src/Harmoni360.Web/ClientApp/coverage/
 
   # Security Validation
   security-check:
@@ -170,14 +170,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Run npm audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm audit --audit-level moderate
         continue-on-error: true  # Allow to fail due to permission issues in CI
 
@@ -207,7 +207,7 @@ jobs:
           context: .
           file: ./Dockerfile.flyio
           push: false
-          tags: harmonihse360:pr-${{ github.event.number }}
+          tags: harmoni360:pr-${{ github.event.number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -221,7 +221,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: harmonihse360_migration_test
+          POSTGRES_DB: harmoni360_migration_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -248,15 +248,15 @@ jobs:
 
       - name: Check for pending migrations
         run: |
-          dotnet ef migrations list --project src/HarmoniHSE360.Infrastructure --startup-project src/HarmoniHSE360.Web
+          dotnet ef migrations list --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_migration_test;Username=postgres;Password=postgres"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_migration_test;Username=postgres;Password=postgres"
 
       - name: Apply migrations
         run: |
-          dotnet ef database update --project src/HarmoniHSE360.Infrastructure --startup-project src/HarmoniHSE360.Web
+          dotnet ef database update --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_migration_test;Username=postgres;Password=postgres"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_migration_test;Username=postgres;Password=postgres"
 
   # PR Summary Comment
   pr-summary:

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# HarmoniHSE360 Fly.io Token Setup Script
+# Harmoni360 Fly.io Token Setup Script
 # This script helps set up Fly.io API tokens for GitHub Actions
 
 set -e
 
-echo "🚀 HarmoniHSE360 Fly.io Token Setup"
+echo "🚀 Harmoni360 Fly.io Token Setup"
 echo "===================================="
 
 # Check if required tools are installed

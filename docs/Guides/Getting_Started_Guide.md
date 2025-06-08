@@ -1,10 +1,10 @@
-# 🚀 HarmoniHSE360 - Getting Started Guide
+# 🚀 Harmoni360 - Getting Started Guide
 
-Complete guide for running and testing the HarmoniHSE360 application with authentication functionality.
+Complete guide for running and testing the Harmoni360 application with authentication functionality.
 
 ## 🎯 Overview
 
-HarmoniHSE360 is a **Modular Monolith** application built with:
+Harmoni360 is a **Modular Monolith** application built with:
 - **Backend**: .NET 8.0 with Clean Architecture
 - **Frontend**: React 18.2 + TypeScript with CoreUI components
 - **Authentication**: JWT tokens with role-based access
@@ -31,14 +31,14 @@ HarmoniHSE360 is a **Modular Monolith** application built with:
 **Option A: Local PostgreSQL**
 ```bash
 # Create database (assumes PostgreSQL is installed)
-createdb HarmoniHSE360
+createdb Harmoni360
 ```
 
 **Option B: PostgreSQL via Docker**
 ```bash
 # Run PostgreSQL in Docker
-docker run --name harmonihse360-db \
-  -e POSTGRES_DB=HarmoniHSE360 \
+docker run --name harmoni360-db \
+  -e POSTGRES_DB=Harmoni360 \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres123 \
   -p 5432:5432 -d postgres:15-alpine
@@ -46,16 +46,16 @@ docker run --name harmonihse360-db \
 
 ### Step 2: Configure Application Settings
 
-Create or update `src/HarmoniHSE360.Web/appsettings.Development.json`:
+Create or update `src/Harmoni360.Web/appsettings.Development.json`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=HarmoniHSE360;Username=postgres;Password=postgres123"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=Harmoni360;Username=postgres;Password=postgres123"
   },
   "Jwt": {
     "Key": "YourSuperSecretJwtKeyThatIsAtLeast32CharactersLong!",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationMinutes": 60,
     "RefreshTokenExpirationDays": 7
   },
@@ -85,13 +85,13 @@ chmod +x ./scripts/create-migration.sh
 **Option B: Manual commands**
 ```bash
 # Navigate to Web project
-cd src/HarmoniHSE360.Web
+cd src/Harmoni360.Web
 
 # Create initial migration
-dotnet ef migrations add InitialCreate -p ../HarmoniHSE360.Infrastructure -s . -c ApplicationDbContext
+dotnet ef migrations add InitialCreate -p ../Harmoni360.Infrastructure -s . -c ApplicationDbContext
 
 # Apply migration and seed data
-dotnet ef database update -p ../HarmoniHSE360.Infrastructure -s . -c ApplicationDbContext
+dotnet ef database update -p ../Harmoni360.Infrastructure -s . -c ApplicationDbContext
 ```
 
 The database will be automatically seeded with demo users when running in Development environment.
@@ -110,14 +110,14 @@ npm install
 
 **Terminal 1 - React Dev Server:**
 ```bash
-cd src/HarmoniHSE360.Web/ClientApp
+cd src/Harmoni360.Web/ClientApp
 npm run dev
 ```
 *This starts Vite dev server on http://localhost:5173*
 
 **Terminal 2 - .NET API:**
 ```bash
-cd src/HarmoniHSE360.Web
+cd src/Harmoni360.Web
 dotnet run
 ```
 *This starts the API server on http://localhost:5000*
@@ -158,10 +158,10 @@ Since this is the first run, you need to create the initial migration:
 # Wait for services to be ready (about 30 seconds)
 
 # Create the initial migration
-docker-compose exec app dotnet ef migrations add InitialCreate -p ../HarmoniHSE360.Infrastructure -s . -c ApplicationDbContext
+docker-compose exec app dotnet ef migrations add InitialCreate -p ../Harmoni360.Infrastructure -s . -c ApplicationDbContext
 
 # Apply migration and seed data
-docker-compose exec app dotnet ef database update -p ../HarmoniHSE360.Infrastructure -s . -c ApplicationDbContext
+docker-compose exec app dotnet ef database update -p ../Harmoni360.Infrastructure -s . -c ApplicationDbContext
 ```
 
 The database will be automatically seeded with demo users when the application starts in Development environment.
@@ -273,7 +273,7 @@ pg_isready -U postgres
 **Problem**: npm install fails or build errors
 ```bash
 # Clear cache and reinstall
-cd src/HarmoniHSE360.Web/ClientApp
+cd src/Harmoni360.Web/ClientApp
 rm -rf node_modules package-lock.json
 npm install
 ```
@@ -345,7 +345,7 @@ docker-compose up -d
 docker-compose logs -f app
 
 # Access database directly
-docker-compose exec postgres psql -U postgres -d HarmoniHSE360
+docker-compose exec postgres psql -U postgres -d Harmoni360
 
 # Check Redis cache
 docker-compose exec redis redis-cli ping
@@ -377,10 +377,10 @@ docker stats
 ### Project Structure
 ```
 src/
-├── HarmoniHSE360.Domain/          # Domain entities and business logic
-├── HarmoniHSE360.Application/     # Use cases and interfaces
-├── HarmoniHSE360.Infrastructure/  # Data access and external services
-└── HarmoniHSE360.Web/            # API controllers and React SPA
+├── Harmoni360.Domain/          # Domain entities and business logic
+├── Harmoni360.Application/     # Use cases and interfaces
+├── Harmoni360.Infrastructure/  # Data access and external services
+└── Harmoni360.Web/            # API controllers and React SPA
     ├── Controllers/              # REST API endpoints
     ├── ClientApp/               # React application
     │   ├── src/components/      # React components
@@ -406,7 +406,7 @@ src/
 After successfully running and testing authentication:
 
 1. **Explore the Codebase**:
-   - Review Domain entities in `src/HarmoniHSE360.Domain/`
+   - Review Domain entities in `src/Harmoni360.Domain/`
    - Check authentication implementation in `Application/Features/Authentication/`
    - Examine React components in `ClientApp/src/`
 

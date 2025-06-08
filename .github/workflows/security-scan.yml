@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       # Trivy filesystem scan
       - name: Run Trivy vulnerability scanner (filesystem)
@@ -87,7 +87,7 @@ jobs:
 
       - name: Run .NET security scan
         run: |
-          security-scan --project src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj --export security-scan-results.json
+          security-scan --project src/Harmoni360.Web/Harmoni360.Web.csproj --export security-scan-results.json
         continue-on-error: true
 
       - name: Check for outdated .NET packages
@@ -97,11 +97,11 @@ jobs:
 
       # Node.js security scanning
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Run npm audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           npm audit --audit-level moderate --json > npm-audit-results.json
         continue-on-error: true
@@ -110,7 +110,7 @@ jobs:
         run: npm install -g audit-ci
 
       - name: Run enhanced npm security audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           audit-ci --config audit-ci.json --output-format json --output audit-ci-results.json
         continue-on-error: true
@@ -127,12 +127,12 @@ jobs:
       # Docker image security scanning
       - name: Build Docker image for scanning
         run: |
-          docker build -f Dockerfile.flyio -t harmonihse360:security-scan .
+          docker build -f Dockerfile.flyio -t harmoni360:security-scan .
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'harmonihse360:security-scan'
+          image-ref: 'harmoni360:security-scan'
           format: 'sarif'
           output: 'trivy-container-results.sarif'
 
@@ -195,7 +195,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Build .NET application
         if: matrix.language == 'csharp'
@@ -205,7 +205,7 @@ jobs:
 
       - name: Build JavaScript application
         if: matrix.language == 'javascript'
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           npm ci
           npm run build
@@ -234,7 +234,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Install license checking tools
         run: |
@@ -248,7 +248,7 @@ jobs:
         continue-on-error: true
 
       - name: Check Node.js licenses
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           npm ci
           license-checker --json --out ../../../nodejs-licenses.json
@@ -277,7 +277,7 @@ jobs:
         with:
           status: failure
           text: |
-            🚨 Security scan detected issues in HarmoniHSE360!
+            🚨 Security scan detected issues in Harmoni360!
             
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}

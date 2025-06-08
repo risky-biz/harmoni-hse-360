@@ -17,20 +17,20 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy solution and project files for dependency restore
-COPY ["HarmoniHSE360.sln", "./"]
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "src/HarmoniHSE360.Web/"]
-COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "src/HarmoniHSE360.Application/"]
-COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "src/HarmoniHSE360.Domain/"]
-COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "src/HarmoniHSE360.Infrastructure/"]
+COPY ["Harmoni360.sln", "./"]
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "src/Harmoni360.Web/"]
+COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "src/Harmoni360.Application/"]
+COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "src/Harmoni360.Domain/"]
+COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "src/Harmoni360.Infrastructure/"]
 
 # Restore .NET dependencies
 RUN dotnet restore
 
 # Copy package.json for npm dependencies
-COPY ["src/HarmoniHSE360.Web/ClientApp/package*.json", "src/HarmoniHSE360.Web/ClientApp/"]
+COPY ["src/Harmoni360.Web/ClientApp/package*.json", "src/Harmoni360.Web/ClientApp/"]
 
 # Install npm dependencies
-WORKDIR /src/src/HarmoniHSE360.Web/ClientApp
+WORKDIR /src/src/Harmoni360.Web/ClientApp
 RUN npm ci
 
 # Set working directory
@@ -42,11 +42,11 @@ EXPOSE 5000 5173
 # Create script to run both backend and frontend
 RUN echo '#!/bin/bash\n\
 # Start frontend dev server\n\
-cd /src/src/HarmoniHSE360.Web/ClientApp && npm run dev -- --host 0.0.0.0 &\n\
+cd /src/src/Harmoni360.Web/ClientApp && npm run dev -- --host 0.0.0.0 &\n\
 # Wait for frontend to start\n\
 sleep 5\n\
 # Start backend API\n\
-cd /src/src/HarmoniHSE360.Web && dotnet watch run --urls "http://+:5000" --no-launch-profile\n\
+cd /src/src/Harmoni360.Web && dotnet watch run --urls "http://+:5000" --no-launch-profile\n\
 ' > /start.sh && chmod +x /start.sh
 
 # Start both services

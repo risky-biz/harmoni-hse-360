@@ -1,6 +1,6 @@
-# HarmoniHSE360 Deployment Documentation
+# Harmoni360 Deployment Documentation
 
-This directory contains comprehensive deployment documentation for the HarmoniHSE360 application, focusing on cloud deployment strategies and production-ready configurations.
+This directory contains comprehensive deployment documentation for the Harmoni360 application, focusing on cloud deployment strategies and production-ready configurations.
 
 ## 📋 Documentation Overview
 
@@ -69,8 +69,8 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
 
 | Environment | URL | Branch | Auto-Deploy | Resources |
 |-------------|-----|--------|-------------|-----------|
-| **Staging** | `harmonihse360-staging.fly.dev` | `develop` | ✅ | 1 CPU, 512MB |
-| **Production** | `harmonihse360-app.fly.dev` | `main` | ✅ (with approval) | 1 CPU, 1GB |
+| **Staging** | `harmoni360-staging.fly.dev` | `develop` | ✅ | 1 CPU, 512MB |
+| **Production** | `harmoni360-app.fly.dev` | `main` | ✅ (with approval) | 1 CPU, 1GB |
 
 ### System Architecture
 ```
@@ -81,7 +81,7 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ HarmoniHSE360   │    │  PostgreSQL DB  │    │   Redis Cache   │
+│ Harmoni360   │    │  PostgreSQL DB  │    │   Redis Cache   │
 │   Container     │◄──►│   (Fly.io)      │    │   (Fly.io)      │
 │ (.NET + React)  │    │                 │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -142,39 +142,39 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
 ## 🎯 Demo Environment
 
 ### Demo URLs
-- **Application:** https://harmonihse360-app.fly.dev
-- **Health Check:** https://harmonihse360-app.fly.dev/health
-- **API Docs:** https://harmonihse360-app.fly.dev/swagger
+- **Application:** https://harmoni360-app.fly.dev
+- **Health Check:** https://harmoni360-app.fly.dev/health
+- **API Docs:** https://harmoni360-app.fly.dev/swagger
 
 ### Demo Accounts
 | Role | Email | Password | Purpose |
 |------|-------|----------|---------|
-| Admin | admin@harmonihse360.com | Admin123! | Full access |
-| Manager | manager@harmonihse360.com | Manager123! | Management |
-| Officer | officer@harmonihse360.com | Officer123! | Operations |
-| Employee | employee@harmonihse360.com | Employee123! | Basic user |
+| Admin | admin@harmoni360.com | Admin123! | Full access |
+| Manager | manager@harmoni360.com | Manager123! | Management |
+| Officer | officer@harmoni360.com | Officer123! | Operations |
+| Employee | employee@harmoni360.com | Employee123! | Basic user |
 
 ## 🔍 Troubleshooting Quick Reference
 
 ### Common Commands
 ```bash
 # Check application status
-fly status -a harmonihse360-app
+fly status -a harmoni360-app
 
 # View logs
-fly logs -a harmonihse360-app
+fly logs -a harmoni360-app
 
 # Restart application
-fly restart -a harmonihse360-app
+fly restart -a harmoni360-app
 
 # Access console
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 
 # Check database
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Monitor metrics
-fly metrics -a harmonihse360-app
+fly metrics -a harmoni360-app
 ```
 
 ### Emergency Procedures

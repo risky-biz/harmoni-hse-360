@@ -1,7 +1,7 @@
 # Update Incident - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for incident update and modification functionality in the HarmoniHSE360 system.
+This document contains comprehensive test cases for incident update and modification functionality in the Harmoni360 system.
 
 ---
 

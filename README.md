@@ -1,10 +1,10 @@
-# HarmoniHSE360
+# Harmoni360
 
-![HarmoniHSE360 Logo](Documents/Assets/Images/Harmoni_HSE_360_Logo.png)
+![Harmoni360 Logo](Documents/Assets/Images/Harmoni_HSE_360_Logo.png)
 
 ## Enterprise Health, Safety, and Environment Management System
 
-HarmoniHSE360 is a comprehensive cloud-based HSE management system designed for British School Jakarta. Built using a Modular Monolith architecture with Clean Architecture principles, it provides a unified platform for managing all health, safety, and environmental activities across the campus.
+Harmoni360 is a comprehensive cloud-based HSE management system designed for British School Jakarta. Built using a Modular Monolith architecture with Clean Architecture principles, it provides a unified platform for managing all health, safety, security, and environmental activities across the campus.
 
 ## 🏗️ Architecture
 
@@ -100,21 +100,21 @@ See [Docker Guide](docs/Guides/Docker_Guide.md) for detailed instructions.
 
 3. **Backend Setup**
    ```bash
-   cd src/HarmoniHSE360.Web
+   cd src/Harmoni360.Web
    dotnet restore
    dotnet run
    ```
 
 4. **Frontend Setup** (new terminal)
    ```bash
-   cd src/HarmoniHSE360.Web/ClientApp
+   cd src/Harmoni360.Web/ClientApp
    npm install
    npm run dev
    ```
 
 6. **Run the Blazor Server app**
    ```bash
-   cd src/Web/HarmoniHSE360.BlazorServer
+   cd src/Web/Harmoni360.BlazorServer
    dotnet run
    ```
 
@@ -137,18 +137,18 @@ Access the applications:
 
 The system comes with pre-seeded users for immediate testing:
 
-**Quick Access**: All users use password `HarmoniHSE360!`
+**Quick Access**: All users use password `Harmoni360!`
 
-- **Admin**: `admin@harmonihse360.com`
-- **HSE Manager**: `hse.manager@harmonihse360.com`  
-- **Engineer**: `engineer@harmonihse360.com`
+- **Admin**: `admin@harmoni360.com`
+- **HSE Manager**: `hse.manager@harmoni360.com`  
+- **Engineer**: `engineer@harmoni360.com`
 
 👉 **See [Seeded Users Guide](./docs/Guides/Seeded_Users.md) for complete user list**
 
 ## 📁 Project Structure
 
 ```
-HarmoniHSE360/
+Harmoni360/
 ├── src/
 │   ├── BuildingBlocks/          # Shared kernel
 │   ├── Modules/                 # Business modules
@@ -190,7 +190,7 @@ dotnet test --collect:"XPlat Code Coverage"
 - [Business Requirements](docs/Markdown/Business_Analyst_Harmoni_HSE_360_REQUIREMENTS.md)
 - [Technical Architecture](docs/Markdown/Solution_Architect_Comprehensive_Development_Practices_for_Harmoni_HSE_360_Application.md)
 - [Project Epics](docs/Markdown/Project_Manager_Harmoni_HSE_360_EPICS.md)
-- [Development Tracking](docs/Markdown/HarmoniHSE360_Development_Tracking.md)
+- [Development Tracking](docs/Markdown/Harmoni360_Development_Tracking.md)
 
 ### 🛠️ Development Guides
 - [Database Access Guide](docs/Guides/Database_Access_Guide.md)

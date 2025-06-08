@@ -1,4 +1,4 @@
-name: HarmoniHSE360 CI/CD Pipeline
+name: Harmoni360 CI/CD Pipeline
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: harmonihse360_test
+          POSTGRES_DB: harmoni360_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -67,20 +67,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Restore .NET dependencies
         run: dotnet restore
 
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Build .NET application
         run: dotnet build --no-restore --configuration Release
 
       - name: Build React application
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run build
 
       - name: Run .NET tests
@@ -91,12 +91,12 @@ jobs:
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=cobertura
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=postgres;Password=postgres"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=postgres;Password=postgres"
           ConnectionStrings__Redis: "localhost:6379"
           Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
 
       - name: Run Frontend tests
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm test -- --coverage --watchAll=false
 
       - name: Upload test results
@@ -106,15 +106,15 @@ jobs:
           name: test-results
           path: |
             TestResults/
-            src/HarmoniHSE360.Web/ClientApp/coverage/
+            src/Harmoni360.Web/ClientApp/coverage/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            src/HarmoniHSE360.Web/bin/Release/
-            src/HarmoniHSE360.Web/ClientApp/dist/
+            src/Harmoni360.Web/bin/Release/
+            src/Harmoni360.Web/ClientApp/dist/
 
   # Security Scanning Job
   security-scan:
@@ -150,10 +150,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Install Node.js dependencies for audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
 
       - name: Install security scan tools
@@ -161,7 +161,7 @@ jobs:
           npm install -g audit-ci
 
       - name: Run npm audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           npm audit --audit-level moderate || true
           audit-ci --config audit-ci.json || true
@@ -245,7 +245,7 @@ jobs:
       - name: Health check
         run: |
           sleep 30
-          curl -f https://harmonihse360-staging.fly.dev/health || exit 1
+          curl -f https://harmoni360-staging.fly.dev/health || exit 1
 
   # Deploy to Production
   deploy-production:
@@ -277,7 +277,7 @@ jobs:
       - name: Health check
         run: |
           sleep 30
-          curl -f https://harmonihse360-app.fly.dev/health || exit 1
+          curl -f https://harmoni360-app.fly.dev/health || exit 1
 
       - name: Notify deployment success
         uses: 8398a7/action-slack@v3
@@ -285,7 +285,7 @@ jobs:
         continue-on-error: true
         with:
           status: success
-          text: "🚀 HarmoniHSE360 successfully deployed to production!"
+          text: "🚀 Harmoni360 successfully deployed to production!"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -295,6 +295,6 @@ jobs:
         continue-on-error: true
         with:
           status: failure
-          text: "❌ HarmoniHSE360 production deployment failed!"
+          text: "❌ Harmoni360 production deployment failed!"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

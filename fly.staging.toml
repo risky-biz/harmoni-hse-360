@@ -1,6 +1,6 @@
-# Fly.io configuration file for HarmoniHSE360 Staging Environment
+# Fly.io configuration file for Harmoni360 Staging Environment
 
-app = "harmonihse360-staging"
+app = "harmoni360-staging"
 primary_region = "sjc"
 
 [build]
@@ -38,7 +38,7 @@ primary_region = "sjc"
   tls_skip_verify = false
 
 [mounts]
-  source = "harmonihse360_staging_uploads"
+  source = "harmoni360_staging_uploads"
   destination = "/app/uploads"
 
 # Staging-specific machine configuration

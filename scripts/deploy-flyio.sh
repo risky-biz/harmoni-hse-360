@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# HarmoniHSE360 Fly.io Deployment Script
+# Harmoni360 Fly.io Deployment Script
 # This script automates the deployment process to Fly.io
 
 set -e  # Exit on any error
 
-echo "🚀 Starting HarmoniHSE360 Fly.io Deployment"
+echo "🚀 Starting Harmoni360 Fly.io Deployment"
 echo "============================================"
 
 # Check if fly CLI is installed
@@ -23,11 +23,11 @@ if ! fly auth whoami &> /dev/null; then
 fi
 
 # Variables
-APP_NAME="harmonihse360-app"
-DB_NAME="harmonihse360-db"
-REDIS_NAME="harmonihse360-redis"
+APP_NAME="harmoni360-app"
+DB_NAME="harmoni360-db"
+REDIS_NAME="harmoni360-redis"
 REGION="sjc"
-VOLUME_NAME="harmonihse360_uploads"
+VOLUME_NAME="harmoni360_uploads"
 
 echo "📋 Configuration:"
 echo "   App Name: $APP_NAME"
@@ -128,7 +128,7 @@ fi
 
 # Set JWT key
 echo "   🔑 Setting JWT key..."
-JWT_KEY="HarmoniHSE360-Production-JWT-Key-$(date +%s)-$(openssl rand -hex 16)"
+JWT_KEY="Harmoni360-Production-JWT-Key-$(date +%s)-$(openssl rand -hex 16)"
 fly secrets set "Jwt__Key=$JWT_KEY" -a "$APP_NAME"
 echo "   ✅ JWT key set"
 
