@@ -43,6 +43,9 @@ export interface CreateIncidentRequest {
   severity: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
   incidentDate: string;
   location: string;
+  categoryId?: number;
+  departmentId?: number;
+  locationId?: number;
   latitude?: number;
   longitude?: number;
   witnessNames?: string;
@@ -228,6 +231,8 @@ export interface AddInvolvedPersonRequest {
   personId: number;
   involvementType: string;
   injuryDescription?: string;
+  manualPersonName?: string;
+  manualPersonEmail?: string;
 }
 
 export interface UpdateInvolvedPersonRequest {
@@ -307,10 +312,34 @@ export const incidentApi = createApi({
 
       return headers;
     },
+    responseHandler: async (response) => {
+      // Check if response is HTML (likely 404 page) instead of JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('API endpoint not found - received HTML instead of JSON');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      // Handle empty responses (like 200 OK with no body)
+      const responseText = await response.text();
+      if (!responseText) {
+        return {}; // Return empty object for successful empty responses
+      }
+      
+      try {
+        return JSON.parse(responseText);
+      } catch (error) {
+        throw new Error('Invalid JSON response from server');
+      }
+    },
   }),
   tagTypes: [
     'Incident',
     'IncidentStatistics',
+    'IncidentDashboard',
     'IncidentAttachment',
     'CorrectiveAction',
     'IncidentAudit',
@@ -401,6 +430,7 @@ export const incidentApi = createApi({
           searchParams.append('pageSize', params.pageSize.toString());
         if (params.status) searchParams.append('status', params.status);
         if (params.severity) searchParams.append('severity', params.severity);
+        if (params.searchTerm) searchParams.append('searchTerm', params.searchTerm);
 
         return {
           url: `/my-reports?${searchParams.toString()}`,
@@ -408,6 +438,13 @@ export const incidentApi = createApi({
         };
       },
       providesTags: ['Incident'],
+      transformErrorResponse: (response: any) => {
+        // Provide helpful guidance for development mode
+        if (import.meta.env.DEV) {
+          console.warn('IncidentAPI: getMyIncidents API unavailable. Please ensure the backend is running and database is seeded.');
+        }
+        return response;
+      },
     }),
 
     // Get incident statistics
@@ -436,6 +473,13 @@ export const incidentApi = createApi({
         };
       },
       providesTags: ['IncidentDashboard', 'IncidentStatistics'],
+      transformErrorResponse: (response: any) => {
+        // Provide helpful guidance for development mode
+        if (import.meta.env.DEV) {
+          console.warn('IncidentAPI: getIncidentDashboard API unavailable. Please ensure the backend is running and database is seeded.');
+        }
+        return response;
+      },
     }),
 
     // Delete incident
@@ -504,6 +548,22 @@ export const incidentApi = createApi({
           { type: 'Incident' as const, id },
         ];
       },
+    }),
+
+    // Update incident status
+    updateIncidentStatus: builder.mutation<void, { id: number; status: string; comment?: string }>({
+      query: ({ id, status, comment }) => ({
+        url: `/${id}/status`,
+        method: 'PUT',
+        body: { status, comment },
+      }),
+      invalidatesTags: (_, __, { id }) => [
+        { type: 'Incident' as const, id },
+        { type: 'IncidentAudit' as const, id },
+        'Incident',
+        'IncidentStatistics',
+        'IncidentDashboard',
+      ],
     }),
 
     // Upload incident attachments
@@ -702,6 +762,7 @@ export const {
   useGetIncidentDetailQuery,
   useUpdateIncidentMutation,
   useDeleteIncidentMutation,
+  useUpdateIncidentStatusMutation,
   useGetMyIncidentsQuery,
   useGetIncidentStatisticsQuery,
   useGetIncidentDashboardQuery,

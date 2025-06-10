@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CCard,
@@ -6,8 +6,6 @@ import {
   CCardHeader,
   CCol,
   CRow,
-  CBadge,
-  CWidgetStatsA,
   CAlert,
   CButton,
   CSpinner,
@@ -16,45 +14,118 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../utils/iconMappings';
 
 import { useAuth } from '../hooks/useAuth';
-// import { useGetIncidentStatisticsQuery } from '../features/incidents/incidentApi';
+import { useGetIncidentDashboardQuery } from '../features/incidents/incidentApi';
+import DashboardWidget from '../components/dashboard/DashboardWidget';
+import ApiUnavailableMessage from '../components/common/ApiUnavailableMessage';
+import { DashboardWidget as WidgetConfig, WidgetData } from '../types/dashboard';
+import { dashboardLayouts } from '../config/dashboardLayouts';
+import { dashboardService } from '../services/dashboardService';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [widgetData, setWidgetData] = useState<Map<string, WidgetData>>(new Map());
+  const [loadingWidgets, setLoadingWidgets] = useState<Set<string>>(new Set());
+  const [errorWidgets, setErrorWidgets] = useState<Map<string, string>>(new Map());
 
-  // Temporarily disable API call for debugging
-  // const { data: stats, isLoading: statsLoading, error: statsError } = useGetIncidentStatisticsQuery();
-  const stats = {
-    totalIncidents: 0,
-    openIncidents: 0,
-    closedIncidents: 0,
-    criticalIncidents: 0,
+  // Get dashboard data from API
+  const { data: dashboardData, isLoading: statsLoading, error: statsError } = useGetIncidentDashboardQuery();
+
+  // Determine which dashboard layout to use based on user role
+  const currentLayout = useMemo(() => {
+    if (!user) return dashboardLayouts.find(layout => layout.id === 'default');
+    
+    // Map user roles to dashboard layouts
+    const roleToLayout: Record<string, string> = {
+      'Admin': 'executive',
+      'HSE Manager': 'executive',
+      'HSE Officer': 'safety-officer',
+      'HSE Coordinator': 'safety-officer',
+      'Department Head': 'safety-officer',
+      'Employee': 'basic-user',
+      'Contractor': 'basic-user',
+    };
+
+    const layoutId = roleToLayout[user.role] || 'default';
+    return dashboardLayouts.find(layout => layout.id === layoutId) || 
+           dashboardLayouts.find(layout => layout.id === 'default');
+  }, [user]);
+
+  const widgets = currentLayout?.widgets || [];
+
+  // Load widget data
+  const loadWidgetData = async (widget: WidgetConfig) => {
+    try {
+      setLoadingWidgets(prev => new Set(prev).add(widget.id));
+      setErrorWidgets(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(widget.id);
+        return newMap;
+      });
+
+      const data = await dashboardService.getWidgetData(widget);
+      if (data) {
+        setWidgetData(prev => new Map(prev).set(widget.id, data));
+      }
+    } catch (error) {
+      console.error(`Error loading widget ${widget.id}:`, error);
+      setErrorWidgets(prev => new Map(prev).set(widget.id, error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setLoadingWidgets(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(widget.id);
+        return newSet;
+      });
+    }
   };
-  const statsLoading = false;
-  const statsError = null;
 
-  // Debug logging
-  console.log('Dashboard component rendering', { user, stats });
+  // Initial data load
+  useEffect(() => {
+    widgets.forEach(widget => {
+      loadWidgetData(widget);
+    });
+  }, [widgets]);
+
+  // Auto-refresh for widgets that support it
+  useEffect(() => {
+    const intervals: NodeJS.Timeout[] = [];
+
+    widgets.forEach(widget => {
+      if (widget.config.autoRefresh && widget.refreshInterval) {
+        const interval = setInterval(() => {
+          loadWidgetData(widget);
+        }, widget.refreshInterval * 1000);
+        intervals.push(interval);
+      }
+    });
+
+    return () => {
+      intervals.forEach(interval => clearInterval(interval));
+    };
+  }, [widgets]);
 
   if (!user) {
-    console.log('No user found in Dashboard');
-    return <div>Loading user...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
+        <CSpinner size="lg" />
+      </div>
+    );
   }
 
   return (
     <>
       <div className="mb-4">
-        <h1>Dashboard</h1>
+        <h1>{currentLayout?.name || 'Dashboard'}</h1>
         <p className="text-medium-emphasis">
           Welcome back, {user?.name}! Here's your HSE overview.
         </p>
       </div>
 
-      <CAlert color="info" className="d-flex align-items-center">
+      <CAlert color="info" className="d-flex align-items-center mb-4">
         <FontAwesomeIcon icon={CONTEXT_ICONS.vaccination} className="flex-shrink-0 me-2" />
         <div>
           <strong>Welcome to Harmoni360!</strong> This system manages health,
-          safety, and environmental data for British School Jakarta.
+          safety, security and environmental data for British School Jakarta.
           <CButton
             color="primary"
             size="sm"
@@ -68,212 +139,42 @@ const Dashboard: React.FC = () => {
       </CAlert>
 
       {statsError && (
-        <CAlert color="warning" className="mb-4">
-          <strong>Unable to load statistics.</strong> Please ensure you're
-          logged in and try refreshing the page.
-        </CAlert>
+        <ApiUnavailableMessage
+          title="Unable to load dashboard statistics"
+          message="The dashboard data could not be loaded from the backend API."
+          onRefresh={() => window.location.reload()}
+          className="mb-4"
+        />
       )}
 
-      <CRow className="mb-4">
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsA
-            className="mb-4 dashboard-widget"
-            color="primary"
-            value={
-              statsLoading ? (
-                <CSpinner size="sm" />
-              ) : (
-                <>
-                  {stats?.totalIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">incidents</span>
-                </>
-              )
-            }
-            title="Total Incidents"
-            action={
-              <FontAwesomeIcon
-                icon={CONTEXT_ICONS.incident}
-                size="2x"
-                className="my-4 text-white"
-              />
-            }
-            onClick={() => navigate('/incidents')}
-            style={{ cursor: 'pointer' }}
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsA
-            className="mb-4 dashboard-widget"
-            color="warning"
-            value={
-              statsLoading ? (
-                <CSpinner size="sm" />
-              ) : (
-                <>
-                  {stats?.openIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">open</span>
-                </>
-              )
-            }
-            title="Open Incidents"
-            action={
-              <FontAwesomeIcon icon={CONTEXT_ICONS.report} size="2x" className="my-4 text-white" />
-            }
-            onClick={() =>
-              navigate(
-                '/incidents?status=Reported,UnderInvestigation,AwaitingAction'
-              )
-            }
-            style={{ cursor: 'pointer' }}
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsA
-            className="mb-4 dashboard-widget"
-            color="danger"
-            value={
-              statsLoading ? (
-                <CSpinner size="sm" />
-              ) : (
-                <>
-                  {stats?.criticalIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">critical</span>
-                </>
-              )
-            }
-            title="Critical Incidents"
-            action={
-              <FontAwesomeIcon
-                icon={CONTEXT_ICONS.incident}
-                size="2x"
-                className="my-4 text-white"
-              />
-            }
-            onClick={() => navigate('/incidents?severity=Critical')}
-            style={{ cursor: 'pointer' }}
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsA
-            className="mb-4 dashboard-widget"
-            color="success"
-            value={
-              statsLoading ? (
-                <CSpinner size="sm" />
-              ) : (
-                <>
-                  {stats?.closedIncidents || 0}{' '}
-                  <span className="fs-6 fw-normal">resolved</span>
-                </>
-              )
-            }
-            title="Resolved Incidents"
-            action={
-              <FontAwesomeIcon
-                icon={CONTEXT_ICONS.vaccination}
-                size="2x"
-                className="my-4 text-white"
-              />
-            }
-            onClick={() => navigate('/incidents?status=Resolved,Closed')}
-            style={{ cursor: 'pointer' }}
-          />
-        </CCol>
-      </CRow>
-
+      {/* Modular Widget Dashboard */}
       <CRow>
-        <CCol md={6}>
-          <CCard className="mb-4">
-            <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Quick Actions</strong>
-            </CCardHeader>
-            <CCardBody>
-              <div className="d-grid gap-3">
-                <CButton
-                  color="primary"
-                  className="d-flex align-items-center justify-content-between"
-                  onClick={() => navigate('/incidents/create')}
-                >
-                  <div className="d-flex align-items-center">
-                    <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="me-2" />
-                    Report New Incident
-                  </div>
-                  <FontAwesomeIcon icon={ACTION_ICONS.next} size="sm" />
-                </CButton>
-
-                <CButton
-                  color="secondary"
-                  variant="outline"
-                  className="d-flex align-items-center justify-content-between"
-                  onClick={() => navigate('/incidents')}
-                >
-                  <div className="d-flex align-items-center">
-                    <FontAwesomeIcon icon={CONTEXT_ICONS.report} className="me-2" />
-                    View All Incidents
-                  </div>
-                  <FontAwesomeIcon icon={ACTION_ICONS.next} size="sm" />
-                </CButton>
-
-                <CButton
-                  color="secondary"
-                  variant="outline"
-                  className="d-flex align-items-center justify-content-between"
-                  onClick={() => navigate('/incidents/my-reports')}
-                >
-                  <div className="d-flex align-items-center">
-                    <FontAwesomeIcon icon={CONTEXT_ICONS.report} className="me-2" />
-                    My Incident Reports
-                  </div>
-                  <FontAwesomeIcon icon={ACTION_ICONS.next} size="sm" />
-                </CButton>
-
-                <CButton
-                  color="success"
-                  variant="outline"
-                  className="d-flex align-items-center justify-content-between"
-                  disabled
-                >
-                  <div className="d-flex align-items-center">
-                    <FontAwesomeIcon icon={CONTEXT_ICONS.vaccination} className="me-2" />
-                    Risk Assessment (Coming Soon)
-                  </div>
-                  <FontAwesomeIcon icon={ACTION_ICONS.next} size="sm" />
-                </CButton>
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-
-        <CCol md={6}>
-          <CCard className="mb-4">
-            <CCardHeader>
-              <strong>Your Profile</strong>
-            </CCardHeader>
-            <CCardBody>
-              <div className="mb-3">
-                <strong>Name:</strong> {user?.name}
-              </div>
-              <div className="mb-3">
-                <strong>Employee ID:</strong> {user?.employeeId}
-              </div>
-              <div className="mb-3">
-                <strong>Department:</strong> {user?.department}
-              </div>
-              <div className="mb-3">
-                <strong>Position:</strong> {user?.position}
-              </div>
-              <div className="mb-3">
-                <strong>Roles:</strong>{' '}
-                {user?.roles.map((role, index) => (
-                  <CBadge key={index} color="primary" className="me-1">
-                    {role}
-                  </CBadge>
-                ))}
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
+        {widgets.map((widget) => (
+          <DashboardWidget
+            key={widget.id}
+            widget={widget}
+            data={widgetData.get(widget.id)}
+            isLoading={loadingWidgets.has(widget.id)}
+            error={errorWidgets.get(widget.id)}
+            onRefresh={() => loadWidgetData(widget)}
+          />
+        ))}
       </CRow>
+
+      {/* Dashboard Layout Info for Debug (remove in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <CRow className="mt-4">
+          <CCol>
+            <CCard>
+              <CCardHeader>
+                <small className="text-muted">
+                  Debug: Current Layout - {currentLayout?.name} ({widgets.length} widgets)
+                </small>
+              </CCardHeader>
+            </CCard>
+          </CCol>
+        </CRow>
+      )}
     </>
   );
 };

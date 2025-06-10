@@ -36,6 +36,8 @@ public class GetIncidentsQueryHandler : IRequestHandler<GetIncidentsQuery, GetIn
             .Include(i => i.Attachments)
             .Include(i => i.InvolvedPersons)
             .Include(i => i.CorrectiveActions)
+            .Include(i => i.Category)
+            .Include(i => i.DepartmentEntity)
             .AsQueryable();
 
         // Apply filters
@@ -82,6 +84,8 @@ public class GetIncidentsQueryHandler : IRequestHandler<GetIncidentsQuery, GetIn
             ReporterName = i.ReporterName,
             ReporterEmail = i.ReporterEmail,
             ReporterDepartment = i.ReporterDepartment,
+            Category = i.Category?.Name,
+            Department = i.DepartmentEntity?.Name,
             InjuryType = i.InjuryType?.ToString(),
             MedicalTreatmentProvided = i.MedicalTreatmentProvided,
             EmergencyServicesContacted = i.EmergencyServicesContacted,

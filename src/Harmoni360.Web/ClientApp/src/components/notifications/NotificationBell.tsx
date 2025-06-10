@@ -84,17 +84,31 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
           'Content-Type': 'application/json'
         }
       });
+      
       if (response.ok) {
         const data = await response.json();
         setUnreadCount(data.count || 0);
+      } else if (response.status === 401) {
+        // Authentication required - set to 0 for unauthenticated users
+        setUnreadCount(0);
       } else {
-        // Fallback to mock count if API fails
-        setUnreadCount(3);
+        // API error - provide guidance for development mode
+        if (import.meta.env.DEV) {
+          console.warn('NotificationBell: API error. Please ensure the backend is running and database is seeded.');
+          setUnreadCount(0); // Show 0 when API has errors
+        } else {
+          setUnreadCount(0);
+        }
       }
     } catch (error) {
-      console.error('Failed to load unread count:', error);
-      // Set mock count for demo
-      setUnreadCount(3);
+      // Network error or JSON parsing error
+      if (import.meta.env.DEV) {
+        console.warn('NotificationBell: API unavailable. Please ensure the backend is running and database is seeded.');
+        setUnreadCount(0); // Show 0 when API is unavailable
+      } else {
+        console.error('Failed to load unread count:', error);
+        setUnreadCount(0);
+      }
     }
   };
 

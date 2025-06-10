@@ -74,6 +74,9 @@ public class IncidentController : ControllerBase
                 Severity = severity,
                 IncidentDate = request.IncidentDate,
                 Location = request.Location,
+                CategoryId = request.CategoryId,
+                DepartmentId = request.DepartmentId,
+                LocationId = request.LocationId,
                 Latitude = request.Latitude,
                 Longitude = request.Longitude,
                 WitnessNames = request.WitnessNames,
@@ -289,6 +292,45 @@ public class IncidentController : ControllerBase
         {
             _logger.LogError(ex, "Error updating incident {IncidentId}", id);
             return BadRequest(new { message = "An error occurred while updating the incident" });
+        }
+    }
+
+    /// <summary>
+    /// Update incident status
+    /// </summary>
+    [HttpPut("{id}/status")]
+    [RequireModulePermission(ModuleType.IncidentManagement, PermissionType.Update)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult> UpdateIncidentStatus(int id, [FromBody] UpdateIncidentStatusRequest request)
+    {
+        try
+        {
+            var command = new UpdateIncidentStatusCommand
+            {
+                Id = id,
+                Status = request.Status,
+                Comment = request.Comment,
+                ModifiedBy = _currentUserService.Email ?? "system"
+            };
+
+            await _mediator.Send(command);
+            return Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating incident status for incident {IncidentId}", id);
+            return BadRequest(new { message = "An error occurred while updating the incident status" });
         }
     }
 
@@ -634,7 +676,9 @@ public class IncidentController : ControllerBase
                 IncidentId = id,
                 PersonId = request.PersonId,
                 InvolvementType = involvementType,
-                InjuryDescription = request.InjuryDescription
+                InjuryDescription = request.InjuryDescription,
+                ManualPersonName = request.ManualPersonName,
+                ManualPersonEmail = request.ManualPersonEmail
             };
 
             await _mediator.Send(command);
@@ -784,6 +828,9 @@ public class CreateIncidentRequest
     public string Severity { get; set; } = string.Empty;
     public DateTime IncidentDate { get; set; }
     public string Location { get; set; } = string.Empty;
+    public int? CategoryId { get; set; }
+    public int? DepartmentId { get; set; }
+    public int? LocationId { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public string? WitnessNames { get; set; }
@@ -810,6 +857,8 @@ public class AddInvolvedPersonRequest
     public int PersonId { get; set; }
     public string InvolvementType { get; set; } = string.Empty;
     public string? InjuryDescription { get; set; }
+    public string? ManualPersonName { get; set; }
+    public string? ManualPersonEmail { get; set; }
 }
 
 /// <summary>
@@ -819,4 +868,13 @@ public class UpdateInvolvedPersonRequest
 {
     public string InvolvementType { get; set; } = string.Empty;
     public string? InjuryDescription { get; set; }
+}
+
+/// <summary>
+/// Request model for updating incident status
+/// </summary>
+public class UpdateIncidentStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
+    public string? Comment { get; set; }
 }

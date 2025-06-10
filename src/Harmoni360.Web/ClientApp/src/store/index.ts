@@ -7,6 +7,8 @@ import { ppeApi } from '../features/ppe/ppeApi';
 import { ppeManagementApi } from '../features/ppe/ppeManagementApi';
 import { hazardApi } from '../features/hazards/hazardApi';
 import { healthApi } from '../features/health/healthApi';
+import { configurationApi } from '../api/configurationApi';
+import { applicationModeApi } from '../api/applicationModeApi';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +19,8 @@ export const store = configureStore({
     [ppeManagementApi.reducerPath]: ppeManagementApi.reducer,
     [hazardApi.reducerPath]: hazardApi.reducer,
     [healthApi.reducerPath]: healthApi.reducer,
+    [configurationApi.reducerPath]: configurationApi.reducer,
+    [applicationModeApi.reducerPath]: applicationModeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -29,7 +33,9 @@ export const store = configureStore({
       ppeApi.middleware,
       ppeManagementApi.middleware,
       hazardApi.middleware,
-      healthApi.middleware
+      healthApi.middleware,
+      configurationApi.middleware,
+      applicationModeApi.middleware
     ),
 });
 

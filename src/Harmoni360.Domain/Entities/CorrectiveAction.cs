@@ -9,6 +9,10 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
     public string AssignedToDepartment { get; private set; } = string.Empty;
     public int? AssignedToId { get; private set; }
     public User? AssignedTo { get; private set; }
+    
+    // Configuration entity reference
+    public int? DepartmentId { get; private set; }
+    public Department? Department { get; private set; }
     public DateTime DueDate { get; private set; }
     public DateTime? CompletedDate { get; private set; }
     public ActionStatus Status { get; private set; }
@@ -30,7 +34,8 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
         DateTime dueDate,
         ActionPriority priority,
         string createdBy,
-        int? assignedToId = null)
+        int? assignedToId = null,
+        int? departmentId = null)
     {
         return new CorrectiveAction
         {
@@ -38,6 +43,7 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
             Description = description,
             AssignedToDepartment = assignedToDepartment,
             AssignedToId = assignedToId,
+            DepartmentId = departmentId,
             DueDate = dueDate,
             Priority = priority,
             Status = ActionStatus.Pending,
@@ -89,11 +95,13 @@ public class CorrectiveAction : BaseEntity, IAuditableEntity
         DateTime dueDate,
         ActionPriority priority,
         string modifiedBy,
-        int? assignedToId = null)
+        int? assignedToId = null,
+        int? departmentId = null)
     {
         Description = description;
         AssignedToDepartment = assignedToDepartment;
         AssignedToId = assignedToId;
+        DepartmentId = departmentId;
         DueDate = dueDate;
         Priority = priority;
         LastModifiedAt = DateTime.UtcNow;

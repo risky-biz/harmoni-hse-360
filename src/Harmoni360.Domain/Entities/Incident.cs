@@ -19,6 +19,16 @@ public class Incident : BaseEntity, IAuditableEntity
     public string ReporterEmail { get; private set; } = string.Empty;
     public string ReporterDepartment { get; private set; } = string.Empty;
 
+    // Configuration entity references
+    public int? DepartmentId { get; private set; }
+    public Department? DepartmentEntity { get; private set; }
+    
+    public int? CategoryId { get; private set; }
+    public IncidentCategory? Category { get; private set; }
+    
+    public int? LocationId { get; private set; }
+    public IncidentLocation? LocationEntity { get; private set; }
+
     // Additional fields for escalation
     public string Department => ReporterDepartment;
     public DateTime? LastResponseAt { get; private set; }
@@ -64,7 +74,10 @@ public class Incident : BaseEntity, IAuditableEntity
         string reporterEmail,
         string reporterDepartment,
         GeoLocation? geoLocation = null,
-        int? reporterId = null)
+        int? reporterId = null,
+        int? departmentId = null,
+        int? categoryId = null,
+        int? locationId = null)
     {
         var incident = new Incident
         {
@@ -79,6 +92,9 @@ public class Incident : BaseEntity, IAuditableEntity
             ReporterDepartment = reporterDepartment,
             GeoLocation = geoLocation,
             ReporterId = reporterId,
+            DepartmentId = departmentId,
+            CategoryId = categoryId,
+            LocationId = locationId,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = reporterEmail,
             MedicalTreatmentProvided = false,
@@ -167,9 +183,9 @@ public class Incident : BaseEntity, IAuditableEntity
         _attachments.Add(attachment);
     }
 
-    public void AddInvolvedPerson(int personId, InvolvementType involvementType, string? injuryDescription = null)
+    public void AddInvolvedPerson(int? personId, InvolvementType involvementType, string? injuryDescription = null, string? manualPersonName = null, string? manualPersonEmail = null)
     {
-        var involvedPerson = new IncidentInvolvedPerson(Id, personId, involvementType, injuryDescription);
+        var involvedPerson = new IncidentInvolvedPerson(Id, personId, involvementType, injuryDescription, manualPersonName, manualPersonEmail);
         _involvedPersons.Add(involvedPerson);
     }
 

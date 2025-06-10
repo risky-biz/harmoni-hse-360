@@ -46,6 +46,7 @@ import { useLogoutMutation } from '../features/auth/authApi';
 import { logout } from '../features/auth/authSlice';
 import ApplicationSettings from '../components/common/ApplicationSettings';
 import NotificationBell from '../components/notifications/NotificationBell';
+import DemoModeBanner from '../components/common/DemoModeBanner';
 
 // Icon mapping for navigation items
 const getNavigationIcon = (name: string) => {
@@ -106,7 +107,8 @@ const DefaultLayout: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className={sidebarShow ? 'sidebar-show' : 'sidebar-hide'}>
+      <DemoModeBanner sidebarShow={sidebarShow} />
       <CSidebar
         position="fixed"
         unfoldable={false}
@@ -181,6 +183,7 @@ const DefaultLayout: React.FC = () => {
 
       <div
         className={`wrapper d-flex flex-column min-vh-100 ${sidebarShow ? 'sidebar-visible' : 'sidebar-hidden'}`}
+        style={{ paddingTop: 'var(--demo-banner-height, 0px)' }}
       >
         <CHeader position="sticky" className="mb-4 p-0 ps-2">
           <CContainer fluid className="px-4">
@@ -254,14 +257,6 @@ const DefaultLayout: React.FC = () => {
             <span className="ms-1">&copy; 2025 Harmoni360</span>
           </div>
           <div className="ms-auto">
-            <span className="me-1">Powered by</span>
-            <a
-              href="https://coreui.io/react"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              CoreUI React
-            </a>
           </div>
         </CFooter>
       </div>

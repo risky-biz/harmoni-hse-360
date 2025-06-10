@@ -3,6 +3,7 @@ using Harmoni360.Domain.Interfaces;
 using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Infrastructure.Persistence.Repositories;
 using Harmoni360.Infrastructure.Services;
+using Harmoni360.Infrastructure.Services.DataSeeders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -57,7 +58,21 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
+        
+        // Add data seeders
         services.AddScoped<IDataSeeder, DataSeeder>();
+        services.AddScoped<ConfigurationDataSeeder>();
+        services.AddScoped<RoleDataSeeder>();
+        services.AddScoped<ModulePermissionDataSeeder>();
+        services.AddScoped<RoleModulePermissionDataSeeder>();
+        services.AddScoped<UserDataSeeder>();
+        services.AddScoped<IncidentDataSeeder>();
+        services.AddScoped<PPEDataSeeder>();
+        services.AddScoped<PPEItemDataSeeder>();
+        services.AddScoped<HazardDataSeeder>();
+        services.AddScoped<HealthDataSeeder>();
+        services.AddScoped<SecurityDataSeeder>();
+        
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
 
         // Add notification and escalation services
@@ -68,6 +83,9 @@ public static class DependencyInjection
         // Add security services
         services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
         services.AddScoped<ISecurityAuditService, SecurityAuditService>();
+
+        // Add application mode service
+        services.AddSingleton<IApplicationModeService, ApplicationModeService>();
 
         return services;
     }

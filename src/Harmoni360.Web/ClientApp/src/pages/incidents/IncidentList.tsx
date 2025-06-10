@@ -127,7 +127,8 @@ const IncidentList: React.FC = () => {
                 }}
                 title="Refresh incident list"
               >
-                🔄 Refresh
+                <FontAwesomeIcon icon={ACTION_ICONS.refresh} className="me-2" />
+                Refresh
               </CButton>
               <CButton
                 color="primary"

@@ -28,14 +28,21 @@ import {
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapPin } from '@fortawesome/free-solid-svg-icons';
-import { ACTION_ICONS, CONTEXT_ICONS, FILE_TYPE_ICONS } from '../../utils/iconMappings';
+import { ACTION_ICONS, CONTEXT_ICONS, FILE_TYPE_ICONS, getCategoryIcon, PRIORITY_ICONS, LOCATION_ICONS } from '../../utils/iconMappings';
 import {
   useCreateIncidentMutation,
   useUploadIncidentAttachmentsMutation,
   CreateIncidentRequest,
 } from '../../features/incidents/incidentApi';
+import { 
+  useGetDepartmentsQuery, 
+  useGetIncidentCategoriesQuery, 
+  useGetIncidentLocationsQuery 
+} from '../../api/configurationApi';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';
+import { useApplicationMode } from '../../hooks/useApplicationMode';
+import { DemoModeOnly } from '../../components/common/DemoModeWrapper';
 
 // Validation schema based on FRQ-INC-001 requirements
 const schema = yup.object({
@@ -61,7 +68,21 @@ const schema = yup.object({
     .string()
     .required('Location is required')
     .min(3, 'Location must be at least 3 characters'),
-  category: yup.string().required('Incident category is required'),
+  categoryId: yup
+    .number()
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .min(1, 'Please select a valid incident category')
+    .required('Incident category is required'),
+  departmentId: yup
+    .number()
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .nullable()
+    .optional(),
+  locationId: yup
+    .number()
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .nullable()
+    .optional(),
   latitude: yup.number().optional(),
   longitude: yup.number().optional(),
   involvedPersons: yup
@@ -80,7 +101,9 @@ interface IncidentFormData {
   severity: 'Minor' | 'Moderate' | 'Serious' | 'Critical';
   incidentDate: string;
   location: string;
-  category: string;
+  categoryId?: number;
+  departmentId?: number;
+  locationId?: number;
   involvedPersons?: string;
   immediateActions?: string;
   latitude?: number;
@@ -89,10 +112,16 @@ interface IncidentFormData {
 
 const CreateIncident: React.FC = () => {
   const navigate = useNavigate();
+  const { isDemoMode, maxAttachmentSizeMB } = useApplicationMode();
   const [createIncident, { isLoading: isSubmitting }] =
     useCreateIncidentMutation();
   const [uploadAttachments, { isLoading: isUploading }] =
     useUploadIncidentAttachmentsMutation();
+  
+  // Configuration data queries
+  const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery({});
+  const { data: categories = [], isLoading: isCategoriesLoading } = useGetIncidentCategoriesQuery({});
+  const { data: locations = [], isLoading: isLocationsLoading } = useGetIncidentLocationsQuery({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<
     'saved' | 'saving' | 'error' | null
@@ -118,7 +147,9 @@ const CreateIncident: React.FC = () => {
       severity: 'Minor',
       incidentDate: new Date().toISOString().slice(0, 16), // Current date-time
       location: '',
-      category: '',
+      categoryId: undefined,
+      departmentId: undefined,
+      locationId: undefined,
       involvedPersons: '',
       immediateActions: '',
     },
@@ -200,17 +231,18 @@ const CreateIncident: React.FC = () => {
   // Handle file upload (photos/videos per FRQ-INC-001)
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
+    const maxSizeMB = isDemoMode ? maxAttachmentSizeMB : 50;
     const validFiles = files.filter((file) => {
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
-      const isValidSize = file.size <= 50 * 1024 * 1024; // 50MB max
+      const isValidSize = file.size <= maxSizeMB * 1024 * 1024;
 
       return (isImage || isVideo) && isValidSize;
     });
 
     if (validFiles.length !== files.length) {
       alert(
-        'Some files were skipped. Only images and videos under 50MB are allowed.'
+        `Some files were skipped. Only images and videos under ${maxSizeMB}MB are allowed.`
       );
     }
 
@@ -234,6 +266,9 @@ const CreateIncident: React.FC = () => {
         severity: data.severity,
         incidentDate: new Date(data.incidentDate).toISOString(),
         location: data.location,
+        categoryId: data.categoryId || undefined,
+        departmentId: data.departmentId || undefined,
+        locationId: data.locationId || undefined,
         latitude: data.latitude,
         longitude: data.longitude,
         witnessNames: data.involvedPersons || undefined,
@@ -287,44 +322,6 @@ const CreateIncident: React.FC = () => {
     }
   };
 
-  // Incident categories based on Epic 1 requirements
-  const incidentCategories = [
-    {
-      value: 'student_injury',
-      label: 'Student Injury (Sports, Playground, Classroom)',
-    },
-    { value: 'staff_injury', label: 'Staff/Teacher Injury' },
-    { value: 'visitor_incident', label: 'Visitor Incident' },
-    { value: 'property_damage', label: 'Property Damage' },
-    { value: 'environmental', label: 'Environmental Incident' },
-    { value: 'security', label: 'Security Incident' },
-    { value: 'near_miss', label: 'Near-Miss Event' },
-    { value: 'medical_emergency', label: 'Medical Emergency' },
-    { value: 'lab_accident', label: 'Laboratory Accident' },
-    { value: 'transportation', label: 'Transportation Incident' },
-  ];
-
-  // Campus locations (replace with dynamic data)
-  const campusLocations = [
-    'Main Building - Ground Floor',
-    'Main Building - 1st Floor',
-    'Main Building - 2nd Floor',
-    'Science Wing - Chemistry Lab',
-    'Science Wing - Physics Lab',
-    'Science Wing - Biology Lab',
-    'Library - Main Hall',
-    'Library - Study Rooms',
-    'Gymnasium - Main Court',
-    'Gymnasium - Equipment Room',
-    'Cafeteria - Dining Area',
-    'Cafeteria - Kitchen',
-    'Playground - Primary',
-    'Playground - Secondary',
-    'Swimming Pool Area',
-    'Parking Area',
-    'Sports Field',
-    'Other (specify in description)',
-  ];
 
   return (
     <PermissionGuard 
@@ -392,7 +389,7 @@ const CreateIncident: React.FC = () => {
                 variant="outline"
                 onClick={() => navigate('/incidents')}
               >
-                <FontAwesomeIcon icon={CONTEXT_ICONS.dashboard_speedometer} size="sm" className="me-1" />
+                <FontAwesomeIcon icon={ACTION_ICONS.back} size="sm" className="me-1" />
                 Back to List
               </CButton>
             </div>
@@ -410,6 +407,21 @@ const CreateIncident: React.FC = () => {
                 </CAlert>
               )}
 
+              {/* Development: Show validation errors */}
+              {process.env.NODE_ENV === 'development' && Object.keys(errors).length > 0 && (
+                <CAlert color="warning" className="mb-4">
+                  <FontAwesomeIcon icon={ACTION_ICONS.warning} className="me-2" />
+                  <strong>Please fix the following errors:</strong>
+                  <ul className="mb-0 mt-2">
+                    {Object.entries(errors).map(([field, error]) => (
+                      <li key={field}>
+                        <strong>{field}:</strong> {error?.message}
+                      </li>
+                    ))}
+                  </ul>
+                </CAlert>
+              )}
+
               <CCallout color="info" className="mb-4">
                 <FontAwesomeIcon icon={ACTION_ICONS.info} className="me-2" />
                 <strong>Important:</strong> Report incidents as soon as
@@ -417,15 +429,35 @@ const CreateIncident: React.FC = () => {
                 according to Indonesian regulations.
               </CCallout>
 
+              {(isDepartmentsLoading || isCategoriesLoading || isLocationsLoading) && (
+                <CAlert color="info" className="mb-4">
+                  <CSpinner size="sm" className="me-2" />
+                  Loading configuration data...
+                  {isDepartmentsLoading && ' Departments'}
+                  {isCategoriesLoading && ' Categories'} 
+                  {isLocationsLoading && ' Locations'}
+                </CAlert>
+              )}
+
+              <DemoModeOnly>
+                <CCallout color="info" className="mb-4">
+                  <FontAwesomeIcon icon={ACTION_ICONS.info} className="me-2" />
+                  <strong>Demo Mode:</strong> You're using sample data. Attachments are limited to {maxAttachmentSizeMB}MB in demo mode.
+                </CCallout>
+              </DemoModeOnly>
+
               {/* Basic Information Section */}
               <CAccordion>
                 <CAccordionItem itemKey={1}>
                   <CAccordionHeader>
-                    <strong>1. Basic Information</strong>
+                    <div className="d-flex align-items-center">
+                      <FontAwesomeIcon icon={CONTEXT_ICONS.basicInformation} className="me-2 text-primary" />
+                      <strong>Basic Information</strong>
+                    </div>
                   </CAccordionHeader>
                   <CAccordionBody>
                     <CRow className="mb-3">
-                      <CCol md={6}>
+                      <CCol md={12}>
                         <CFormLabel htmlFor="title">
                           Incident Title *
                         </CFormLabel>
@@ -441,6 +473,9 @@ const CreateIncident: React.FC = () => {
                           </div>
                         )}
                       </CCol>
+                    </CRow>
+
+                    <CRow className="mb-3">
                       <CCol md={3}>
                         <CFormLabel htmlFor="severity">
                           Severity Level *
@@ -461,23 +496,52 @@ const CreateIncident: React.FC = () => {
                           </div>
                         )}
                       </CCol>
-                      <CCol md={3}>
-                        <CFormLabel htmlFor="category">Category *</CFormLabel>
+                      <CCol md={4}>
+                        <CFormLabel htmlFor="categoryId">Category *</CFormLabel>
                         <CFormSelect
-                          id="category"
-                          {...register('category')}
-                          invalid={!!errors.category}
+                          id="categoryId"
+                          {...register('categoryId', { valueAsNumber: true })}
+                          invalid={!!errors.categoryId}
+                          disabled={isCategoriesLoading}
                         >
-                          <option value="">Select category...</option>
-                          {incidentCategories.map((cat) => (
-                            <option key={cat.value} value={cat.value}>
-                              {cat.label}
+                          <option value="">
+                            {isCategoriesLoading ? 'Loading categories...' : 'Select category...'}
+                          </option>
+                          {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                              {category.requiresImmediateAction ? ' [URGENT]' : ''}
                             </option>
                           ))}
                         </CFormSelect>
-                        {errors.category && (
+                        {errors.categoryId && (
                           <div className="invalid-feedback d-block">
-                            {errors.category.message}
+                            {errors.categoryId.message}
+                          </div>
+                        )}
+                      </CCol>
+                      <CCol md={5}>
+                        <CFormLabel htmlFor="departmentId">Department</CFormLabel>
+                        <CFormSelect
+                          id="departmentId"
+                          {...register('departmentId', { valueAsNumber: true })}
+                          disabled={isDepartmentsLoading}
+                        >
+                          <option value="">
+                            {isDepartmentsLoading ? 'Loading departments...' : 'Select department (optional)'}
+                          </option>
+                          {departments.map((dept) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name} ({dept.code})
+                            </option>
+                          ))}
+                        </CFormSelect>
+                        <small className="text-muted">
+                          Which department should handle this incident?
+                        </small>
+                        {errors.departmentId && (
+                          <div className="invalid-feedback d-block">
+                            {errors.departmentId.message}
                           </div>
                         )}
                       </CCol>
@@ -511,7 +575,10 @@ const CreateIncident: React.FC = () => {
                 {/* Location and Time Section */}
                 <CAccordionItem itemKey={2}>
                   <CAccordionHeader>
-                    <strong>2. Location and Time</strong>
+                    <div className="d-flex align-items-center">
+                      <FontAwesomeIcon icon={CONTEXT_ICONS.locationTime} className="me-2 text-success" />
+                      <strong>Location and Time</strong>
+                    </div>
                   </CAccordionHeader>
                   <CAccordionBody>
                     <CRow className="mb-3">
@@ -541,14 +608,29 @@ const CreateIncident: React.FC = () => {
                         <CInputGroup>
                           {locationInputMode === 'dropdown' ? (
                             <CFormSelect
-                              id="location"
-                              {...register('location')}
+                              id="locationId"
+                              {...register('locationId', { 
+                                valueAsNumber: true,
+                                onChange: (e) => {
+                                  const selectedLocation = locations.find(loc => loc.id === parseInt(e.target.value));
+                                  if (selectedLocation) {
+                                    setValue('location', selectedLocation.fullLocation);
+                                    setValue('latitude', selectedLocation.latitude);
+                                    setValue('longitude', selectedLocation.longitude);
+                                  }
+                                }
+                              })}
                               invalid={!!errors.location}
+                              disabled={isLocationsLoading}
                             >
-                              <option value="">Select location...</option>
-                              {campusLocations.map((location) => (
-                                <option key={location} value={location}>
-                                  {location}
+                              <option value="">
+                                {isLocationsLoading ? 'Loading locations...' : 'Select location...'}
+                              </option>
+                              {locations.map((location) => (
+                                <option key={location.id} value={location.id}>
+                                  {location.name}
+                                  {location.building && ` - ${location.building}`}
+                                  {location.isHighRisk && ' [HIGH RISK]'}
                                 </option>
                               ))}
                             </CFormSelect>
@@ -582,6 +664,7 @@ const CreateIncident: React.FC = () => {
                               onClick={() => {
                                 setLocationInputMode('dropdown');
                                 setValue('location', '');
+                                setValue('locationId', undefined);
                                 setValue('latitude', undefined);
                                 setValue('longitude', undefined);
                               }}
@@ -598,8 +681,8 @@ const CreateIncident: React.FC = () => {
                         )}
                         <small className="text-muted">
                           {locationInputMode === 'dropdown'
-                            ? 'Click the location button to use GPS coordinates'
-                            : 'GPS coordinates will be stored in the database. Click ↩ to use dropdown again.'}
+                            ? 'Select a predefined location or click GPS button for coordinates'
+                            : 'GPS coordinates will be stored. Click ↩ to use dropdown again.'}
                         </small>
                       </CCol>
                     </CRow>
@@ -609,7 +692,10 @@ const CreateIncident: React.FC = () => {
                 {/* Additional Details Section */}
                 <CAccordionItem itemKey={3}>
                   <CAccordionHeader>
-                    <strong>3. Additional Details</strong>
+                    <div className="d-flex align-items-center">
+                      <FontAwesomeIcon icon={CONTEXT_ICONS.additionalDetails} className="me-2 text-info" />
+                      <strong>Additional Details</strong>
+                    </div>
                   </CAccordionHeader>
                   <CAccordionBody>
                     <CRow className="mb-3">
@@ -654,7 +740,10 @@ const CreateIncident: React.FC = () => {
                 {/* Evidence Upload Section */}
                 <CAccordionItem itemKey={4}>
                   <CAccordionHeader>
-                    <strong>4. Evidence (Photos/Videos)</strong>
+                    <div className="d-flex align-items-center">
+                      <FontAwesomeIcon icon={CONTEXT_ICONS.evidence} className="me-2 text-warning" />
+                      <strong>Evidence (Photos/Videos)</strong>
+                    </div>
                   </CAccordionHeader>
                   <CAccordionBody>
                     <div className="mb-3">
@@ -675,7 +764,7 @@ const CreateIncident: React.FC = () => {
                       </CInputGroup>
                       <small className="text-muted">
                         Maximum 5 photos, 2-minute videos. Files must be under
-                        50MB each.
+                        {isDemoMode ? ` ${maxAttachmentSizeMB}MB each (demo limit).` : ' 50MB each.'}
                       </small>
                     </div>
 
@@ -693,9 +782,10 @@ const CreateIncident: React.FC = () => {
                             <CButton
                               size="sm"
                               color="light"
-                              className="ms-2 p-0"
-                              style={{ width: '16px', height: '16px' }}
+                              className="ms-2 p-0 d-flex align-items-center justify-content-center"
+                              style={{ width: '25px', height: '25px', minWidth: '25px' }}
                               onClick={() => removeFile(index)}
+                              title="Remove file"
                             >
                               ×
                             </CButton>

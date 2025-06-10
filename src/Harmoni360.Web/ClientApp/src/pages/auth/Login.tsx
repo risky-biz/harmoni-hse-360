@@ -298,7 +298,7 @@ const Login: React.FC = () => {
                               backgroundColor: 'rgba(255,255,255,0.2)',
                             }}
                           >
-                            🛡️
+                            <FontAwesomeIcon icon={CONTEXT_ICONS.security} size="lg" />
                           </div>
                           <h5
                             className="mb-0"
@@ -321,7 +321,7 @@ const Login: React.FC = () => {
                               backgroundColor: 'rgba(255,255,255,0.2)',
                             }}
                           >
-                            📊
+                            <FontAwesomeIcon icon={CONTEXT_ICONS.analytics} size="lg" />
                           </div>
                           <h5
                             className="mb-0"
@@ -344,7 +344,7 @@ const Login: React.FC = () => {
                               backgroundColor: 'rgba(255,255,255,0.2)',
                             }}
                           >
-                            🌿
+                            <FontAwesomeIcon icon={CONTEXT_ICONS.department} size="lg" />
                           </div>
                           <h5
                             className="mb-0"

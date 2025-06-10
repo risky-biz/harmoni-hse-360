@@ -53,7 +53,10 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
             request.Latitude.HasValue && request.Longitude.HasValue
                 ? Domain.ValueObjects.GeoLocation.Create(request.Latitude.Value, request.Longitude.Value)
                 : null,
-            user.Id
+            user.Id,
+            request.DepartmentId,
+            request.CategoryId,
+            request.LocationId
         );
 
         // Add witness information if provided

@@ -12,6 +12,9 @@ public record CreateIncidentCommand : IRequest<IncidentDto>
     public IncidentSeverity Severity { get; init; }
     public DateTime IncidentDate { get; init; }
     public string Location { get; init; } = string.Empty;
+    public int? CategoryId { get; init; }
+    public int? DepartmentId { get; init; }
+    public int? LocationId { get; init; }
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }
     public int ReporterId { get; init; }

@@ -17,22 +17,32 @@ public class RemoveInvolvedPersonCommandHandler : IRequestHandler<RemoveInvolved
 
     public async Task<Unit> Handle(RemoveInvolvedPersonCommand request, CancellationToken cancellationToken)
     {
+        // First try to find by PersonId (for existing users)
         var involvedPerson = await _context.IncidentInvolvedPersons
             .Include(ip => ip.Person)
             .FirstOrDefaultAsync(ip => ip.IncidentId == request.IncidentId && ip.PersonId == request.PersonId, cancellationToken);
+
+        // If not found by PersonId, try to find by the IncidentInvolvedPerson ID (for manual entries)
+        if (involvedPerson == null)
+        {
+            involvedPerson = await _context.IncidentInvolvedPersons
+                .Include(ip => ip.Person)
+                .FirstOrDefaultAsync(ip => ip.IncidentId == request.IncidentId && ip.Id == request.PersonId, cancellationToken);
+        }
 
         if (involvedPerson == null)
         {
             throw new InvalidOperationException($"Person with ID {request.PersonId} is not involved in incident {request.IncidentId}.");
         }
 
-        var personName = involvedPerson.Person?.Name ?? $"Person ID {request.PersonId}";
+        // Get the person name for audit logging
+        var personName = involvedPerson.Person?.Name ?? involvedPerson.ManualPersonName ?? $"Person ID {request.PersonId}";
 
         _context.IncidentInvolvedPersons.Remove(involvedPerson);
         await _context.SaveChangesAsync(cancellationToken);
 
         // Log audit trail
-        await _auditService.LogActionAsync(request.IncidentId, $"Involved person removed: {personName}");
+        await _auditService.LogActionAsync(request.IncidentId, "Person Removed", $"Involved person removed: {personName}");
 
         // Save audit trail entry
         await _context.SaveChangesAsync(cancellationToken);

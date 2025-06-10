@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import {
@@ -15,13 +15,17 @@ import {
   CButton,
   CSpinner,
   CAlert,
+  CInputGroup,
+  CInputGroupText,
 } from '@coreui/react';
 import { Icon } from '../../components/common/Icon';
-import { faArrowLeft, faSave } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faSave, faMapPin } from '@fortawesome/free-solid-svg-icons';
 import {
   useGetIncidentQuery,
   useUpdateIncidentMutation,
 } from '../../features/incidents/incidentApi';
+import { useGetIncidentLocationsQuery } from '../../api/configurationApi';
 import AttachmentManager from '../../components/common/AttachmentManager';
 import { formatDateTime } from '../../utils/dateUtils';
 
@@ -31,11 +35,16 @@ interface EditIncidentFormData {
   severity: string;
   status: string;
   location: string;
+  locationId?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 const EditIncident: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationInputMode, setLocationInputMode] = useState<'dropdown' | 'text'>('dropdown');
 
   const {
     data: incident,
@@ -44,34 +53,16 @@ const EditIncident: React.FC = () => {
   } = useGetIncidentQuery(Number(id));
   const [updateIncident, { isLoading: isUpdating, error: updateError }] =
     useUpdateIncidentMutation();
-
-  // Campus locations dropdown options
-  const campusLocations = [
-    'Main Building - Ground Floor',
-    'Main Building - 1st Floor',
-    'Main Building - 2nd Floor',
-    'Science Wing - Chemistry Lab',
-    'Science Wing - Physics Lab',
-    'Science Wing - Biology Lab',
-    'Library - Main Hall',
-    'Library - Study Rooms',
-    'Gymnasium - Main Court',
-    'Gymnasium - Equipment Room',
-    'Cafeteria - Dining Area',
-    'Cafeteria - Kitchen',
-    'Playground - Primary',
-    'Playground - Secondary',
-    'Swimming Pool Area',
-    'Parking Area',
-    'Sports Field',
-    'Other (specify in description)',
-  ];
+  
+  // Get locations from database
+  const { data: locations = [], isLoading: isLocationsLoading } = useGetIncidentLocationsQuery({});
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<EditIncidentFormData>();
 
   useEffect(() => {
@@ -82,16 +73,59 @@ const EditIncident: React.FC = () => {
         severity: incident.severity,
         status: incident.status,
         location: incident.location,
+        locationId: incident.locationId,
+        latitude: incident.latitude,
+        longitude: incident.longitude,
       });
+      
+      // If incident has coordinates, switch to text mode
+      if (incident.latitude && incident.longitude) {
+        setLocationInputMode('text');
+      }
     }
   }, [incident, reset]);
+
+  // Get current location
+  const getCurrentLocation = () => {
+    setLocationLoading(true);
+    setLocationInputMode('text');
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setValue('latitude', position.coords.latitude);
+          setValue('longitude', position.coords.longitude);
+
+          // Set coordinates as text in the location field
+          setValue(
+            'location',
+            `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`
+          );
+          setLocationLoading(false);
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          setLocationLoading(false);
+          setLocationInputMode('dropdown'); // Revert to dropdown on error
+          alert(
+            'Unable to get your location. Please enter the location manually.'
+          );
+        }
+      );
+    } else {
+      setLocationLoading(false);
+      setLocationInputMode('dropdown'); // Revert to dropdown if not supported
+      alert('Geolocation is not supported by this browser.');
+    }
+  };
 
   const onSubmit = async (data: EditIncidentFormData) => {
     try {
       await updateIncident({
         id: Number(id),
         incident: {
-          ...data,
+          title: data.title,
+          description: data.description,
           severity: data.severity as
             | 'Minor'
             | 'Moderate'
@@ -103,6 +137,7 @@ const EditIncident: React.FC = () => {
             | 'AwaitingAction'
             | 'Resolved'
             | 'Closed',
+          location: data.location,
         },
       }).unwrap();
 
@@ -242,25 +277,87 @@ const EditIncident: React.FC = () => {
 
                   <div className="mb-3">
                     <CFormLabel htmlFor="location">Location *</CFormLabel>
-                    <CFormSelect
-                      id="location"
-                      {...register('location', {
-                        required: 'Location is required',
-                      })}
-                      invalid={!!errors.location}
-                    >
-                      <option value="">Select location...</option>
-                      {campusLocations.map((location) => (
-                        <option key={location} value={location}>
-                          {location}
-                        </option>
-                      ))}
-                    </CFormSelect>
+                    <CInputGroup>
+                      {locationInputMode === 'dropdown' ? (
+                        <CFormSelect
+                          id="locationId"
+                          {...register('locationId', { 
+                            valueAsNumber: true,
+                            onChange: (e) => {
+                              const selectedLocation = locations.find(loc => loc.id === parseInt(e.target.value));
+                              if (selectedLocation) {
+                                setValue('location', selectedLocation.fullLocation);
+                                setValue('latitude', selectedLocation.latitude);
+                                setValue('longitude', selectedLocation.longitude);
+                              }
+                            }
+                          })}
+                          invalid={!!errors.location}
+                          disabled={isLocationsLoading}
+                        >
+                          <option value="">
+                            {isLocationsLoading ? 'Loading locations...' : 'Select location...'}
+                          </option>
+                          {locations.map((location) => (
+                            <option key={location.id} value={location.id}>
+                              {location.name}
+                              {location.building && ` - ${location.building}`}
+                              {location.isHighRisk && ' [HIGH RISK]'}
+                            </option>
+                          ))}
+                        </CFormSelect>
+                      ) : (
+                        <CFormInput
+                          id="location"
+                          {...register('location', {
+                            required: 'Location is required',
+                          })}
+                          invalid={!!errors.location}
+                          placeholder="Enter coordinates or location details"
+                          readOnly={locationLoading}
+                        />
+                      )}
+                      <CButton
+                        type="button"
+                        color="primary"
+                        variant="outline"
+                        onClick={getCurrentLocation}
+                        disabled={locationLoading}
+                      >
+                        {locationLoading ? (
+                          <CSpinner size="sm" />
+                        ) : (
+                          <FontAwesomeIcon icon={faMapPin} />
+                        )}
+                      </CButton>
+                      {locationInputMode === 'text' && (
+                        <CButton
+                          type="button"
+                          color="secondary"
+                          variant="outline"
+                          onClick={() => {
+                            setLocationInputMode('dropdown');
+                            setValue('location', '');
+                            setValue('locationId', undefined);
+                            setValue('latitude', undefined);
+                            setValue('longitude', undefined);
+                          }}
+                          title="Switch back to dropdown"
+                        >
+                          ↩
+                        </CButton>
+                      )}
+                    </CInputGroup>
                     {errors.location && (
                       <div className="invalid-feedback d-block">
                         {errors.location.message}
                       </div>
                     )}
+                    <small className="text-muted">
+                      {locationInputMode === 'dropdown'
+                        ? 'Select a predefined location or click GPS button for coordinates'
+                        : 'GPS coordinates will be stored. Click ↩ to use dropdown again.'}
+                    </small>
                   </div>
                 </CCol>
 

@@ -511,22 +511,26 @@ const PPEDetail: React.FC = () => {
                     </div>
                     {ppeItem.isExpired && (
                       <div className="mb-2 text-danger">
-                        <strong>⚠️ Item has expired</strong>
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" />
+                        <strong>Item has expired</strong>
                       </div>
                     )}
                     {ppeItem.isExpiringSoon && !ppeItem.isExpired && (
                       <div className="mb-2 text-warning">
-                        <strong>⚠️ Item expiring soon</strong>
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" />
+                        <strong>Item expiring soon</strong>
                       </div>
                     )}
                     {ppeItem.isMaintenanceDue && (
                       <div className="mb-2 text-warning">
-                        <strong>🔧 Maintenance due</strong>
+                        <FontAwesomeIcon icon={faTools} className="me-1" />
+                        <strong>Maintenance due</strong>
                       </div>
                     )}
                     {ppeItem.isInspectionDue && (
                       <div className="mb-4 text-info">
-                        <strong>🔍 Inspection due</strong>
+                        <FontAwesomeIcon icon={faShieldAlt} className="me-1" />
+                        <strong>Inspection due</strong>
                       </div>
                     )}
 

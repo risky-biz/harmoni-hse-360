@@ -53,6 +53,9 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -83,6 +86,8 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("AssignedToId");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("DueDate");
 
                     b.HasIndex("IncidentId");
@@ -90,6 +95,73 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("CorrectiveActions", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Contact")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("HeadOfDepartment")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.EmergencyContact", b =>
@@ -876,6 +948,9 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -883,6 +958,9 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -918,6 +996,9 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("MedicalTreatmentProvided")
                         .HasColumnType("boolean");
@@ -955,11 +1036,17 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("CreatedAt");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("IncidentDate");
 
                     b.HasIndex("InvestigatorId");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("ReporterId");
 
@@ -1058,6 +1145,74 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.ToTable("IncidentAuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("RequiresImmediateAction")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("IncidentCategories", (string)null);
+                });
+
             modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentInvolvedPerson", b =>
                 {
                     b.Property<int>("Id")
@@ -1070,21 +1225,108 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("InjuryDescription")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("InvolvementType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PersonId")
+                    b.Property<string>("ManualPersonEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ManualPersonName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("PersonId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IncidentId");
-
                     b.HasIndex("PersonId");
 
-                    b.ToTable("IncidentInvolvedPersons");
+                    b.HasIndex("IncidentId", "ManualPersonName")
+                        .HasDatabaseName("IX_IncidentInvolvedPersons_IncidentId_ManualPersonName");
+
+                    b.HasIndex("IncidentId", "PersonId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_IncidentInvolvedPersons_IncidentId_PersonId")
+                        .HasFilter("[PersonId] IS NOT NULL");
+
+                    b.ToTable("IncidentInvolvedPersons", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Building")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Floor")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsHighRisk")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Room")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Building");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("IncidentLocations", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.MedicalCondition", b =>
@@ -3308,6 +3550,11 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasForeignKey("AssignedToId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Harmoni360.Domain.Entities.Department", "Department")
+                        .WithMany("CorrectiveActions")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Harmoni360.Domain.Entities.Incident", null)
                         .WithMany("CorrectiveActions")
                         .HasForeignKey("IncidentId")
@@ -3315,6 +3562,8 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("AssignedTo");
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.EmergencyContact", b =>
@@ -3486,9 +3735,24 @@ namespace Harmoni360.Infrastructure.Migrations
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Incident", b =>
                 {
+                    b.HasOne("Harmoni360.Domain.Entities.IncidentCategory", "Category")
+                        .WithMany("Incidents")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Harmoni360.Domain.Entities.Department", "DepartmentEntity")
+                        .WithMany("Incidents")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Harmoni360.Domain.Entities.User", "Investigator")
                         .WithMany()
                         .HasForeignKey("InvestigatorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Harmoni360.Domain.Entities.IncidentLocation", "LocationEntity")
+                        .WithMany("Incidents")
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Harmoni360.Domain.Entities.User", "Reporter")
@@ -3519,9 +3783,15 @@ namespace Harmoni360.Infrastructure.Migrations
                                 .HasForeignKey("IncidentId");
                         });
 
+                    b.Navigation("Category");
+
+                    b.Navigation("DepartmentEntity");
+
                     b.Navigation("GeoLocation");
 
                     b.Navigation("Investigator");
+
+                    b.Navigation("LocationEntity");
 
                     b.Navigation("Reporter");
                 });
@@ -3557,10 +3827,37 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasOne("Harmoni360.Domain.Entities.User", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentLocation", b =>
+                {
+                    b.OwnsOne("Harmoni360.Domain.ValueObjects.GeoLocation", "GeoLocation", b1 =>
+                        {
+                            b1.Property<int>("IncidentLocationId")
+                                .HasColumnType("integer");
+
+                            b1.Property<double>("Latitude")
+                                .HasPrecision(10, 8)
+                                .HasColumnType("double precision")
+                                .HasColumnName("Latitude");
+
+                            b1.Property<double>("Longitude")
+                                .HasPrecision(11, 8)
+                                .HasColumnType("double precision")
+                                .HasColumnName("Longitude");
+
+                            b1.HasKey("IncidentLocationId");
+
+                            b1.ToTable("IncidentLocations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IncidentLocationId");
+                        });
+
+                    b.Navigation("GeoLocation");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.MedicalCondition", b =>
@@ -4075,6 +4372,13 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Department", b =>
+                {
+                    b.Navigation("CorrectiveActions");
+
+                    b.Navigation("Incidents");
+                });
+
             modelBuilder.Entity("Harmoni360.Domain.Entities.EscalationRule", b =>
                 {
                     b.Navigation("Actions");
@@ -4109,6 +4413,16 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Navigation("CorrectiveActions");
 
                     b.Navigation("InvolvedPersons");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentCategory", b =>
+                {
+                    b.Navigation("Incidents");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentLocation", b =>
+                {
+                    b.Navigation("Incidents");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.ModulePermission", b =>

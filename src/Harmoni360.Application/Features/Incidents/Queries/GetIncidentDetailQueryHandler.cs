@@ -23,6 +23,8 @@ public class GetIncidentDetailQueryHandler : IRequestHandler<GetIncidentDetailQu
             .Include(i => i.InvolvedPersons)
                 .ThenInclude(ip => ip.Person)
             .Include(i => i.CorrectiveActions)
+            .Include(i => i.Category)
+            .Include(i => i.DepartmentEntity)
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (incident == null)
@@ -45,6 +47,8 @@ public class GetIncidentDetailQueryHandler : IRequestHandler<GetIncidentDetailQu
             ReporterName = incident.ReporterName,
             ReporterEmail = incident.ReporterEmail,
             ReporterDepartment = incident.ReporterDepartment,
+            Category = incident.Category?.Name,
+            Department = incident.DepartmentEntity?.Name,
             InjuryType = incident.InjuryType?.ToString(),
             MedicalTreatmentProvided = incident.MedicalTreatmentProvided,
             EmergencyServicesContacted = incident.EmergencyServicesContacted,
@@ -52,21 +56,30 @@ public class GetIncidentDetailQueryHandler : IRequestHandler<GetIncidentDetailQu
             ImmediateActionsTaken = incident.ImmediateActionsTaken,
             InvolvedPersons = incident.InvolvedPersons.Select(ip =>
             {
-                var nameParts = ip.Person.Name.Split(' ');
-                return new InvolvedPersonDto
+                var dto = new InvolvedPersonDto
                 {
                     Id = ip.Id,
-                    Person = new UserDto
+                    InvolvementType = ip.InvolvementType.ToString(),
+                    InjuryDescription = ip.InjuryDescription,
+                    ManualPersonName = ip.ManualPersonName,
+                    ManualPersonEmail = ip.ManualPersonEmail
+                };
+
+                // If it's a linked user (not manual entry)
+                if (ip.Person != null)
+                {
+                    var nameParts = ip.Person.Name.Split(' ');
+                    dto.Person = new UserDto
                     {
                         Id = ip.Person.Id,
                         FirstName = nameParts.FirstOrDefault() ?? "",
                         LastName = string.Join(" ", nameParts.Skip(1)),
                         Email = ip.Person.Email,
                         FullName = ip.Person.Name
-                    },
-                    InvolvementType = ip.InvolvementType.ToString(),
-                    InjuryDescription = ip.InjuryDescription
-                };
+                    };
+                }
+
+                return dto;
             }).ToList(),
             AttachmentsCount = incident.Attachments.Count,
             CorrectiveActionsCount = incident.CorrectiveActions.Count,

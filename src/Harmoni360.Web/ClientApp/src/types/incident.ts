@@ -8,9 +8,11 @@ export interface UserDto {
 
 export interface InvolvedPersonDto {
   id: number;
-  person: UserDto;
+  person?: UserDto; // Optional for manual entries
   involvementType: string;
   injuryDescription?: string;
+  manualPersonName?: string; // For manual entries
+  manualPersonEmail?: string; // For manual entries
 }
 
 export interface IncidentDetailDto {

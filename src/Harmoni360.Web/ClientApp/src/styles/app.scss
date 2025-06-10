@@ -30,6 +30,234 @@ $charcoal: #212121;
   --harmoni-yellow: #{$accent-yellow};
   --harmoni-grey: #{$soft-grey};
   --harmoni-charcoal: #{$charcoal};
+  --demo-banner-height: 0px;
+}
+
+// Demo banner responsive behavior
+.demo-banner {
+  z-index: 1040;
+  
+  // On mobile devices, don't offset for sidebar
+  @media (max-width: 991.98px) {
+    .demo-banner-content {
+      margin-left: 0 !important;
+    }
+  }
+}
+
+// Ensure sidebar is above banner on mobile
+.sidebar {
+  z-index: 1050;
+}
+
+// Incident Dashboard Mobile Responsiveness
+.dashboard-container {
+  .dashboard-header {
+    h1 {
+      font-size: 1.75rem;
+      @media (max-width: 767.98px) {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .btn-block-mobile {
+      @media (max-width: 575.98px) {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+
+  .dashboard-filters {
+    .filter-controls {
+      @media (max-width: 991.98px) {
+        .col-lg-5, .col-lg-3, .col-lg-4 {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+    
+    .department-select {
+      min-width: 150px;
+      @media (max-width: 575.98px) {
+        min-width: 100%;
+      }
+    }
+    
+    .refresh-controls {
+      @media (max-width: 991.98px) {
+        text-align: left !important;
+        justify-content: flex-start !important;
+      }
+      
+      .text-truncate-mobile {
+        @media (max-width: 575.98px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .stats-row {
+    .col-lg-3 {
+      @media (max-width: 767.98px) {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  // Status Distribution Component
+  .status-distribution-card {
+    .status-distribution-container {
+      .chart-container {
+        display: flex;
+        justify-content: center;
+        @media (max-width: 575.98px) {
+          margin-bottom: 1rem;
+        }
+      }
+      
+      .status-legend {
+        max-height: 200px;
+        overflow-y: auto;
+        
+        .legend-item {
+          padding: 0.25rem 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+
+  // Category Breakdown Component
+  .category-breakdown-card {
+    .category-chart-container {
+      .category-legend {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 0.75rem;
+        
+        .legend-color {
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // Response Time Analytics
+  .response-time-card {
+    .metrics-grid {
+      .metric-item {
+        padding: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  // Department Performance
+  .department-stats {
+    max-height: 350px;
+    
+    .department-item {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      @media (max-width: 575.98px) {
+        padding: 0.75rem !important;
+        
+        .d-flex {
+          flex-direction: column;
+          align-items: flex-start !important;
+          
+          .mb-0 {
+            margin-bottom: 0.5rem !important;
+          }
+        }
+      }
+    }
+  }
+
+  // Chart Responsiveness
+  @media (max-width: 767.98px) {
+    .chart-card {
+      .card-body {
+        padding: 0.75rem;
+      }
+    }
+    
+    .stats-card {
+      .card-body {
+        padding: 1rem 0.75rem;
+      }
+      
+      .stats-value {
+        font-size: 1.75rem;
+      }
+      
+      .stats-title {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Tablet specific adjustments
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .dashboard-container {
+    .stats-row {
+      .col-lg-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+    }
+    
+    .col-lg-4, .col-lg-6 {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+// Additional responsive utilities
+@media (max-width: 575.98px) {
+  .text-truncate-mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .d-sm-none {
+    display: none !important;
+  }
+  
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+// Sidebar responsive behavior
+.sidebar-show {
+  @media (min-width: 992px) {
+    .demo-banner-content {
+      margin-left: var(--cui-sidebar-width, 256px);
+    }
+  }
+}
+
+.sidebar-hide {
+  .demo-banner-content {
+    margin-left: 0;
+  }
 }
 
 // Typography
@@ -445,11 +673,12 @@ h1, h2, h3, h4, h5, h6 {
       
       .d-flex {
         flex-direction: column;
-        align-items: flex-start !important;
+        // Remove align-items to center icon vertically
         
         .me-3 {
           margin-right: 0 !important;
           margin-bottom: 8px;
+          align-self: center; // Center the icon
         }
         
         .justify-content-between {

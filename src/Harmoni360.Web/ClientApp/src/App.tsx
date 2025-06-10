@@ -76,9 +76,9 @@ const CreateIncident = React.lazy(() =>
     };
   })
 );
-const IncidentDetail = React.lazy(() =>
-  import('./pages/incidents/IncidentDetail').catch((err) => {
-    console.error('Failed to load IncidentDetail:', err);
+const IncidentDetailEnhanced = React.lazy(() =>
+  import('./pages/incidents/IncidentDetailEnhanced').catch((err) => {
+    console.error('Failed to load IncidentDetailEnhanced:', err);
     return {
       default: () => <div>Error loading Incident Detail. Please refresh.</div>,
     };
@@ -367,6 +367,24 @@ const UserManagement = React.lazy(() =>
   })
 );
 
+// Settings Management Pages
+const SystemSettings = React.lazy(() =>
+  import('./pages/settings/SystemSettings').catch((err) => {
+    console.error('Failed to load SystemSettings:', err);
+    return {
+      default: () => <div>Error loading System Settings. Please refresh.</div>,
+    };
+  })
+);
+const IncidentSettings = React.lazy(() =>
+  import('./pages/settings/IncidentSettings').catch((err) => {
+    console.error('Failed to load IncidentSettings:', err);
+    return {
+      default: () => <div>Error loading Incident Settings. Please refresh.</div>,
+    };
+  })
+);
+
 // Loading component
 const Loading = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -514,7 +532,7 @@ function App() {
                   element={<QuickReport />}
                 />
                 <Route path="/incidents/qr-scanner" element={<QrScanner />} />
-                <Route path="/incidents/:id" element={<IncidentDetail />} />
+                <Route path="/incidents/:id" element={<IncidentDetailEnhanced />} />
                 <Route path="/incidents/:id/edit" element={<EditIncident />} />
                 <Route path="/incidents/my-reports" element={<MyReports />} />
 
@@ -581,12 +599,7 @@ function App() {
                   <AdminRoute>
                     <Routes>
                       <Route path="ppe" element={<PPEManagement />} />
-                      <Route path="incidents" element={
-                        <div className="p-4">
-                          <h2>Incident Management Settings</h2>
-                          <p>Configuration options for incident management coming soon...</p>
-                        </div>
-                      } />
+                      <Route path="incidents" element={<IncidentSettings />} />
                       <Route path="risks" element={
                         <div className="p-4">
                           <h2>Risk Management Settings</h2>
@@ -599,12 +612,7 @@ function App() {
                           <p>User and role management coming soon...</p>
                         </div>
                       } />
-                      <Route path="system" element={
-                        <div className="p-4">
-                          <h2>System Configuration</h2>
-                          <p>General system settings coming soon...</p>
-                        </div>
-                      } />
+                      <Route path="system" element={<SystemSettings />} />
                       <Route path="audit" element={
                         <div className="p-4">
                           <h2>Audit & Compliance Settings</h2>

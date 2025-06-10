@@ -18,6 +18,11 @@ public interface IApplicationDbContext
     DbSet<CorrectiveAction> CorrectiveActions { get; }
     DbSet<IncidentAuditLog> IncidentAuditLogs { get; }
     
+    // Configuration Management
+    DbSet<Department> Departments { get; }
+    DbSet<IncidentCategory> IncidentCategories { get; }
+    DbSet<IncidentLocation> IncidentLocations { get; }
+    
     // PPE Management
     DbSet<PPECategory> PPECategories { get; }
     DbSet<PPESize> PPESizes { get; }

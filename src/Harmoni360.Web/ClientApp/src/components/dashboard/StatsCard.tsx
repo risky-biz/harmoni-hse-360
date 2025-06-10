@@ -1,6 +1,7 @@
 import React from 'react';
 import { CCard, CCardBody, CSpinner } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 interface StatsCardProps {
   title: string;
@@ -60,7 +61,12 @@ const StatsCard: React.FC<StatsCardProps> = ({
           {trend && !isLoading && (
             <div className="text-medium-emphasis small mt-1">
               <span className={`fw-semibold ${trend.isPositive ? 'text-success' : 'text-danger'}`}>
-                {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+                <FontAwesomeIcon 
+                  icon={trend.isPositive ? faArrowUp : faArrowDown} 
+                  size="sm" 
+                  className="me-1" 
+                />
+                {Math.abs(trend.value)}%
               </span>
               <span className="ms-1">{trend.label}</span>
             </div>

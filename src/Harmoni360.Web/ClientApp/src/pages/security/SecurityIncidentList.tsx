@@ -205,7 +205,8 @@ const SecurityIncidentList: React.FC = () => {
                 onClick={() => refetch()}
                 title="Refresh security incident list"
               >
-                🔄 Refresh
+                <FontAwesomeIcon icon={ACTION_ICONS.refresh} className="me-2" />
+                Refresh
               </CButton>
               <CButton
                 color="primary"

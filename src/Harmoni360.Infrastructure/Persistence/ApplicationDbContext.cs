@@ -34,6 +34,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<EscalationHistory> EscalationHistories => Set<EscalationHistory>();
     public DbSet<NotificationHistory> NotificationHistories => Set<NotificationHistory>();
     
+    // Configuration Management
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<IncidentCategory> IncidentCategories => Set<IncidentCategory>();
+    public DbSet<IncidentLocation> IncidentLocations => Set<IncidentLocation>();
+    
     // PPE Management
     public DbSet<PPECategory> PPECategories => Set<PPECategory>();
     public DbSet<PPESize> PPESizes => Set<PPESize>();

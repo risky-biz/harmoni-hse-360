@@ -19,6 +19,10 @@ public class IncidentDto
     public string? ReporterEmail { get; set; }
     public string? ReporterDepartment { get; set; }
 
+    // Category and Department info
+    public string? Category { get; set; }
+    public string? Department { get; set; }
+
     // Injury details
     public string? InjuryType { get; set; }
     public bool? MedicalTreatmentProvided { get; set; }
@@ -73,9 +77,13 @@ public class AttachmentDto
 public class InvolvedPersonDto
 {
     public int Id { get; set; }
-    public UserDto Person { get; set; } = null!;
+    public UserDto? Person { get; set; } // Nullable for manual entries
     public string InvolvementType { get; set; } = string.Empty;
     public string? InjuryDescription { get; set; }
+    
+    // For manual entries when Person is null
+    public string? ManualPersonName { get; set; }
+    public string? ManualPersonEmail { get; set; }
 }
 
 public class CorrectiveActionDto

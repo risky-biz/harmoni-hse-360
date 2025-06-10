@@ -25,6 +25,7 @@ import {
   faFilter,
   faSort,
   faRefresh,
+  faArrowRotateRight,
   faHome,
   faClipboardList,
   faFileAlt,
@@ -48,6 +49,24 @@ import {
   faLock,
   faBars,
   faMapPin,
+  faFire,
+  faBolt,
+  faFlask,
+  faCarCrash,
+  faHammer,
+  faLeaf,
+  faDatabase,
+  faUtensils,
+  faPersonFalling,
+  faPersonFallingBurst,
+  faGear,
+  faBriefcaseMedical,
+  faHandFist,
+  faRadiation,
+  faHardHat,
+  faTriangleExclamation,
+  faCamera,
+  faStickyNote,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Action Icons - Common actions across the incident management system
@@ -85,7 +104,7 @@ export const ACTION_ICONS = {
   // UI Controls
   menu: faEllipsisV,
   options: faEllipsisV,
-  refresh: faRefresh,
+  refresh: faArrowRotateRight,
   loading: faSpinner,
 
   // Status Actions
@@ -109,7 +128,7 @@ export const FILE_TYPE_ICONS = {
 // Context Icons - Specific to incident management context
 export const CONTEXT_ICONS = {
   // Incident Related
-  incident: faExclamationTriangle,
+  incident: faPersonFallingBurst,
   report: faClipboardList,
   reports: faClipboardList,
   dashboard: faHome,
@@ -147,12 +166,18 @@ export const CONTEXT_ICONS = {
   chart_pie: faChartPie,
   security: faLock,
   menu: faBars,
+
+  // Form Section Icons for CreateIncident
+  basicInformation: faInfoCircle,
+  locationTime: faMapMarkerAlt,
+  additionalDetails: faStickyNote,
+  evidence: faCamera,
 };
 
 // Severity Icons - For incident severity levels
 export const SEVERITY_ICONS = {
-  Critical: faExclamationTriangle,
-  Serious: faExclamationTriangle,
+  Critical: faPersonFallingBurst,
+  Serious: faPersonFallingBurst,
   Moderate: faInfoCircle,
   Minor: faCheckCircle,
 };
@@ -161,9 +186,45 @@ export const SEVERITY_ICONS = {
 export const STATUS_ICONS = {
   Reported: faClipboardList,
   UnderInvestigation: faClock,
-  AwaitingAction: faExclamationTriangle,
+  AwaitingAction: faPersonFallingBurst,
   Resolved: faCheckCircle,
   Closed: faCheckCircle,
+};
+
+// Category Icons - For incident categories
+export const CATEGORY_ICONS = {
+  'Slip, Trip, Fall': faPersonFalling,
+  'Equipment Malfunction': faGear,
+  'Chemical Exposure': faFlask,
+  'Fire/Explosion': faFire,
+  'Medical Emergency': faBriefcaseMedical,
+  'Security Breach': faShieldAlt,
+  'Vehicle Accident': faCarCrash,
+  'Workplace Violence': faHandFist,
+  'Environmental': faLeaf,
+  'Electrical': faBolt,
+  'Structural': faBuilding,
+  'Food Safety': faUtensils,
+  'Data Breach': faDatabase,
+  'Near Miss': faPersonFallingBurst,
+  'Property Damage': faHammer,
+  default: faPersonFallingBurst,
+};
+
+// Priority Icons - For immediate action requirements
+export const PRIORITY_ICONS = {
+  immediate: faPersonFallingBurst,
+  high: faPersonFallingBurst,
+  medium: faInfoCircle,
+  low: faCheckCircle,
+  critical: faPersonFallingBurst,
+};
+
+// Location Risk Icons
+export const LOCATION_ICONS = {
+  highRisk: faPersonFallingBurst,
+  normal: faMapMarkerAlt,
+  safe: faCheckCircle,
 };
 
 // Helper function to get file type icon based on filename
@@ -190,4 +251,14 @@ export const getFileTypeIcon = (fileName: string) => {
     default:
       return FILE_TYPE_ICONS.default;
   }
+};
+
+// Helper function to get category icon
+export const getCategoryIcon = (categoryName: string) => {
+  return CATEGORY_ICONS[categoryName as keyof typeof CATEGORY_ICONS] || CATEGORY_ICONS.default;
+};
+
+// Helper function to get priority icon
+export const getPriorityIcon = (priority: string) => {
+  return PRIORITY_ICONS[priority.toLowerCase() as keyof typeof PRIORITY_ICONS] || PRIORITY_ICONS.medium;
 };
