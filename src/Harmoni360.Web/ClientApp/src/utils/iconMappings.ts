@@ -4,6 +4,7 @@ import {
   faTrash,
   faEye,
   faSearch,
+  faSearchPlus,
   faArrowLeft,
   faArrowRight,
   faSave,
@@ -48,6 +49,8 @@ import {
   faChartPie,
   faLock,
   faBars,
+  faFolderOpen,
+  faTag,
   faMapPin,
   faFire,
   faBolt,
@@ -112,6 +115,10 @@ export const ACTION_ICONS = {
   reject: faTimes,
   warning: faExclamationTriangle,
   info: faInfoCircle,
+
+  // Assessment and Analysis
+  assessment: faShieldAlt,
+  analyze: faSearchPlus,
 };
 
 // File Type Icons - For attachment management
@@ -125,6 +132,26 @@ export const FILE_TYPE_ICONS = {
   video: faFileVideo,
 };
 
+// Hazard Management Icons - Standardized hazard reporting iconography
+export const HAZARD_ICONS = {
+  // Primary hazard reporting icon - Industry standard warning symbol
+  general: faTriangleExclamation,
+  reporting: faTriangleExclamation,
+  warning: faTriangleExclamation,
+  
+  // Specific hazard type icons (used within content, not for navigation)
+  fire: faFire,
+  chemical: faFlask,
+  electrical: faBolt,
+  mechanical: faGear,
+  biological: faTriangleExclamation, // Use general warning, not specialized biohazard
+  radiation: faTriangleExclamation, // Use general warning, not specialized radiation
+  physical: faTriangleExclamation,
+  environmental: faLeaf,
+  ergonomic: faTriangleExclamation,
+  psychological: faTriangleExclamation,
+};
+
 // Context Icons - Specific to incident management context
 export const CONTEXT_ICONS = {
   // Incident Related
@@ -133,11 +160,19 @@ export const CONTEXT_ICONS = {
   reports: faClipboardList,
   dashboard: faHome,
 
+  // Hazard Management - Use standardized hazard icons
+  hazard: HAZARD_ICONS.general,
+  hazardReporting: HAZARD_ICONS.reporting,
+
   // Location and Time
   location: faMapMarkerAlt,
   pin: faMapPin,
   date: faCalendarAlt,
   time: faClock,
+
+  // Categories and Types
+  category: faFolderOpen,
+  type: faTag,
 
   // People and Organization
   user: faUser,
@@ -261,4 +296,30 @@ export const getCategoryIcon = (categoryName: string) => {
 // Helper function to get priority icon
 export const getPriorityIcon = (priority: string) => {
   return PRIORITY_ICONS[priority.toLowerCase() as keyof typeof PRIORITY_ICONS] || PRIORITY_ICONS.medium;
+};
+
+// Helper function to get hazard-specific icon
+export const getHazardIcon = (hazardType?: string) => {
+  if (!hazardType) return HAZARD_ICONS.general;
+  
+  const type = hazardType.toLowerCase();
+  const hazardIconMap: { [key: string]: any } = {
+    'fire': HAZARD_ICONS.fire,
+    'chemical': HAZARD_ICONS.chemical,
+    'electrical': HAZARD_ICONS.electrical,
+    'mechanical': HAZARD_ICONS.mechanical,
+    'environmental': HAZARD_ICONS.environmental,
+    'biological': HAZARD_ICONS.biological,
+    'radiation': HAZARD_ICONS.radiation,
+    'physical': HAZARD_ICONS.physical,
+    'ergonomic': HAZARD_ICONS.ergonomic,
+    'psychological': HAZARD_ICONS.psychological,
+  };
+  
+  return hazardIconMap[type] || HAZARD_ICONS.general;
+};
+
+// Helper function to get standardized hazard reporting icon
+export const getHazardReportingIcon = () => {
+  return HAZARD_ICONS.reporting;
 };

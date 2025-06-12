@@ -280,18 +280,21 @@ public class SecurityAuditService : ISecurityAuditService
     public async Task<List<SecurityAuditLogDto>> GetAuditTrailAsync(int? incidentId = null, int? userId = null, DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         // TODO: Implement proper query logic
+        await Task.CompletedTask;
         return new List<SecurityAuditLogDto>();
     }
 
     public async Task<List<SecurityAuditLogDto>> GetUserActivityAsync(int userId, DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         // TODO: Implement proper query logic
+        await Task.CompletedTask;
         return new List<SecurityAuditLogDto>();
     }
 
     public async Task<SecurityComplianceAuditDto> GenerateComplianceAuditAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
         // TODO: Implement proper compliance audit logic
+        await Task.CompletedTask;
         return new SecurityComplianceAuditDto
         {
             StartDate = startDate,

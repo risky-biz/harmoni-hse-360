@@ -8,8 +8,10 @@ public class Hazard : BaseEntity, IAuditableEntity
 {
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
-    public HazardCategory Category { get; private set; }
-    public HazardType Type { get; private set; }
+    public int? CategoryId { get; private set; }
+    public HazardCategory? Category { get; private set; }
+    public int? TypeId { get; private set; }
+    public HazardType? Type { get; private set; }
     public string Location { get; private set; } = string.Empty;
     public GeoLocation? GeoLocation { get; private set; }
     public HazardStatus Status { get; private set; }
@@ -50,8 +52,8 @@ public class Hazard : BaseEntity, IAuditableEntity
     public static Hazard Create(
         string title,
         string description,
-        HazardCategory category,
-        HazardType type,
+        int? categoryId,
+        int? typeId,
         string location,
         HazardSeverity severity,
         int reporterId,
@@ -62,8 +64,8 @@ public class Hazard : BaseEntity, IAuditableEntity
         {
             Title = title,
             Description = description,
-            Category = category,
-            Type = type,
+            CategoryId = categoryId,
+            TypeId = typeId,
             Location = location,
             Severity = severity,
             Status = HazardStatus.Reported,
@@ -118,6 +120,24 @@ public class Hazard : BaseEntity, IAuditableEntity
         LastModifiedBy = modifiedBy;
 
         AddDomainEvent(new HazardSeverityChangedEvent(this, previousSeverity, severity));
+    }
+
+    public void UpdateCategory(int? categoryId, string modifiedBy)
+    {
+        CategoryId = categoryId;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifiedBy;
+
+        AddDomainEvent(new HazardUpdatedEvent(this));
+    }
+
+    public void UpdateType(int? typeId, string modifiedBy)
+    {
+        TypeId = typeId;
+        LastModifiedAt = DateTime.UtcNow;
+        LastModifiedBy = modifiedBy;
+
+        AddDomainEvent(new HazardUpdatedEvent(this));
     }
 
     public void SetGeoLocation(double latitude, double longitude)
@@ -194,34 +214,6 @@ public class Hazard : BaseEntity, IAuditableEntity
     }
 }
 
-public enum HazardCategory
-{
-    Physical = 1,
-    Chemical = 2,
-    Biological = 3,
-    Ergonomic = 4,
-    Psychological = 5,
-    Environmental = 6,
-    Fire = 7,
-    Electrical = 8,
-    Mechanical = 9,
-    Radiation = 10
-}
-
-public enum HazardType
-{
-    Slip = 1,
-    Trip = 2,
-    Fall = 3,
-    Cut = 4,
-    Burn = 5,
-    Exposure = 6,
-    Collision = 7,
-    Entrapment = 8,
-    Explosion = 9,
-    Fire = 10,
-    Other = 99
-}
 
 public enum HazardStatus
 {

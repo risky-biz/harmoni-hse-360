@@ -28,6 +28,8 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
         // Create base query
         var query = _context.Hazards
             .Include(h => h.Reporter)
+            .Include(h => h.Category)
+            .Include(h => h.Type)
             .Include(h => h.CurrentRiskAssessment)
             .AsQueryable();
 
@@ -101,16 +103,22 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
                 h.ReporterDepartment.ToLower().Contains(searchTerm));
         }
 
-        // Category filter
-        if (request.Category.HasValue)
+        // Category filter by ID
+        if (request.CategoryId.HasValue)
         {
-            query = query.Where(h => h.Category == request.Category.Value);
+            query = query.Where(h => h.CategoryId == request.CategoryId.Value);
+        }
+
+        // Category filter by name (frontend compatibility)
+        if (!string.IsNullOrWhiteSpace(request.Category))
+        {
+            query = query.Where(h => h.Category != null && h.Category.Name == request.Category);
         }
 
         // Type filter
-        if (request.Type.HasValue)
+        if (request.TypeId.HasValue)
         {
-            query = query.Where(h => h.Type == request.Type.Value);
+            query = query.Where(h => h.TypeId == request.TypeId.Value);
         }
 
         // Status filter
@@ -209,8 +217,8 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
         if (request.OnlyHighRisk)
         {
             query = query.Where(h => h.CurrentRiskAssessment != null &&
-                                   (h.CurrentRiskAssessment.RiskLevel == RiskLevel.High ||
-                                    h.CurrentRiskAssessment.RiskLevel == RiskLevel.Critical));
+                                   (h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.High ||
+                                    h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.Critical));
         }
 
         if (request.OnlyMyHazards)
@@ -233,7 +241,7 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
         return sortBy?.ToLower() switch
         {
             "title" => isDescending ? query.OrderByDescending(h => h.Title) : query.OrderBy(h => h.Title),
-            "category" => isDescending ? query.OrderByDescending(h => h.Category) : query.OrderBy(h => h.Category),
+            "category" => isDescending ? query.OrderByDescending(h => h.Category != null ? h.Category.Name : "") : query.OrderBy(h => h.Category != null ? h.Category.Name : ""),
             "severity" => isDescending ? query.OrderByDescending(h => h.Severity) : query.OrderBy(h => h.Severity),
             "status" => isDescending ? query.OrderByDescending(h => h.Status) : query.OrderBy(h => h.Status),
             "location" => isDescending ? query.OrderByDescending(h => h.Location) : query.OrderBy(h => h.Location),
@@ -252,8 +260,8 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
             Id = hazard.Id,
             Title = hazard.Title,
             Description = hazard.Description,
-            Category = hazard.Category.ToString(),
-            Type = hazard.Type.ToString(),
+            Category = hazard.Category?.Name ?? "Unknown",
+            Type = hazard.Type?.Name ?? "Unknown",
             Location = hazard.Location,
             Latitude = hazard.GeoLocation?.Latitude,
             Longitude = hazard.GeoLocation?.Longitude,
@@ -327,8 +335,8 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
                 h.Status != HazardStatus.Resolved && h.Status != HazardStatus.Closed, cancellationToken),
             HighRiskHazards = await _context.Hazards.CountAsync(h => 
                 h.CurrentRiskAssessment != null && 
-                (h.CurrentRiskAssessment.RiskLevel == RiskLevel.High || 
-                 h.CurrentRiskAssessment.RiskLevel == RiskLevel.Critical), cancellationToken),
+                (h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.High || 
+                 h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.Critical), cancellationToken),
             UnassessedHazards = await _context.Hazards.CountAsync(h => 
                 h.CurrentRiskAssessment == null, cancellationToken),
             OverdueActions = await _context.HazardMitigationActions.CountAsync(ma => 
@@ -338,8 +346,10 @@ public class GetHazardsQueryHandler : IRequestHandler<GetHazardsQuery, GetHazard
 
         // Get counts by category
         summary.HazardsByCategory = await _context.Hazards
-            .GroupBy(h => h.Category)
-            .Select(g => new { Category = g.Key.ToString(), Count = g.Count() })
+            .Include(h => h.Category)
+            .Where(h => h.Category != null)
+            .GroupBy(h => h.Category!.Name)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Category, x => x.Count, cancellationToken);
 
         // Get counts by severity

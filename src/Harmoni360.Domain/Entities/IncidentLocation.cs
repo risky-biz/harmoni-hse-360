@@ -37,7 +37,8 @@ public class IncidentLocation : BaseEntity, IAuditableEntity
         string? room = null,
         GeoLocation? geoLocation = null,
         int displayOrder = 0,
-        bool isHighRisk = false)
+        bool isHighRisk = false,
+        bool isActive = true)
     {
         return new IncidentLocation
         {
@@ -50,7 +51,7 @@ public class IncidentLocation : BaseEntity, IAuditableEntity
             GeoLocation = geoLocation,
             DisplayOrder = displayOrder,
             IsHighRisk = isHighRisk,
-            IsActive = true
+            IsActive = isActive
         };
     }
 
@@ -63,7 +64,8 @@ public class IncidentLocation : BaseEntity, IAuditableEntity
         string? room = null,
         GeoLocation? geoLocation = null,
         int displayOrder = 0,
-        bool isHighRisk = false)
+        bool isHighRisk = false,
+        bool isActive = true)
     {
         Name = name;
         Code = code;
@@ -74,6 +76,7 @@ public class IncidentLocation : BaseEntity, IAuditableEntity
         GeoLocation = geoLocation;
         DisplayOrder = displayOrder;
         IsHighRisk = isHighRisk;
+        IsActive = isActive;
     }
 
     public void Activate() => IsActive = true;

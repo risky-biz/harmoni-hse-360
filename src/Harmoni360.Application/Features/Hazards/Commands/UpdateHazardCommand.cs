@@ -10,8 +10,8 @@ public record UpdateHazardCommand : IRequest<HazardDto>
     public int Id { get; init; }
     public string Title { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
-    public HazardCategory Category { get; init; }
-    public HazardType Type { get; init; }
+    public int? CategoryId { get; init; }
+    public int? TypeId { get; init; }
     public string Location { get; init; } = string.Empty;
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }

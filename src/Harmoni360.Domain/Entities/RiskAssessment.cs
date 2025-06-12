@@ -1,5 +1,6 @@
 using Harmoni360.Domain.Common;
 using Harmoni360.Domain.Events;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Domain.Entities;
 
@@ -16,7 +17,7 @@ public class RiskAssessment : BaseEntity, IAuditableEntity
     public int ProbabilityScore { get; private set; } // 1-5
     public int SeverityScore { get; private set; } // 1-5
     public int RiskScore { get; private set; } // Calculated: Probability * Severity
-    public RiskLevel RiskLevel { get; private set; } // Low, Medium, High, Critical
+    public RiskAssessmentLevel RiskLevel { get; private set; } // Low, Medium, High, Critical
     
     // Assessment details
     public string PotentialConsequences { get; private set; } = string.Empty;
@@ -82,7 +83,7 @@ public class RiskAssessment : BaseEntity, IAuditableEntity
 
         assessment.AddDomainEvent(new RiskAssessmentCreatedEvent(assessment));
 
-        if (riskLevel >= RiskLevel.High)
+        if (assessment.RiskLevel >= RiskAssessmentLevel.High)
         {
             assessment.AddDomainEvent(new HighRiskAssessmentCreatedEvent(assessment));
         }
@@ -177,28 +178,28 @@ public class RiskAssessment : BaseEntity, IAuditableEntity
         }
     }
 
-    private static RiskLevel CalculateRiskLevel(int riskScore)
+    private static RiskAssessmentLevel CalculateRiskLevel(int riskScore)
     {
         return riskScore switch
         {
-            >= 1 and <= 4 => RiskLevel.VeryLow,
-            >= 5 and <= 9 => RiskLevel.Low,
-            >= 10 and <= 14 => RiskLevel.Medium,
-            >= 15 and <= 19 => RiskLevel.High,
-            >= 20 and <= 25 => RiskLevel.Critical,
-            _ => RiskLevel.Low
+            >= 1 and <= 4 => RiskAssessmentLevel.VeryLow,
+            >= 5 and <= 9 => RiskAssessmentLevel.Low,
+            >= 10 and <= 14 => RiskAssessmentLevel.Medium,
+            >= 15 and <= 19 => RiskAssessmentLevel.High,
+            >= 20 and <= 25 => RiskAssessmentLevel.Critical,
+            _ => RiskAssessmentLevel.Low
         };
     }
 
-    private static DateTime CalculateNextReviewDate(RiskLevel riskLevel)
+    private static DateTime CalculateNextReviewDate(RiskAssessmentLevel riskLevel)
     {
         var months = riskLevel switch
         {
-            RiskLevel.Critical => 1,    // Monthly for critical risks
-            RiskLevel.High => 3,        // Quarterly for high risks
-            RiskLevel.Medium => 6,      // Semi-annually for medium risks
-            RiskLevel.Low => 12,        // Annually for low risks
-            RiskLevel.VeryLow => 24,    // Every 2 years for very low risks
+            RiskAssessmentLevel.Critical => 1,    // Monthly for critical risks
+            RiskAssessmentLevel.High => 3,        // Quarterly for high risks
+            RiskAssessmentLevel.Medium => 6,      // Semi-annually for medium risks
+            RiskAssessmentLevel.Low => 12,        // Annually for low risks
+            RiskAssessmentLevel.VeryLow => 24,    // Every 2 years for very low risks
             _ => 12
         };
 
@@ -206,7 +207,7 @@ public class RiskAssessment : BaseEntity, IAuditableEntity
     }
 }
 
-public enum RiskLevel
+public enum RiskAssessmentLevel
 {
     VeryLow = 1,    // Score 1-4
     Low = 2,        // Score 5-9

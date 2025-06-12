@@ -32,7 +32,8 @@ public class IncidentCategory : BaseEntity, IAuditableEntity
         string color = "#007bff",
         string icon = "fa-exclamation-triangle",
         int displayOrder = 0,
-        bool requiresImmediateAction = false)
+        bool requiresImmediateAction = false,
+        bool isActive = true)
     {
         return new IncidentCategory
         {
@@ -43,7 +44,7 @@ public class IncidentCategory : BaseEntity, IAuditableEntity
             Icon = icon,
             DisplayOrder = displayOrder,
             RequiresImmediateAction = requiresImmediateAction,
-            IsActive = true
+            IsActive = isActive
         };
     }
 
@@ -54,7 +55,8 @@ public class IncidentCategory : BaseEntity, IAuditableEntity
         string color = "#007bff",
         string icon = "fa-exclamation-triangle",
         int displayOrder = 0,
-        bool requiresImmediateAction = false)
+        bool requiresImmediateAction = false,
+        bool isActive = true)
     {
         Name = name;
         Code = code;
@@ -63,6 +65,7 @@ public class IncidentCategory : BaseEntity, IAuditableEntity
         Icon = icon;
         DisplayOrder = displayOrder;
         RequiresImmediateAction = requiresImmediateAction;
+        IsActive = isActive;
     }
 
     public void Activate() => IsActive = true;

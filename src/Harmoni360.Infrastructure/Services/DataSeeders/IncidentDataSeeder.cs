@@ -23,19 +23,24 @@ public class IncidentDataSeeder : IDataSeeder
 
     public async Task SeedAsync()
     {
-        // Check if we should re-seed incidents even if they exist
-        var reSeedIncidents = _configuration["DataSeeding:ReSeedIncidents"] == "true";
+        // Get seeding configuration
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
 
-        if (!reSeedIncidents && await _context.Incidents.AnyAsync())
+        _logger.LogInformation("IncidentDataSeeder - ForceReseed: {ForceReseed}", forceReseed);
+
+        if (!forceReseed && await _context.Incidents.AnyAsync())
         {
-            _logger.LogInformation("Incidents already exist and ReSeedIncidents is false, skipping incident seeding");
+            _logger.LogInformation("Incidents already exist and ForceReseed is false, skipping incident seeding");
             return;
         }
 
         _logger.LogInformation("Starting incident seeding...");
 
         // If re-seeding is enabled, clear existing incidents first
-        if (reSeedIncidents && await _context.Incidents.AnyAsync())
+        if (forceReseed && await _context.Incidents.AnyAsync())
         {
             _logger.LogInformation("Clearing existing incidents for re-seeding...");
             _context.Incidents.RemoveRange(_context.Incidents);

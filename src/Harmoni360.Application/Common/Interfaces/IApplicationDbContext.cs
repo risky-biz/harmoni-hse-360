@@ -40,6 +40,7 @@ public interface IApplicationDbContext
     DbSet<RiskAssessment> RiskAssessments { get; }
     DbSet<HazardMitigationAction> HazardMitigationActions { get; }
     DbSet<HazardReassessment> HazardReassessments { get; }
+    DbSet<HazardAuditLog> HazardAuditLogs { get; }
     
     // Health Management
     DbSet<HealthRecord> HealthRecords { get; }
@@ -57,6 +58,13 @@ public interface IApplicationDbContext
     DbSet<SecurityControl> SecurityControls { get; }
     DbSet<ThreatIndicator> ThreatIndicators { get; }
     DbSet<SecurityAuditLog> SecurityAuditLogs { get; }
+    
+    // Work Permit Management
+    DbSet<WorkPermit> WorkPermits { get; }
+    DbSet<WorkPermitAttachment> WorkPermitAttachments { get; }
+    DbSet<WorkPermitApproval> WorkPermitApprovals { get; }
+    DbSet<WorkPermitHazard> WorkPermitHazards { get; }
+    DbSet<WorkPermitPrecaution> WorkPermitPrecautions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

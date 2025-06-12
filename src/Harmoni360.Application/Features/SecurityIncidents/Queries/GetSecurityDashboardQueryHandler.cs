@@ -279,6 +279,7 @@ public class GetSecurityDashboardQueryHandler : IRequestHandler<GetSecurityDashb
     {
         // This would typically integrate with compliance assessment logic
         // For now, returning a basic implementation
+        await Task.CompletedTask;
         return new SecurityComplianceStatusDto
         {
             ISO27001Compliant = true,

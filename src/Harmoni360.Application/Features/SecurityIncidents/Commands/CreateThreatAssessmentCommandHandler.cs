@@ -104,7 +104,7 @@ public class CreateThreatAssessmentCommandHandler : IRequestHandler<CreateThreat
             PreviousThreatLevel = assessment.PreviousThreatLevel,
             AssessmentRationale = assessment.AssessmentRationale,
             AssessmentDateTime = assessment.AssessmentDateTime,
-            AssessedByName = assessedBy?.Name,
+            AssessedByName = assessedBy?.Name ?? "Unknown",
             ExternalThreatIntelUsed = assessment.ExternalThreatIntelUsed,
             ThreatIntelSource = assessment.ThreatIntelSource,
             ThreatIntelDetails = assessment.ThreatIntelDetails,

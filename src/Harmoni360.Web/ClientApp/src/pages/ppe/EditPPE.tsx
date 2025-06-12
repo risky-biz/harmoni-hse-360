@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -89,11 +89,19 @@ const EditPPE: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  // Validate the ID parameter
+  const itemId = id ? parseInt(id, 10) : null;
+  
+  // Redirect to PPE list if ID is invalid
+  if (!id || !itemId || isNaN(itemId)) {
+    return <Navigate to="/ppe" replace />;
+  }
+
   const {
     data: ppeItem,
     error: loadError,
     isLoading,
-  } = useGetPPEItemQuery(Number(id));
+  } = useGetPPEItemQuery(itemId);
   
   
   const [updatePPEItem, { isLoading: isUpdating }] =

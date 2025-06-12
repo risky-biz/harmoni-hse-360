@@ -1,4 +1,8 @@
 export { default as SystemSettings } from './SystemSettings';
+export { default as IncidentSettings } from './IncidentSettings';
+export { default as RiskSettings } from './RiskSettings';
 export { default as DepartmentManagement } from './components/DepartmentManagement';
 export { default as CategoryManagement } from './components/CategoryManagement';
 export { default as LocationManagement } from './components/LocationManagement';
+export { default as HazardCategoryManagement } from './components/HazardCategoryManagement';
+export { default as HazardTypeManagement } from './components/HazardTypeManagement';

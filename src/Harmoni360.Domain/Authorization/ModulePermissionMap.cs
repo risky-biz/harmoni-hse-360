@@ -20,6 +20,7 @@ public static class ModulePermissionMap
             [RoleType.SuperAdmin] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -38,6 +39,7 @@ public static class ModulePermissionMap
             [RoleType.Developer] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -56,6 +58,7 @@ public static class ModulePermissionMap
             [RoleType.Admin] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),

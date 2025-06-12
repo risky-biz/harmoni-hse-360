@@ -36,6 +36,8 @@ public class GetHazardByIdQueryHandler : IRequestHandler<GetHazardByIdQuery, Haz
         // Build query with conditional includes for performance
         var query = _context.Hazards
             .Include(h => h.Reporter)
+            .Include(h => h.Category)
+            .Include(h => h.Type)
             .Include(h => h.CurrentRiskAssessment)
                 .ThenInclude(ra => ra != null ? ra.Assessor : null)
             .AsQueryable();
@@ -98,8 +100,8 @@ public class GetHazardByIdQueryHandler : IRequestHandler<GetHazardByIdQuery, Haz
             Id = hazard.Id,
             Title = hazard.Title,
             Description = hazard.Description,
-            Category = hazard.Category.ToString(),
-            Type = hazard.Type.ToString(),
+            Category = hazard.Category?.Name ?? "Unknown",
+            Type = hazard.Type?.Name ?? "Unknown",
             Location = hazard.Location,
             Latitude = hazard.GeoLocation?.Latitude,
             Longitude = hazard.GeoLocation?.Longitude,

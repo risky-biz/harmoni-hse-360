@@ -467,9 +467,8 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -526,13 +525,12 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("TypeId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Category");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CreatedAt");
 
@@ -549,9 +547,9 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("Type");
+                    b.HasIndex("TypeId");
 
-                    b.HasIndex("Category", "Status");
+                    b.HasIndex("CategoryId", "Status");
 
                     b.HasIndex("Status", "Severity");
 
@@ -611,6 +609,129 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("UploadedAt");
 
                     b.ToTable("HazardAttachments");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardAuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ChangeDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("FieldName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("HazardId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HazardId", "ChangedAt")
+                        .HasDatabaseName("IX_HazardAuditLogs_HazardId_ChangedAt");
+
+                    b.ToTable("HazardAuditLogs", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("RiskLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("RiskLevel");
+
+                    b.ToTable("HazardCategories", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardMitigationAction", b =>
@@ -773,6 +894,75 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("IsCompleted", "ScheduledDate");
 
                     b.ToTable("HazardReassessments");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("RequiresPermit")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("RiskMultiplier")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("RequiresPermit");
+
+                    b.ToTable("HazardTypes", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HealthIncident", b =>
@@ -3489,6 +3679,632 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.ToTable("VaccinationRecords", (string)null);
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActualEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ActualStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CompanyWorkPermitNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CompletionNotes")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("ContactPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ContractorCompany")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("EmergencyProcedures")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("EnvironmentalPermitNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EquipmentToBeUsed")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("EstimatedDuration")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("HasSMK3Compliance")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCompletedSafely")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsJamsostekCompliant")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("K3LicenseNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LessonsLearned")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("MaterialsInvolved")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("NumberOfWorkers")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PermitNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("PlannedEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PlannedStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RequestedByDepartment")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("RequestedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RequestedByName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RequestedByPosition")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("RequiresConfinedSpaceEntry")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresElectricalIsolation")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresExcavation")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresFireWatch")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresGasMonitoring")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresHeightWork")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresHotWorkPermit")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresRadiationWork")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RiskAssessmentSummary")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RiskLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("SafetyOfficer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("WorkLocation")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("WorkScope")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("WorkSupervisor")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("PermitNumber")
+                        .IsUnique();
+
+                    b.HasIndex("PlannedEndDate");
+
+                    b.HasIndex("PlannedStartDate");
+
+                    b.HasIndex("Priority");
+
+                    b.HasIndex("RequestedById");
+
+                    b.HasIndex("RiskLevel");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("PlannedStartDate", "Status");
+
+                    b.HasIndex("RequestedById", "Status");
+
+                    b.HasIndex("Status", "Type");
+
+                    b.ToTable("WorkPermits", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitApproval", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApprovalLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("ApprovalOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ApprovedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ApprovedByName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("AuthorityLevel")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("HasAuthorityToApprove")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("K3CertificateNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Signature")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("WorkPermitId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovalLevel");
+
+                    b.HasIndex("ApprovedAt");
+
+                    b.HasIndex("ApprovedById");
+
+                    b.HasIndex("IsApproved");
+
+                    b.HasIndex("WorkPermitId");
+
+                    b.HasIndex("WorkPermitId", "ApprovalLevel");
+
+                    b.HasIndex("WorkPermitId", "ApprovalOrder");
+
+                    b.ToTable("WorkPermitApprovals", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttachmentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("WorkPermitId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttachmentType");
+
+                    b.HasIndex("UploadedAt");
+
+                    b.HasIndex("WorkPermitId");
+
+                    b.ToTable("WorkPermitAttachments", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitHazard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ControlImplementedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ControlMeasures")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("HazardDescription")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ImplementationNotes")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsControlImplemented")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Likelihood")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("ResidualRiskLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ResponsiblePerson")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RiskLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Severity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("WorkPermitId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("IsControlImplemented");
+
+                    b.HasIndex("RiskLevel");
+
+                    b.HasIndex("WorkPermitId");
+
+                    b.HasIndex("WorkPermitId", "IsControlImplemented");
+
+                    b.HasIndex("WorkPermitId", "RiskLevel");
+
+                    b.ToTable("WorkPermitHazards", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitPrecaution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CompletedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CompletionNotes")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsK3Requirement")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsMandatoryByLaw")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("K3StandardReference")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PrecautionDescription")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<bool>("RequiresVerification")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ResponsiblePerson")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("VerificationMethod")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("VerifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("WorkPermitId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("IsCompleted");
+
+                    b.HasIndex("IsK3Requirement");
+
+                    b.HasIndex("IsMandatoryByLaw");
+
+                    b.HasIndex("IsRequired");
+
+                    b.HasIndex("IsVerified");
+
+                    b.HasIndex("Priority");
+
+                    b.HasIndex("WorkPermitId");
+
+                    b.HasIndex("IsK3Requirement", "IsCompleted");
+
+                    b.HasIndex("WorkPermitId", "IsCompleted");
+
+                    b.HasIndex("WorkPermitId", "IsRequired");
+
+                    b.HasIndex("WorkPermitId", "Priority");
+
+                    b.ToTable("WorkPermitPrecautions", (string)null);
+                });
+
             modelBuilder.Entity("RolePermissions", b =>
                 {
                     b.Property<int>("RoleId")
@@ -3608,6 +4424,11 @@ namespace Harmoni360.Infrastructure.Migrations
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Hazard", b =>
                 {
+                    b.HasOne("Harmoni360.Domain.Entities.HazardCategory", "Category")
+                        .WithMany("Hazards")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Harmoni360.Domain.Entities.RiskAssessment", "CurrentRiskAssessment")
                         .WithOne()
                         .HasForeignKey("Harmoni360.Domain.Entities.Hazard", "CurrentRiskAssessmentId")
@@ -3618,6 +4439,11 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasForeignKey("ReporterId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Harmoni360.Domain.Entities.HazardType", "Type")
+                        .WithMany("Hazards")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.OwnsOne("Harmoni360.Domain.ValueObjects.GeoLocation", "GeoLocation", b1 =>
                         {
@@ -3642,17 +4468,32 @@ namespace Harmoni360.Infrastructure.Migrations
                                 .HasForeignKey("HazardId");
                         });
 
+                    b.Navigation("Category");
+
                     b.Navigation("CurrentRiskAssessment");
 
                     b.Navigation("GeoLocation");
 
                     b.Navigation("Reporter");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardAttachment", b =>
                 {
                     b.HasOne("Harmoni360.Domain.Entities.Hazard", "Hazard")
                         .WithMany("Attachments")
+                        .HasForeignKey("HazardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hazard");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardAuditLog", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.Hazard", "Hazard")
+                        .WithMany()
                         .HasForeignKey("HazardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3702,6 +4543,16 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Navigation("CompletedBy");
 
                     b.Navigation("Hazard");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardType", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.HazardCategory", "Category")
+                        .WithMany("HazardTypes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HealthIncident", b =>
@@ -4327,6 +5178,85 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Navigation("HealthRecord");
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
+                {
+                    b.OwnsOne("Harmoni360.Domain.ValueObjects.GeoLocation", "GeoLocation", b1 =>
+                        {
+                            b1.Property<int>("WorkPermitId")
+                                .HasColumnType("integer");
+
+                            b1.Property<double>("Latitude")
+                                .HasPrecision(10, 8)
+                                .HasColumnType("double precision")
+                                .HasColumnName("Latitude");
+
+                            b1.Property<double>("Longitude")
+                                .HasPrecision(11, 8)
+                                .HasColumnType("double precision")
+                                .HasColumnName("Longitude");
+
+                            b1.HasKey("WorkPermitId");
+
+                            b1.ToTable("WorkPermits");
+
+                            b1.WithOwner()
+                                .HasForeignKey("WorkPermitId");
+                        });
+
+                    b.Navigation("GeoLocation");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitApproval", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.WorkPermit", "WorkPermit")
+                        .WithMany("Approvals")
+                        .HasForeignKey("WorkPermitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkPermit");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitAttachment", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.WorkPermit", "WorkPermit")
+                        .WithMany("Attachments")
+                        .HasForeignKey("WorkPermitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkPermit");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitHazard", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.HazardCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Harmoni360.Domain.Entities.WorkPermit", "WorkPermit")
+                        .WithMany("Hazards")
+                        .HasForeignKey("WorkPermitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("WorkPermit");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermitPrecaution", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.WorkPermit", "WorkPermit")
+                        .WithMany("Precautions")
+                        .HasForeignKey("WorkPermitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkPermit");
+                });
+
             modelBuilder.Entity("RolePermissions", b =>
                 {
                     b.HasOne("Harmoni360.Domain.Entities.Permission", null)
@@ -4393,6 +5323,18 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Navigation("Reassessments");
 
                     b.Navigation("RiskAssessments");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardCategory", b =>
+                {
+                    b.Navigation("HazardTypes");
+
+                    b.Navigation("Hazards");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.HazardType", b =>
+                {
+                    b.Navigation("Hazards");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HealthRecord", b =>
@@ -4476,6 +5418,17 @@ namespace Harmoni360.Infrastructure.Migrations
             modelBuilder.Entity("Harmoni360.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
+                {
+                    b.Navigation("Approvals");
+
+                    b.Navigation("Attachments");
+
+                    b.Navigation("Hazards");
+
+                    b.Navigation("Precautions");
                 });
 #pragma warning restore 612, 618
         }

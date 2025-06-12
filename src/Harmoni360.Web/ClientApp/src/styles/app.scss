@@ -612,6 +612,27 @@ h1, h2, h3, h4, h5, h6 {
 
   tbody tr:hover {
     background-color: rgba(0, 151, 167, 0.05);
+    
+    // Ensure badges maintain proper contrast on hover
+    .hazard-badge {
+      // Force background colors to stay visible on hover
+      &.badge-light {
+        background-color: #f8f9fa !important;
+        color: #495057 !important;
+        border: 1px solid #dee2e6 !important;
+      }
+      
+      // Ensure info badges remain visible on teal hover background
+      &.badge-info {
+        background-color: #0dcaf0 !important;
+        color: #000 !important;
+      }
+      
+      // Maintain icon visibility
+      .fa, .fas, .far, .fab {
+        opacity: 1 !important;
+      }
+    }
   }
 }
 

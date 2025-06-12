@@ -35,7 +35,8 @@ public class Department : BaseEntity, IAuditableEntity
         string? headOfDepartment = null,
         string? contact = null,
         string? location = null,
-        int displayOrder = 0)
+        int displayOrder = 0,
+        bool isActive = true)
     {
         return new Department
         {
@@ -46,7 +47,7 @@ public class Department : BaseEntity, IAuditableEntity
             Contact = contact,
             Location = location,
             DisplayOrder = displayOrder,
-            IsActive = true
+            IsActive = isActive
         };
     }
 
@@ -57,7 +58,8 @@ public class Department : BaseEntity, IAuditableEntity
         string? headOfDepartment = null,
         string? contact = null,
         string? location = null,
-        int displayOrder = 0)
+        int displayOrder = 0,
+        bool isActive = true)
     {
         Name = name;
         Code = code;
@@ -66,6 +68,7 @@ public class Department : BaseEntity, IAuditableEntity
         Contact = contact;
         Location = location;
         DisplayOrder = displayOrder;
+        IsActive = isActive;
     }
 
     public void Activate() => IsActive = true;

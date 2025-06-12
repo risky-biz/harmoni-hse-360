@@ -4,47 +4,80 @@ This directory contains comprehensive deployment documentation for the Harmoni36
 
 ## 📋 Documentation Overview
 
-### Core Deployment Guides
+### Deployment Options
+
+HarmoniHSE360 supports three distinct deployment scenarios to meet different organizational needs:
+
+#### 1. 🌐 Cloud Deployment (Fly.io)
+**Best for**: Demo environments, staging, small to medium production deployments
+- **Location**: [Flyio/](./Flyio/)
+- **Features**: Global CDN, automatic scaling, zero-downtime deployments
+- **Cost**: Free tier available, pay-as-you-scale
+- **Complexity**: Medium
+
+#### 2. 🐳 Standalone Server with Docker
+**Best for**: On-premises production, enterprise environments, full control
+- **Location**: [Standalone_Server/Docker/](./Standalone_Server/Docker/)
+- **Features**: Complete containerization, production-ready orchestration
+- **Cost**: Hardware + maintenance costs
+- **Complexity**: Medium-High
+
+#### 3. ⚙️ Standalone Server without Docker
+**Best for**: Traditional IT environments, legacy infrastructure, maximum control
+- **Location**: [Standalone_Server/Manual/](./Standalone_Server/Manual/)
+- **Features**: Direct installation, system service management
+- **Cost**: Hardware + maintenance costs
+- **Complexity**: High
+
+### Core Documentation
 
 | Document | Description | Audience |
 |----------|-------------|----------|
 | **[Infrastructure Overview](./Infrastructure_Overview.md)** | **Complete system architecture and deployment strategy** | **DevOps Engineers, Architects** |
-| **[Docker Configuration Guide](./Docker_Configuration_Guide.md)** | **Comprehensive Docker setup and containerization** | **Developers, DevOps Engineers** |
-| **[Manual Deployment Guide](./Manual_Deployment_Guide.md)** | **Step-by-step manual deployment process** | **DevOps Engineers, Developers** |
-| **[Automated Deployment Guide](./Automated_Deployment_Guide.md)** | **Complete CI/CD pipeline setup and configuration** | **DevOps Engineers** |
 | **[Environment Configuration](./Environment_Configuration.md)** | **Environment variables and secrets management** | **DevOps Engineers, Developers** |
 | **[Security Best Practices](./Security_Best_Practices.md)** | **Security considerations and compliance guidelines** | **Security Engineers, DevOps** |
-| [Fly.io Deployment Guide](./Fly_io_Deployment_Guide.md) | Legacy manual deployment guide | DevOps, Developers |
-| [GitHub Actions CI/CD Guide](./GitHub_Actions_CI_CD_Guide.md) | Legacy CI/CD pipeline documentation | DevOps, Developers |
 | [Troubleshooting Guide](./Troubleshooting_Guide.md) | Common issues and solutions | All Users |
 | [Quick Reference](./Quick_Reference.md) | Essential commands and shortcuts | All Users |
 | [Deployment Checklist](./Deployment_Checklist.md) | Pre-deployment verification checklist | DevOps, QA |
 
 ## 🚀 Quick Start Options
 
-### 1. Automated CI/CD Deployment (Recommended)
+### 1. 🌐 Cloud Deployment (Fly.io) - Recommended for Demos/Staging
 ```bash
-# Setup GitHub Actions pipeline
+# Automated CI/CD deployment
 # 1. Configure FLY_API_TOKEN secret in GitHub repository
 # 2. Push to develop branch → deploys to staging automatically
 # 3. Push to main branch → deploys to production with approval
 
-# Manual trigger via GitHub CLI
-gh workflow run deploy.yml --ref main -f environment=production
-```
-
-### 2. One-Command Script Deployment
-```bash
-# Linux/macOS
+# Manual deployment
+git clone https://github.com/risky-biz/harmoni-hse-360.git
+cd harmoni-hse-360
 chmod +x scripts/deploy-flyio.sh
 ./scripts/deploy-flyio.sh
-
-# Windows PowerShell
-.\scripts\deploy-flyio.ps1
 ```
 
-### 3. Manual Step-by-Step Deployment
-Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete control.
+### 2. 🐳 Docker Standalone - Recommended for Production
+```bash
+# Automated Docker deployment
+git clone https://github.com/risky-biz/harmoni-hse-360.git
+cd harmoni-hse-360
+chmod +x scripts/deploy-standalone.sh
+sudo ./scripts/deploy-standalone.sh
+
+# Manual Docker deployment
+cp .env.prod.example .env.prod
+# Edit .env.prod with your configuration
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### 3. ⚙️ Manual Standalone - Maximum Control
+```bash
+# Traditional deployment without containers
+git clone https://github.com/risky-biz/harmoni-hse-360.git
+cd harmoni-hse-360
+chmod +x scripts/install-manual.sh
+sudo ./scripts/install-manual.sh
+```
 
 ### Prerequisites
 - [Fly.io CLI](https://fly.io/docs/hands-on/install-flyctl/) with authenticated account
@@ -67,10 +100,12 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
 
 ### Deployment Environments
 
-| Environment | URL | Branch | Auto-Deploy | Resources |
-|-------------|-----|--------|-------------|-----------|
-| **Staging** | `harmoni360-staging.fly.dev` | `develop` | ✅ | 1 CPU, 512MB |
-| **Production** | `harmoni360-app.fly.dev` | `main` | ✅ (with approval) | 1 CPU, 1GB |
+| Deployment Type | Environment | URL/Location | Branch | Auto-Deploy | Resources |
+|-----------------|-------------|--------------|--------|-------------|-----------|
+| **Fly.io Cloud** | Staging | `harmoni360-staging.fly.dev` | `develop` | ✅ | 1 CPU, 512MB |
+| **Fly.io Cloud** | Production | `harmoni360-app.fly.dev` | `main` | ✅ (with approval) | 1 CPU, 1GB |
+| **Docker Standalone** | Production | `your-domain.com` | `main` | Optional | 8+ CPU, 32GB+ RAM |
+| **Manual Standalone** | Production | `your-domain.com` | `main` | Manual | 8+ CPU, 32GB+ RAM |
 
 ### System Architecture
 ```
@@ -95,12 +130,28 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
 
 ## 📊 Deployment Options Comparison
 
-| Platform | Cost | Complexity | Features | Recommendation |
-|----------|------|------------|----------|----------------|
-| **Fly.io** | Free tier available | Medium | Full Docker support, Global CDN | ⭐⭐⭐⭐⭐ **Recommended** |
-| Render.com | Free with limitations | Low | Easy setup, 30-day DB limit | ⭐⭐⭐⭐ Good alternative |
-| Railway.app | $5/month minimum | Low | Excellent DX, no free tier | ⭐⭐⭐ Paid option |
-| Azure Container Apps | ~$25/month | High | Enterprise features | ⭐⭐⭐ Enterprise choice |
+| Deployment Option | Cost | Complexity | Scalability | Control | Best For |
+|-------------------|------|------------|-------------|---------|----------|
+| **🌐 Fly.io Cloud** | $13-28/month | Medium | Auto-scaling | Medium | Demos, small-medium prod |
+| **🐳 Docker Standalone** | $15K+ initial | Medium-High | Manual scaling | High | Enterprise, on-premises |
+| **⚙️ Manual Standalone** | $12K+ initial | High | Manual scaling | Maximum | Legacy environments, compliance |
+
+### Detailed Comparison
+
+#### Fly.io Cloud Deployment
+- **Pros**: Quick setup, global CDN, automatic scaling, managed services
+- **Cons**: Vendor lock-in, limited customization, ongoing costs
+- **Ideal for**: Demos, staging, small to medium production deployments
+
+#### Docker Standalone Deployment
+- **Pros**: Full control, containerized consistency, easier scaling, comprehensive monitoring
+- **Cons**: Requires Docker expertise, more complex setup, hardware costs
+- **Ideal for**: Production environments, enterprise deployments, on-premises requirements
+
+#### Manual Standalone Deployment
+- **Pros**: Maximum control, no container dependencies, traditional IT practices
+- **Cons**: Complex setup, manual dependency management, harder to scale
+- **Ideal for**: Legacy environments, strict compliance requirements, maximum customization
 
 ## 🔧 Configuration Files
 

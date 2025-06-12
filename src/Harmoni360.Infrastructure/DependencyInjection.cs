@@ -67,13 +67,13 @@ public static class DependencyInjection
         services.AddScoped<RoleModulePermissionDataSeeder>();
         services.AddScoped<UserDataSeeder>();
         services.AddScoped<IncidentDataSeeder>();
-        services.AddScoped<PPEDataSeeder>();
         services.AddScoped<PPEItemDataSeeder>();
         services.AddScoped<HazardDataSeeder>();
         services.AddScoped<HealthDataSeeder>();
         services.AddScoped<SecurityDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
+        services.AddScoped<IHazardAuditService, HazardAuditService>();
 
         // Add notification and escalation services
         services.AddScoped<INotificationService, NotificationService>();

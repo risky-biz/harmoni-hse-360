@@ -49,8 +49,8 @@ public class CreateHazardCommandHandler : IRequestHandler<CreateHazardCommand, H
         var hazard = Hazard.Create(
             title: request.Title,
             description: request.Description,
-            category: request.Category,
-            type: request.Type,
+            categoryId: request.CategoryId,
+            typeId: request.TypeId,
             location: request.Location,
             severity: request.Severity,
             reporterId: request.ReporterId,
@@ -111,14 +111,21 @@ public class CreateHazardCommandHandler : IRequestHandler<CreateHazardCommand, H
         // Save final changes to persist domain events
         await _context.SaveChangesAsync(cancellationToken);
 
+        // Load the related entities for DTO mapping
+        await _context.Hazards
+            .Where(h => h.Id == hazard.Id)
+            .Include(h => h.Category)
+            .Include(h => h.Type)
+            .LoadAsync(cancellationToken);
+
         // Map to DTO
         var hazardDto = new HazardDto
         {
             Id = hazard.Id,
             Title = hazard.Title,
             Description = hazard.Description,
-            Category = hazard.Category.ToString(),
-            Type = hazard.Type.ToString(),
+            Category = hazard.Category?.Name ?? "Unknown",
+            Type = hazard.Type?.Name ?? "Unknown",
             Location = hazard.Location,
             Latitude = hazard.GeoLocation?.Latitude,
             Longitude = hazard.GeoLocation?.Longitude,

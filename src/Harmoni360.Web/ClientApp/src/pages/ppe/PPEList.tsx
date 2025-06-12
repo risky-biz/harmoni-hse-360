@@ -377,7 +377,7 @@ const PPEList: React.FC = () => {
                             </CDropdownToggle>
                             <CDropdownMenu>
                               <CDropdownItem
-                                onClick={() => navigate(`/ppe/${item.id}`)}
+                                onClick={() => item.id && navigate(`/ppe/${item.id}`)}
                               >
                                 <FontAwesomeIcon
                                   icon={ACTION_ICONS.view}
@@ -387,7 +387,7 @@ const PPEList: React.FC = () => {
                                 View Details
                               </CDropdownItem>
                               <CDropdownItem
-                                onClick={() => navigate(`/ppe/${item.id}/edit`)}
+                                onClick={() => item.id && navigate(`/ppe/${item.id}/edit`)}
                               >
                                 <FontAwesomeIcon
                                   icon={ACTION_ICONS.edit}
@@ -398,7 +398,7 @@ const PPEList: React.FC = () => {
                               </CDropdownItem>
                               {item.status === 'Available' && (
                                 <CDropdownItem
-                                  onClick={() => navigate(`/ppe/${item.id}/assign`)}
+                                  onClick={() => item.id && navigate(`/ppe/${item.id}/assign`)}
                                 >
                                   <FontAwesomeIcon
                                     icon={ACTION_ICONS.add}

@@ -527,7 +527,7 @@ const PPEDashboard: React.FC = () => {
                   statusColor: warning.isExpired ? 'danger' : 'warning',
                   timestamp: warning.expiryDate,
                   isOverdue: warning.isExpired,
-                  onClick: () => navigate(`/ppe/${warning.itemId}`)
+                  onClick: () => warning.itemId && navigate(`/ppe/${warning.itemId}`)
                 })),
                 ...dashboard.maintenanceWarnings.slice(0, 3).map(warning => ({
                   id: warning.itemId,
@@ -537,7 +537,7 @@ const PPEDashboard: React.FC = () => {
                   statusColor: warning.isOverdue ? 'danger' : 'info',
                   timestamp: warning.dueDate,
                   isOverdue: warning.isOverdue,
-                  onClick: () => navigate(`/ppe/${warning.itemId}`)
+                  onClick: () => warning.itemId && navigate(`/ppe/${warning.itemId}`)
                 }))
               ]}
               isLoading={isLoading}

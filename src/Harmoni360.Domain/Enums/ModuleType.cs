@@ -68,8 +68,13 @@ public enum ModuleType
     UserManagement = 12,
 
     /// <summary>
+    /// Work Permit Management Module - Work permit creation, approval workflow, compliance tracking, safety oversight
+    /// </summary>
+    WorkPermitManagement = 14,
+
+    /// <summary>
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>
-    ApplicationSettings = 13
+    ApplicationSettings = 15
 }

@@ -15,11 +15,13 @@ public class CreateHazardCommandValidator : AbstractValidator<CreateHazardComman
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters.");
 
-        RuleFor(x => x.Category)
-            .IsInEnum().WithMessage("Valid hazard category is required.");
+        RuleFor(x => x.CategoryId)
+            .GreaterThan(0).WithMessage("Valid hazard category is required.")
+            .When(x => x.CategoryId.HasValue);
 
-        RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("Valid hazard type is required.");
+        RuleFor(x => x.TypeId)
+            .GreaterThan(0).WithMessage("Valid hazard type is required.")
+            .When(x => x.TypeId.HasValue);
 
         RuleFor(x => x.Location)
             .NotEmpty().WithMessage("Location is required.")

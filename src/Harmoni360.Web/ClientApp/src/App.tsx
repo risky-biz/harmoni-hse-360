@@ -182,6 +182,32 @@ const RiskAssessments = React.lazy(() =>
     };
   })
 );
+
+// Risk Assessment Management Pages
+const RiskAssessmentList = React.lazy(() =>
+  import('./pages/risk-assessments/RiskAssessmentList').catch((err) => {
+    console.error('Failed to load RiskAssessmentList:', err);
+    return {
+      default: () => <div>Error loading Risk Assessment List. Please refresh.</div>,
+    };
+  })
+);
+const RiskAssessmentDetail = React.lazy(() =>
+  import('./pages/risk-assessments/RiskAssessmentDetail').catch((err) => {
+    console.error('Failed to load RiskAssessmentDetail:', err);
+    return {
+      default: () => <div>Error loading Risk Assessment Detail. Please refresh.</div>,
+    };
+  })
+);
+const CreateRiskAssessment = React.lazy(() =>
+  import('./pages/risk-assessments/CreateRiskAssessment').catch((err) => {
+    console.error('Failed to load CreateRiskAssessment:', err);
+    return {
+      default: () => <div>Error loading Create Risk Assessment. Please refresh.</div>,
+    };
+  })
+);
 const HazardAnalytics = React.lazy(() =>
   import('./pages/hazards/HazardAnalytics').catch((err) => {
     console.error('Failed to load HazardAnalytics:', err);
@@ -232,6 +258,14 @@ const PPEManagement = React.lazy(() =>
     };
   })
 );
+const PPEOperationalManagement = React.lazy(() =>
+  import('./pages/ppe/PPEOperationalManagement').catch((err) => {
+    console.error('Failed to load PPEOperationalManagement:', err);
+    return {
+      default: () => <div>Error loading PPE Operational Management. Please refresh.</div>,
+    };
+  })
+);
 const PPEList = React.lazy(() =>
   import('./pages/ppe/PPEList').catch((err) => {
     console.error('Failed to load PPEList:', err);
@@ -261,6 +295,64 @@ const PPEDetail = React.lazy(() =>
     console.error('Failed to load PPEDetail:', err);
     return {
       default: () => <div>Error loading PPE Detail. Please refresh.</div>,
+    };
+  })
+);
+
+// Work Permit Management Pages
+const WorkPermitDashboard = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitDashboard').catch((err) => {
+    console.error('Failed to load WorkPermitDashboard:', err);
+    return {
+      default: () => <div>Error loading Work Permit Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitList = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitList').catch((err) => {
+    console.error('Failed to load WorkPermitList:', err);
+    return {
+      default: () => <div>Error loading Work Permit List. Please refresh.</div>,
+    };
+  })
+);
+const CreateWorkPermit = React.lazy(() =>
+  import('./pages/work-permits/CreateWorkPermit').catch((err) => {
+    console.error('Failed to load CreateWorkPermit:', err);
+    return {
+      default: () => <div>Error loading Create Work Permit. Please refresh.</div>,
+    };
+  })
+);
+const EditWorkPermit = React.lazy(() =>
+  import('./pages/work-permits/EditWorkPermit').catch((err) => {
+    console.error('Failed to load EditWorkPermit:', err);
+    return {
+      default: () => <div>Error loading Edit Work Permit. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitDetail = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitDetail').catch((err) => {
+    console.error('Failed to load WorkPermitDetail:', err);
+    return {
+      default: () => <div>Error loading Work Permit Detail. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitApproval = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitApproval').catch((err) => {
+    console.error('Failed to load WorkPermitApproval:', err);
+    return {
+      default: () => <div>Error loading Work Permit Approval. Please refresh.</div>,
+    };
+  })
+);
+const MyWorkPermits = React.lazy(() =>
+  import('./pages/work-permits/MyWorkPermits').catch((err) => {
+    console.error('Failed to load MyWorkPermits:', err);
+    return {
+      default: () => <div>Error loading My Work Permits. Please refresh.</div>,
     };
   })
 );
@@ -381,6 +473,14 @@ const IncidentSettings = React.lazy(() =>
     console.error('Failed to load IncidentSettings:', err);
     return {
       default: () => <div>Error loading Incident Settings. Please refresh.</div>,
+    };
+  })
+);
+const RiskSettings = React.lazy(() =>
+  import('./pages/settings/RiskSettings').catch((err) => {
+    console.error('Failed to load RiskSettings:', err);
+    return {
+      default: () => <div>Error loading Risk Settings. Please refresh.</div>,
     };
   })
 );
@@ -549,12 +649,30 @@ function App() {
                 <Route path="/hazards/:id" element={<HazardDetail />} />
                 <Route path="/hazards/:id/edit" element={<EditHazard />} />
 
+                {/* Risk Assessment Management */}
+                <Route path="/risk-assessments" element={<RiskAssessmentList />} />
+                <Route path="/risk-assessments/create" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/create/:hazardId" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/:id" element={<RiskAssessmentDetail />} />
+                <Route path="/risk-assessments/:id/edit" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/:id/reassess" element={<CreateRiskAssessment />} />
+
                 {/* PPE Management */}
                 <Route path="/ppe" element={<PPEList />} />
                 <Route path="/ppe/dashboard" element={<PPEDashboard />} />
+                <Route path="/ppe/management" element={<PPEOperationalManagement />} />
                 <Route path="/ppe/create" element={<CreatePPE />} />
                 <Route path="/ppe/:id" element={<PPEDetail />} />
                 <Route path="/ppe/:id/edit" element={<EditPPE />} />
+
+                {/* Work Permit Management */}
+                <Route path="/work-permits" element={<WorkPermitList />} />
+                <Route path="/work-permits/dashboard" element={<WorkPermitDashboard />} />
+                <Route path="/work-permits/create" element={<CreateWorkPermit />} />
+                <Route path="/work-permits/my-permits" element={<MyWorkPermits />} />
+                <Route path="/work-permits/:id" element={<WorkPermitDetail />} />
+                <Route path="/work-permits/:id/edit" element={<EditWorkPermit />} />
+                <Route path="/work-permits/:id/approve" element={<WorkPermitApproval />} />
 
                 {/* Health Management */}
                 <Route path="/health" element={<HealthList />} />
@@ -600,12 +718,7 @@ function App() {
                     <Routes>
                       <Route path="ppe" element={<PPEManagement />} />
                       <Route path="incidents" element={<IncidentSettings />} />
-                      <Route path="risks" element={
-                        <div className="p-4">
-                          <h2>Risk Management Settings</h2>
-                          <p>Configuration options for risk management coming soon...</p>
-                        </div>
-                      } />
+                      <Route path="risks" element={<RiskSettings />} />
                       <Route path="users" element={
                         <div className="p-4">
                           <h2>User Management Settings</h2>

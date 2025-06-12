@@ -7,7 +7,11 @@ import { ppeApi } from '../features/ppe/ppeApi';
 import { ppeManagementApi } from '../features/ppe/ppeManagementApi';
 import { hazardApi } from '../features/hazards/hazardApi';
 import { healthApi } from '../features/health/healthApi';
+import { riskAssessmentApi } from '../features/risk-assessments/riskAssessmentApi';
+import { workPermitApi } from '../features/work-permits/workPermitApi';
+import { securityApi } from '../features/security/securityApi';
 import { configurationApi } from '../api/configurationApi';
+import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
 
 export const store = configureStore({
@@ -19,7 +23,11 @@ export const store = configureStore({
     [ppeManagementApi.reducerPath]: ppeManagementApi.reducer,
     [hazardApi.reducerPath]: hazardApi.reducer,
     [healthApi.reducerPath]: healthApi.reducer,
+    [riskAssessmentApi.reducerPath]: riskAssessmentApi.reducer,
+    [workPermitApi.reducerPath]: workPermitApi.reducer,
+    [securityApi.reducerPath]: securityApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
+    [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -34,7 +42,11 @@ export const store = configureStore({
       ppeManagementApi.middleware,
       hazardApi.middleware,
       healthApi.middleware,
+      riskAssessmentApi.middleware,
+      workPermitApi.middleware,
+      securityApi.middleware,
       configurationApi.middleware,
+      hazardConfigurationApi.middleware,
       applicationModeApi.middleware
     ),
 });

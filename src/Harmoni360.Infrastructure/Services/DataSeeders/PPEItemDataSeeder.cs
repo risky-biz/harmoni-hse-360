@@ -23,18 +23,24 @@ public class PPEItemDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         // Check if we should re-seed PPE items even if they exist
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
         var reSeedPPEItems = _configuration["DataSeeding:ReSeedPPEItems"] == "true";
 
-        if (!reSeedPPEItems && await _context.PPEItems.AnyAsync())
+        _logger.LogInformation("PPEItemDataSeeder - ForceReseed: {ForceReseed}, ReSeedPPEItems: {ReSeed}", forceReseed, reSeedPPEItems);
+
+        if (!forceReseed && !reSeedPPEItems && await _context.PPEItems.AnyAsync())
         {
-            _logger.LogInformation("PPE items already exist and ReSeedPPEItems is false, skipping PPE items seeding");
+            _logger.LogInformation("PPE items already exist and neither ForceReseed nor ReSeedPPEItems is enabled, skipping PPE items seeding");
             return;
         }
 
         _logger.LogInformation("Starting PPE items seeding...");
 
         // If re-seeding is enabled, clear existing items first
-        if (reSeedPPEItems && await _context.PPEItems.AnyAsync())
+        if ((reSeedPPEItems || forceReseed) && await _context.PPEItems.AnyAsync())
         {
             _logger.LogInformation("Clearing existing PPE items for re-seeding...");
             _context.PPEItems.RemoveRange(_context.PPEItems);

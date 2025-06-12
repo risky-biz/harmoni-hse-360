@@ -29,6 +29,8 @@ public class UpdateHazardCommandHandler : IRequestHandler<UpdateHazardCommand, H
         // Get the existing hazard with related data
         var hazard = await _context.Hazards
             .Include(h => h.Reporter)
+            .Include(h => h.Category)
+            .Include(h => h.Type)
             .Include(h => h.Attachments)
             .Include(h => h.CurrentRiskAssessment)
             .Include(h => h.RiskAssessments)
@@ -43,11 +45,23 @@ public class UpdateHazardCommandHandler : IRequestHandler<UpdateHazardCommand, H
         // Store original values for audit trail
         var originalStatus = hazard.Status;
         var originalSeverity = hazard.Severity;
-
-        // Use enum values directly from request
+        var originalCategoryId = hazard.CategoryId;
+        var originalTypeId = hazard.TypeId;
 
         // Update hazard properties
         hazard.UpdateDetails(request.Title, request.Description, _currentUserService.Name);
+
+        // Update category if changed
+        if (originalCategoryId != request.CategoryId)
+        {
+            hazard.UpdateCategory(request.CategoryId, _currentUserService.Name);
+        }
+
+        // Update type if changed
+        if (originalTypeId != request.TypeId)
+        {
+            hazard.UpdateType(request.TypeId, _currentUserService.Name);
+        }
 
         // Update GeoLocation if coordinates provided
         if (request.Latitude.HasValue && request.Longitude.HasValue)
@@ -119,8 +133,8 @@ public class UpdateHazardCommandHandler : IRequestHandler<UpdateHazardCommand, H
             Id = hazard.Id,
             Title = hazard.Title,
             Description = hazard.Description,
-            Category = hazard.Category.ToString(),
-            Type = hazard.Type.ToString(),
+            Category = hazard.Category?.Name ?? "Unknown",
+            Type = hazard.Type?.Name ?? "Unknown",
             Location = hazard.Location,
             Latitude = hazard.GeoLocation?.Latitude,
             Longitude = hazard.GeoLocation?.Longitude,

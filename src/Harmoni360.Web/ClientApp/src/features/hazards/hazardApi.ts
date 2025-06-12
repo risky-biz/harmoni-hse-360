@@ -16,6 +16,12 @@ import type {
   UserDto
 } from '../../types/hazard';
 
+// Re-export for convenience
+export type { 
+  HazardAttachmentDto,
+  HazardMitigationActionDto 
+} from '../../types/hazard';
+
 export const hazardApi = createApi({
   reducerPath: 'hazardApi',
   baseQuery: fetchBaseQuery({
@@ -45,7 +51,8 @@ export const hazardApi = createApi({
     'HazardAttachment',
     'RiskAssessment',
     'MitigationAction',
-    'HazardLocation'
+    'HazardLocation',
+    'HazardAuditTrail'
   ],
   endpoints: (builder) => ({
     // Get hazards list with filtering and pagination
@@ -368,8 +375,66 @@ export const hazardApi = createApi({
         method: 'GET',
       }),
     }),
+
+    // Upload hazard attachments
+    uploadHazardAttachments: builder.mutation<void, { hazardId: number; files: File[] }>({
+      query: ({ hazardId, files }) => {
+        const formData = new FormData();
+        files.forEach(file => {
+          formData.append('newAttachments', file);
+        });
+
+        return {
+          url: `/${hazardId}/attachments`,
+          method: 'POST',
+          body: formData,
+        };
+      },
+      invalidatesTags: (_, __, { hazardId }) => [
+        { type: 'Hazard' as const, id: hazardId },
+        { type: 'HazardDetail' as const, id: hazardId },
+        { type: 'HazardAttachment' as const, id: hazardId },
+      ],
+    }),
+
+    // Delete hazard attachment
+    deleteHazardAttachment: builder.mutation<void, { hazardId: number; attachmentId: number }>({
+      query: ({ hazardId, attachmentId }) => ({
+        url: `/${hazardId}/attachments/${attachmentId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_, __, { hazardId }) => [
+        { type: 'Hazard' as const, id: hazardId },
+        { type: 'HazardDetail' as const, id: hazardId },
+        { type: 'HazardAttachment' as const, id: hazardId },
+      ],
+    }),
+
+    // Get hazard audit trail
+    getHazardAuditTrail: builder.query<HazardAuditLogDto[], number>({
+      query: (hazardId) => ({
+        url: `/${hazardId}/audit-trail`,
+        method: 'GET',
+      }),
+      providesTags: (_, __, hazardId) => [
+        { type: 'HazardAuditTrail' as const, id: hazardId },
+      ],
+    }),
   }),
 });
+
+// Export audit log type
+export interface HazardAuditLogDto {
+  id: number;
+  hazardId: number;
+  action: string;
+  fieldName: string;
+  oldValue: string;
+  newValue: string;
+  changeDescription: string;
+  changedBy: string;
+  changedAt: string;
+}
 
 // Export hooks for usage in functional components
 export const {
@@ -388,4 +453,7 @@ export const {
   useGetOverdueHazardsQuery,
   useGetHighRiskHazardsQuery,
   useGetAvailableUsersQuery,
+  useUploadHazardAttachmentsMutation,
+  useDeleteHazardAttachmentMutation,
+  useGetHazardAuditTrailQuery,
 } = hazardApi;

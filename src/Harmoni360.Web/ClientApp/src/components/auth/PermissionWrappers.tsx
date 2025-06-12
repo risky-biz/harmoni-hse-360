@@ -1,12 +1,12 @@
 import React from 'react';
-import { CButton, CButtonProps } from '@coreui/react';
+import { CButton } from '@coreui/react';
 import { PermissionGuard } from './PermissionGuard';
 import { ModuleType, PermissionType, RoleType } from '../../types/permissions';
 
 /**
  * Enhanced button component that only renders when user has the required permissions
  */
-interface PermissionButtonProps extends CButtonProps {
+interface PermissionButtonProps extends React.ComponentPropsWithoutRef<typeof CButton> {
   // Module permission check
   module?: ModuleType;
   permission?: PermissionType;

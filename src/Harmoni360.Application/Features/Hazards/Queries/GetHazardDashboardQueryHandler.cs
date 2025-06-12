@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Hazards.DTOs;
 using Harmoni360.Domain.Entities;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Hazards.Queries;
 
@@ -49,7 +50,11 @@ public class GetHazardDashboardQueryHandler : IRequestHandler<GetHazardDashboard
         }
 
         // Build base query with department filter if specified
-        var baseQuery = _context.Hazards.AsQueryable();
+        var baseQuery = _context.Hazards
+            .Include(h => h.Category)
+            .Include(h => h.Type)
+            .Include(h => h.CurrentRiskAssessment)
+            .AsQueryable();
         
         if (!string.IsNullOrEmpty(request.Department))
         {
@@ -128,9 +133,9 @@ public class GetHazardDashboardQueryHandler : IRequestHandler<GetHazardDashboard
             ResolvedHazards = await baseQuery.CountAsync(h => 
                 h.Status == HazardStatus.Resolved || h.Status == HazardStatus.Closed, cancellationToken),
             HighRiskHazards = await baseQuery.CountAsync(h => 
-                h.CurrentRiskAssessment != null && h.CurrentRiskAssessment.RiskLevel == RiskLevel.High, cancellationToken),
+                h.CurrentRiskAssessment != null && h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.High, cancellationToken),
             CriticalRiskHazards = await baseQuery.CountAsync(h => 
-                h.CurrentRiskAssessment != null && h.CurrentRiskAssessment.RiskLevel == RiskLevel.Critical, cancellationToken),
+                h.CurrentRiskAssessment != null && h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.Critical, cancellationToken),
             UnassessedHazards = await baseQuery.CountAsync(h => h.CurrentRiskAssessment == null, cancellationToken),
             NewHazardsThisMonth = await baseQuery.CountAsync(h => 
                 h.IdentifiedDate >= DateTime.UtcNow.AddDays(-30), cancellationToken)
@@ -179,8 +184,9 @@ public class GetHazardDashboardQueryHandler : IRequestHandler<GetHazardDashboard
 
         // Category distribution
         riskMetrics.CategoryDistribution = await baseQuery
-            .GroupBy(h => h.Category)
-            .Select(g => new { Category = g.Key.ToString(), Count = g.Count() })
+            .Where(h => h.Category != null)
+            .GroupBy(h => h.Category!.Name)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Category, x => x.Count, cancellationToken);
 
         // Severity distribution
@@ -331,8 +337,8 @@ public class GetHazardDashboardQueryHandler : IRequestHandler<GetHazardDashboard
                 Department = g.Key.ReporterDepartment,
                 HazardCount = g.Count(),
                 HighRiskCount = g.Count(h => h.CurrentRiskAssessment != null && 
-                                           (h.CurrentRiskAssessment.RiskLevel == RiskLevel.High || 
-                                            h.CurrentRiskAssessment.RiskLevel == RiskLevel.Critical))
+                                           (h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.High || 
+                                            h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.Critical))
             })
             .OrderByDescending(l => l.HazardCount)
             .Take(10)
@@ -444,7 +450,7 @@ public class GetHazardDashboardQueryHandler : IRequestHandler<GetHazardDashboard
         // Critical risk hazards
         var criticalHazards = await baseQuery
             .Where(h => h.CurrentRiskAssessment != null && 
-                       h.CurrentRiskAssessment.RiskLevel == RiskLevel.Critical)
+                       h.CurrentRiskAssessment.RiskLevel == RiskAssessmentLevel.Critical)
             .Select(h => new HazardAlertDto
             {
                 AlertType = "HighRisk",

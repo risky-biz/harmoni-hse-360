@@ -23,32 +23,85 @@ public class UserDataSeeder : IDataSeeder
 
     public async Task SeedAsync()
     {
-        // Check if we should re-seed users even if they exist
-        var reSeedUsers = _configuration["DataSeeding:ReSeedUsers"] == "true";
+        // Get seeding configuration
+        var seedUserAccounts = _configuration["DataSeeding:Categories:UserAccounts"] == "true";
 
-        if (!reSeedUsers && await _context.Users.AnyAsync())
+        // Seed essential admin users (always required)
+        await SeedEssentialAdminUsersAsync();
+
+        // Seed demo/sample user accounts if enabled
+        if (seedUserAccounts)
         {
-            _logger.LogInformation("Users already exist and ReSeedUsers is false, skipping user seeding");
-            return;
+            await SeedSampleUserAccountsAsync();
+        }
+    }
+
+    public async Task SeedEssentialAdminUsersAsync(bool forceReseed = false)
+    {
+        // Skip existence check if forceReseed is true
+        if (!forceReseed)
+        {
+            // Check if essential admin users already exist
+            var hasEssentialAdmins = await _context.Users.AnyAsync(u => 
+                u.Email == "superadmin@harmoni360.com" || 
+                u.Email == "developer@harmoni360.com" || 
+                u.Email == "admin@harmoni360.com");
+
+            if (hasEssentialAdmins)
+            {
+                _logger.LogInformation("Essential admin users already exist, skipping");
+                return;
+            }
         }
 
-        _logger.LogInformation("Starting user seeding...");
+        _logger.LogInformation("Seeding essential admin users...");
 
-        // If re-seeding is enabled, clear existing users first
-        if (reSeedUsers && await _context.Users.AnyAsync())
-        {
-            _logger.LogInformation("Clearing existing users for re-seeding...");
-            _context.Users.RemoveRange(_context.Users);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Existing users cleared");
-        }
-
-        // Get all roles from database - HSSE expansion
+        // Get required roles
         var superAdminRole = await _context.Roles.FirstAsync(r => r.Name == "SuperAdmin");
         var developerRole = await _context.Roles.FirstAsync(r => r.Name == "Developer");
         var adminRole = await _context.Roles.FirstAsync(r => r.Name == "Admin");
-        
-        // HSE Management Roles
+
+        // Hash passwords for production use
+        var passwordHashService = new PasswordHashService();
+
+        // Essential admin users (ALWAYS seeded for production initial setup)
+        var essentialAdminUsers = new List<User>
+        {
+            User.Create("superadmin@harmoni360.com", passwordHashService.HashPassword("SuperAdmin123!"), "Super Administrator", "SA001", "IT", "Super Administrator"),
+            User.Create("developer@harmoni360.com", passwordHashService.HashPassword("Developer123!"), "Software Developer", "DEV001", "IT", "Developer User"),
+            User.Create("admin@harmoni360.com", passwordHashService.HashPassword("Admin123!"), "System Administrator", "ADM001", "IT", "System Administrator")
+        };
+
+        // Assign roles to essential admin users
+        essentialAdminUsers[0].AssignRole(superAdminRole);   // superadmin@harmoni360.com
+        essentialAdminUsers[1].AssignRole(developerRole);    // developer@harmoni360.com  
+        essentialAdminUsers[2].AssignRole(adminRole);        // admin@harmoni360.com
+
+        await _context.Users.AddRangeAsync(essentialAdminUsers);
+        _logger.LogInformation("Seeded {Count} essential admin users", essentialAdminUsers.Count);
+    }
+
+    public async Task SeedSampleUserAccountsAsync(bool forceReseed = false)
+    {
+        // Skip existence check if forceReseed is true
+        if (!forceReseed)
+        {
+            // Check if demo users already exist
+            var hasDemoUsers = await _context.Users.AnyAsync(u => 
+                u.Email.Contains("incident.manager") || 
+                u.Email.Contains("risk.manager") ||
+                u.Email.Contains("ppe.manager"));
+
+            if (hasDemoUsers)
+            {
+                _logger.LogInformation("Sample user accounts already exist, skipping");
+                return;
+            }
+        }
+
+        _logger.LogInformation("Seeding sample user accounts...");
+
+        // Get all roles from database - HSSE expansion
         var incidentManagerRole = await _context.Roles.FirstAsync(r => r.Name == "IncidentManager");
         var riskManagerRole = await _context.Roles.FirstAsync(r => r.Name == "RiskManager");
         var ppeManagerRole = await _context.Roles.FirstAsync(r => r.Name == "PPEManager");
@@ -66,13 +119,9 @@ public class UserDataSeeder : IDataSeeder
         // Hash demo passwords for production use
         var passwordHashService = new PasswordHashService();
 
-        var users = new List<User>
+        // Sample/Demo users for testing and demonstration
+        var demoUsers = new List<User>
         {
-            // System administration users
-            User.Create("superadmin@harmoni360.com", passwordHashService.HashPassword("SuperAdmin123!"), "Super Administrator", "SA001", "IT", "Super Administrator"),
-            User.Create("developer@harmoni360.com", passwordHashService.HashPassword("Developer123!"), "System Developer", "DEV001", "IT", "Software Developer"),
-            User.Create("admin@harmoni360.com", passwordHashService.HashPassword("Admin123!"), "System Administrator", "ADM001", "IT", "System Administrator"),
-            
             // HSE (Health, Safety, Environment) specialized managers
             User.Create("incident.manager@harmoni360.com", passwordHashService.HashPassword("IncidentMgr123!"), "Incident Manager", "IM001", "Health & Safety", "Incident Management Specialist"),
             User.Create("risk.manager@harmoni360.com", passwordHashService.HashPassword("RiskMgr123!"), "Risk Manager", "RM001", "Health & Safety", "Risk Assessment Specialist"),
@@ -93,29 +142,24 @@ public class UserDataSeeder : IDataSeeder
             User.Create("jane.smith@bsj.sch.id", passwordHashService.HashPassword("Employee123!"), "Jane Smith", "EMP002", "Academic", "Teacher")
         };
 
-        // Assign roles to users - HSSE expansion
-        users[0].AssignRole(superAdminRole);          // Super Administrator
-        users[1].AssignRole(developerRole);           // System Developer
-        users[2].AssignRole(adminRole);               // System Administrator
+        // Assign roles to demo users
+        demoUsers[0].AssignRole(incidentManagerRole);     // incident.manager@harmoni360.com
+        demoUsers[1].AssignRole(riskManagerRole);         // risk.manager@harmoni360.com
+        demoUsers[2].AssignRole(ppeManagerRole);          // ppe.manager@harmoni360.com
+        demoUsers[3].AssignRole(healthMonitorRole);       // health.monitor@harmoni360.com
         
-        // HSE specialized managers
-        users[3].AssignRole(incidentManagerRole);     // Incident Manager
-        users[4].AssignRole(riskManagerRole);         // Risk Manager
-        users[5].AssignRole(ppeManagerRole);          // PPE Manager
-        users[6].AssignRole(healthMonitorRole);       // Health Monitor
-        
-        // Security domain specialists - NEW
-        users[7].AssignRole(securityManagerRole);     // Security Manager
-        users[8].AssignRole(securityOfficerRole);     // Security Officer
-        users[9].AssignRole(complianceOfficerRole);   // Compliance Officer
+        // Security domain specialists
+        demoUsers[4].AssignRole(securityManagerRole);     // security.manager@harmoni360.com
+        demoUsers[5].AssignRole(securityOfficerRole);     // security.officer@harmoni360.com
+        demoUsers[6].AssignRole(complianceOfficerRole);   // compliance.officer@harmoni360.com
         
         // General access roles
-        users[10].AssignRole(reporterRole);           // Safety Reporter
-        users[11].AssignRole(viewerRole);             // Safety Viewer
-        users[12].AssignRole(reporterRole);           // John Doe (legacy compatibility)
-        users[13].AssignRole(viewerRole);             // Jane Smith (legacy compatibility)
+        demoUsers[7].AssignRole(reporterRole);            // reporter@harmoni360.com
+        demoUsers[8].AssignRole(viewerRole);              // viewer@harmoni360.com
+        demoUsers[9].AssignRole(reporterRole);            // john.doe@bsj.sch.id
+        demoUsers[10].AssignRole(viewerRole);             // jane.smith@bsj.sch.id
 
-        await _context.Users.AddRangeAsync(users);
-        _logger.LogInformation("Seeded {Count} users", users.Count);
+        await _context.Users.AddRangeAsync(demoUsers);
+        _logger.LogInformation("Seeded {Count} sample user accounts", demoUsers.Count);
     }
 }

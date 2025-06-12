@@ -7,7 +7,7 @@ namespace Harmoni360.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequireModuleAccess(ModuleType.Dashboard)]
+[Authorize]
 public class NotificationController : ControllerBase
 {
     private readonly ILogger<NotificationController> _logger;

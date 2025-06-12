@@ -113,6 +113,7 @@ const hasNavigationAccess = (
 
 /**
  * Enhanced navigation configuration with permission requirements
+ * Following HSSE workflow hierarchy as per advisor feedback
  */
 export const createNavigationConfig = (): NavigationItem[] => [
   {
@@ -124,7 +125,148 @@ export const createNavigationConfig = (): NavigationItem[] => [
     permission: PermissionType.Read,
   },
   
-  // Incident Management Section
+  // 1. Work Permit Management
+  {
+    component: 'CNavTitle',
+    name: 'Work Permit Management',
+    module: ModuleType.WorkPermitManagement,
+    requireAnyPermission: true,
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Work Permits',
+    to: '#work-permits',
+    icon: null,
+    module: ModuleType.WorkPermitManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Work Permit Dashboard',
+        to: '/work-permits/dashboard',
+        module: ModuleType.WorkPermitManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Submit Work Permit',
+        to: '/work-permits/create',
+        module: ModuleType.WorkPermitManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'View Work Permits',
+        to: '/work-permits',
+        module: ModuleType.WorkPermitManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Work Permits',
+        to: '/work-permits/my-permits',
+        module: ModuleType.WorkPermitManagement,
+        permission: PermissionType.Read,
+      },
+    ],
+  },
+
+  // 2. Risk Management Section (moved up from previous position)
+  {
+    component: 'CNavTitle',
+    name: 'Risk Management',
+    module: ModuleType.RiskManagement,
+    requireAnyPermission: true,
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Hazard & Risk',
+    to: '#hazards',
+    icon: null,
+    module: ModuleType.RiskManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Risk Dashboard',
+        to: '/hazards/dashboard',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Report Hazard',
+        to: '/hazards/create',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Hazard Register',
+        to: '/hazards',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Risk Assessments',
+        to: '/hazards/assessments',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Hazards',
+        to: '/hazards/my-hazards',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Location Mapping',
+        to: '/hazards/mapping',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Risk Analytics',
+        to: '/hazards/analytics',
+        module: ModuleType.RiskManagement,
+        permission: PermissionType.Read,
+      },
+    ],
+  },
+
+  // 3. Inspection Management (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'Inspection Management',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'Inspections (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+
+  // 4. Audit Management (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'Audit Management',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'Audits (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+  
+  // 5. Incident Management Section (moved down from top)
   {
     component: 'CNavTitle',
     name: 'Incident Management',
@@ -170,82 +312,7 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // Risk Management Section
-  {
-    component: 'CNavTitle',
-    name: 'Risk Management',
-    module: ModuleType.RiskManagement,
-    requireAnyPermission: true,
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Hazard Reporting',
-    to: '#hazards',
-    icon: null,
-    module: ModuleType.RiskManagement,
-    requireAnyPermission: true,
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Hazard Dashboard',
-        to: '/hazards/dashboard',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Report Hazard',
-        to: '/hazards/create',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Create,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Hazard Register',
-        to: '/hazards',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'My Hazards',
-        to: '/hazards/my-hazards',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Risk Assessments',
-        to: '/hazards/assessments',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Location Mapping',
-        to: '/hazards/mapping',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Mobile Report',
-        to: '/hazards/mobile-report',
-        module: ModuleType.RiskManagement,
-        permission: PermissionType.Create,
-      },
-    ],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Risk Analytics',
-    to: '/hazards/analytics',
-    icon: null,
-    module: ModuleType.RiskManagement,
-    permission: PermissionType.Read,
-  },
-
-  // PPE Management Section
+  // 6. PPE Management Section
   {
     component: 'CNavTitle',
     name: 'PPE Management',
@@ -283,7 +350,7 @@ export const createNavigationConfig = (): NavigationItem[] => [
       },
       {
         component: 'CNavItem',
-        name: 'PPE Management',
+        name: 'PPE Operations',
         to: '/ppe/management',
         module: ModuleType.PPEManagement,
         permission: PermissionType.Configure,
@@ -291,7 +358,116 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // Health Management Section
+  // 7. Training Management (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'Training Management',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'Training (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+
+  // 8. License Management (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'License Management',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'Licenses (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+
+  // 9. Waste Management (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'Waste Management',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'Waste Management (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+
+  // 10. HSE Statistics/Dashboard (Placeholder)
+  {
+    component: 'CNavTitle',
+    name: 'HSE Statistics',
+    adminOnly: true, // Temporary until module is implemented
+  },
+  {
+    component: 'CNavItem',
+    name: 'HSE Dashboard (Coming Soon)',
+    to: '#',
+    icon: null,
+    adminOnly: true,
+  },
+
+  // 11. Security Management Section
+  {
+    component: 'CNavTitle',
+    name: 'Security Management',
+    module: ModuleType.SecurityIncidentManagement,
+    requireAnyPermission: true,
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Security',
+    to: '#security',
+    icon: null,
+    module: ModuleType.SecurityIncidentManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Security Dashboard',
+        to: '/security/dashboard',
+        module: ModuleType.SecurityIncidentManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Report Security Incident',
+        to: '/security/incidents/create',
+        module: ModuleType.SecurityIncidentManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Security Incidents',
+        to: '/security/incidents',
+        module: ModuleType.SecurityIncidentManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Threat Assessment',
+        to: '/security/threat-assessment',
+        module: ModuleType.SecurityIncidentManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Security Controls',
+        to: '/security/controls',
+        module: ModuleType.SecurityIncidentManagement,
+        permission: PermissionType.Configure,
+      },
+    ],
+  },
+
+  // 12. Health Management Section (moved to last position)
   {
     component: 'CNavTitle',
     name: 'Health Management',
@@ -339,66 +515,6 @@ export const createNavigationConfig = (): NavigationItem[] => [
         name: 'Health Compliance',
         to: '/health/compliance',
         module: ModuleType.HealthMonitoring,
-        permission: PermissionType.Read,
-      },
-    ],
-  },
-
-  // Security Management Section
-  {
-    component: 'CNavTitle',
-    name: 'Security Management',
-    module: ModuleType.SecurityIncidentManagement,
-    requireAnyPermission: true,
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Security Incidents',
-    to: '#security',
-    icon: null,
-    module: ModuleType.SecurityIncidentManagement,
-    requireAnyPermission: true,
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Security Dashboard',
-        to: '/security/dashboard',
-        module: ModuleType.SecurityIncidentManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Report Security Incident',
-        to: '/security/incidents/create',
-        module: ModuleType.SecurityIncidentManagement,
-        permission: PermissionType.Create,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Security Incidents',
-        to: '/security/incidents',
-        module: ModuleType.SecurityIncidentManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Threat Assessment',
-        to: '/security/threat-assessment',
-        module: ModuleType.SecurityIncidentManagement,
-        permission: PermissionType.Read,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Security Controls',
-        to: '/security/controls',
-        module: ModuleType.SecurityIncidentManagement,
-        permission: PermissionType.Configure,
-      },
-      {
-        component: 'CNavItem',
-        name: 'Security Analytics',
-        to: '/security/analytics',
-        module: ModuleType.SecurityIncidentManagement,
         permission: PermissionType.Read,
       },
     ],

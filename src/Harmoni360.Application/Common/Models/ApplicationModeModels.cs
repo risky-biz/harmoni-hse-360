@@ -45,3 +45,4 @@ public class DemoLimitations
     public List<string> DisabledFeatures { get; set; } = new();
     public Dictionary<string, int> OperationLimits { get; set; } = new();
 }
+

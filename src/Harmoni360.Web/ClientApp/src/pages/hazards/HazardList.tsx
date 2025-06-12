@@ -1,200 +1,399 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CCard,
   CCardBody,
   CCardHeader,
-  CRow,
   CCol,
-  CButton,
-  CFormInput,
-  CFormSelect,
+  CRow,
   CTable,
-  CTableHead,
   CTableBody,
-  CTableHeaderCell,
   CTableDataCell,
+  CTableHead,
+  CTableHeaderCell,
   CTableRow,
-  CBadge,
-  CPagination,
-  CPaginationItem,
+  CButton,
+  CFormSelect,
+  CInputGroup,
+  CFormInput,
   CSpinner,
   CAlert,
+  CPagination,
+  CPaginationItem,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react';
-import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSearch, faEye } from '@fortawesome/free-solid-svg-icons';
+import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import { useGetHazardsQuery } from '../../features/hazards/hazardApi';
-import { 
-  HAZARD_CATEGORIES, 
-  HAZARD_STATUSES, 
-  HAZARD_SEVERITIES,
-  GetHazardsParams 
-} from '../../types/hazard';
+import { useGetHazardCategoriesQuery } from '../../api/hazardConfigurationApi';
+import {
+  getSeverityBadge,
+  getStatusBadge,
+  formatDate,
+} from '../../utils/hazardUtils';
+import { GetHazardsParams } from '../../types/hazard';
 
 const HazardList: React.FC = () => {
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<GetHazardsParams>({
-    pageNumber: 1,
-    pageSize: 10,
-    searchTerm: '',
-    category: '',
-    status: '',
-    severity: '',
-  });
+  const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [severityFilter, setSeverityFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const { data, isLoading, error } = useGetHazardsQuery(filters);
+  // Use RTK Query to fetch hazards
+  const { data, error, isLoading, refetch } = useGetHazardsQuery(
+    {
+      pageNumber: currentPage,
+      pageSize: itemsPerPage,
+      status: statusFilter || undefined,
+      severity: severityFilter || undefined,
+      category: categoryFilter || undefined,
+      searchTerm: searchTerm || undefined,
+    },
+    {
+      // Ensure we refetch when the component mounts
+      refetchOnMountOrArgChange: true,
+      // Refetch when the window regains focus
+      refetchOnFocus: true,
+    }
+  );
 
-  const handleFilterChange = (field: keyof GetHazardsParams, value: string | number) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      [field]: value,
-      pageNumber: field !== 'pageNumber' ? 1 : value // Reset to first page when changing filters
-    }));
+  // Fetch hazard categories for dynamic filtering
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetHazardCategoriesQuery();
+
+  // Extract hazards from response
+  const hazards = data?.hazards || [];
+  const totalCount = data?.totalCount || 0;
+  const totalPages = data?.totalPages || 0;
+
+  // Extract categories for filter dropdown
+  const categories = categoriesData || [];
+
+  // Handle success message from navigation state
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      // Clear the navigation state
+      window.history.replaceState({}, document.title);
+      // Auto-hide message after 5 seconds
+      const timer = setTimeout(() => setSuccessMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
+
+  // Handle page changes
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const getSeverityColor = (severity: string) => {
-    const colors: Record<string, string> = {
-      'Negligible': 'success',
-      'Minor': 'info',
-      'Moderate': 'warning',
-      'Major': 'danger',
-      'Catastrophic': 'dark'
-    };
-    return colors[severity] || 'secondary';
+  // Handle search with debouncing
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'Reported': 'info',
-      'UnderAssessment': 'warning',
-      'ActionRequired': 'danger',
-      'Mitigating': 'primary',
-      'Monitoring': 'warning',
-      'Resolved': 'success',
-      'Closed': 'secondary'
-    };
-    return colors[status] || 'secondary';
+  // Handle filter changes
+  const handleFilterChange = (filterType: string, value: string) => {
+    switch (filterType) {
+      case 'status':
+        setStatusFilter(value);
+        break;
+      case 'severity':
+        setSeverityFilter(value);
+        break;
+      case 'category':
+        setCategoryFilter(value);
+        break;
+    }
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
-  if (error) {
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+    setSeverityFilter('');
+    setCategoryFilter('');
+    setCurrentPage(1);
+  };
+
+  if (isLoading || categoriesLoading) {
     return (
-      <CAlert color="danger">
-        Failed to load hazards. Please try again.
-      </CAlert>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
+        <CSpinner size="sm" className="text-primary" />
+        <span className="ms-2">Loading hazards...</span>
+      </div>
     );
   }
 
   return (
     <CRow>
       <CCol xs={12}>
-        <CCard className="mb-4">
+        <CCard className="shadow-sm">
           <CCardHeader className="d-flex justify-content-between align-items-center">
-            <strong>Hazard Register</strong>
-            <CButton 
-              color="primary" 
-              onClick={() => navigate('/hazards/create')}
-            >
-              <FontAwesomeIcon icon={faPlus} className="me-2" />
-              Report New Hazard
-            </CButton>
-          </CCardHeader>
-          <CCardBody>
-            {/* Filters */}
-            <CRow className="mb-3">
-              <CCol md={3}>
-                <CFormInput
-                  placeholder="Search hazards..."
-                  value={filters.searchTerm}
-                  onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+            <div>
+              <h4
+                className="mb-0"
+                style={{
+                  color: 'var(--harmoni-charcoal)',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              >
+                <FontAwesomeIcon icon={CONTEXT_ICONS.hazard} className="me-2" />
+                Hazard Register
+              </h4>
+              <small className="text-muted">
+                Manage and track all hazard reports
+              </small>
+            </div>
+            <div className="d-flex gap-2">
+              <CButton
+                color="secondary"
+                variant="outline"
+                onClick={() => {
+                  console.log('Manual refresh triggered');
+                  refetch();
+                }}
+                title="Refresh hazard list"
+              >
+                <FontAwesomeIcon icon={ACTION_ICONS.refresh} className="me-2" />
+                Refresh
+              </CButton>
+              <CButton
+                color="warning"
+                onClick={() => navigate('/hazards/create')}
+                className="d-flex align-items-center"
+              >
+                <FontAwesomeIcon
+                  icon={ACTION_ICONS.create}
+                  size="sm"
+                  className="me-2"
                 />
+                Report Hazard
+              </CButton>
+            </div>
+          </CCardHeader>
+
+          <CCardBody>
+            {successMessage && (
+              <CAlert
+                color="success"
+                dismissible
+                onClose={() => setSuccessMessage(null)}
+                className="mb-3"
+              >
+                {successMessage}
+              </CAlert>
+            )}
+
+            {error && (
+              <CAlert color="danger" className="mb-3">
+                Failed to load hazards. Please try again.
+              </CAlert>
+            )}
+
+            {/* Search and Filter Controls */}
+            <CRow className="mb-3">
+              <CCol md={4}>
+                <CInputGroup>
+                  <CFormInput
+                    placeholder="Search hazards by title, description, or location..."
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                  />
+                  <CButton color="primary" variant="outline">
+                    <FontAwesomeIcon icon={ACTION_ICONS.search} />
+                  </CButton>
+                </CInputGroup>
               </CCol>
-              <CCol md={3}>
+              <CCol md={2}>
                 <CFormSelect
-                  value={filters.category}
-                  onChange={(e) => handleFilterChange('category', e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {HAZARD_CATEGORIES.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol md={3}>
-                <CFormSelect
-                  value={filters.status}
+                  value={statusFilter}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                 >
                   <option value="">All Statuses</option>
-                  {HAZARD_STATUSES.map(status => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
+                  <option value="Reported">Reported</option>
+                  <option value="UnderAssessment">Under Assessment</option>
+                  <option value="ActionRequired">Action Required</option>
+                  <option value="Mitigating">Mitigating</option>
+                  <option value="Monitoring">Monitoring</option>
+                  <option value="Resolved">Resolved</option>
+                  <option value="Closed">Closed</option>
                 </CFormSelect>
               </CCol>
-              <CCol md={3}>
+              <CCol md={2}>
                 <CFormSelect
-                  value={filters.severity}
+                  value={severityFilter}
                   onChange={(e) => handleFilterChange('severity', e.target.value)}
                 >
                   <option value="">All Severities</option>
-                  {HAZARD_SEVERITIES.map(severity => (
-                    <option key={severity} value={severity}>{severity}</option>
+                  <option value="Catastrophic">Catastrophic</option>
+                  <option value="Major">Major</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="Minor">Minor</option>
+                  <option value="Negligible">Negligible</option>
+                </CFormSelect>
+              </CCol>
+              <CCol md={2}>
+                <CFormSelect
+                  value={categoryFilter}
+                  onChange={(e) => handleFilterChange('category', e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
+                    </option>
                   ))}
                 </CFormSelect>
               </CCol>
+              <CCol md={2}>
+                <CButton
+                  color="secondary"
+                  variant="outline"
+                  onClick={clearFilters}
+                  className="w-100"
+                >
+                  Clear Filters
+                </CButton>
+              </CCol>
             </CRow>
 
-            {isLoading ? (
-              <div className="text-center py-4">
-                <CSpinner />
+            {/* Hazards Table */}
+            {hazards.length === 0 ? (
+              <div className="text-center py-5">
+                <FontAwesomeIcon
+                  icon={CONTEXT_ICONS.hazard}
+                  size="3x"
+                  className="text-muted mb-3"
+                />
+                <h5 className="text-muted">No hazards found</h5>
+                <p className="text-muted">
+                  {searchTerm || statusFilter || severityFilter || categoryFilter
+                    ? 'Try adjusting your search or filter criteria.'
+                    : 'Get started by reporting your first hazard.'}
+                </p>
+                <CButton
+                  color="warning"
+                  onClick={() => navigate('/hazards/create')}
+                >
+                  <FontAwesomeIcon icon={ACTION_ICONS.create} className="me-2" />
+                  Report First Hazard
+                </CButton>
               </div>
             ) : (
               <>
-                <CTable striped hover responsive>
+                <CTable hover responsive className="border">
                   <CTableHead>
                     <CTableRow>
-                      <CTableHeaderCell>Title</CTableHeaderCell>
-                      <CTableHeaderCell>Category</CTableHeaderCell>
-                      <CTableHeaderCell>Severity</CTableHeaderCell>
-                      <CTableHeaderCell>Status</CTableHeaderCell>
-                      <CTableHeaderCell>Location</CTableHeaderCell>
-                      <CTableHeaderCell>Reporter</CTableHeaderCell>
-                      <CTableHeaderCell>Date</CTableHeaderCell>
-                      <CTableHeaderCell>Actions</CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '25%' }}>
+                        Title
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '12%' }}>
+                        Category
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '12%' }}>
+                        Severity
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '12%' }}>
+                        Status
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '15%' }}>
+                        Location
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '12%' }}>
+                        Reporter
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '12%' }}>
+                        Date
+                      </CTableHeaderCell>
+                      <CTableHeaderCell scope="col" style={{ width: '100px' }}>
+                        Actions
+                      </CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {data?.hazards.map(hazard => (
+                    {hazards.map((hazard) => (
                       <CTableRow key={hazard.id}>
                         <CTableDataCell>
-                          <Link to={`/hazards/${hazard.id}`} className="text-decoration-none">
-                            {hazard.title}
-                          </Link>
-                        </CTableDataCell>
-                        <CTableDataCell>{hazard.category}</CTableDataCell>
-                        <CTableDataCell>
-                          <CBadge color={getSeverityColor(hazard.severity)}>
-                            {hazard.severity}
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          <CBadge color={getStatusColor(hazard.status)}>
-                            {hazard.status}
-                          </CBadge>
-                        </CTableDataCell>
-                        <CTableDataCell>{hazard.location}</CTableDataCell>
-                        <CTableDataCell>{hazard.reporterName}</CTableDataCell>
-                        <CTableDataCell>
-                          {new Date(hazard.identifiedDate).toLocaleDateString()}
-                        </CTableDataCell>
-                        <CTableDataCell>
-                          <CButton
-                            color="primary"
-                            variant="outline"
-                            size="sm"
+                          <div
+                            className="fw-semibold text-primary cursor-pointer"
                             onClick={() => navigate(`/hazards/${hazard.id}`)}
+                            role="button"
+                            title="View hazard details"
                           >
-                            <FontAwesomeIcon icon={faEye} />
-                          </CButton>
+                            {hazard.title}
+                          </div>
+                          {hazard.description && (
+                            <small className="text-muted d-block mt-1">
+                              {hazard.description.length > 80
+                                ? `${hazard.description.substring(0, 80)}...`
+                                : hazard.description}
+                            </small>
+                          )}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          {hazard.category || 'N/A'}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          {getSeverityBadge(hazard.severity)}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          {getStatusBadge(hazard.status)}
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <div className="text-truncate" style={{ maxWidth: '150px' }}>
+                            {hazard.location || 'Not specified'}
+                          </div>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <div className="text-truncate" style={{ maxWidth: '120px' }}>
+                            {hazard.reporter?.name || 'Unknown'}
+                          </div>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <small>{formatDate(hazard.identifiedDate)}</small>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <CDropdown>
+                            <CDropdownToggle
+                              color="light"
+                              size="sm"
+                              caret={false}
+                            >
+                              <FontAwesomeIcon icon={ACTION_ICONS.menu} />
+                            </CDropdownToggle>
+                            <CDropdownMenu>
+                              <CDropdownItem
+                                onClick={() => navigate(`/hazards/${hazard.id}`)}
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.view}
+                                  className="me-2"
+                                />
+                                View Details
+                              </CDropdownItem>
+                              <CDropdownItem
+                                onClick={() => navigate(`/hazards/${hazard.id}/edit`)}
+                              >
+                                <FontAwesomeIcon
+                                  icon={ACTION_ICONS.edit}
+                                  className="me-2"
+                                />
+                                Edit Hazard
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
                         </CTableDataCell>
                       </CTableRow>
                     ))}
@@ -202,36 +401,47 @@ const HazardList: React.FC = () => {
                 </CTable>
 
                 {/* Pagination */}
-                {data && data.totalPages > 1 && (
-                  <CPagination className="justify-content-center">
-                    <CPaginationItem
-                      disabled={!data.hasPreviousPage}
-                      onClick={() => handleFilterChange('pageNumber', data.pageNumber - 1)}
-                    >
-                      Previous
-                    </CPaginationItem>
-                    {Array.from({ length: data.totalPages }, (_, i) => i + 1).map(page => (
+                {totalPages > 1 && (
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <div className="text-muted">
+                      Showing {((currentPage - 1) * itemsPerPage) + 1} to{' '}
+                      {Math.min(currentPage * itemsPerPage, totalCount)} of{' '}
+                      {totalCount} hazards
+                    </div>
+                    <CPagination className="mb-0">
                       <CPaginationItem
-                        key={page}
-                        active={page === data.pageNumber}
-                        onClick={() => handleFilterChange('pageNumber', page)}
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
                       >
-                        {page}
+                        Previous
                       </CPaginationItem>
-                    ))}
-                    <CPaginationItem
-                      disabled={!data.hasNextPage}
-                      onClick={() => handleFilterChange('pageNumber', data.pageNumber + 1)}
-                    >
-                      Next
-                    </CPaginationItem>
-                  </CPagination>
-                )}
-
-                {/* Summary */}
-                {data && (
-                  <div className="mt-3 text-muted">
-                    Showing {data.hazards.length} of {data.totalCount} hazards
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(
+                          (page) =>
+                            page === 1 ||
+                            page === totalPages ||
+                            Math.abs(page - currentPage) <= 2
+                        )
+                        .map((page, index, array) => (
+                          <React.Fragment key={page}>
+                            {index > 0 && array[index - 1] !== page - 1 && (
+                              <CPaginationItem disabled>...</CPaginationItem>
+                            )}
+                            <CPaginationItem
+                              active={page === currentPage}
+                              onClick={() => handlePageChange(page)}
+                            >
+                              {page}
+                            </CPaginationItem>
+                          </React.Fragment>
+                        ))}
+                      <CPaginationItem
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        Next
+                      </CPaginationItem>
+                    </CPagination>
                   </div>
                 )}
               </>

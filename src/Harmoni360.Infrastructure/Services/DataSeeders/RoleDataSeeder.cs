@@ -24,9 +24,10 @@ public class RoleDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var roleCount = await _context.Roles.CountAsync();
-        _logger.LogInformation("Current role count: {RoleCount}", roleCount);
+        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        _logger.LogInformation("Current role count: {RoleCount}, ForceReseed: {ForceReseed}", roleCount, forceReseed);
 
-        if (roleCount > 0)
+        if (!forceReseed && roleCount > 0)
         {
             _logger.LogInformation("Roles already exist, skipping seeding");
             return;

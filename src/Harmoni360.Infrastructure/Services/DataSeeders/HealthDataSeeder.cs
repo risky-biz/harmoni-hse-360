@@ -23,18 +23,24 @@ public class HealthDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         // Check if we should re-seed health data even if it exists
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
         var reSeedHealthData = _configuration["DataSeeding:ReSeedHealthData"] == "true";
 
-        if (!reSeedHealthData && (await _context.HealthRecords.AnyAsync() || await _context.MedicalConditions.AnyAsync()))
+        _logger.LogInformation("HealthDataSeeder - ForceReseed: {ForceReseed}, ReSeedHealthData: {ReSeed}", forceReseed, reSeedHealthData);
+
+        if (!forceReseed && !reSeedHealthData && (await _context.HealthRecords.AnyAsync() || await _context.MedicalConditions.AnyAsync()))
         {
-            _logger.LogInformation("Health data already exists and ReSeedHealthData is false, skipping health data seeding");
+            _logger.LogInformation("Health data already exists and neither ForceReseed nor ReSeedHealthData is enabled, skipping health data seeding");
             return;
         }
 
         _logger.LogInformation("Starting health data seeding...");
 
         // If re-seeding is enabled, clear existing data first
-        if (reSeedHealthData)
+        if (reSeedHealthData || forceReseed)
         {
             if (await _context.HealthIncidents.AnyAsync())
             {

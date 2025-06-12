@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import {
   CCard,
   CCardBody,
@@ -15,51 +16,64 @@ import {
   CAlert,
   CSpinner,
 } from '@coreui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { Icon } from '../../components/common/Icon';
+import { faArrowLeft, faSave } from '@fortawesome/free-solid-svg-icons';
 import { useGetHazardQuery, useUpdateHazardMutation } from '../../features/hazards/hazardApi';
+import HazardAttachmentManager from '../../components/hazards/HazardAttachmentManager';
+import MitigationActionsManager from '../../components/hazards/MitigationActionsManager';
 import { 
   HAZARD_CATEGORIES, 
   HAZARD_TYPES, 
   HAZARD_SEVERITIES,
-  HAZARD_STATUSES,
-  UpdateHazardRequest 
+  HAZARD_STATUSES 
 } from '../../types/hazard';
+import { formatDateTime } from '../../utils/dateUtils';
+
+interface EditHazardFormData {
+  title: string;
+  description: string;
+  category: string;
+  type: string;
+  location: string;
+  severity: string;
+  status: string;
+  expectedResolutionDate?: string;
+  statusChangeReason?: string;
+}
 
 const EditHazard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hazardId = parseInt(id || '0');
   
-  const { data: hazard, isLoading: isLoadingHazard } = useGetHazardQuery({
+  const { 
+    data: hazard, 
+    error: loadError, 
+    isLoading: isLoadingHazard, 
+    refetch 
+  } = useGetHazardQuery({
     id: hazardId,
-    includeAttachments: false,
-    includeRiskAssessments: false,
-    includeMitigationActions: false,
+    includeAttachments: true,
+    includeRiskAssessments: true,
+    includeMitigationActions: true,
     includeReassessments: false,
   });
   
-  const [updateHazard, { isLoading: isUpdating, error }] = useUpdateHazardMutation();
+  const [updateHazard, { isLoading: isUpdating, error: updateError }] = useUpdateHazardMutation();
   
-  const [formData, setFormData] = useState<Partial<UpdateHazardRequest>>({
-    id: hazardId,
-    title: '',
-    description: '',
-    category: '',
-    type: '',
-    location: '',
-    status: '',
-    severity: '',
-    expectedResolutionDate: '',
-    statusChangeReason: '',
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<EditHazardFormData>();
 
-  const [newAttachments, setNewAttachments] = useState<File[]>([]);
+  const statusValue = watch('status');
 
   useEffect(() => {
     if (hazard) {
-      setFormData({
-        id: hazard.id,
+      reset({
         title: hazard.title,
         description: hazard.description,
         category: hazard.category,
@@ -71,46 +85,51 @@ const EditHazard: React.FC = () => {
         statusChangeReason: '',
       });
     }
-  }, [hazard]);
+  }, [hazard, reset]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const onSubmit = async (data: EditHazardFormData) => {
     try {
-      const updateData: UpdateHazardRequest = {
-        ...formData as UpdateHazardRequest,
-        newAttachments: newAttachments.length > 0 ? newAttachments : undefined,
-      };
+      await updateHazard({
+        id: hazardId,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        type: data.type,
+        location: data.location,
+        status: data.status,
+        severity: data.severity,
+        expectedResolutionDate: data.expectedResolutionDate || undefined,
+        statusChangeReason: data.statusChangeReason || undefined,
+      }).unwrap();
       
-      await updateHazard(updateData).unwrap();
       navigate(`/hazards/${hazardId}`);
-    } catch (err) {
-      console.error('Failed to update hazard:', err);
-    }
-  };
-
-  const handleInputChange = (field: keyof UpdateHazardRequest, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setNewAttachments(Array.from(e.target.files));
+    } catch (error) {
+      console.error('Failed to update hazard:', error);
     }
   };
 
   if (isLoadingHazard) {
     return (
-      <div className="text-center py-4">
-        <CSpinner />
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '400px' }}
+      >
+        <CSpinner size="sm" className="text-primary" />
+        <span className="ms-2">Loading hazard...</span>
       </div>
     );
   }
 
-  if (!hazard) {
+  if (loadError || !hazard) {
     return (
       <CAlert color="danger">
-        Hazard not found.
+        Failed to load hazard. Please try again.
+        <div className="mt-3">
+          <CButton color="primary" onClick={() => navigate('/hazards')}>
+            <Icon icon={faArrowLeft} className="me-2" />
+            Back to List
+          </CButton>
+        </div>
       </CAlert>
     );
   }
@@ -118,175 +137,266 @@ const EditHazard: React.FC = () => {
   return (
     <CRow>
       <CCol xs={12}>
-        <div className="mb-3">
-          <CButton 
-            color="secondary" 
-            variant="outline"
-            onClick={() => navigate(`/hazards/${hazardId}`)}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} className="me-1" />
-            Back to Hazard Detail
-          </CButton>
-        </div>
-
-        <CCard className="mb-4">
+        <CCard className="shadow-sm">
           <CCardHeader>
-            <strong>Edit Hazard: {hazard.title}</strong>
+            <h4 className="mb-0">Edit Hazard</h4>
           </CCardHeader>
           <CCardBody>
-            {error && (
-              <CAlert color="danger" className="mb-3">
+            {updateError && (
+              <CAlert color="danger" dismissible>
                 Failed to update hazard. Please try again.
               </CAlert>
             )}
-            
-            <CForm onSubmit={handleSubmit}>
-              <CRow className="mb-3">
-                <CCol md={6}>
-                  <CFormLabel htmlFor="title">Hazard Title *</CFormLabel>
-                  <CFormInput
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    required
-                  />
+
+            <CForm onSubmit={handleSubmit(onSubmit)}>
+              <CRow>
+                <CCol md={8}>
+                  <div className="mb-3">
+                    <CFormLabel htmlFor="title">Hazard Title *</CFormLabel>
+                    <CFormInput
+                      id="title"
+                      type="text"
+                      {...register('title', { required: 'Title is required' })}
+                      invalid={!!errors.title}
+                    />
+                    {errors.title && (
+                      <div className="invalid-feedback d-block">
+                        {errors.title.message}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <CFormLabel htmlFor="description">Description *</CFormLabel>
+                    <CFormTextarea
+                      id="description"
+                      rows={4}
+                      {...register('description', {
+                        required: 'Description is required',
+                      })}
+                      invalid={!!errors.description}
+                    />
+                    {errors.description && (
+                      <div className="invalid-feedback d-block">
+                        {errors.description.message}
+                      </div>
+                    )}
+                  </div>
+
+                  <CRow>
+                    <CCol md={6}>
+                      <div className="mb-3">
+                        <CFormLabel htmlFor="category">Category *</CFormLabel>
+                        <CFormSelect
+                          id="category"
+                          {...register('category', {
+                            required: 'Category is required',
+                          })}
+                          invalid={!!errors.category}
+                        >
+                          <option value="">Select Category</option>
+                          {HAZARD_CATEGORIES.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </CFormSelect>
+                        {errors.category && (
+                          <div className="invalid-feedback d-block">
+                            {errors.category.message}
+                          </div>
+                        )}
+                      </div>
+                    </CCol>
+
+                    <CCol md={6}>
+                      <div className="mb-3">
+                        <CFormLabel htmlFor="type">Type *</CFormLabel>
+                        <CFormSelect
+                          id="type"
+                          {...register('type', {
+                            required: 'Type is required',
+                          })}
+                          invalid={!!errors.type}
+                        >
+                          <option value="">Select Type</option>
+                          {HAZARD_TYPES.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </CFormSelect>
+                        {errors.type && (
+                          <div className="invalid-feedback d-block">
+                            {errors.type.message}
+                          </div>
+                        )}
+                      </div>
+                    </CCol>
+                  </CRow>
+
+                  <CRow>
+                    <CCol md={6}>
+                      <div className="mb-3">
+                        <CFormLabel htmlFor="severity">Severity *</CFormLabel>
+                        <CFormSelect
+                          id="severity"
+                          {...register('severity', {
+                            required: 'Severity is required',
+                          })}
+                          invalid={!!errors.severity}
+                        >
+                          <option value="">Select Severity</option>
+                          {HAZARD_SEVERITIES.map(severity => (
+                            <option key={severity} value={severity}>{severity}</option>
+                          ))}
+                        </CFormSelect>
+                        {errors.severity && (
+                          <div className="invalid-feedback d-block">
+                            {errors.severity.message}
+                          </div>
+                        )}
+                      </div>
+                    </CCol>
+
+                    <CCol md={6}>
+                      <div className="mb-3">
+                        <CFormLabel htmlFor="status">Status *</CFormLabel>
+                        <CFormSelect
+                          id="status"
+                          {...register('status', {
+                            required: 'Status is required',
+                          })}
+                          invalid={!!errors.status}
+                        >
+                          <option value="">Select Status</option>
+                          {HAZARD_STATUSES.map(status => (
+                            <option key={status} value={status}>{status}</option>
+                          ))}
+                        </CFormSelect>
+                        {errors.status && (
+                          <div className="invalid-feedback d-block">
+                            {errors.status.message}
+                          </div>
+                        )}
+                      </div>
+                    </CCol>
+                  </CRow>
+
+                  <div className="mb-3">
+                    <CFormLabel htmlFor="location">Location *</CFormLabel>
+                    <CFormInput
+                      id="location"
+                      type="text"
+                      {...register('location', { required: 'Location is required' })}
+                      invalid={!!errors.location}
+                    />
+                    {errors.location && (
+                      <div className="invalid-feedback d-block">
+                        {errors.location.message}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <CFormLabel htmlFor="expectedResolutionDate">Expected Resolution Date</CFormLabel>
+                    <CFormInput
+                      type="date"
+                      id="expectedResolutionDate"
+                      {...register('expectedResolutionDate')}
+                    />
+                  </div>
+
+                  {statusValue && statusValue !== hazard.status && (
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="statusChangeReason">Reason for Status Change</CFormLabel>
+                      <CFormTextarea
+                        id="statusChangeReason"
+                        rows={3}
+                        {...register('statusChangeReason')}
+                        placeholder="Please explain why the status is being changed..."
+                      />
+                    </div>
+                  )}
                 </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="location">Location *</CFormLabel>
-                  <CFormInput
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                    required
-                  />
+
+                <CCol md={4}>
+                  <div className="border-start ps-4">
+                    <h6 className="text-muted mb-3">Hazard Information</h6>
+                    <div className="mb-2">
+                      <strong>ID:</strong> {hazard.id}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Identified Date:</strong>{' '}
+                      {formatDateTime(hazard.identifiedDate)}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Reporter:</strong> {hazard.reporterName}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Department:</strong> {hazard.reporterDepartment}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Created:</strong>{' '}
+                      {formatDateTime(hazard.createdAt)}
+                    </div>
+                    {hazard.lastModifiedAt && (
+                      <div className="mb-2">
+                        <strong>Last Modified:</strong>{' '}
+                        {formatDateTime(hazard.lastModifiedAt)}
+                      </div>
+                    )}
+                    {hazard.currentRiskLevel && (
+                      <div className="mb-2">
+                        <strong>Risk Level:</strong>{' '}
+                        <span className={`badge bg-${hazard.currentRiskLevel === 'High' || hazard.currentRiskLevel === 'Critical' ? 'danger' : hazard.currentRiskLevel === 'Medium' ? 'warning' : 'success'}`}>
+                          {hazard.currentRiskLevel}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </CCol>
               </CRow>
 
-              <CRow className="mb-3">
-                <CCol md={3}>
-                  <CFormLabel htmlFor="category">Category *</CFormLabel>
-                  <CFormSelect
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
-                    required
-                  >
-                    <option value="">Select Category</option>
-                    {HAZARD_CATEGORIES.map(category => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </CFormSelect>
-                </CCol>
-                <CCol md={3}>
-                  <CFormLabel htmlFor="type">Type *</CFormLabel>
-                  <CFormSelect
-                    id="type"
-                    value={formData.type}
-                    onChange={(e) => handleInputChange('type', e.target.value)}
-                    required
-                  >
-                    <option value="">Select Type</option>
-                    {HAZARD_TYPES.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </CFormSelect>
-                </CCol>
-                <CCol md={3}>
-                  <CFormLabel htmlFor="severity">Severity *</CFormLabel>
-                  <CFormSelect
-                    id="severity"
-                    value={formData.severity}
-                    onChange={(e) => handleInputChange('severity', e.target.value)}
-                    required
-                  >
-                    <option value="">Select Severity</option>
-                    {HAZARD_SEVERITIES.map(severity => (
-                      <option key={severity} value={severity}>{severity}</option>
-                    ))}
-                  </CFormSelect>
-                </CCol>
-                <CCol md={3}>
-                  <CFormLabel htmlFor="status">Status *</CFormLabel>
-                  <CFormSelect
-                    id="status"
-                    value={formData.status}
-                    onChange={(e) => handleInputChange('status', e.target.value)}
-                    required
-                  >
-                    <option value="">Select Status</option>
-                    {HAZARD_STATUSES.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </CFormSelect>
-                </CCol>
-              </CRow>
+              <hr />
 
-              <div className="mb-3">
-                <CFormLabel htmlFor="description">Description *</CFormLabel>
-                <CFormTextarea
-                  id="description"
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  required
-                />
-              </div>
-
-              <CRow className="mb-3">
-                <CCol md={6}>
-                  <CFormLabel htmlFor="expectedResolutionDate">Expected Resolution Date</CFormLabel>
-                  <CFormInput
-                    type="date"
-                    id="expectedResolutionDate"
-                    value={formData.expectedResolutionDate}
-                    onChange={(e) => handleInputChange('expectedResolutionDate', e.target.value)}
-                  />
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="newAttachments">Add New Attachments</CFormLabel>
-                  <CFormInput
-                    type="file"
-                    id="newAttachments"
-                    multiple
-                    accept="image/*,.pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                  />
-                </CCol>
-              </CRow>
-
-              {formData.status !== hazard.status && (
-                <div className="mb-3">
-                  <CFormLabel htmlFor="statusChangeReason">Reason for Status Change</CFormLabel>
-                  <CFormTextarea
-                    id="statusChangeReason"
-                    rows={3}
-                    value={formData.statusChangeReason}
-                    onChange={(e) => handleInputChange('statusChangeReason', e.target.value)}
-                    placeholder="Please explain why the status is being changed..."
-                  />
-                </div>
-              )}
-
-              <div className="d-flex gap-2">
-                <CButton 
-                  type="submit" 
-                  color="primary" 
+              <div className="d-flex justify-content-between">
+                <CButton
+                  color="light"
+                  onClick={() => navigate(`/hazards/${hazardId}`)}
                   disabled={isUpdating}
                 >
-                  {isUpdating && <CSpinner size="sm" className="me-2" />}
-                  Update Hazard
-                </CButton>
-                <CButton 
-                  type="button" 
-                  color="secondary" 
-                  onClick={() => navigate(`/hazards/${hazardId}`)}
-                >
+                  <Icon icon={faArrowLeft} className="me-2" />
                   Cancel
+                </CButton>
+                <CButton color="primary" type="submit" disabled={isUpdating}>
+                  {isUpdating ? (
+                    <>
+                      <CSpinner size="sm" className="me-2" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Icon icon={faSave} className="me-2" />
+                      Save Changes
+                    </>
+                  )}
                 </CButton>
               </div>
             </CForm>
           </CCardBody>
         </CCard>
+
+        {/* Attachments Section */}
+        <HazardAttachmentManager
+          hazardId={hazardId}
+          allowUpload={true}
+          allowDelete={true}
+        />
+        
+        {/* Mitigation Actions Section */}
+        <MitigationActionsManager
+          hazardId={hazardId}
+          mitigationActions={hazard.mitigationActions || []}
+          allowEdit={true}
+          onRefresh={refetch}
+        />
       </CCol>
     </CRow>
   );

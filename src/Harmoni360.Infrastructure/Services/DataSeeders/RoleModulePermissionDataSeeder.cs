@@ -25,19 +25,19 @@ public class RoleModulePermissionDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var roleModulePermissionCount = await _context.RoleModulePermissions.CountAsync();
-        _logger.LogInformation("Current role-module permission count: {RoleModulePermissionCount}", roleModulePermissionCount);
-
-        var reSeedRoleModulePermissions = bool.Parse(_configuration["DataSeeding:ReSeedRoleModulePermissions"] ?? "false");
+        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        _logger.LogInformation("Current role-module permission count: {RoleModulePermissionCount}, ForceReseed: {ForceReseed}", 
+            roleModulePermissionCount, forceReseed);
         
-        if (roleModulePermissionCount > 0 && !reSeedRoleModulePermissions)
+        if (!forceReseed && roleModulePermissionCount > 0)
         {
             _logger.LogInformation("Role-module permissions already exist, skipping seeding");
             return;
         }
         
-        if (reSeedRoleModulePermissions && roleModulePermissionCount > 0)
+        if (forceReseed && roleModulePermissionCount > 0)
         {
-            _logger.LogInformation("ReSeedRoleModulePermissions is enabled, clearing existing role-module permissions...");
+            _logger.LogInformation("ForceReseed is enabled, clearing existing role-module permissions...");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"RoleModulePermissions\"");
             _logger.LogInformation("Existing role-module permissions cleared");
         }

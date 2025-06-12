@@ -61,8 +61,8 @@ public record RiskAssessmentCreatedEvent(RiskAssessment RiskAssessment) : IDomai
 
 public record RiskAssessmentUpdatedEvent(
     RiskAssessment RiskAssessment,
-    RiskLevel PreviousRiskLevel,
-    RiskLevel NewRiskLevel) : IDomainEvent
+    RiskAssessmentLevel PreviousRiskLevel,
+    RiskAssessmentLevel NewRiskLevel) : IDomainEvent
 {
     public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }

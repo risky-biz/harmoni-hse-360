@@ -52,10 +52,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     
     // Hazard Management
     public DbSet<Hazard> Hazards => Set<Hazard>();
+    public DbSet<HazardCategory> HazardCategories => Set<HazardCategory>();
+    public DbSet<HazardType> HazardTypes => Set<HazardType>();
     public DbSet<HazardAttachment> HazardAttachments => Set<HazardAttachment>();
     public DbSet<RiskAssessment> RiskAssessments => Set<RiskAssessment>();
     public DbSet<HazardMitigationAction> HazardMitigationActions => Set<HazardMitigationAction>();
     public DbSet<HazardReassessment> HazardReassessments => Set<HazardReassessment>();
+    public DbSet<HazardAuditLog> HazardAuditLogs => Set<HazardAuditLog>();
     
     // Health Management
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
@@ -73,11 +76,37 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SecurityControl> SecurityControls => Set<SecurityControl>();
     public DbSet<ThreatIndicator> ThreatIndicators => Set<ThreatIndicator>();
     public DbSet<Domain.Entities.Security.SecurityAuditLog> SecurityAuditLogs => Set<Domain.Entities.Security.SecurityAuditLog>();
+    
+    // Work Permit Management
+    public DbSet<WorkPermit> WorkPermits => Set<WorkPermit>();
+    public DbSet<WorkPermitAttachment> WorkPermitAttachments => Set<WorkPermitAttachment>();
+    public DbSet<WorkPermitApproval> WorkPermitApprovals => Set<WorkPermitApproval>();
+    public DbSet<WorkPermitHazard> WorkPermitHazards => Set<WorkPermitHazard>();
+    public DbSet<WorkPermitPrecaution> WorkPermitPrecautions => Set<WorkPermitPrecaution>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Apply all entity configurations
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Configure all DateTime properties to use UTC
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(
+                        property.ClrType == typeof(DateTime)
+                            ? new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                                v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                            : new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime?, DateTime?>(
+                                v => v.HasValue ? (v.Value.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v.Value.ToUniversalTime()) : v,
+                                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v));
+                }
+            }
+        }
 
         base.OnModelCreating(modelBuilder);
     }

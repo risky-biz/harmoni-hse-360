@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import {
   CCard,
   CCardBody,
@@ -45,6 +45,7 @@ import {
   formatDateTime,
   formatCurrency,
 } from '../../utils/ppeUtils';
+import PPEAssignmentModal from '../../components/ppe/PPEAssignmentModal';
 
 const PPEDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,13 +53,22 @@ const PPEDetail: React.FC = () => {
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+
+  // Validate the ID parameter
+  const itemId = id ? parseInt(id, 10) : null;
+  
+  // Redirect to PPE list if ID is invalid
+  if (!id || !itemId || isNaN(itemId)) {
+    return <Navigate to="/ppe" replace />;
+  }
 
   const {
     data: ppeItem,
     error,
     isLoading,
     refetch,
-  } = useGetPPEItemQuery(Number(id));
+  } = useGetPPEItemQuery(itemId);
   
   const [deletePPEItem, { isLoading: isDeleting }] = useDeletePPEItemMutation();
   const [assignPPE, { isLoading: isAssigning }] = useAssignPPEMutation();
@@ -91,18 +101,19 @@ const PPEDetail: React.FC = () => {
   };
 
   const handleAssign = () => {
-    // In a real implementation, this would open a modal to select a user
-    const userId = prompt('Enter User ID to assign to:');
-    if (userId) {
-      handleAction(
-        () => assignPPE({ 
-          ppeItemId: Number(id), 
-          assignedToId: Number(userId),
-          purpose: 'Standard assignment'
-        }).unwrap(),
-        'assigned'
-      );
-    }
+    setShowAssignmentModal(true);
+  };
+
+  const handleAssignSubmit = async (userId: number, purpose: string, notes?: string) => {
+    return handleAction(
+      () => assignPPE({ 
+        ppeItemId: Number(id), 
+        assignedToId: userId,
+        purpose: purpose,
+        notes: notes
+      }).unwrap(),
+      'assigned'
+    );
   };
 
   const handleReturn = () => {
@@ -623,6 +634,18 @@ const PPEDetail: React.FC = () => {
           </CCard>
         </CCol>
       </CRow>
+
+      {/* PPE Assignment Modal */}
+      {ppeItem && (
+        <PPEAssignmentModal
+          visible={showAssignmentModal}
+          onClose={() => setShowAssignmentModal(false)}
+          ppeItemId={ppeItem.id}
+          ppeItemName={ppeItem.name}
+          ppeItemCode={ppeItem.itemCode}
+          onAssign={handleAssignSubmit}
+        />
+      )}
     </>
   );
 };

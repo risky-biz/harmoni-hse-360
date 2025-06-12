@@ -23,13 +23,9 @@ public class HazardConfiguration : IEntityTypeConfiguration<Hazard>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(h => h.Category)
-            .HasConversion<string>()
-            .IsRequired();
-
-        builder.Property(h => h.Type)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.Property(h => h.CategoryId);
+        
+        builder.Property(h => h.TypeId);
 
         builder.Property(h => h.Status)
             .HasConversion<string>()
@@ -63,6 +59,16 @@ public class HazardConfiguration : IEntityTypeConfiguration<Hazard>
         });
 
         // Configure relationships
+        builder.HasOne(h => h.Category)
+            .WithMany(c => c.Hazards)
+            .HasForeignKey(h => h.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(h => h.Type)
+            .WithMany(t => t.Hazards)
+            .HasForeignKey(h => h.TypeId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasOne(h => h.Reporter)
             .WithMany()
             .HasForeignKey(h => h.ReporterId)
@@ -97,8 +103,8 @@ public class HazardConfiguration : IEntityTypeConfiguration<Hazard>
         builder.Ignore(h => h.DomainEvents);
 
         // Indexes for performance
-        builder.HasIndex(h => h.Category);
-        builder.HasIndex(h => h.Type);
+        builder.HasIndex(h => h.CategoryId);
+        builder.HasIndex(h => h.TypeId);
         builder.HasIndex(h => h.Status);
         builder.HasIndex(h => h.Severity);
         builder.HasIndex(h => h.IdentifiedDate);
@@ -106,6 +112,6 @@ public class HazardConfiguration : IEntityTypeConfiguration<Hazard>
         builder.HasIndex(h => h.ReporterDepartment);
         builder.HasIndex(h => h.CreatedAt);
         builder.HasIndex(h => new { h.Status, h.Severity }); // Composite index for common queries
-        builder.HasIndex(h => new { h.Category, h.Status }); // Composite index for filtering
+        builder.HasIndex(h => new { h.CategoryId, h.Status }); // Composite index for filtering
     }
 }

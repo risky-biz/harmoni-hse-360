@@ -1,5 +1,5 @@
 import { DashboardLayout, DashboardWidget, QuickAction } from '../types/dashboard';
-import { ACTION_ICONS, CONTEXT_ICONS } from '../utils/iconMappings';
+import { ACTION_ICONS, CONTEXT_ICONS, HAZARD_ICONS } from '../utils/iconMappings';
 
 // Quick Actions Configuration
 export const getQuickActions = (navigate: (path: string) => void): QuickAction[] => [
@@ -30,7 +30,7 @@ export const getQuickActions = (navigate: (path: string) => void): QuickAction[]
   {
     id: 'hazard-report',
     label: 'Report Hazard',
-    icon: CONTEXT_ICONS.incident,
+    icon: HAZARD_ICONS.reporting,
     action: () => navigate('/hazards/create'),
     color: 'warning',
     variant: 'outline',

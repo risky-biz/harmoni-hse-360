@@ -1,5 +1,6 @@
 using MediatR;
 using Harmoni360.Domain.Entities;
+using Harmoni360.Domain.Enums;
 using Harmoni360.Application.Features.Hazards.DTOs;
 
 namespace Harmoni360.Application.Features.Hazards.Queries;
@@ -12,11 +13,12 @@ public record GetHazardsQuery : IRequest<GetHazardsResponse>
     
     // Filtering
     public string? SearchTerm { get; init; }
-    public HazardCategory? Category { get; init; }
-    public HazardType? Type { get; init; }
+    public string? Category { get; init; }  // Category name filtering (frontend compatibility)
+    public int? CategoryId { get; init; }   // Category ID filtering (existing functionality)
+    public int? TypeId { get; init; }
     public HazardStatus? Status { get; init; }
     public HazardSeverity? Severity { get; init; }
-    public RiskLevel? RiskLevel { get; init; }
+    public RiskAssessmentLevel? RiskLevel { get; init; }
     public string? Location { get; init; }
     public string? Department { get; init; }
     public int? ReporterId { get; init; }

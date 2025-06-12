@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Hazards.DTOs;
 using Harmoni360.Domain.Entities;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Hazards.Commands;
 
@@ -125,15 +126,15 @@ public class CreateRiskAssessmentCommandHandler : IRequestHandler<CreateRiskAsse
         return riskAssessmentDto;
     }
 
-    private static HazardSeverity MapRiskLevelToSeverity(RiskLevel riskLevel)
+    private static HazardSeverity MapRiskLevelToSeverity(RiskAssessmentLevel riskLevel)
     {
         return riskLevel switch
         {
-            RiskLevel.VeryLow => HazardSeverity.Negligible,
-            RiskLevel.Low => HazardSeverity.Minor,
-            RiskLevel.Medium => HazardSeverity.Moderate,
-            RiskLevel.High => HazardSeverity.Major,
-            RiskLevel.Critical => HazardSeverity.Catastrophic,
+            RiskAssessmentLevel.VeryLow => HazardSeverity.Negligible,
+            RiskAssessmentLevel.Low => HazardSeverity.Minor,
+            RiskAssessmentLevel.Medium => HazardSeverity.Moderate,
+            RiskAssessmentLevel.High => HazardSeverity.Major,
+            RiskAssessmentLevel.Critical => HazardSeverity.Catastrophic,
             _ => HazardSeverity.Minor
         };
     }

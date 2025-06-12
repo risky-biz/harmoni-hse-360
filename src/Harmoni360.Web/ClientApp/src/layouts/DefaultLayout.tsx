@@ -36,7 +36,7 @@ import {
   faUser,
   faLock,
 } from '@fortawesome/free-solid-svg-icons';
-import { CONTEXT_ICONS } from '../utils/iconMappings';
+import { CONTEXT_ICONS, HAZARD_ICONS } from '../utils/iconMappings';
 import { createNavigationConfig, filterNavigationByPermissions } from '../utils/navigationUtils';
 
 import { useAppDispatch } from '../store/hooks';
@@ -52,12 +52,24 @@ import DemoModeBanner from '../components/common/DemoModeBanner';
 const getNavigationIcon = (name: string) => {
   const iconMap: { [key: string]: React.ReactNode } = {
     'Dashboard': <FontAwesomeIcon icon={faTachometerAlt} className="nav-icon" />,
-    'Incidents': <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />,
-    'Hazard Reporting': <FontAwesomeIcon icon={faExclamationTriangle} className="nav-icon" />,
+    'Work Permits': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'Work Permit Dashboard': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'Submit Work Permit': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'View Work Permits': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'My Work Permits': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'Work Permits (Coming Soon)': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
+    'Hazard & Risk': <FontAwesomeIcon icon={HAZARD_ICONS.reporting} className="nav-icon" />,
     'Risk Analytics': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
+    'Inspections (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'Audits (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'Incidents': <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />,
     'PPE': <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
+    'Training (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
+    'Licenses (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.license} className="nav-icon" />,
+    'Waste Management (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
+    'HSE Dashboard (Coming Soon)': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
+    'Security': <FontAwesomeIcon icon={faLock} className="nav-icon" />,
     'Health Records': <FontAwesomeIcon icon={CONTEXT_ICONS.health} className="nav-icon" />,
-    'Security Incidents': <FontAwesomeIcon icon={faLock} className="nav-icon" />,
     'User Management': <FontAwesomeIcon icon={faUser} className="nav-icon" />,
     'System Settings': <FontAwesomeIcon icon={faCog} className="nav-icon" />,
     'Reports': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
@@ -153,7 +165,7 @@ const DefaultLayout: React.FC = () => {
                       <NavLink
                         to={subItem.to || '#'}
                         className="nav-link"
-                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health'}
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards'}
                       >
                         {subItem.name}
                       </NavLink>

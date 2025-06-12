@@ -213,7 +213,7 @@ public class SecurityIncidentController : ControllerBase
         try
         {
             // This would typically be implemented with a specific query
-            // For now, return NotImplemented as placeholder
+            // For now, return NotImplemented as placeholder\n            await Task.CompletedTask;
             return StatusCode(501, "Threat assessment retrieval not yet implemented");
         }
         catch (Exception ex)

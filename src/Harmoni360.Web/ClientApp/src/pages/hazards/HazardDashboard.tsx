@@ -1,26 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
+  CRow,
+  CCol,
   CCard,
   CCardBody,
   CCardHeader,
-  CRow,
-  CCol,
+  CButton,
+  CButtonGroup,
   CFormSelect,
-  CSpinner,
   CAlert,
+  CSpinner,
+  CBadge,
+  CButtonToolbar,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem
 } from '@coreui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faPlus,
+  faArrowRotateRight,
+  faCog
+} from '@fortawesome/free-solid-svg-icons';
+import { HubConnectionState } from '@microsoft/signalr';
+
 import { useGetHazardDashboardQuery } from '../../features/hazards/hazardApi';
-import StatsCard from '../../components/dashboard/StatsCard';
-import ProgressCard from '../../components/dashboard/ProgressCard';
-import ChartCard from '../../components/dashboard/ChartCard';
-import DonutChart from '../../components/dashboard/DonutChart';
-import BarChart from '../../components/dashboard/BarChart';
-import LineChart from '../../components/dashboard/LineChart';
-import RecentItemsList from '../../components/dashboard/RecentItemsList';
+import { useGetDepartmentsQuery } from '../../api/configurationApi';
+import { useSignalR } from '../../hooks/useSignalR';
+import { useApplicationMode } from '../../hooks/useApplicationMode';
+import { HAZARD_ICONS } from '../../utils/iconMappings';
+import {
+  StatsCard,
+  ChartCard,
+  ProgressCard,
+  RecentItemsList,
+  DonutChart,
+  BarChart,
+  LineChart
+} from '../../components/dashboard';
+import { PermissionGuard } from '../../components/auth/PermissionGuard';
+import { ModuleType, PermissionType } from '../../types/permissions';
+import { formatDistanceToNow } from 'date-fns';
 
 const HazardDashboard: React.FC = () => {
-  const [dateFilter, setDateFilter] = useState('30');
-  const [departmentFilter, setDepartmentFilter] = useState('');
+  const navigate = useNavigate();
+  const { isDemo } = useApplicationMode();
+  const [timeRange, setTimeRange] = useState<string>('all');
+  const [department, setDepartment] = useState<string>('');
+  const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(0); // 0 = disabled
+  const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
+  const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Initialize SignalR
+  const { connectionState } = useSignalR();
+  
+  // Get departments from database
+  const { data: departments } = useGetDepartmentsQuery();
+
+  // Calculate date range based on selection
+  const getDateRange = () => {
+    const now = new Date();
+    switch (timeRange) {
+      case '7d':
+        return {
+          fromDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          toDate: now.toISOString()
+        };
+      case '30d':
+        return {
+          fromDate: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          toDate: now.toISOString()
+        };
+      case '90d':
+        return {
+          fromDate: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+          toDate: now.toISOString()
+        };
+      default:
+        return {};
+    }
+  };
 
   // Helper function to get status color
   const getStatusColor = (severity: string): string => {
@@ -39,20 +100,46 @@ const HazardDashboard: React.FC = () => {
     }
   };
 
-  const { data, isLoading, error } = useGetHazardDashboardQuery({
-    dateFrom: getDateFromDays(parseInt(dateFilter)),
-    department: departmentFilter || undefined,
+  const { 
+    data, 
+    isLoading, 
+    error,
+    refetch,
+    dataUpdatedAt
+  } = useGetHazardDashboardQuery({
+    ...getDateRange(),
+    department: department || undefined,
     includeTrends: true,
     includeLocationAnalytics: true,
     includeComplianceMetrics: true,
     includePerformanceMetrics: true,
   });
 
-  function getDateFromDays(days: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-    return date.toISOString().split('T')[0];
-  }
+  // Update last refresh time when data changes
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      setLastRefreshTime(new Date(dataUpdatedAt));
+    }
+  }, [dataUpdatedAt]);
+
+  // Handle auto-refresh
+  useEffect(() => {
+    if (autoRefreshIntervalRef.current) {
+      clearInterval(autoRefreshIntervalRef.current);
+    }
+
+    if (autoRefreshInterval > 0) {
+      autoRefreshIntervalRef.current = setInterval(() => {
+        refetch();
+      }, autoRefreshInterval * 1000);
+    }
+
+    return () => {
+      if (autoRefreshIntervalRef.current) {
+        clearInterval(autoRefreshIntervalRef.current);
+      }
+    };
+  }, [autoRefreshInterval, refetch]);
 
   if (isLoading) {
     return (
@@ -79,33 +166,144 @@ const HazardDashboard: React.FC = () => {
   }
 
   return (
-    <>
-      {/* Filter Controls */}
-      <CRow className="mb-4">
-        <CCol md={3}>
-          <CFormSelect 
-            value={dateFilter} 
-            onChange={(e) => setDateFilter(e.target.value)}
+    <div className="dashboard-container">
+      {/* Header */}
+      <div className="mb-4 dashboard-header">
+        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+          <div>
+            <h1 className="h2 h1-md">Hazard Management Dashboard</h1>
+            <p className="text-medium-emphasis mb-0 d-none d-md-block">
+              Comprehensive hazard reporting and risk assessment overview
+            </p>
+          </div>
+          <PermissionGuard 
+            module={ModuleType.HazardManagement} 
+            permission={PermissionType.Create}
           >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-            <option value="365">Last year</option>
-          </CFormSelect>
-        </CCol>
-        <CCol md={3}>
-          <CFormSelect 
-            value={departmentFilter} 
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            <option value="Safety">Safety</option>
-            <option value="Facilities">Facilities</option>
-            <option value="Academic">Academic</option>
-            <option value="Administration">Administration</option>
-          </CFormSelect>
-        </CCol>
-      </CRow>
+            <CButton 
+              color="warning" 
+              onClick={() => navigate('/hazards/create')}
+              className="btn-block-mobile"
+            >
+              <FontAwesomeIcon icon={HAZARD_ICONS.reporting} className="me-2" />
+              <span className="d-none d-sm-inline">Report Hazard</span>
+              <span className="d-sm-none">Report</span>
+            </CButton>
+          </PermissionGuard>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <CCard className="mb-4 dashboard-filters">
+        <CCardBody className="py-3">
+          <CRow className="align-items-center filter-controls">
+            <CCol lg={5} className="mb-3 mb-lg-0">
+              <div className="d-flex align-items-center flex-column flex-sm-row gap-2">
+                <label className="form-label mb-0 fw-semibold text-nowrap d-none d-sm-block">Time Range:</label>
+                <CButtonGroup size="sm" className="w-100 w-sm-auto">
+                  <CButton
+                    color={timeRange === 'all' ? 'primary' : 'outline-primary'}
+                    onClick={() => setTimeRange('all')}
+                  >
+                    All
+                  </CButton>
+                  <CButton
+                    color={timeRange === '7d' ? 'primary' : 'outline-primary'}
+                    onClick={() => setTimeRange('7d')}
+                  >
+                    7D
+                  </CButton>
+                  <CButton
+                    color={timeRange === '30d' ? 'primary' : 'outline-primary'}
+                    onClick={() => setTimeRange('30d')}
+                  >
+                    30D
+                  </CButton>
+                  <CButton
+                    color={timeRange === '90d' ? 'primary' : 'outline-primary'}
+                    onClick={() => setTimeRange('90d')}
+                  >
+                    90D
+                  </CButton>
+                </CButtonGroup>
+              </div>
+            </CCol>
+            <CCol lg={3} className="mb-3 mb-lg-0">
+              <CFormSelect
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                size="sm"
+                className="department-select"
+              >
+                <option value="">All Departments</option>
+                {departments?.map((dept) => (
+                  <option key={dept.id} value={dept.name}>
+                    {dept.name}
+                  </option>
+                )) || (
+                  // Fallback for demo mode or when departments haven't loaded
+                  <>
+                    <option value="Operations">Operations</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Security">Security</option>
+                    <option value="Administration">Administration</option>
+                    <option value="Facilities">Facilities</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Human Resources">Human Resources</option>
+                  </>
+                )}
+              </CFormSelect>
+            </CCol>
+            <CCol lg={4} className="text-end refresh-controls">
+              <div className="d-flex align-items-center justify-content-end gap-2 flex-wrap">
+                <CButtonToolbar className="gap-2">
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => refetch()}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={faArrowRotateRight} className="me-1" />
+                    <span className="d-none d-sm-inline">{isLoading ? 'Refreshing...' : 'Refresh'}</span>
+                    <span className="d-sm-none">{isLoading ? '...' : 'Refresh'}</span>
+                  </CButton>
+                  <CDropdown variant="btn-group">
+                    <CDropdownToggle color="secondary" variant="outline">
+                      <FontAwesomeIcon icon={faCog} className="me-1 d-none d-sm-inline" />
+                      <span className="d-none d-md-inline">Auto-refresh: </span>
+                      {autoRefreshInterval === 0 ? 'Off' : `${autoRefreshInterval}s`}
+                    </CDropdownToggle>
+                    <CDropdownMenu>
+                      <CDropdownItem onClick={() => setAutoRefreshInterval(0)}>
+                        Disabled
+                      </CDropdownItem>
+                      <CDropdownItem onClick={() => setAutoRefreshInterval(30)}>
+                        Every 30 seconds
+                      </CDropdownItem>
+                      <CDropdownItem onClick={() => setAutoRefreshInterval(60)}>
+                        Every minute
+                      </CDropdownItem>
+                      <CDropdownItem onClick={() => setAutoRefreshInterval(300)}>
+                        Every 5 minutes
+                      </CDropdownItem>
+                    </CDropdownMenu>
+                  </CDropdown>
+                </CButtonToolbar>
+                <div className="text-medium-emphasis small text-end flex-shrink-0">
+                  <div className="text-truncate-mobile">Last: {formatDistanceToNow(lastRefreshTime, { addSuffix: true })}</div>
+                  {connectionState === HubConnectionState.Connected && (
+                    <div className="text-success d-none d-sm-block">
+                      <small>● Live updates</small>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CCol>
+          </CRow>
+        </CCardBody>
+      </CCard>
 
       {/* Overview Stats */}
       <CRow className="mb-4">
@@ -271,7 +469,7 @@ const HazardDashboard: React.FC = () => {
           </CCard>
         </CCol>
       </CRow>
-    </>
+    </div>
   );
 };
 

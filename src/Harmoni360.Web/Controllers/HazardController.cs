@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Harmoni360.Application.Features.Hazards.Commands;
 using Harmoni360.Application.Features.Hazards.Queries;
 using Harmoni360.Application.Features.Hazards.DTOs;
+using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Web.Authorization;
 using Harmoni360.Domain.Enums;
+using System.Collections.Generic;
 
 namespace Harmoni360.Web.Controllers;
 
@@ -15,11 +17,13 @@ namespace Harmoni360.Web.Controllers;
 public class HazardController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<HazardController> _logger;
 
-    public HazardController(IMediator mediator, ILogger<HazardController> logger)
+    public HazardController(IMediator mediator, ICurrentUserService currentUserService, ILogger<HazardController> logger)
     {
         _mediator = mediator;
+        _currentUserService = currentUserService;
         _logger = logger;
     }
 
@@ -260,6 +264,26 @@ public class HazardController : ControllerBase
     }
 
     /// <summary>
+    /// Get audit trail for a specific hazard
+    /// </summary>
+    [HttpGet("{id:int}/audit-trail")]
+    [RequireModulePermission(ModuleType.RiskManagement, PermissionType.Read)]
+    public async Task<ActionResult<List<HazardAuditLogDto>>> GetHazardAuditTrail(int id)
+    {
+        try
+        {
+            var query = new GetHazardAuditTrailQuery { HazardId = id };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving audit trail for hazard {HazardId}", id);
+            return StatusCode(500, "An error occurred while retrieving the audit trail");
+        }
+    }
+
+    /// <summary>
     /// Get hazard locations for mapping
     /// </summary>
     [HttpGet("locations")]
@@ -330,21 +354,39 @@ public class HazardController : ControllerBase
     }
 
     /// <summary>
-    /// Get my hazards (reported by or assigned to current user)
+    /// Get hazards reported by current user
     /// </summary>
     [HttpGet("my-hazards")]
     [RequireModulePermission(ModuleType.RiskManagement, PermissionType.Read)]
-    public async Task<ActionResult<GetHazardsResponse>> GetMyHazards([FromQuery] GetHazardsQuery query)
+    [ProducesResponseType(typeof(GetHazardsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<GetHazardsResponse>> GetMyHazards(
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] string? status = null,
+        [FromQuery] string? severity = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
-            query = query with { OnlyMyHazards = true };
+            var query = new GetMyHazardsQuery
+            {
+                SearchTerm = searchTerm,
+                Status = status,
+                Severity = severity,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                UserId = _currentUserService.UserId
+            };
+
+            _logger.LogInformation("Getting my hazards for user {UserId} with filters: {@Query}",
+                _currentUserService.UserId, query);
+
             var result = await _mediator.Send(query);
             return Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving user's hazards");
+            _logger.LogError(ex, "Error retrieving my hazards for user {UserId}", _currentUserService.UserId);
             return StatusCode(500, "An error occurred while retrieving your hazards");
         }
     }
