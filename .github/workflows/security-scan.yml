@@ -98,7 +98,7 @@ jobs:
       # Node.js security scanning
       - name: Install Node.js dependencies
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run npm audit
         working-directory: src/HarmoniHSE360.Web/ClientApp
@@ -207,7 +207,7 @@ jobs:
         if: matrix.language == 'javascript'
         working-directory: src/HarmoniHSE360.Web/ClientApp
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run build
 
       - name: Perform CodeQL Analysis
@@ -250,7 +250,7 @@ jobs:
       - name: Check Node.js licenses
         working-directory: src/HarmoniHSE360.Web/ClientApp
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           license-checker --json --out ../../../nodejs-licenses.json
         continue-on-error: true
 

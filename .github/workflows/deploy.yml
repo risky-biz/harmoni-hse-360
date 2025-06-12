@@ -58,9 +58,9 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        with:
+      with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          cache: true
+          cache: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -74,7 +74,7 @@ jobs:
 
       - name: Install Node.js dependencies
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build .NET application
         run: dotnet build --no-restore --configuration Release
@@ -144,6 +144,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: false
 
       - name: Setup Node.js for npm audit
         uses: actions/setup-node@v4
@@ -154,7 +155,7 @@ jobs:
 
       - name: Install Node.js dependencies for audit
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Install security scan tools
         run: |

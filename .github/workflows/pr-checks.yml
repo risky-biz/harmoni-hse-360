@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Node.js dependencies
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run .NET code formatting check
         run: dotnet format --verify-no-changes --verbosity diagnostic
@@ -108,7 +108,7 @@ jobs:
 
       - name: Install Node.js dependencies
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build .NET application
         run: dotnet build --no-restore --configuration Release
@@ -175,7 +175,7 @@ jobs:
 
       - name: Install Node.js dependencies
         working-directory: src/HarmoniHSE360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run npm audit
         working-directory: src/HarmoniHSE360.Web/ClientApp
