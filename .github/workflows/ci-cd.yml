@@ -47,12 +47,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-        cache: true
-        cache-dependency-path: |
-          src/Harmoni360.Application/packages.lock.json
-          src/Harmoni360.Domain/packages.lock.json
-          src/Harmoni360.Infrastructure/packages.lock.json
-          src/Harmoni360.Web/packages.lock.json
+        cache: false
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -101,12 +96,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-        cache: true
-        cache-dependency-path: |
-          src/Harmoni360.Application/packages.lock.json
-          src/Harmoni360.Domain/packages.lock.json
-          src/Harmoni360.Infrastructure/packages.lock.json
-          src/Harmoni360.Web/packages.lock.json
+        cache: false
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
