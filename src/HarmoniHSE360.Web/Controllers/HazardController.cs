@@ -1,9 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using HarmoniHSE360.Application.Features.Hazards.Commands;
 using HarmoniHSE360.Application.Features.Hazards.Queries;
 using HarmoniHSE360.Application.Features.Hazards.DTOs;
+using HarmoniHSE360.Application.Common.Interfaces;
+using System.IO;
 
 namespace HarmoniHSE360.Web.Controllers;
 
@@ -14,11 +17,19 @@ public class HazardController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<HazardController> _logger;
+    private readonly IApplicationDbContext _context;
+    private readonly IFileStorageService _fileStorageService;
 
-    public HazardController(IMediator mediator, ILogger<HazardController> logger)
+    public HazardController(
+        IMediator mediator,
+        ILogger<HazardController> logger,
+        IApplicationDbContext context,
+        IFileStorageService fileStorageService)
     {
         _mediator = mediator;
         _logger = logger;
+        _context = context;
+        _fileStorageService = fileStorageService;
     }
 
     /// <summary>
@@ -240,9 +251,19 @@ public class HazardController : ControllerBase
     {
         try
         {
-            // This would typically involve getting the file from storage
-            // For now, return a placeholder response
-            return NotFound("File download functionality not yet implemented");
+            var attachment = await _context.HazardAttachments
+                .Where(a => a.Id == attachmentId && a.HazardId == id)
+                .FirstOrDefaultAsync();
+
+            if (attachment == null)
+            {
+                return NotFound(new { message = "Attachment not found" });
+            }
+
+            var fileStream = await _fileStorageService.DownloadAsync(attachment.FilePath);
+            var contentType = GetContentType(attachment.FileName);
+
+            return File(fileStream, contentType, attachment.FileName);
         }
         catch (Exception ex)
         {
@@ -396,5 +417,24 @@ public class HazardController : ControllerBase
             _logger.LogError(ex, "Error retrieving high-risk hazards");
             return StatusCode(500, "An error occurred while retrieving high-risk hazards");
         }
+    }
+
+    private static string GetContentType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".pdf" => "application/pdf",
+            ".doc" => "application/msword",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".txt" => "text/plain",
+            ".mp4" => "video/mp4",
+            ".avi" => "video/avi",
+            ".mov" => "video/quicktime",
+            _ => "application/octet-stream"
+        };
     }
 }
