@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -188,6 +189,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: false
 
       - name: Setup Node.js (for JavaScript analysis)
         if: matrix.language == 'javascript'
@@ -228,6 +230,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
