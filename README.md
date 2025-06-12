@@ -47,6 +47,7 @@ HarmoniHSE360 is a comprehensive cloud-based HSE management system designed for 
 ### Prerequisites
 - Docker Desktop (recommended) OR
 - .NET 8 SDK + Node.js 20+ (for local development)
+  - If .NET is missing on Ubuntu, run `./scripts/install-dotnet.sh`
 
 ### Quick Start with Docker (Recommended)
 
