@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          # Disable caching due to packages.lock.json being in subdirectories
+          cache: false  # disable caching because lock files are in subdirectories
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          # Disable caching due to packages.lock.json being in subdirectories
+          cache: false  # disable caching because lock files are in subdirectories
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -239,7 +239,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          # Disable caching due to packages.lock.json being in subdirectories
+          cache: false  # disable caching because lock files are in subdirectories
 
       - name: Restore dependencies
         run: dotnet restore
