@@ -385,17 +385,14 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Database is up to date");
         }
 
-        // Only seed if in development and tables exist
-        if (app.Environment.IsDevelopment())
+        // Seed database if tables exist using configuration
+        var canConnect = await dbContext.Database.CanConnectAsync();
+        if (canConnect)
         {
-            var canConnect = await dbContext.Database.CanConnectAsync();
-            if (canConnect)
-            {
-                var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
-                logger.LogInformation("Seeding database with demo data...");
-                await seeder.SeedAsync();
-                logger.LogInformation("Database seeding completed");
-            }
+            var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+            logger.LogInformation("Seeding database using configuration...");
+            await seeder.SeedAsync();
+            logger.LogInformation("Database seeding completed");
         }
     }
     catch (Exception ex)
