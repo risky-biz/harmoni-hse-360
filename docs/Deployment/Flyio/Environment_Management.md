@@ -115,7 +115,9 @@ flyctl secrets set ASPNETCORE_ENVIRONMENT="Staging" -a harmoni360-staging
 #### Production Environment Secrets
 ```bash
 # Database (production)
-flyctl secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360_prod;Username=postgres;Password=PRODUCTION_DB_PASSWORD" -a harmoni360-app
+flyctl secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=Harmoni360_Prod;Username=harmoni360;Password=PRODUCTION_DB_PASSWORD" -a harmoni360-app
+
+# The Fly Postgres cluster must be created with the same database name and user.
 
 # Redis (production)
 flyctl secrets set ConnectionStrings__Redis="redis://default:PRODUCTION_REDIS_PASSWORD@harmoni360-cache.upstash.io:6379" -a harmoni360-app

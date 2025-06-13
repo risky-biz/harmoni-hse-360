@@ -229,17 +229,19 @@ ConnectionStrings__DefaultConnection="Host=hostname;Port=5432;Database=dbname;Us
 #### Database User Permissions
 ```sql
 -- Create application-specific user with minimal permissions
-CREATE USER harmoni360_app WITH PASSWORD 'secure_random_password';
+CREATE USER harmoni360 WITH PASSWORD 'secure_random_password';
+
+-- The Fly Postgres cluster should use the same database name and user
 
 -- Grant only necessary permissions
-GRANT CONNECT ON DATABASE harmoni360_production TO harmoni360_app;
-GRANT USAGE ON SCHEMA public TO harmoni360_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360_app;
+GRANT CONNECT ON DATABASE Harmoni360_Prod TO harmoni360;
+GRANT USAGE ON SCHEMA public TO harmoni360;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360;
 
 -- Revoke dangerous permissions
-REVOKE CREATE ON SCHEMA public FROM harmoni360_app;
-REVOKE ALL ON pg_catalog FROM harmoni360_app;
+REVOKE CREATE ON SCHEMA public FROM harmoni360;
+REVOKE ALL ON pg_catalog FROM harmoni360;
 ```
 
 ### Data Encryption

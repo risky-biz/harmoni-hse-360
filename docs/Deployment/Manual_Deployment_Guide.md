@@ -83,7 +83,7 @@ fly postgres create --name harmoni360-db --region sjc
 fly postgres connect -a harmoni360-db
 
 # Create application database (if needed)
-CREATE DATABASE harmoni360_production;
+CREATE DATABASE Harmoni360_Prod;
 \q
 ```
 
@@ -150,8 +150,10 @@ primary_region = "sjc"     # Choose your region
 #### 5.1 Set Database Connection
 ```bash
 # Set PostgreSQL connection string
-fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360_production;Username=postgres;Password=[your-db-password]"
+fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=Harmoni360_Prod;Username=harmoni360;Password=[your-db-password]"
 ```
+
+> **Note**: The Fly Postgres cluster must be created using the same database name (`Harmoni360_Prod`) and user (`harmoni360`).
 
 #### 5.2 Set Redis Connection
 ```bash
