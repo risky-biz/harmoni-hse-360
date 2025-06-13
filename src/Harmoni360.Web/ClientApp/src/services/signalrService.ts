@@ -165,7 +165,7 @@ class SignalRService {
       console.log('SignalR: Dashboard update received');
       // Invalidate dashboard cache to trigger refetch
       store.dispatch(
-        incidentApi.util.invalidateTags(['IncidentDashboard', 'IncidentStatistics'])
+        incidentApi.util.invalidateTags(['IncidentStatistics'])
       );
       // Also invalidate PPE dashboard
       try {

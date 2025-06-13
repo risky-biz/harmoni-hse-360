@@ -198,7 +198,6 @@ const IncidentDashboard: React.FC = () => {
     department: department || undefined,
     includeResolved: true
   });
-
   // Use demo data if in demo mode and no API data, otherwise use API data
   const dashboardData = apiData || (isDemo ? generateDemoData() : null);
 
@@ -727,8 +726,7 @@ const IncidentDashboard: React.FC = () => {
                       {dashboardData.responseTimeStats.incidentsWithinSLA} of {dashboardData.responseTimeStats.totalIncidentsWithResponse} within 24h target
                     </div>
                   </div>
-
-                  {/* Metrics Grid */}
+                                    {/* Metrics Grid */}
                   <div className="metrics-grid">
                     <div className="metric-item mb-3">
                       <div className="d-flex justify-content-between align-items-center">
@@ -755,7 +753,6 @@ const IncidentDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-
                   {/* Quick Actions */}
                   <div className="mt-4">
                     <div className="small text-medium-emphasis mb-2 fw-semibold">

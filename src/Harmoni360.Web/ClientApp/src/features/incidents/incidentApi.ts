@@ -231,8 +231,6 @@ export interface AddInvolvedPersonRequest {
   personId: number;
   involvementType: string;
   injuryDescription?: string;
-  manualPersonName?: string;
-  manualPersonEmail?: string;
 }
 
 export interface UpdateInvolvedPersonRequest {
@@ -312,34 +310,10 @@ export const incidentApi = createApi({
 
       return headers;
     },
-    responseHandler: async (response) => {
-      // Check if response is HTML (likely 404 page) instead of JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('text/html')) {
-        throw new Error('API endpoint not found - received HTML instead of JSON');
-      }
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      // Handle empty responses (like 200 OK with no body)
-      const responseText = await response.text();
-      if (!responseText) {
-        return {}; // Return empty object for successful empty responses
-      }
-      
-      try {
-        return JSON.parse(responseText);
-      } catch (error) {
-        throw new Error('Invalid JSON response from server');
-      }
-    },
   }),
   tagTypes: [
     'Incident',
     'IncidentStatistics',
-    'IncidentDashboard',
     'IncidentAttachment',
     'CorrectiveAction',
     'IncidentAudit',
@@ -457,8 +431,8 @@ export const incidentApi = createApi({
     }),
 
     // Get incident dashboard data
-    getIncidentDashboard: builder.query<IncidentDashboardDto, IncidentDashboardParams | void>({
-      query: (params = {}) => {
+    getIncidentDashboard: builder.query<IncidentDashboardDto, IncidentDashboardParams>({
+      query: (params: IncidentDashboardParams = {}) => {
         const searchParams = new URLSearchParams();
         
         if (params.fromDate) searchParams.append('fromDate', params.fromDate);

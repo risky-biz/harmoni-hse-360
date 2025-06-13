@@ -98,7 +98,7 @@ COPY src/ .
 
 # Build React app
 WORKDIR /src/Harmoni360.Web/ClientApp
-RUN npm ci --only=production
+RUN npm ci --legacy-peer-deps
 RUN npm run build
 
 # Build .NET app
@@ -296,7 +296,7 @@ fly volumes create harmoni360_uploads --region sjc --size 1
 
 1. **Add Custom Domain:**
    ```bash
-   fly certs create harmoni360.yourdomain.com
+   fly certs create harmonihse360.yourdomain.com
    ```
 
 2. **Configure DNS:**
@@ -483,6 +483,6 @@ fly postgres connect -a harmoni360-db
 
 ---
 
-*Last Updated: January 2025*
-*Version: 1.0*
+*Last Updated: March 2025*
+*Version: 1.1*
 *Part of Harmoni360 Deployment Documentation Suite*

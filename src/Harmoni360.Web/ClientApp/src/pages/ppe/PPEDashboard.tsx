@@ -25,7 +25,10 @@ import {
   CDropdownMenu,
   CDropdownItem
 } from '@coreui/react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { HubConnectionState } from '@microsoft/signalr';
+import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import {
   faShieldAlt,
   faExclamationTriangle,
@@ -33,7 +36,9 @@ import {
   faClock,
   faRedo,
   faCog,
-  faPlus
+  faPlus,
+  faSearch,
+  faClipboardCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { useGetPPEDashboardQuery } from '../../features/ppe/ppeApi';
 import { useGetPPECategoriesQuery } from '../../features/ppe/ppeManagementApi';
@@ -527,7 +532,7 @@ const PPEDashboard: React.FC = () => {
                   statusColor: warning.isExpired ? 'danger' : 'warning',
                   timestamp: warning.expiryDate,
                   isOverdue: warning.isExpired,
-                  onClick: () => warning.itemId && navigate(`/ppe/${warning.itemId}`)
+                  onClick: () => navigate(`/ppe/${warning.itemId}`)
                 })),
                 ...dashboard.maintenanceWarnings.slice(0, 3).map(warning => ({
                   id: warning.itemId,
@@ -537,7 +542,7 @@ const PPEDashboard: React.FC = () => {
                   statusColor: warning.isOverdue ? 'danger' : 'info',
                   timestamp: warning.dueDate,
                   isOverdue: warning.isOverdue,
-                  onClick: () => warning.itemId && navigate(`/ppe/${warning.itemId}`)
+                  onClick: () => navigate(`/ppe/${warning.itemId}`)
                 }))
               ]}
               isLoading={isLoading}

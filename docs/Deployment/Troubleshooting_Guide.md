@@ -238,7 +238,8 @@ fly machine update --vm-cpu-kind performance -a harmoni360-app
 ```dockerfile
 # Use multi-stage builds efficiently
 # Clear npm cache
-RUN npm ci --only=production && npm cache clean --force
+
+RUN npm ci --legacy-peer-deps && npm cache clean --force
 
 # Optimize .NET build
 RUN dotnet publish -c Release --no-restore -o /app/publish
@@ -428,7 +429,7 @@ dotnet restore --verbosity detailed
 npm cache clean --force
 
 # Install with exact versions
-npm ci --prefer-offline
+npm ci --legacy-peer-deps --prefer-offline
 
 # Check Node.js version
 node --version

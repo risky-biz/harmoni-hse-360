@@ -1,10 +1,10 @@
 name: Harmoni360 CI/CD Pipeline
 
-on:
+"on":
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -33,7 +33,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: harmoni360_test
+          POSTGRES_DB: harmonihse360_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -58,7 +58,7 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-      with:
+        with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           cache: false
 
@@ -155,7 +155,7 @@ jobs:
 
       - name: Install Node.js dependencies for audit
         working-directory: src/Harmoni360.Web/ClientApp
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Install security scan tools
         run: |
@@ -223,7 +223,7 @@ jobs:
     needs: docker-build
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment: staging
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -255,25 +255,7 @@ jobs:
           sleep 30
           curl -f https://harmoni-hse-360.fly.dev/health || exit 1
 
-      - name: Notify staging deployment success
-        uses: 8398a7/action-slack@v3
-        if: success()
-        continue-on-error: true
-        with:
-          status: success
-          text: "🚀 Harmoni360 successfully deployed to staging environment!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Notify staging deployment failure
-        uses: 8398a7/action-slack@v3
-        if: failure()
-        continue-on-error: true
-        with:
-          status: failure
-          text: "❌ Harmoni360 staging deployment failed!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Deploy to Production
   deploy-production:
@@ -313,22 +295,4 @@ jobs:
           sleep 30
           curl -f https://harmoni-hse-360.fly.dev/health || exit 1
 
-      - name: Notify deployment success
-        uses: 8398a7/action-slack@v3
-        if: success()
-        continue-on-error: true
-        with:
-          status: success
-          text: "🚀 Harmoni360 successfully deployed to production!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Notify deployment failure
-        uses: 8398a7/action-slack@v3
-        if: failure()
-        continue-on-error: true
-        with:
-          status: failure
-          text: "❌ Harmoni360 production deployment failed!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
