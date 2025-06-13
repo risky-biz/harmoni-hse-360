@@ -280,6 +280,13 @@ fly volumes create harmoni360_uploads --region sjc --size 1
    fly secrets set Jwt__Key="YourSuperSecretProductionJwtKeyThatMustBeAtLeast32CharactersLong!"
    ```
 
+4. **Set Domain Variables (optional):**
+   ```bash
+   fly secrets set DOMAIN_NAME="harmoni-360.fly.dev"
+   fly secrets set ALLOWED_HOSTS="harmoni-360.fly.dev,localhost"
+   fly secrets set CORS_ORIGINS="https://harmoni-360.fly.dev"
+   ```
+
 ### 4.4 Deploy Application
 
 1. **Build and Deploy:**
