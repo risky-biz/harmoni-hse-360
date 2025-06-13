@@ -377,6 +377,7 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
+        await WaitForDatabaseAsync(dbContext, logger);
         logger.LogInformation("Checking database migrations...");
 
         // Check if database exists and create/migrate if needed
@@ -426,3 +427,26 @@ startupLogger.LogInformation("Environment: {Environment}", app.Environment.Envir
 startupLogger.LogInformation("URLs: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 await app.RunAsync();
+
+static async Task WaitForDatabaseAsync(ApplicationDbContext context, Microsoft.Extensions.Logging.ILogger logger, int maxAttempts = 5, int delaySeconds = 2)
+{
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            if (await context.Database.CanConnectAsync())
+            {
+                logger.LogInformation("Database connection succeeded on attempt {Attempt}", attempt);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Database connection attempt {Attempt} failed", attempt);
+        }
+
+        await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+    }
+
+    logger.LogError("Could not connect to the database after {MaxAttempts} attempts", maxAttempts);
+}
