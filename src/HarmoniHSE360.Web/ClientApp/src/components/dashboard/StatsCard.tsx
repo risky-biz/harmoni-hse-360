@@ -7,7 +7,7 @@ interface StatsCardProps {
   value: string | number;
   subtitle?: string;
   icon?: any;
-  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
+  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark';
   trend?: {
     value: number;
     isPositive: boolean;

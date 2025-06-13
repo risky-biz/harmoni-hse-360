@@ -26,20 +26,18 @@ import {
   CDropdownItem
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import {
-  cilShieldAlt,
-  cilWarning,
-  cilTask,
-  cilClock,
-  cilTrendUp,
-  cilPeople,
-  cilLocationPin,
-  cilChartLine,
-  cilReload,
-  cilOptions,
-  cilPlus
-} from '@coreui/icons';
+import { cilShieldAlt } from '@coreui/icons/dist/esm/free/cil-shield-alt';
+import { cilWarning } from '@coreui/icons/dist/esm/free/cil-warning';
+import { cilTask } from '@coreui/icons/dist/esm/free/cil-task';
+import { cilClock } from '@coreui/icons/dist/esm/free/cil-clock';
+import { cilPeople } from '@coreui/icons/dist/esm/free/cil-people';
+import { cilLocationPin } from '@coreui/icons/dist/esm/free/cil-location-pin';
+import { cilChartLine } from '@coreui/icons/dist/esm/free/cil-chart-line';
+import { cilReload } from '@coreui/icons/dist/esm/free/cil-reload';
+import { cilOptions } from '@coreui/icons/dist/esm/free/cil-options';
+import { cilPlus } from '@coreui/icons/dist/esm/free/cil-plus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { HubConnectionState } from '@microsoft/signalr';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import {
   faShieldAlt,
@@ -98,7 +96,7 @@ const PPEDashboard: React.FC = () => {
     }
   };
 
-  const { data: dashboard, error, isLoading, refetch, dataUpdatedAt } = useGetPPEDashboardQuery({
+  const { data: dashboard, error, isLoading, refetch, fulfilledTimeStamp } = useGetPPEDashboardQuery({
     ...getDateRange(),
     category: category || undefined
   }, {
@@ -110,10 +108,10 @@ const PPEDashboard: React.FC = () => {
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (dataUpdatedAt) {
-      setLastRefreshTime(new Date(dataUpdatedAt));
+    if (fulfilledTimeStamp) {
+      setLastRefreshTime(new Date(fulfilledTimeStamp));
     }
-  }, [dataUpdatedAt]);
+  }, [fulfilledTimeStamp]);
 
   // Handle auto-refresh
   useEffect(() => {
@@ -246,7 +244,7 @@ const PPEDashboard: React.FC = () => {
                     <span className="d-none d-sm-inline">{isLoading ? 'Refreshing...' : 'Refresh'}</span>
                     <span className="d-sm-none">{isLoading ? '...' : 'Refresh'}</span>
                   </CButton>
-                  <CDropdown variant="btn-group" size="sm">
+                  <CDropdown variant="btn-group">
                     <CDropdownToggle color="secondary" variant="outline">
                       <CIcon icon={cilOptions} className="me-1 d-none d-sm-inline" />
                       <span className="d-none d-md-inline">Auto-refresh: </span>
@@ -270,7 +268,7 @@ const PPEDashboard: React.FC = () => {
                 </CButtonToolbar>
                 <div className="text-medium-emphasis small text-end flex-shrink-0">
                   <div className="text-truncate-mobile">Last: {formatDistanceToNow(lastRefreshTime, { addSuffix: true })}</div>
-                  {connectionState === 1 && (
+                  {connectionState === HubConnectionState.Connected && (
                     <div className="text-success d-none d-sm-block">
                       <small>● Live updates</small>
                     </div>

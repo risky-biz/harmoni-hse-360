@@ -435,7 +435,7 @@ export const incidentApi = createApi({
           method: 'GET',
         };
       },
-      providesTags: ['IncidentDashboard', 'IncidentStatistics'],
+      providesTags: ['IncidentStatistics'],
     }),
 
     // Delete incident

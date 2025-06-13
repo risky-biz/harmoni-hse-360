@@ -46,10 +46,10 @@ const MyHazards: React.FC = () => {
   const { data, isLoading, error } = useGetMyHazardsQuery(filters);
 
   const handleFilterChange = (field: keyof GetHazardsParams, value: string | number) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      [field]: value,
-      pageNumber: field !== 'pageNumber' ? 1 : value // Reset to first page when changing filters
+    setFilters(prev => ({
+      ...prev,
+      [field]: field === 'pageNumber' ? Number(value) : value,
+      pageNumber: field !== 'pageNumber' ? 1 : Number(value)
     }));
   };
 
