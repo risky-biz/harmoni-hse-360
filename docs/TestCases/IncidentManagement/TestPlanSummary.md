@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive test plan for the HarmoniHSE360 Incident Management System Module. The test plan covers all aspects of incident management functionality including creation, updates, workflow management, file attachments, search capabilities, access control, validation, and system integration.
+This document provides a comprehensive test plan for the Harmoni360 Incident Management System Module. The test plan covers all aspects of incident management functionality including creation, updates, workflow management, file attachments, search capabilities, access control, validation, and system integration.
 
 ### Test Scope:
 - ✅ Incident Creation and Management

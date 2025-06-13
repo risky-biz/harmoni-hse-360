@@ -1,6 +1,6 @@
-# HarmoniHSE360 Guides
+# Harmoni360 Guides
 
-This folder contains all operational guides for the HarmoniHSE360 system.
+This folder contains all operational guides for the Harmoni360 system.
 
 ## 📚 Available Guides
 
@@ -20,7 +20,7 @@ Complete authentication system documentation:
 
 ### 🛠️ System Operations
 #### 3. [Getting Started Guide](./Getting_Started_Guide.md)
-Complete guide for running and testing the HarmoniHSE360 application:
+Complete guide for running and testing the Harmoni360 application:
 - Local development setup
 - Docker deployment options
 - Authentication testing scenarios
@@ -50,10 +50,10 @@ Comprehensive guide for database access:
 docker-compose up -d
 
 # Local development (React)
-cd src/HarmoniHSE360.Web/ClientApp && npm run dev
+cd src/Harmoni360.Web/ClientApp && npm run dev
 
 # Local development (.NET)
-cd src/HarmoniHSE360.Web && dotnet run
+cd src/Harmoni360.Web && dotnet run
 
 # Check service status
 docker-compose ps
@@ -82,5 +82,5 @@ docs/
     ├── Business_Analyst_Harmoni_HSE_360_REQUIREMENTS.md
     ├── Project_Manager_Harmoni_HSE_360_EPICS.md
     ├── Solution_Architect_Comprehensive_Development_Practices_V2.md
-    └── HarmoniHSE360_Development_Tracking.md
+    └── Harmoni360_Development_Tracking.md
 ```

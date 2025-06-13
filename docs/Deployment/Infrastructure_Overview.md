@@ -1,8 +1,8 @@
-# HarmoniHSE360 Infrastructure Overview
+# Harmoni360 Infrastructure Overview
 
 ## 📋 Executive Summary
 
-This document provides a comprehensive overview of the HarmoniHSE360 deployment infrastructure, detailing the complete architecture, technology stack, and deployment strategy for Docker-based deployments to Fly.io.
+This document provides a comprehensive overview of the Harmoni360 deployment infrastructure, detailing the complete architecture, technology stack, and deployment strategy for Docker-based deployments to Fly.io.
 
 ## 🏗️ System Architecture
 
@@ -20,7 +20,7 @@ graph TB
     end
     
     subgraph "Application Layer"
-        APP[HarmoniHSE360 Container]
+        APP[Harmoni360 Container]
         subgraph "App Components"
             API[.NET 8 Web API]
             SPA[React 18 SPA]
@@ -113,14 +113,14 @@ Security:
 | Environment | Purpose | Branch | URL | Resources |
 |-------------|---------|--------|-----|-----------|
 | **Development** | Local development | `feature/*` | `localhost:5000` | Docker Compose |
-| **Staging** | Pre-production testing | `develop` | `harmonihse360-staging.fly.dev` | 1 CPU, 512MB |
-| **Production** | Live application | `main` | `harmonihse360-app.fly.dev` | 1 CPU, 1GB |
+| **Staging** | Pre-production testing | `develop` | `harmoni360-staging.fly.dev` | 1 CPU, 512MB |
+| **Production** | Live application | `main` | `harmoni360-app.fly.dev` | 1 CPU, 1GB |
 
 ### Configuration Management
 
 #### Staging Environment (`fly.staging.toml`)
 ```toml
-app = "harmonihse360-staging"
+app = "harmoni360-staging"
 primary_region = "sjc"
 
 [env]
@@ -135,7 +135,7 @@ primary_region = "sjc"
 
 #### Production Environment (`fly.toml`)
 ```toml
-app = "harmonihse360-app"
+app = "harmoni360-app"
 primary_region = "sjc"
 
 [env]

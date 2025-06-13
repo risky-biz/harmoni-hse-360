@@ -1,5 +1,5 @@
-# **Comprehensive Development Practices for HarmoniHSE360 Enterprise Application**
-A complete guide for building a Health, Safety, and Environment application using .NET 8 Modular Monolith architecture with React and CoreUI frontend, focusing on single deployment, real-time updates, time-series data, and development workflow optimization.
+# **Comprehensive Development Practices for Harmoni360 Enterprise Application**
+A complete guide for building a Health, Safety, Security, and Environment application using .NET 8 Modular Monolith architecture with React and CoreUI frontend, focusing on single deployment, real-time updates, time-series data, and development workflow optimization.
 
 ## **Table of Contents**
 1. [Architecture Overview - Modular Monolith](#architecture-overview)
@@ -24,7 +24,7 @@ A complete guide for building a Health, Safety, and Environment application usin
 ### **System Architecture**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│             HarmoniHSE360 Modular Monolith                   │
+│             Harmoni360 Modular Monolith                   │
 ├─────────────────────────────────────────────────────────────┤
 │                    Presentation Layer                         │
 │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
@@ -64,26 +64,26 @@ A complete guide for building a Health, Safety, and Environment application usin
 
 ### **Monolith Project Structure**
 ```
-HarmoniHSE360/
+Harmoni360/
 ├── src/
-│   ├── HarmoniHSE360.Domain/           # Domain entities and interfaces
+│   ├── Harmoni360.Domain/           # Domain entities and interfaces
 │   │   ├── Entities/
 │   │   ├── ValueObjects/
 │   │   └── Interfaces/
 │   │
-│   ├── HarmoniHSE360.Application/      # Business logic
+│   ├── Harmoni360.Application/      # Business logic
 │   │   ├── Features/
 │   │   │   ├── Incidents/
 │   │   │   ├── Hazards/
 │   │   │   └── [Other modules...]
 │   │   └── Common/
 │   │
-│   ├── HarmoniHSE360.Infrastructure/   # Data access and external services
+│   ├── Harmoni360.Infrastructure/   # Data access and external services
 │   │   ├── Persistence/
 │   │   ├── Services/
 │   │   └── DependencyInjection.cs
 │   │
-│   └── HarmoniHSE360.Web/              # Web application host
+│   └── Harmoni360.Web/              # Web application host
 │       ├── Controllers/                # API Controllers
 │       ├── Hubs/                       # SignalR Hubs
 │       ├── ClientApp/                  # React application
@@ -93,12 +93,12 @@ HarmoniHSE360/
 │       │   └── vite.config.ts
 │       ├── Middleware/
 │       ├── Program.cs
-│       └── HarmoniHSE360.Web.csproj
+│       └── Harmoni360.Web.csproj
 │
 ├── tests/
-│   ├── HarmoniHSE360.UnitTests/
-│   ├── HarmoniHSE360.IntegrationTests/
-│   └── HarmoniHSE360.E2ETests/
+│   ├── Harmoni360.UnitTests/
+│   ├── Harmoni360.IntegrationTests/
+│   └── Harmoni360.E2ETests/
 │
 ├── docker/
 │   └── Dockerfile
@@ -114,29 +114,29 @@ HarmoniHSE360/
 #### **1. Create the Solution**
 ```bash
 # Create solution
-dotnet new sln -n HarmoniHSE360
+dotnet new sln -n Harmoni360
 
 # Create projects
-dotnet new classlib -n HarmoniHSE360.Domain
-dotnet new classlib -n HarmoniHSE360.Application
-dotnet new classlib -n HarmoniHSE360.Infrastructure
-dotnet new webapi -n HarmoniHSE360.Web
+dotnet new classlib -n Harmoni360.Domain
+dotnet new classlib -n Harmoni360.Application
+dotnet new classlib -n Harmoni360.Infrastructure
+dotnet new webapi -n Harmoni360.Web
 
 # Add projects to solution
-dotnet sln add src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj
-dotnet sln add src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj
-dotnet sln add src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj
-dotnet sln add src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj
+dotnet sln add src/Harmoni360.Domain/Harmoni360.Domain.csproj
+dotnet sln add src/Harmoni360.Application/Harmoni360.Application.csproj
+dotnet sln add src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj
+dotnet sln add src/Harmoni360.Web/Harmoni360.Web.csproj
 
 # Add project references
-dotnet add src/HarmoniHSE360.Application reference src/HarmoniHSE360.Domain
-dotnet add src/HarmoniHSE360.Infrastructure reference src/HarmoniHSE360.Application
-dotnet add src/HarmoniHSE360.Web reference src/HarmoniHSE360.Infrastructure
+dotnet add src/Harmoni360.Application reference src/Harmoni360.Domain
+dotnet add src/Harmoni360.Infrastructure reference src/Harmoni360.Application
+dotnet add src/Harmoni360.Web reference src/Harmoni360.Infrastructure
 ```
 
 #### **2. Setup React App within Web Project**
 ```bash
-cd src/HarmoniHSE360.Web
+cd src/Harmoni360.Web
 
 # Create React app with Vite
 npm create vite@latest ClientApp -- --template react-ts
@@ -150,7 +150,7 @@ npm install -D @types/react @types/react-dom @vitejs/plugin-react
 
 #### **3. Configure Web Project for SPA Integration**
 
-**HarmoniHSE360.Web.csproj:**
+**Harmoni360.Web.csproj:**
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
@@ -174,7 +174,7 @@ npm install -D @types/react @types/react-dom @vitejs/plugin-react
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HarmoniHSE360.Infrastructure\HarmoniHSE360.Infrastructure.csproj" />
+    <ProjectReference Include="..\Harmoni360.Infrastructure\Harmoni360.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -212,10 +212,10 @@ npm install -D @types/react @types/react-dom @vitejs/plugin-react
 
 ### **Program.cs Configuration**
 ```csharp
-using HarmoniHSE360.Application;
-using HarmoniHSE360.Infrastructure;
-using HarmoniHSE360.Web.Hubs;
-using HarmoniHSE360.Web.Middleware;
+using Harmoni360.Application;
+using Harmoni360.Infrastructure;
+using Harmoni360.Web.Hubs;
+using Harmoni360.Web.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.IdentityModel.Tokens;
@@ -239,7 +239,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "HarmoniHSE360 API",
+        Title = "Harmoni360 API",
         Version = "v1",
         Description = "HSE Management System API"
     });
@@ -428,7 +428,7 @@ public class IncidentsController : ControllerBase
 ### **Module Organization Example**
 ```csharp
 // Application/Features/Incidents/IncidentModule.cs
-namespace HarmoniHSE360.Application.Features.Incidents;
+namespace Harmoni360.Application.Features.Incidents;
 
 public static class IncidentModule
 {
@@ -491,7 +491,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'HarmoniHSE360',
+        name: 'Harmoni360',
         short_name: 'HSE360',
         theme_color: '#0097A7',
         background_color: '#ffffff',
@@ -1087,27 +1087,27 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
 # Copy csproj files and restore
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
-COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "HarmoniHSE360.Application/"]
-COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "HarmoniHSE360.Domain/"]
-COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "HarmoniHSE360.Infrastructure/"]
-RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
+COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "Harmoni360.Application/"]
+COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "Harmoni360.Domain/"]
+COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "Harmoni360.Infrastructure/"]
+RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
 
 # Copy everything else
 COPY src/ .
 
 # Build React app
-WORKDIR /src/HarmoniHSE360.Web/ClientApp
+WORKDIR /src/Harmoni360.Web/ClientApp
 RUN npm ci
 RUN npm run build
 
 # Build .NET app
-WORKDIR /src/HarmoniHSE360.Web
-RUN dotnet build "HarmoniHSE360.Web.csproj" -c Release -o /app/build
+WORKDIR /src/Harmoni360.Web
+RUN dotnet build "Harmoni360.Web.csproj" -c Release -o /app/build
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish "HarmoniHSE360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
@@ -1127,7 +1127,7 @@ COPY --from=publish /app/publish .
 USER appuser
 
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]
+ENTRYPOINT ["dotnet", "Harmoni360.Web.dll"]
 ```
 
 ### **Kubernetes Deployment**
@@ -1356,7 +1356,7 @@ services:
     depends_on:
       - db
       - redis
-    command: dotnet watch run --project /src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj
+    command: dotnet watch run --project /src/Harmoni360.Web/Harmoni360.Web.csproj
 
 volumes:
   postgres_data:
@@ -1367,15 +1367,15 @@ volumes:
 **package.json in root:**
 ```json
 {
-  "name": "harmonihse360",
+  "name": "harmoni360",
   "version": "1.0.0",
   "scripts": {
     "dev": "docker-compose -f docker-compose.dev.yml up",
-    "dev:api": "cd src/HarmoniHSE360.Web && dotnet watch run",
-    "dev:ui": "cd src/HarmoniHSE360.Web/ClientApp && npm run dev",
+    "dev:api": "cd src/Harmoni360.Web && dotnet watch run",
+    "dev:ui": "cd src/Harmoni360.Web/ClientApp && npm run dev",
     "build": "dotnet build",
     "test": "dotnet test",
-    "test:ui": "cd src/HarmoniHSE360.Web/ClientApp && npm test",
+    "test:ui": "cd src/Harmoni360.Web/ClientApp && npm test",
     "docker:build": "docker build -t hse360:latest .",
     "docker:run": "docker run -p 8080:8080 hse360:latest",
     "ef:add": "dotnet ef migrations add",
@@ -1442,15 +1442,15 @@ jobs:
     
     - name: Install React dependencies
       run: npm ci
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
     
     - name: Test React
       run: npm test -- --coverage --watchAll=false
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
     
     - name: Build React
       run: npm run build
-      working-directory: src/HarmoniHSE360.Web/ClientApp
+      working-directory: src/Harmoni360.Web/ClientApp
 
   build-and-push:
     needs: test

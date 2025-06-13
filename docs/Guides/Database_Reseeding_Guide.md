@@ -4,7 +4,7 @@ This guide provides step-by-step instructions for reseeding the database with de
 
 ## Overview
 
-The HarmoniHSE360 application includes an automated data seeding system that populates the database with:
+The Harmoni360 application includes an automated data seeding system that populates the database with:
 - **Roles and Permissions** (Admin, HSEManager, Employee)
 - **Demo Users** with different access levels
 - **Sample Incidents** (6 incidents with various severities and statuses)
@@ -25,12 +25,12 @@ This is the fastest method that works without modifying configuration files.
 1. **Stop the Backend** (if running):
    ```bash
    # Kill any existing backend processes
-   pkill -f "dotnet.*HarmoniHSE360" || lsof -ti:5000 | xargs kill -9
+   pkill -f "dotnet.*Harmoni360" || lsof -ti:5000 | xargs kill -9
    ```
 
 2. **Navigate to Backend Directory**:
    ```bash
-   cd /path/to/harmoni-hse-360/src/HarmoniHSE360.Web
+   cd /path/to/harmoni-hse-360/src/Harmoni360.Web
    ```
 
 3. **Start Backend with Reseeding Enabled**:
@@ -63,7 +63,7 @@ This is the fastest method that works without modifying configuration files.
 1. **Edit Configuration File**:
    ```bash
    # Edit appsettings.Development.json
-   vi src/HarmoniHSE360.Web/appsettings.Development.json
+   vi src/Harmoni360.Web/appsettings.Development.json
    ```
 
 2. **Update the DataSeeding Section**:
@@ -78,7 +78,7 @@ This is the fastest method that works without modifying configuration files.
 
 3. **Restart the Backend**:
    ```bash
-   cd src/HarmoniHSE360.Web
+   cd src/Harmoni360.Web
    dotnet run
    ```
 
@@ -99,7 +99,7 @@ For detailed monitoring of the seeding process:
 
 1. **Start Backend in Background with Logging**:
    ```bash
-   cd src/HarmoniHSE360.Web
+   cd src/Harmoni360.Web
    ASPNETCORE_ENVIRONMENT=Development DataSeeding__ReSeedIncidents=true dotnet run > /tmp/backend.log 2>&1 &
    ```
 
@@ -209,11 +209,11 @@ For detailed monitoring of the seeding process:
 
 ## Related Files
 
-- **Seeder Implementation**: `src/HarmoniHSE360.Infrastructure/Services/DataSeeder.cs`
-- **Configuration**: `src/HarmoniHSE360.Web/appsettings.Development.json`
-- **Startup Logic**: `src/HarmoniHSE360.Web/Program.cs` (lines 168-215)
+- **Seeder Implementation**: `src/Harmoni360.Infrastructure/Services/DataSeeder.cs`
+- **Configuration**: `src/Harmoni360.Web/appsettings.Development.json`
+- **Startup Logic**: `src/Harmoni360.Web/Program.cs` (lines 168-215)
 
 ---
 
 **Last Updated**: December 2024  
-**Applies to**: HarmoniHSE360 v1.0
+**Applies to**: Harmoni360 v1.0

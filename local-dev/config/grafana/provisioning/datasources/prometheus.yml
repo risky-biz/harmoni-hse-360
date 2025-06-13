@@ -1,0 +1,53 @@
+# Grafana Datasource Configuration for Local Development
+# Automatically provisions Prometheus as a datasource
+
+apiVersion: 1
+
+datasources:
+  # Prometheus datasource
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.40.0
+      cacheLevel: 'High'
+      disableRecordingRules: false
+      incrementalQueryOverlapWindow: 10m
+      queryTimeout: 60s
+      timeInterval: 15s
+    secureJsonData: {}
+    version: 1
+    
+  # Node Exporter metrics (system metrics)
+  - name: Node Exporter
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    editable: true
+    jsonData:
+      httpMethod: POST
+      prometheusType: Prometheus
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: jaeger
+    version: 1
+
+  # Application-specific Prometheus instance (if separate)
+  - name: Application Metrics
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    editable: true
+    jsonData:
+      httpMethod: POST
+      prometheusType: Prometheus
+      timeInterval: 15s
+      queryTimeout: 60s
+      customQueryParameters: 'job=harmoni360-app'
+    version: 1

@@ -1,7 +1,7 @@
 # Create Incident - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for the incident creation functionality in the HarmoniHSE360 system.
+This document contains comprehensive test cases for the incident creation functionality in the Harmoni360 system.
 
 ---
 

@@ -193,14 +193,14 @@ timescale_data/
 redis_data/
 
 # File uploads and attachments
-src/HarmoniHSE360.Web/wwwroot/uploads/
+src/Harmoni360.Web/wwwroot/uploads/
 **/uploads/**
 **/attachments/**
 
 # Frontend build output
 **/dist/**
 **/build/**
-src/HarmoniHSE360.Web/ClientApp/dist/
+src/Harmoni360.Web/ClientApp/dist/
 
 # Large files and media
 *.jpg

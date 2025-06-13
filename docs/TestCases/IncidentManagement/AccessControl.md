@@ -1,7 +1,7 @@
 # Access Control - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for role-based access control and security in the HarmoniHSE360 incident management system.
+This document contains comprehensive test cases for role-based access control and security in the Harmoni360 incident management system.
 
 ---
 

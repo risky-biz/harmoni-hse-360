@@ -1,0 +1,1165 @@
+// Use Sass modules and imports must come first
+@use 'sass:color';
+
+// Harmoni HSE 360 Branding Colors
+$teal-primary: #0097A7;
+$deep-blue: #004D6E;
+$leaf-green: #66BB6A;
+$accent-yellow: #F9A825;
+$soft-grey: #F5F5F5;
+$charcoal: #212121;
+
+// Import CoreUI with configuration
+@use '@coreui/coreui/scss/coreui' with (
+  $primary: $teal-primary,
+  $secondary: $deep-blue,
+  $success: $leaf-green,
+  $warning: $accent-yellow,
+  $body-bg: $soft-grey,
+  $body-color: $charcoal
+);
+
+// Import dashboard styles after variables and CoreUI
+@import './dashboard.scss';
+
+// Custom styles following Harmoni branding
+:root {
+  --harmoni-teal: #{$teal-primary};
+  --harmoni-blue: #{$deep-blue};
+  --harmoni-green: #{$leaf-green};
+  --harmoni-yellow: #{$accent-yellow};
+  --harmoni-grey: #{$soft-grey};
+  --harmoni-charcoal: #{$charcoal};
+  --demo-banner-height: 0px;
+}
+
+// Demo banner responsive behavior
+.demo-banner {
+  z-index: 1040;
+  
+  // On mobile devices, don't offset for sidebar
+  @media (max-width: 991.98px) {
+    .demo-banner-content {
+      margin-left: 0 !important;
+    }
+  }
+}
+
+// Ensure sidebar is above banner on mobile
+.sidebar {
+  z-index: 1050;
+}
+
+// Incident Dashboard Mobile Responsiveness
+.dashboard-container {
+  .dashboard-header {
+    h1 {
+      font-size: 1.75rem;
+      @media (max-width: 767.98px) {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .btn-block-mobile {
+      @media (max-width: 575.98px) {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+
+  .dashboard-filters {
+    .filter-controls {
+      @media (max-width: 991.98px) {
+        .col-lg-5, .col-lg-3, .col-lg-4 {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+    
+    .department-select {
+      min-width: 150px;
+      @media (max-width: 575.98px) {
+        min-width: 100%;
+      }
+    }
+    
+    .refresh-controls {
+      @media (max-width: 991.98px) {
+        text-align: left !important;
+        justify-content: flex-start !important;
+      }
+      
+      .text-truncate-mobile {
+        @media (max-width: 575.98px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .stats-row {
+    .col-lg-3 {
+      @media (max-width: 767.98px) {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  // Status Distribution Component
+  .status-distribution-card {
+    .status-distribution-container {
+      .chart-container {
+        display: flex;
+        justify-content: center;
+        @media (max-width: 575.98px) {
+          margin-bottom: 1rem;
+        }
+      }
+      
+      .status-legend {
+        max-height: 200px;
+        overflow-y: auto;
+        
+        .legend-item {
+          padding: 0.25rem 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+
+  // Category Breakdown Component
+  .category-breakdown-card {
+    .category-chart-container {
+      .category-legend {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 0.75rem;
+        
+        .legend-color {
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // Response Time Analytics
+  .response-time-card {
+    .metrics-grid {
+      .metric-item {
+        padding: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  // Department Performance
+  .department-stats {
+    max-height: 350px;
+    
+    .department-item {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      @media (max-width: 575.98px) {
+        padding: 0.75rem !important;
+        
+        .d-flex {
+          flex-direction: column;
+          align-items: flex-start !important;
+          
+          .mb-0 {
+            margin-bottom: 0.5rem !important;
+          }
+        }
+      }
+    }
+  }
+
+  // Chart Responsiveness
+  @media (max-width: 767.98px) {
+    .chart-card {
+      .card-body {
+        padding: 0.75rem;
+      }
+    }
+    
+    .stats-card {
+      .card-body {
+        padding: 1rem 0.75rem;
+      }
+      
+      .stats-value {
+        font-size: 1.75rem;
+      }
+      
+      .stats-title {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Tablet specific adjustments
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .dashboard-container {
+    .stats-row {
+      .col-lg-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+    }
+    
+    .col-lg-4, .col-lg-6 {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+// Additional responsive utilities
+@media (max-width: 575.98px) {
+  .text-truncate-mobile {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .d-sm-none {
+    display: none !important;
+  }
+  
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+// Sidebar responsive behavior
+.sidebar-show {
+  @media (min-width: 992px) {
+    .demo-banner-content {
+      margin-left: var(--cui-sidebar-width, 256px);
+    }
+  }
+}
+
+.sidebar-hide {
+  .demo-banner-content {
+    margin-left: 0;
+  }
+}
+
+// Typography
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+}
+
+// Buttons - Harmoni style
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  &.btn-primary {
+    background-color: var(--harmoni-teal);
+    border-color: var(--harmoni-teal);
+
+    &:hover, &:focus {
+      background-color: color.adjust($teal-primary, $lightness: -10%);
+      border-color: color.adjust($teal-primary, $lightness: -10%);
+    }
+  }
+
+  &.btn-secondary {
+    background-color: transparent;
+    color: var(--harmoni-teal);
+    border: 1px solid var(--harmoni-teal);
+
+    &:hover, &:focus {
+      background-color: var(--harmoni-teal);
+      color: white;
+    }
+  }
+
+  &.btn-danger {
+    background-color: var(--harmoni-yellow);
+    border-color: var(--harmoni-yellow);
+    color: var(--harmoni-charcoal);
+  }
+}
+
+// Cards - Harmoni style
+.card {
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+
+  .card-header {
+    background-color: transparent;
+    border-bottom: 2px solid var(--harmoni-teal);
+    font-weight: 600;
+  }
+}
+
+// Forms - Harmoni style
+.form-control, .form-select {
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+
+  &:focus {
+    border-color: var(--harmoni-teal);
+    box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25);
+  }
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+// Azure Portal-style Sidebar with Harmoni HSE 360 colors
+.sidebar {
+  background-color: #2d2d30;
+  border-right: none;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  width: 240px;
+
+  // Always show full brand, remove minimized version
+  .sidebar-brand-full {
+    display: block;
+  }
+  
+  .sidebar-brand-minimized {
+    display: none;
+  }
+
+  // Brand/Logo area
+  .sidebar-brand {
+    background-color: #2d2d30;
+    border-bottom: 1px solid #3a3a3c;
+    padding: 16px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .sidebar-logo {
+      max-width: 140px;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .sidebar-logo-minimized {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      display: none;
+    }
+  }
+
+  // Navigation styling
+  .sidebar-nav {
+    padding: 8px 0;
+  }
+
+  .nav-link {
+    color: #e3e3e3;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 0;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    border-left: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 400;
+    margin: 2px 0;
+
+    &:hover {
+      color: #ffffff;
+      background-color: #3a3a3c;
+      text-decoration: none;
+    }
+
+    &.active {
+      color: #ffffff;
+      background-color: #3a3a3c;
+      border-left-color: var(--harmoni-teal);
+      font-weight: 500;
+    }
+  }
+
+  .nav-icon {
+    color: #e3e3e3;
+    margin-right: 12px;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    
+    .active & {
+      color: var(--harmoni-teal);
+    }
+  }
+
+  // CoreUI nav item styling overrides
+  .nav-item {
+    .nav-link {
+      color: #e3e3e3 !important;
+      
+      &:hover {
+        color: #ffffff !important;
+      }
+      
+      &.active {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Navigation groups (dropdown sections)
+  .nav-group {
+    .nav-group-toggler {
+      color: #e3e3e3;
+      background-color: transparent;
+      border: none;
+      padding: 12px 16px;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease-in-out;
+      border-left: 3px solid transparent;
+      margin: 2px 0;
+
+      &:hover {
+        color: #ffffff;
+        background-color: #3a3a3c;
+      }
+
+      &[aria-expanded="true"] {
+        color: #ffffff;
+        background-color: #3a3a3c;
+        // Remove automatic border highlight when expanded
+        // Only show border when no child is active
+      }
+
+      // Only highlight parent when it's specifically selected (not when child is active)
+      &.active:not([aria-expanded="true"]) {
+        border-left-color: var(--harmoni-teal);
+      }
+
+      .nav-icon {
+        margin-right: 12px;
+      }
+    }
+
+    .nav-group-items {
+      background-color: #252526;
+      border-left: 3px solid #3a3a3c;
+      margin-left: 0;
+
+      .nav-item {
+        .nav-link {
+          padding-left: 44px;
+          font-size: 13px;
+          color: #cccccc !important;
+          border-left: 3px solid transparent;
+          margin: 1px 0;
+          transition: all 0.2s ease-in-out;
+
+          &:hover {
+            color: #ffffff !important;
+            background-color: #3a3a3c;
+          }
+
+          &.active {
+            color: #ffffff !important;
+            background-color: #3a3a3c;
+            border-left-color: var(--harmoni-teal);
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+
+  // Section titles (remove or minimize)
+  .nav-title {
+    color: #8a8a8a;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px 16px 8px 16px;
+    margin: 0;
+  }
+
+  // Toggler button styling
+  .sidebar-toggler {
+    background-color: #3a3a3c;
+    border: none;
+    color: #e3e3e3;
+    padding: 12px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #4a4a4c;
+      color: #ffffff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px var(--harmoni-teal);
+    }
+  }
+}
+
+// Wrapper layout adjustments for sidebar visibility
+.wrapper {
+  transition: margin-left 0.3s ease-in-out;
+  
+  &.sidebar-visible {
+    margin-left: 240px; // Width of sidebar when visible
+    
+    @media (max-width: 991.98px) {
+      margin-left: 0; // No margin on mobile, sidebar overlays
+    }
+  }
+  
+  &.sidebar-hidden {
+    margin-left: 0; // No margin when sidebar is hidden
+  }
+}
+
+// Header customization
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+// Dashboard widgets
+.dashboard-widget {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .widget-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    &.primary {
+      background-color: rgba(0, 151, 167, 0.1);
+      color: var(--harmoni-teal);
+    }
+
+    &.success {
+      background-color: rgba(102, 187, 106, 0.1);
+      color: var(--harmoni-green);
+    }
+
+    &.warning {
+      background-color: rgba(249, 168, 37, 0.1);
+      color: var(--harmoni-yellow);
+    }
+  }
+}
+
+// Tables
+.table {
+  th {
+    background-color: var(--harmoni-grey);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(0, 151, 167, 0.05);
+    
+    // Ensure badges maintain proper contrast on hover
+    .hazard-badge {
+      // Force background colors to stay visible on hover
+      &.badge-light {
+        background-color: #f8f9fa !important;
+        color: #495057 !important;
+        border: 1px solid #dee2e6 !important;
+      }
+      
+      // Ensure info badges remain visible on teal hover background
+      &.badge-info {
+        background-color: #0dcaf0 !important;
+        color: #000 !important;
+      }
+      
+      // Maintain icon visibility
+      .fa, .fas, .far, .fab {
+        opacity: 1 !important;
+      }
+    }
+  }
+}
+
+// Alerts
+.alert {
+  border-radius: 8px;
+  border: none;
+
+  &.alert-info {
+    background-color: rgba(0, 151, 167, 0.1);
+    color: color.adjust($teal-primary, $lightness: -20%);
+  }
+
+  &.alert-success {
+    background-color: rgba(102, 187, 106, 0.1);
+    color: color.adjust($leaf-green, $lightness: -20%);
+  }
+
+  &.alert-warning {
+    background-color: rgba(249, 168, 37, 0.1);
+    color: color.adjust($accent-yellow, $lightness: -20%);
+  }
+}
+
+// Loading states
+.loading-spinner {
+  color: var(--harmoni-teal);
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .card {
+    padding: 12px;
+  }
+
+  .btn {
+    min-height: 44px; // Touch target size
+  }
+
+  .dashboard-widget {
+    padding: 16px;
+  }
+
+  // Audit trail mobile responsiveness
+  .list-group {
+    overflow-x: auto;
+    white-space: nowrap;
+    
+    .list-group-item {
+      min-width: 300px;
+      white-space: normal;
+    }
+  }
+
+  // Activity history mobile styling
+  .audit-trail-mobile {
+    .list-group-item {
+      padding: 12px;
+      
+      .d-flex {
+        flex-direction: column;
+        // Remove align-items to center icon vertically
+        
+        .me-3 {
+          margin-right: 0 !important;
+          margin-bottom: 8px;
+          align-self: center; // Center the icon
+        }
+        
+        .justify-content-between {
+          width: 100%;
+          flex-direction: column;
+          align-items: flex-start !important;
+          
+          small {
+            margin-top: 4px;
+            align-self: flex-start;
+          }
+        }
+      }
+    }
+  }
+
+  // Related Information mobile styling
+  .related-info-mobile {
+    .list-group-item {
+      padding: 16px;
+      border-radius: 8px !important;
+      margin-bottom: 8px;
+      background-color: #f8f9fa;
+      border: 2px solid #dee2e6 !important;
+      
+      &:hover {
+        background-color: rgba(0, 151, 167, 0.1) !important;
+        border-color: var(--harmoni-teal) !important;
+        transform: scale(1.02);
+        
+        span {
+          color: var(--harmoni-teal) !important;
+          font-weight: 600 !important;
+        }
+        
+        small {
+          color: var(--harmoni-blue) !important;
+        }
+        
+        .badge {
+          background-color: var(--harmoni-teal) !important;
+          transform: scale(1.1);
+        }
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+      
+      // Add touch feedback
+      &:focus {
+        outline: 3px solid var(--harmoni-teal);
+        outline-offset: 2px;
+      }
+      
+      // Make text and badges more prominent
+      span {
+        font-size: 16px;
+        font-weight: 500;
+      }
+      
+      small {
+        font-size: 14px;
+        margin-top: 2px;
+      }
+      
+      .badge {
+        font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+      }
+      
+      // Add visual indicator
+      &::after {
+        content: '\203A';
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #6c757d;
+        transition: all 0.2s ease-in-out;
+      }
+      
+      &:hover::after {
+        color: var(--harmoni-teal);
+        transform: translateY(-50%) translateX(3px);
+      }
+    }
+  }
+}
+
+// Accessibility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Focus states
+*:focus {
+  outline: 2px solid var(--harmoni-teal);
+  outline-offset: 2px;
+}
+
+// Clickable elements styling
+.cursor-pointer {
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    background-color: rgba(0, 151, 167, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Related Information section styling
+.list-group-item.cursor-pointer {
+  border: 1px solid #dee2e6;
+  margin-bottom: 2px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: rgba(0, 151, 167, 0.08);
+    border-color: var(--harmoni-teal);
+    
+    span {
+      color: var(--harmoni-teal);
+      font-weight: 500;
+    }
+    
+    .badge {
+      background-color: var(--harmoni-teal) !important;
+    }
+  }
+
+  &:focus {
+    outline: 2px solid var(--harmoni-teal);
+    outline-offset: 2px;
+  }
+}
+
+// Dropdown menu items cursor styling
+.dropdown-item {
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    cursor: pointer !important;
+  }
+
+  &:disabled {
+    cursor: not-allowed !important;
+  }
+}
+
+// Application Settings component styling
+.application-settings {
+  position: sticky;
+  bottom: 0;
+  background-color: #2d2d30;
+  border-top: 1px solid #3a3a3c;
+  padding: 8px;
+  z-index: 1000; // Ensure proper layering
+  
+  // Ensure container stability during interactions
+  contain: layout style; // CSS containment for performance
+  transform: translateZ(0); // Force hardware acceleration
+  
+  .application-settings-toggle {
+    border: none !important;
+    background-color: transparent !important;
+    color: #e3e3e3 !important;
+    padding: 12px 16px;
+    border-radius: 0 !important;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    transition: all 0.15s ease-in-out !important; // Faster, smoother transition
+    
+    // Remove CoreUI's default dropdown arrow
+    &::after {
+      display: none !important;
+    }
+    
+    &:hover {
+      background-color: #3a3a3c !important;
+      color: #ffffff !important;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px var(--harmoni-teal) !important;
+      outline: none !important;
+    }
+    
+    &:active {
+      transform: none !important; // Prevent jump on click
+    }
+    
+    .transition-transform {
+      transition: transform 0.15s ease-in-out !important; // Faster transition
+      will-change: transform; // Optimize for animation
+    }
+    
+    .rotate-180 {
+      transform: rotate(180deg);
+    }
+  }
+  
+  .application-settings-menu {
+    background-color: #2d2d30;
+    border: 1px solid #3a3a3c;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 280px;
+    max-height: 400px; // Prevent menu from being too tall
+    overflow-y: auto; // Enable scrolling if needed
+    border-radius: 4px; // Slight rounding for better appearance
+    animation: fadeInUp 0.15s ease-out; // Smooth entrance animation
+    
+    // Enhanced smooth scrolling properties
+    scroll-behavior: smooth;
+    overflow-anchor: none; // Prevent scroll anchoring issues
+    overscroll-behavior: contain; // Keep scroll within menu
+    -webkit-overflow-scrolling: touch; // iOS smooth scrolling
+    scrollbar-width: thin; // Firefox thin scrollbar
+    scrollbar-color: #3a3a3c #2d2d30; // Firefox scrollbar colors
+    
+    // Position stability during scroll
+    position: relative;
+    will-change: scroll-position; // Optimize for scroll performance
+    transform: translateZ(0); // Create new stacking context for stability
+    
+    // Custom scrollbar for webkit browsers
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #2d2d30;
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #3a3a3c;
+      border-radius: 3px;
+      
+      &:hover {
+        background: #484848;
+      }
+    }
+    
+    // Special state for smooth scrolling
+    &.is-scrolling {
+      // Disable pointer events during scroll to prevent conflicts
+      pointer-events: none;
+      
+      .application-settings-item {
+        // Temporarily disable hover effects during scroll
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+    
+    .dropdown-header {
+      background-color: #252526;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 16px;
+      border-radius: 4px 4px 0 0; // Round top corners
+    }
+    
+    .dropdown-divider {
+      border-color: #3a3a3c;
+      margin: 4px 0;
+    }
+    
+    .application-settings-item {
+      color: #e3e3e3;
+      padding: 12px 16px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      position: relative;
+      
+      // Smooth transitions that won't conflict with scrolling
+      transition: 
+        background-color 0.15s ease-out,
+        color 0.15s ease-out,
+        box-shadow 0.15s ease-out;
+      
+      // Use pseudo-element for smooth slide effect instead of transform
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: linear-gradient(90deg, var(--harmoni-teal), transparent);
+        transition: width 0.2s ease-out;
+        z-index: -1;
+      }
+      
+      // Standard hover state (will be overridden during scroll)
+      &:hover:not(.is-scrolling *) {
+        background-color: #3a3a3c;
+        color: #ffffff;
+        
+        &::before {
+          width: 3px; // Subtle left border effect
+        }
+      }
+      
+      // Enhanced hover state using JavaScript class
+      &.item-hover {
+        background-color: #3a3a3c;
+        color: #ffffff;
+        box-shadow: inset 3px 0 0 var(--harmoni-teal);
+      }
+      
+      &:focus {
+        background-color: #3a3a3c;
+        color: #ffffff;
+        outline: 2px solid var(--harmoni-teal);
+        outline-offset: -2px;
+        
+        &::before {
+          width: 3px;
+        }
+      }
+      
+      &:active {
+        background-color: #404042; // Slightly different color for press
+        
+        &::before {
+          width: 0; // Reset on press
+        }
+      }
+      
+      .fw-semibold {
+        font-weight: 500;
+        margin-bottom: 2px;
+        transition: inherit; // Inherit smooth transitions
+      }
+      
+      small {
+        font-size: 12px;
+        line-height: 1.3;
+        opacity: 0.8;
+        transition: inherit; // Inherit smooth transitions
+      }
+      
+      // Ensure text remains accessible during all states
+      &:hover,
+      &.item-hover,
+      &:focus {
+        small {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+// Animation for smooth dropdown entrance
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Enhanced scroll handling for mobile and touch devices
+@media (hover: none) and (pointer: coarse) {
+  .application-settings-menu {
+    // On touch devices, prioritize scroll performance
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; // Disable smooth scroll on mobile for better performance
+    
+    .application-settings-item {
+      // Simplify hover effects on touch devices
+      &:hover {
+        transform: none !important;
+      }
+      
+      // Use active state instead of hover on touch
+      &:active {
+        background-color: #3a3a3c;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// Reduce motion for users who prefer it
+@media (prefers-reduced-motion: reduce) {
+  .application-settings-menu {
+    scroll-behavior: auto; // Disable smooth scroll for accessibility
+    animation: none; // Disable entrance animation
+    
+    .application-settings-item {
+      transition: none !important; // Disable all transitions
+      
+      &::before {
+        transition: none !important;
+      }
+    }
+  }
+  
+  .application-settings-toggle {
+    .transition-transform {
+      transition: none !important;
+    }
+  }
+}
+
+// Tablet responsiveness
+@media (max-width: 991.98px) and (min-width: 769px) {
+  .related-info-mobile {
+    .list-group-item {
+      padding: 14px;
+      
+      span {
+        font-size: 15px;
+      }
+      
+      .badge {
+        font-size: 13px;
+        padding: 5px 8px;
+      }
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .btn-primary {
+    border: 2px solid white;
+  }
+
+  .card {
+    border: 1px solid var(--harmoni-charcoal);
+  }
+}

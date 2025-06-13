@@ -2,9 +2,9 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: harmonihse360-db-dev
+    container_name: harmoni360-db-dev
     environment:
-      POSTGRES_DB: HarmoniHSE360_Dev
+      POSTGRES_DB: Harmoni360_Dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
     ports:
@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
     networks:
-      - harmonihse360-dev
+      - harmoni360-dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -22,11 +22,11 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: harmonihse360-cache-dev
+    container_name: harmoni360-cache-dev
     ports:
       - "6379:6379"
     networks:
-      - harmonihse360-dev
+      - harmoni360-dev
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -36,9 +36,9 @@ services:
   # pgAdmin for database management
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: harmonihse360-pgadmin-dev
+    container_name: harmoni360-pgadmin-dev
     environment:
-      - PGADMIN_DEFAULT_EMAIL=dev@harmonihse360.com
+      - PGADMIN_DEFAULT_EMAIL=dev@harmoni360.com
       - PGADMIN_DEFAULT_PASSWORD=DevPassword123!
       - PGADMIN_CONFIG_SERVER_MODE=False
       - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
@@ -47,7 +47,7 @@ services:
     volumes:
       - pgadmin_dev_data:/var/lib/pgadmin
     networks:
-      - harmonihse360-dev
+      - harmoni360-dev
     depends_on:
       - postgres
 
@@ -56,5 +56,5 @@ volumes:
   pgadmin_dev_data:
 
 networks:
-  harmonihse360-dev:
+  harmoni360-dev:
     driver: bridge

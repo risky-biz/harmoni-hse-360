@@ -1,7 +1,7 @@
-# Fly.io configuration file for HarmoniHSE360
-# Copy this file to fly.toml and customize as needed
+# Fly.io configuration file for Harmoni360 Production
+# This is the production configuration for harmoni-hse-360
 
-app = "harmonihse360-app"
+app = "harmoni-hse-360"
 primary_region = "sjc"
 
 [build]
@@ -39,7 +39,7 @@ primary_region = "sjc"
   tls_skip_verify = false
 
 [mounts]
-  source = "harmonihse360_uploads"
+  source = "harmoni360_uploads"
   destination = "/app/uploads"
 
 # Optional: Machine configuration for specific resource requirements

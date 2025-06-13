@@ -1,0 +1,841 @@
+import React, { Suspense, useEffect } from 'react';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { CSpinner } from '@coreui/react';
+
+// CoreUI styles
+import '@coreui/coreui/dist/css/coreui.min.css';
+
+// Custom styles with Harmoni branding
+import './styles/app.scss';
+
+// Store
+import { store } from './store';
+
+// Layouts
+import DefaultLayout from './layouts/DefaultLayout';
+import AuthLayout from './layouts/AuthLayout';
+
+// Guards
+import PrivateRoute from './components/auth/PrivateRoute';
+import AdminRoute from './components/auth/AdminRoute';
+import AuthErrorBoundary from './components/common/AuthErrorBoundary';
+
+// Hooks
+import { useSignalR } from './hooks/useSignalR';
+
+// Performance optimizations
+import { PerformanceMonitor } from './utils/performance';
+import { initializeOptimizations, addResourceHints, lazy } from './utils/optimization';
+
+// Add UnauthorizedAccess component
+const UnauthorizedAccess = React.lazy(() =>
+  import('./components/common/UnauthorizedAccess').catch((err) => {
+    console.error('Failed to load UnauthorizedAccess:', err);
+    return {
+      default: () => <div>Error loading unauthorized page. Please refresh.</div>,
+    };
+  })
+);
+
+
+// Lazy load pages with optimized error handling
+const Dashboard = React.lazy(() =>
+  import('./pages/Dashboard').catch((err) => {
+    console.error('Failed to load Dashboard:', err);
+    return {
+      default: () => <div>Error loading Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const Login = React.lazy(() =>
+  import('./pages/auth/Login').catch((err) => {
+    console.error('Failed to load Login:', err);
+    return { default: () => <div>Error loading Login. Please refresh.</div> };
+  })
+);
+const IncidentList = React.lazy(() =>
+  import('./pages/incidents/IncidentList').catch((err) => {
+    console.error('Failed to load IncidentList:', err);
+    return {
+      default: () => <div>Error loading Incident List. Please refresh.</div>,
+    };
+  })
+);
+const CreateIncident = React.lazy(() =>
+  import('./pages/incidents/CreateIncident').catch((err) => {
+    console.error('Failed to load CreateIncident:', err);
+    return {
+      default: () => <div>Error loading Create Incident. Please refresh.</div>,
+    };
+  })
+);
+const IncidentDetailEnhanced = React.lazy(() =>
+  import('./pages/incidents/IncidentDetailEnhanced').catch((err) => {
+    console.error('Failed to load IncidentDetailEnhanced:', err);
+    return {
+      default: () => <div>Error loading Incident Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditIncident = React.lazy(() =>
+  import('./pages/incidents/EditIncident').catch((err) => {
+    console.error('Failed to load EditIncident:', err);
+    return {
+      default: () => <div>Error loading Edit Incident. Please refresh.</div>,
+    };
+  })
+);
+const MyReports = React.lazy(() =>
+  import('./pages/incidents/MyReports').catch((err) => {
+    console.error('Failed to load MyReports:', err);
+    return {
+      default: () => <div>Error loading My Reports. Please refresh.</div>,
+    };
+  })
+);
+const IncidentDashboard = React.lazy(() =>
+  import('./pages/incidents/IncidentDashboard').catch((err) => {
+    console.error('Failed to load IncidentDashboard:', err);
+    return {
+      default: () => <div>Error loading Incident Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const QuickReport = React.lazy(() =>
+  import('./pages/incidents/QuickReport').catch((err) => {
+    console.error('Failed to load QuickReport:', err);
+    return {
+      default: () => <div>Error loading Quick Report. Please refresh.</div>,
+    };
+  })
+);
+const QrScanner = React.lazy(() =>
+  import('./pages/incidents/QrScanner').catch((err) => {
+    console.error('Failed to load QrScanner:', err);
+    return {
+      default: () => <div>Error loading QR Scanner. Please refresh.</div>,
+    };
+  })
+);
+
+// Hazard Management Pages
+const HazardDashboard = React.lazy(() =>
+  import('./pages/hazards/HazardDashboard').catch((err) => {
+    console.error('Failed to load HazardDashboard:', err);
+    return {
+      default: () => <div>Error loading Hazard Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const CreateHazard = React.lazy(() =>
+  import('./pages/hazards/CreateHazard').catch((err) => {
+    console.error('Failed to load CreateHazard:', err);
+    return {
+      default: () => <div>Error loading Create Hazard. Please refresh.</div>,
+    };
+  })
+);
+const HazardList = React.lazy(() =>
+  import('./pages/hazards/HazardList').catch((err) => {
+    console.error('Failed to load HazardList:', err);
+    return {
+      default: () => <div>Error loading Hazard List. Please refresh.</div>,
+    };
+  })
+);
+const HazardDetail = React.lazy(() =>
+  import('./pages/hazards/HazardDetail').catch((err) => {
+    console.error('Failed to load HazardDetail:', err);
+    return {
+      default: () => <div>Error loading Hazard Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditHazard = React.lazy(() =>
+  import('./pages/hazards/EditHazard').catch((err) => {
+    console.error('Failed to load EditHazard:', err);
+    return {
+      default: () => <div>Error loading Edit Hazard. Please refresh.</div>,
+    };
+  })
+);
+const MyHazards = React.lazy(() =>
+  import('./pages/hazards/MyHazards').catch((err) => {
+    console.error('Failed to load MyHazards:', err);
+    return {
+      default: () => <div>Error loading My Hazards. Please refresh.</div>,
+    };
+  })
+);
+const RiskAssessments = React.lazy(() =>
+  import('./pages/hazards/RiskAssessments').catch((err) => {
+    console.error('Failed to load RiskAssessments:', err);
+    return {
+      default: () => <div>Error loading Risk Assessments. Please refresh.</div>,
+    };
+  })
+);
+
+// Risk Assessment Management Pages
+const RiskAssessmentList = React.lazy(() =>
+  import('./pages/risk-assessments/RiskAssessmentList').catch((err) => {
+    console.error('Failed to load RiskAssessmentList:', err);
+    return {
+      default: () => <div>Error loading Risk Assessment List. Please refresh.</div>,
+    };
+  })
+);
+const RiskAssessmentDetail = React.lazy(() =>
+  import('./pages/risk-assessments/RiskAssessmentDetail').catch((err) => {
+    console.error('Failed to load RiskAssessmentDetail:', err);
+    return {
+      default: () => <div>Error loading Risk Assessment Detail. Please refresh.</div>,
+    };
+  })
+);
+const CreateRiskAssessment = React.lazy(() =>
+  import('./pages/risk-assessments/CreateRiskAssessment').catch((err) => {
+    console.error('Failed to load CreateRiskAssessment:', err);
+    return {
+      default: () => <div>Error loading Create Risk Assessment. Please refresh.</div>,
+    };
+  })
+);
+const HazardAnalytics = React.lazy(() =>
+  import('./pages/hazards/HazardAnalytics').catch((err) => {
+    console.error('Failed to load HazardAnalytics:', err);
+    return {
+      default: () => <div>Error loading Hazard Analytics. Please refresh.</div>,
+    };
+  })
+);
+const MitigationActions = React.lazy(() =>
+  import('./pages/hazards/MitigationActions').catch((err) => {
+    console.error('Failed to load MitigationActions:', err);
+    return {
+      default: () => <div>Error loading Mitigation Actions. Please refresh.</div>,
+    };
+  })
+);
+const HazardMapping = React.lazy(() =>
+  import('./pages/hazards/HazardMapping').catch((err) => {
+    console.error('Failed to load HazardMapping:', err);
+    return {
+      default: () => <div>Error loading Hazard Mapping. Please refresh.</div>,
+    };
+  })
+);
+const MobileHazardReport = React.lazy(() =>
+  import('./pages/hazards/MobileHazardReport').catch((err) => {
+    console.error('Failed to load MobileHazardReport:', err);
+    return {
+      default: () => <div>Error loading Mobile Hazard Report. Please refresh.</div>,
+    };
+  })
+);
+
+// PPE Management Pages
+const PPEDashboard = React.lazy(() =>
+  import('./pages/ppe/PPEDashboard').catch((err) => {
+    console.error('Failed to load PPEDashboard:', err);
+    return {
+      default: () => <div>Error loading PPE Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const PPEManagement = React.lazy(() =>
+  import('./pages/ppe/PPEManagement').catch((err) => {
+    console.error('Failed to load PPEManagement:', err);
+    return {
+      default: () => <div>Error loading PPE Management. Please refresh.</div>,
+    };
+  })
+);
+const PPEOperationalManagement = React.lazy(() =>
+  import('./pages/ppe/PPEOperationalManagement').catch((err) => {
+    console.error('Failed to load PPEOperationalManagement:', err);
+    return {
+      default: () => <div>Error loading PPE Operational Management. Please refresh.</div>,
+    };
+  })
+);
+const PPEList = React.lazy(() =>
+  import('./pages/ppe/PPEList').catch((err) => {
+    console.error('Failed to load PPEList:', err);
+    return {
+      default: () => <div>Error loading PPE List. Please refresh.</div>,
+    };
+  })
+);
+const CreatePPE = React.lazy(() =>
+  import('./pages/ppe/CreatePPE').catch((err) => {
+    console.error('Failed to load CreatePPE:', err);
+    return {
+      default: () => <div>Error loading Create PPE. Please refresh.</div>,
+    };
+  })
+);
+const EditPPE = React.lazy(() =>
+  import('./pages/ppe/EditPPE').catch((err) => {
+    console.error('Failed to load EditPPE:', err);
+    return {
+      default: () => <div>Error loading Edit PPE. Please refresh.</div>,
+    };
+  })
+);
+const PPEDetail = React.lazy(() =>
+  import('./pages/ppe/PPEDetail').catch((err) => {
+    console.error('Failed to load PPEDetail:', err);
+    return {
+      default: () => <div>Error loading PPE Detail. Please refresh.</div>,
+    };
+  })
+);
+
+// Inspection Management Pages
+const InspectionDashboard = React.lazy(() =>
+  import('./pages/inspections/InspectionDashboard').then(module => ({
+    default: module.InspectionDashboard
+  })).catch((err) => {
+    console.error('Failed to load InspectionDashboard:', err);
+    return {
+      default: () => <div>Error loading Inspection Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const InspectionList = React.lazy(() =>
+  import('./pages/inspections/InspectionList').then(module => ({
+    default: module.InspectionList
+  })).catch((err) => {
+    console.error('Failed to load InspectionList:', err);
+    return {
+      default: () => <div>Error loading Inspection List. Please refresh.</div>,
+    };
+  })
+);
+const CreateInspection = React.lazy(() =>
+  import('./pages/inspections/CreateInspection').then(module => ({
+    default: module.CreateInspection
+  })).catch((err) => {
+    console.error('Failed to load CreateInspection:', err);
+    return {
+      default: () => <div>Error loading Create Inspection. Please refresh.</div>,
+    };
+  })
+);
+const InspectionDetail = React.lazy(() =>
+  import('./pages/inspections/InspectionDetail').then(module => ({
+    default: module.InspectionDetail
+  })).catch((err) => {
+    console.error('Failed to load InspectionDetail:', err);
+    return {
+      default: () => <div>Error loading Inspection Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditInspection = React.lazy(() =>
+  import('./pages/inspections/EditInspection').then(module => ({
+    default: module.EditInspection
+  })).catch((err) => {
+    console.error('Failed to load EditInspection:', err);
+    return {
+      default: () => <div>Error loading Edit Inspection. Please refresh.</div>,
+    };
+  })
+);
+const MyInspections = React.lazy(() =>
+  import('./pages/inspections/MyInspections').then(module => ({
+    default: module.MyInspections
+  })).catch((err) => {
+    console.error('Failed to load MyInspections:', err);
+    return {
+      default: () => <div>Error loading My Inspections. Please refresh.</div>,
+    };
+  })
+);
+
+// Work Permit Management Pages
+const WorkPermitDashboard = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitDashboard').catch((err) => {
+    console.error('Failed to load WorkPermitDashboard:', err);
+    return {
+      default: () => <div>Error loading Work Permit Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitList = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitList').catch((err) => {
+    console.error('Failed to load WorkPermitList:', err);
+    return {
+      default: () => <div>Error loading Work Permit List. Please refresh.</div>,
+    };
+  })
+);
+const CreateWorkPermit = React.lazy(() =>
+  import('./pages/work-permits/CreateWorkPermit').catch((err) => {
+    console.error('Failed to load CreateWorkPermit:', err);
+    return {
+      default: () => <div>Error loading Create Work Permit. Please refresh.</div>,
+    };
+  })
+);
+const EditWorkPermit = React.lazy(() =>
+  import('./pages/work-permits/EditWorkPermit').catch((err) => {
+    console.error('Failed to load EditWorkPermit:', err);
+    return {
+      default: () => <div>Error loading Edit Work Permit. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitDetail = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitDetail').catch((err) => {
+    console.error('Failed to load WorkPermitDetail:', err);
+    return {
+      default: () => <div>Error loading Work Permit Detail. Please refresh.</div>,
+    };
+  })
+);
+const WorkPermitApproval = React.lazy(() =>
+  import('./pages/work-permits/WorkPermitApproval').catch((err) => {
+    console.error('Failed to load WorkPermitApproval:', err);
+    return {
+      default: () => <div>Error loading Work Permit Approval. Please refresh.</div>,
+    };
+  })
+);
+const MyWorkPermits = React.lazy(() =>
+  import('./pages/work-permits/MyWorkPermits').catch((err) => {
+    console.error('Failed to load MyWorkPermits:', err);
+    return {
+      default: () => <div>Error loading My Work Permits. Please refresh.</div>,
+    };
+  })
+);
+
+// Security Management Pages
+const SecurityDashboard = React.lazy(() =>
+  import('./pages/security/SecurityDashboard').catch((err) => {
+    console.error('Failed to load SecurityDashboard:', err);
+    return {
+      default: () => <div>Error loading Security Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const SecurityIncidentList = React.lazy(() =>
+  import('./pages/security/SecurityIncidentList').catch((err) => {
+    console.error('Failed to load SecurityIncidentList:', err);
+    return {
+      default: () => <div>Error loading Security Incident List. Please refresh.</div>,
+    };
+  })
+);
+const CreateSecurityIncident = React.lazy(() =>
+  import('./pages/security/CreateSecurityIncident').catch((err) => {
+    console.error('Failed to load CreateSecurityIncident:', err);
+    return {
+      default: () => <div>Error loading Create Security Incident. Please refresh.</div>,
+    };
+  })
+);
+const SecurityIncidentDetail = React.lazy(() =>
+  import('./pages/security/SecurityIncidentDetail').catch((err) => {
+    console.error('Failed to load SecurityIncidentDetail:', err);
+    return {
+      default: () => <div>Error loading Security Incident Detail. Please refresh.</div>,
+    };
+  })
+);
+
+// Health Management Pages (Optimized with lazy loading)
+const HealthDashboard = React.lazy(() =>
+  lazy.HealthDashboard().catch((err) => {
+    console.error('Failed to load HealthDashboard:', err);
+    return {
+      default: () => <div>Error loading Health Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const HealthList = React.lazy(() =>
+  lazy.HealthList().catch((err) => {
+    console.error('Failed to load HealthList:', err);
+    return {
+      default: () => <div>Error loading Health List. Please refresh.</div>,
+    };
+  })
+);
+const CreateHealthRecord = React.lazy(() =>
+  lazy.CreateHealthRecord().catch((err) => {
+    console.error('Failed to load CreateHealthRecord:', err);
+    return {
+      default: () => <div>Error loading Create Health Record. Please refresh.</div>,
+    };
+  })
+);
+const EditHealthRecord = React.lazy(() =>
+  lazy.EditHealthRecord().catch((err) => {
+    console.error('Failed to load EditHealthRecord:', err);
+    return {
+      default: () => <div>Error loading Edit Health Record. Please refresh.</div>,
+    };
+  })
+);
+const HealthDetail = React.lazy(() =>
+  lazy.HealthDetail().catch((err) => {
+    console.error('Failed to load HealthDetail:', err);
+    return {
+      default: () => <div>Error loading Health Detail. Please refresh.</div>,
+    };
+  })
+);
+const VaccinationManagement = React.lazy(() =>
+  lazy.VaccinationManagement().catch((err) => {
+    console.error('Failed to load VaccinationManagement:', err);
+    return {
+      default: () => <div>Error loading Vaccination Management. Please refresh.</div>,
+    };
+  })
+);
+const HealthCompliance = React.lazy(() =>
+  lazy.HealthCompliance().catch((err) => {
+    console.error('Failed to load HealthCompliance:', err);
+    return {
+      default: () => <div>Error loading Health Compliance. Please refresh.</div>,
+    };
+  })
+);
+
+// Admin Management Pages
+const UserManagement = React.lazy(() =>
+  import('./pages/admin/UserManagement').catch((err) => {
+    console.error('Failed to load UserManagement:', err);
+    return {
+      default: () => <div>Error loading User Management. Please refresh.</div>,
+    };
+  })
+);
+
+// Settings Management Pages
+const SystemSettings = React.lazy(() =>
+  import('./pages/settings/SystemSettings').catch((err) => {
+    console.error('Failed to load SystemSettings:', err);
+    return {
+      default: () => <div>Error loading System Settings. Please refresh.</div>,
+    };
+  })
+);
+const IncidentSettings = React.lazy(() =>
+  import('./pages/settings/IncidentSettings').catch((err) => {
+    console.error('Failed to load IncidentSettings:', err);
+    return {
+      default: () => <div>Error loading Incident Settings. Please refresh.</div>,
+    };
+  })
+);
+const RiskSettings = React.lazy(() =>
+  import('./pages/settings/RiskSettings').catch((err) => {
+    console.error('Failed to load RiskSettings:', err);
+    return {
+      default: () => <div>Error loading Risk Settings. Please refresh.</div>,
+    };
+  })
+);
+
+// Loading component
+const Loading = () => (
+  <div className="d-flex justify-content-center align-items-center min-vh-100">
+    <CSpinner color="primary" />
+  </div>
+);
+
+// Route change handler component with performance monitoring
+const RouteChangeHandler = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+
+    // Performance monitoring for route changes
+    performance.mark('route-start');
+    
+    // Log route changes for debugging
+    console.log('Route changed to:', location.pathname);
+    
+    // Monitor page performance
+    const performanceMonitor = new PerformanceMonitor();
+    performanceMonitor.measurePageLoad();
+    
+    // End route measurement
+    performance.mark('route-end');
+    performance.measure('route-change', 'route-start', 'route-end');
+  }, [location]);
+
+  return null;
+};
+
+// SignalR Connection Manager
+const SignalRConnectionManager = () => {
+  useSignalR();
+  return null;
+};
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error Boundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="d-flex justify-content-center align-items-center min-vh-100">
+          <div className="text-center">
+            <h2>Something went wrong</h2>
+            <p>Please refresh the page to continue.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => window.location.reload()}
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function App() {
+  useEffect(() => {
+    // Initialize performance optimizations
+    initializeOptimizations();
+    addResourceHints();
+    
+    // Initialize service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {
+        // Service worker registration failed, but that's okay for dev
+      });
+    }
+    
+    // Initialize performance monitoring
+    const performanceMonitor = new PerformanceMonitor();
+    performanceMonitor.measurePageLoad();
+    
+    // Clean up on unmount
+    return () => {
+      // Performance cleanup would go here
+    };
+  }, []);
+
+  return (
+    <AuthErrorBoundary>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <BrowserRouter>
+            <RouteChangeHandler />
+            <SignalRConnectionManager />
+            <Suspense fallback={<Loading />}>
+            <Routes>
+              {/* Auth Routes */}
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Login />} />
+              </Route>
+
+              {/* Unauthorized Access Route (No authentication required) */}
+              <Route path="/unauthorized" element={<UnauthorizedAccess />} />
+
+              {/* Public Reporting Routes (No Authentication Required) */}
+              <Route path="/report/qr/:qrId" element={<QuickReport />} />
+              <Route path="/report/anonymous" element={<QuickReport />} />
+              <Route path="/report/quick" element={<QuickReport />} />
+
+              {/* Protected Routes */}
+              <Route
+                element={
+                  <PrivateRoute>
+                    <DefaultLayout />
+                  </PrivateRoute>
+                }
+              >
+                <Route
+                  path="/"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route path="/dashboard" element={<Dashboard />} />
+
+                {/* Incident Management */}
+                <Route path="/incidents" element={<IncidentList />} />
+                <Route path="/incidents/dashboard" element={<IncidentDashboard />} />
+                <Route path="/incidents/create" element={<CreateIncident />} />
+                <Route
+                  path="/incidents/quick-report"
+                  element={<QuickReport />}
+                />
+                <Route path="/incidents/qr-scanner" element={<QrScanner />} />
+                <Route path="/incidents/:id" element={<IncidentDetailEnhanced />} />
+                <Route path="/incidents/:id/edit" element={<EditIncident />} />
+                <Route path="/incidents/my-reports" element={<MyReports />} />
+
+                {/* Hazard Management */}
+                <Route path="/hazards" element={<HazardList />} />
+                <Route path="/hazards/dashboard" element={<HazardDashboard />} />
+                <Route path="/hazards/create" element={<CreateHazard />} />
+                <Route path="/hazards/mobile-report" element={<MobileHazardReport />} />
+                <Route path="/hazards/my-hazards" element={<MyHazards />} />
+                <Route path="/hazards/assessments" element={<RiskAssessments />} />
+                <Route path="/hazards/analytics" element={<HazardAnalytics />} />
+                <Route path="/hazards/mapping" element={<HazardMapping />} />
+                <Route path="/hazards/:hazardId/mitigation-actions" element={<MitigationActions />} />
+                <Route path="/hazards/:id" element={<HazardDetail />} />
+                <Route path="/hazards/:id/edit" element={<EditHazard />} />
+
+                {/* Risk Assessment Management */}
+                <Route path="/risk-assessments" element={<RiskAssessmentList />} />
+                <Route path="/risk-assessments/create" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/create/:hazardId" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/:id" element={<RiskAssessmentDetail />} />
+                <Route path="/risk-assessments/:id/edit" element={<CreateRiskAssessment />} />
+                <Route path="/risk-assessments/:id/reassess" element={<CreateRiskAssessment />} />
+
+                {/* Inspection Management */}
+                <Route path="/inspections" element={<InspectionList />} />
+                <Route path="/inspections/dashboard" element={<InspectionDashboard />} />
+                <Route path="/inspections/create" element={<CreateInspection />} />
+                <Route path="/inspections/my-inspections" element={<MyInspections />} />
+                <Route path="/inspections/:id" element={<InspectionDetail />} />
+                <Route path="/inspections/:id/edit" element={<EditInspection />} />
+
+                {/* PPE Management */}
+                <Route path="/ppe" element={<PPEList />} />
+                <Route path="/ppe/dashboard" element={<PPEDashboard />} />
+                <Route path="/ppe/management" element={<PPEOperationalManagement />} />
+                <Route path="/ppe/create" element={<CreatePPE />} />
+                <Route path="/ppe/:id" element={<PPEDetail />} />
+                <Route path="/ppe/:id/edit" element={<EditPPE />} />
+
+                {/* Work Permit Management */}
+                <Route path="/work-permits" element={<WorkPermitList />} />
+                <Route path="/work-permits/dashboard" element={<WorkPermitDashboard />} />
+                <Route path="/work-permits/create" element={<CreateWorkPermit />} />
+                <Route path="/work-permits/my-permits" element={<MyWorkPermits />} />
+                <Route path="/work-permits/:id" element={<WorkPermitDetail />} />
+                <Route path="/work-permits/:id/edit" element={<EditWorkPermit />} />
+                <Route path="/work-permits/:id/approve" element={<WorkPermitApproval />} />
+
+                {/* Health Management */}
+                <Route path="/health" element={<HealthList />} />
+                <Route path="/health/dashboard" element={<HealthDashboard />} />
+                <Route path="/health/create" element={<CreateHealthRecord />} />
+                <Route path="/health/detail/:id" element={<HealthDetail />} />
+                <Route path="/health/edit/:id" element={<EditHealthRecord />} />
+                <Route path="/health/vaccinations" element={<VaccinationManagement />} />
+                <Route path="/health/compliance" element={<HealthCompliance />} />
+
+                {/* Security Management */}
+                <Route path="/security" element={<SecurityIncidentList />} />
+                <Route path="/security/incidents" element={<SecurityIncidentList />} />
+                <Route path="/security/dashboard" element={<SecurityDashboard />} />
+                <Route path="/security/incidents/create" element={<CreateSecurityIncident />} />
+                <Route path="/security/incidents/:id" element={<SecurityIncidentDetail />} />
+                <Route path="/security/incidents/:id/edit" element={<CreateSecurityIncident />} />
+
+                {/* Admin Routes - Protected by AdminRoute */}
+                <Route
+                  path="/admin/users"
+                  element={
+                    <AdminRoute>
+                      <UserManagement />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <AdminRoute>
+                      <div className="p-4">
+                        <h2>System Settings</h2>
+                        <p>General system settings coming soon...</p>
+                      </div>
+                    </AdminRoute>
+                  }
+                />
+
+                {/* Settings Routes - Protected by AdminRoute */}
+                <Route path="/settings/*" element={
+                  <AdminRoute>
+                    <Routes>
+                      <Route path="ppe" element={<PPEManagement />} />
+                      <Route path="incidents" element={<IncidentSettings />} />
+                      <Route path="risks" element={<RiskSettings />} />
+                      <Route path="users" element={
+                        <div className="p-4">
+                          <h2>User Management Settings</h2>
+                          <p>User and role management coming soon...</p>
+                        </div>
+                      } />
+                      <Route path="system" element={<SystemSettings />} />
+                      <Route path="audit" element={
+                        <div className="p-4">
+                          <h2>Audit & Compliance Settings</h2>
+                          <p>Audit and compliance configuration coming soon...</p>
+                        </div>
+                      } />
+                      <Route index element={
+                        <div className="p-4">
+                          <h2>Application Settings</h2>
+                          <p>Select a module from the sidebar to configure system settings.</p>
+                        </div>
+                      } />
+                    </Routes>
+                  </AdminRoute>
+                } />
+
+                {/* Profile & Settings (placeholder pages) */}
+                <Route
+                  path="/profile"
+                  element={
+                    <div className="p-4">
+                      <h2>Profile Page</h2>
+                      <p>Coming soon...</p>
+                    </div>
+                  }
+                />
+
+                {/* Catch all other routes and redirect to dashboard */}
+                <Route
+                  path="*"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+              </Route>
+            </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </Provider>
+      </ErrorBoundary>
+    </AuthErrorBoundary>
+  );
+}
+
+export default App;

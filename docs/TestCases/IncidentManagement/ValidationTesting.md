@@ -1,7 +1,7 @@
 # Validation Testing - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for data validation and error handling in the HarmoniHSE360 incident management system.
+This document contains comprehensive test cases for data validation and error handling in the Harmoni360 incident management system.
 
 ---
 

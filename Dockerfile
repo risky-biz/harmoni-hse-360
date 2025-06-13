@@ -7,27 +7,27 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
 # Copy csproj files and restore
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
-COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "HarmoniHSE360.Application/"]
-COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "HarmoniHSE360.Domain/"]
-COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "HarmoniHSE360.Infrastructure/"]
-RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
+COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "Harmoni360.Application/"]
+COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "Harmoni360.Domain/"]
+COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "Harmoni360.Infrastructure/"]
+RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
 
 # Copy everything else
 COPY src/ .
 
 # Build React app
-WORKDIR /src/HarmoniHSE360.Web/ClientApp
+WORKDIR /src/Harmoni360.Web/ClientApp
 RUN npm ci
 RUN npm run build
 
 # Build .NET app
-WORKDIR /src/HarmoniHSE360.Web
-RUN dotnet build "HarmoniHSE360.Web.csproj" -c Release -o /app/build
+WORKDIR /src/Harmoni360.Web
+RUN dotnet build "Harmoni360.Web.csproj" -c Release -o /app/build
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish "HarmoniHSE360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
@@ -50,4 +50,4 @@ USER appuser
 
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-ENTRYPOINT ["dotnet", "HarmoniHSE360.Web.dll"]
+ENTRYPOINT ["dotnet", "Harmoni360.Web.dll"]

@@ -29,7 +29,7 @@ updates:
 
   # Node.js dependencies for React frontend
   - package-ecosystem: "npm"
-    directory: "/src/HarmoniHSE360.Web/ClientApp"
+    directory: "/src/Harmoni360.Web/ClientApp"
     schedule:
       interval: "weekly"
       day: "monday"
