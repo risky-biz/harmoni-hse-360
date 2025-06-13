@@ -45,6 +45,7 @@ fly secrets set ConnectionStrings__DefaultConnection="your-db-connection" -a har
 fly secrets set ConnectionStrings__Redis="your-redis-connection" -a harmoni360-app
 fly secrets set Jwt__Key="your-jwt-key" -a harmoni360-app
 ```
+If the logs show `IDX10703: Cannot create a 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey'`, the JWT key is empty or missing. Ensure you have set the `Jwt__Key` secret (note the double underscore).
 
 #### Database Connection Issues
 ```bash
