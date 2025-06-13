@@ -279,23 +279,3 @@ jobs:
         run: |
           sleep 30
           curl -f https://harmonihse360-app.fly.dev/health || exit 1
-
-      - name: Notify deployment success
-        uses: 8398a7/action-slack@v3
-        if: success()
-        continue-on-error: true
-        with:
-          status: success
-          text: "🚀 HarmoniHSE360 successfully deployed to production!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Notify deployment failure
-        uses: 8398a7/action-slack@v3
-        if: failure()
-        continue-on-error: true
-        with:
-          status: failure
-          text: "❌ HarmoniHSE360 production deployment failed!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
