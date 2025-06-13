@@ -420,8 +420,8 @@ export const incidentApi = createApi({
     }),
 
     // Get incident dashboard data
-    getIncidentDashboard: builder.query<IncidentDashboardDto, IncidentDashboardParams | void>({
-      query: (params = {}) => {
+    getIncidentDashboard: builder.query<IncidentDashboardDto, IncidentDashboardParams>({
+      query: (params: IncidentDashboardParams = {}) => {
         const searchParams = new URLSearchParams();
         
         if (params.fromDate) searchParams.append('fromDate', params.fromDate);

@@ -3,7 +3,7 @@ import React from 'react';
 interface DonutChartData {
   label: string;
   value: number;
-  color: string;
+  color?: string;
 }
 
 interface DonutChartProps {
