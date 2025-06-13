@@ -33,7 +33,6 @@ import {
   faExclamationTriangle,
   faEye,
   faRoute,
-  faLayersAlt,
   faCalendarAlt,
   faBuilding,
   faUser,
@@ -417,7 +416,7 @@ const HazardMapping: React.FC = () => {
                             <CBadge color={getRiskBadgeColor(hazard.currentRiskLevel || 'Not Assessed')}>
                               {hazard.currentRiskLevel || 'Not Assessed'}
                             </CBadge>
-                            <CBadge color="light" text="dark">
+                            <CBadge color="light" textColor="dark">
                               {hazard.category}
                             </CBadge>
                           </div>

@@ -44,10 +44,10 @@ const RiskAssessments: React.FC = () => {
   const { data, isLoading, error } = useGetUnassessedHazardsQuery(filters);
 
   const handleFilterChange = (field: keyof GetHazardsParams, value: string | number) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      [field]: value,
-      pageNumber: field !== 'pageNumber' ? 1 : value
+    setFilters(prev => ({
+      ...prev,
+      [field]: field === 'pageNumber' ? Number(value) : value,
+      pageNumber: field !== 'pageNumber' ? 1 : Number(value)
     }));
   };
 

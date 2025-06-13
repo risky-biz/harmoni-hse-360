@@ -7,12 +7,17 @@ interface StatsCardProps {
   value: string | number;
   subtitle?: string;
   icon?: any;
-  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
+  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark';
   trend?: {
     value: number;
     isPositive: boolean;
     label: string;
   };
+  /**
+   * Temporary backwards compatibility property.
+   * @deprecated use `trend` instead
+   */
+  change?: number;
   isLoading?: boolean;
   onClick?: () => void;
   className?: string;
@@ -25,12 +30,18 @@ const StatsCard: React.FC<StatsCardProps> = ({
   icon,
   color = 'primary',
   trend,
+  change,
   isLoading = false,
   onClick,
   className = ''
 }) => {
   const cardClass = `stats-card ${onClick ? 'clickable' : ''} ${className}`;
   const colorClass = `border-start border-start-4 border-${color}`;
+  const finalTrend = trend ?? (change !== undefined ? {
+    value: change,
+    isPositive: change >= 0,
+    label: ''
+  } : undefined);
 
   return (
     <CCard 
@@ -57,12 +68,12 @@ const StatsCard: React.FC<StatsCardProps> = ({
               </>
             )}
           </div>
-          {trend && !isLoading && (
+          {finalTrend && !isLoading && (
             <div className="text-medium-emphasis small mt-1">
-              <span className={`fw-semibold ${trend.isPositive ? 'text-success' : 'text-danger'}`}>
-                {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+              <span className={`fw-semibold ${finalTrend.isPositive ? 'text-success' : 'text-danger'}`}>
+                {finalTrend.isPositive ? '↗' : '↘'} {Math.abs(finalTrend.value)}%
               </span>
-              <span className="ms-1">{trend.label}</span>
+              <span className="ms-1">{finalTrend.label}</span>
             </div>
           )}
         </div>

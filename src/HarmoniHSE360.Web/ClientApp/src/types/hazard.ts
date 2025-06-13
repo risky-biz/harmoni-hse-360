@@ -337,6 +337,7 @@ export interface ComplianceMetrics {
 }
 
 export interface RecentActivityDto {
+  id: number;
   activityType: string;
   title: string;
   description: string;
@@ -347,6 +348,7 @@ export interface RecentActivityDto {
 }
 
 export interface HazardAlertDto {
+  id: number;
   alertType: string;
   title: string;
   message: string;

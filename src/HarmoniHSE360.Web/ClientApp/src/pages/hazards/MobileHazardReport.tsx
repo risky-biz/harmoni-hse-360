@@ -102,7 +102,7 @@ const MobileHazardReport: React.FC = () => {
         // Try to get address from coordinates
         try {
           const response = await fetch(
-            `https://api.geocoding.com/v1/reverse?lat=${locationData.latitude}&lng=${locationData.longitude}&api_key=${process.env.REACT_APP_GEOCODING_API_KEY}`
+            `https://api.geocoding.com/v1/reverse?lat=${locationData.latitude}&lng=${locationData.longitude}&api_key=${import.meta.env.VITE_GEOCODING_API_KEY}`
           );
           
           if (response.ok) {
@@ -301,7 +301,7 @@ const MobileHazardReport: React.FC = () => {
               <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
               Report Hazard
             </h5>
-            <CBadge color="light" text="dark">
+            <CBadge color="light" textColor="dark">
               Step {step} of {totalSteps}
             </CBadge>
           </div>
