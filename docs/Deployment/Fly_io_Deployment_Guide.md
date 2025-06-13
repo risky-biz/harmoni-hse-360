@@ -98,7 +98,7 @@ COPY src/ .
 
 # Build React app
 WORKDIR /src/HarmoniHSE360.Web/ClientApp
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 RUN npm run build
 
 # Build .NET app
