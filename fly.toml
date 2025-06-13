@@ -55,5 +55,5 @@ primary_region = "sjc"
   memory_mb = 1024
 
 # Restart policy for production stability
-[restart]
+[[restart]]
   policy = "always"
