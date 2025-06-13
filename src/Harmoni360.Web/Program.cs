@@ -440,9 +440,17 @@ static async Task WaitForDatabaseAsync(ApplicationDbContext context, Microsoft.E
                 return;
             }
         }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex, "Database connection attempt {Attempt} failed due to a SQL error", attempt);
+        }
+        catch (TimeoutException ex)
+        {
+            logger.LogWarning(ex, "Database connection attempt {Attempt} failed due to a timeout", attempt);
+        }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Database connection attempt {Attempt} failed", attempt);
+            logger.LogError(ex, "Unexpected error during database connection attempt {Attempt}", attempt);
         }
 
         await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
