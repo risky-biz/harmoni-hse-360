@@ -17,6 +17,7 @@ using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Infrastructure.Services;
 using System.Threading.RateLimiting;
+using System.Data.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -440,9 +441,9 @@ static async Task WaitForDatabaseAsync(ApplicationDbContext context, Microsoft.E
                 return;
             }
         }
-        catch (SqlException ex)
+        catch (DbException ex)
         {
-            logger.LogWarning(ex, "Database connection attempt {Attempt} failed due to a SQL error", attempt);
+            logger.LogWarning(ex, "Database connection attempt {Attempt} failed due to a database error", attempt);
         }
         catch (TimeoutException ex)
         {
