@@ -98,7 +98,7 @@ COPY src/ .
 
 # Build React app
 WORKDIR /src/HarmoniHSE360.Web/ClientApp
-RUN npm ci --only=production
+RUN npm ci
 RUN npm run build
 
 # Build .NET app
@@ -483,6 +483,6 @@ fly postgres connect -a harmonihse360-db
 
 ---
 
-*Last Updated: January 2025*
-*Version: 1.0*
+*Last Updated: March 2025*
+*Version: 1.1*
 *Part of HarmoniHSE360 Deployment Documentation Suite*
