@@ -238,6 +238,7 @@ fly machine update --vm-cpu-kind performance -a harmonihse360-app
 ```dockerfile
 # Use multi-stage builds efficiently
 # Clear npm cache
+
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 
 # Optimize .NET build
