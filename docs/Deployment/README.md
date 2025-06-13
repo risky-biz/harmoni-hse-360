@@ -104,9 +104,10 @@ Follow the [Manual Deployment Guide](./Manual_Deployment_Guide.md) for complete 
 
 ## 🔧 Configuration Files
 
-### Essential Files
+-### Essential Files
 - `Dockerfile.flyio` - Optimized Docker configuration for Fly.io
-- `fly.toml.example` - Fly.io application configuration template
+- `fly.toml` - Production Fly.io configuration
+- `fly.toml.example` - Template used to create `fly.toml`
 - `appsettings.Production.json` - Production environment settings
 - `scripts/deploy-flyio.sh` - Automated deployment script (Linux/macOS)
 - `scripts/deploy-flyio.ps1` - Automated deployment script (Windows)
