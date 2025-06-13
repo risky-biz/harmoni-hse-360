@@ -8,6 +8,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
     <UserSecretsId>27956cca-ed46-4f3f-b393-cd88f0c18d1a</UserSecretsId>
+    <SkipClientBuild>false</SkipClientBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,8 +49,8 @@
   </Target>
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" Condition="'$(SkipClientBuild)' != 'true'" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" Condition="'$(SkipClientBuild)' != 'true'" />
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">

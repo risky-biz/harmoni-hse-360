@@ -22,7 +22,7 @@ RUN npm run build
 
 # Build .NET app
 WORKDIR /src/Harmoni360.Web
-RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:SkipClientBuild=true
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
