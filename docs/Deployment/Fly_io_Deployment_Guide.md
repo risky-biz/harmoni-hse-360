@@ -98,7 +98,7 @@ COPY src/ .
 
 # Build React app
 WORKDIR /src/HarmoniHSE360.Web/ClientApp
-RUN npm ci --only=production
+RUN npm ci
 RUN npm run build
 
 # Build .NET app
