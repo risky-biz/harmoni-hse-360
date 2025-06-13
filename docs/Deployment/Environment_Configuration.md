@@ -184,7 +184,9 @@ fly secrets set Jwt__Key="Harmoni360-Staging-JWT-$(date +%s)-$(openssl rand -hex
 
 ```bash
 # Database connection (replace with actual values)
-fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360_production;Username=postgres;Password=[production-db-password]" -a harmoni360-app
+fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=Harmoni360_Prod;Username=harmoni360;Password=[production-db-password]" -a harmoni360-app
+
+> Ensure the Fly Postgres cluster was created with this database name and user.
 
 # Redis connection (replace with actual values)
 fly secrets set ConnectionStrings__Redis="redis://default:[production-redis-password]@harmoni360-redis.internal:6379" -a harmoni360-app
@@ -269,14 +271,15 @@ fly secrets set Jwt__RefreshTokenExpirationDays="7" -a harmoni360-app
 
 #### Database User Permissions
 ```sql
+
 -- Create application-specific database user
-CREATE USER harmoni360_app WITH PASSWORD 'secure_password';
+CREATE USER harmoni360 WITH PASSWORD 'secure_password';
 
 -- Grant minimal required permissions
-GRANT CONNECT ON DATABASE harmoni360_production TO harmoni360_app;
-GRANT USAGE ON SCHEMA public TO harmoni360_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360_app;
+GRANT CONNECT ON DATABASE Harmoni360_Prod TO harmoni360;
+GRANT USAGE ON SCHEMA public TO harmoni360;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360;
 ```
 
 ## 🔄 Configuration Management Scripts

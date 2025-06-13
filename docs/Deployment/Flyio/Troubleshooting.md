@@ -166,10 +166,12 @@ flyctl postgres connect -a harmoni360-db
 **Solutions:**
 ```bash
 # Verify connection string format
-# Should be: Host=harmoni360-db.internal;Port=5432;Database=harmoni360;Username=postgres;Password=xxx
+# Should be: Host=harmoni360-db.internal;Port=5432;Database=Harmoni360_Prod;Username=harmoni360;Password=xxx
+
+# Ensure your Fly Postgres cluster was created with this database name and user.
 
 # Update connection string
-flyctl secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360;Username=postgres;Password=YOUR_PASSWORD" -a harmoni360-app
+flyctl secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=Harmoni360_Prod;Username=harmoni360;Password=YOUR_PASSWORD" -a harmoni360-app
 
 # Restart application after secret update
 flyctl restart -a harmoni360-app
