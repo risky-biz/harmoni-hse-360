@@ -1,5 +1,6 @@
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
+using Harmoni360.Domain.Entities.Inspections;
 using Microsoft.EntityFrameworkCore;
 
 namespace Harmoni360.Application.Common.Interfaces;
@@ -65,6 +66,14 @@ public interface IApplicationDbContext
     DbSet<WorkPermitApproval> WorkPermitApprovals { get; }
     DbSet<WorkPermitHazard> WorkPermitHazards { get; }
     DbSet<WorkPermitPrecaution> WorkPermitPrecautions { get; }
+    
+    // Inspection Management
+    DbSet<Inspection> Inspections { get; }
+    DbSet<InspectionItem> InspectionItems { get; }
+    DbSet<InspectionFinding> InspectionFindings { get; }
+    DbSet<InspectionAttachment> InspectionAttachments { get; }
+    DbSet<InspectionComment> InspectionComments { get; }
+    DbSet<FindingAttachment> FindingAttachments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

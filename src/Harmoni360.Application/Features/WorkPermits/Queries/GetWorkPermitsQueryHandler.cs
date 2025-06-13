@@ -63,11 +63,11 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
 
             return new GetWorkPermitsResponse
             {
-                WorkPermits = workPermitDtos,
+                Items = workPermitDtos,
                 TotalCount = totalCount,
-                PageNumber = request.PageNumber,
+                CurrentPage = request.PageNumber,
                 PageSize = request.PageSize,
-                TotalPages = totalPages,
+                PageCount = totalPages,
                 HasPreviousPage = request.PageNumber > 1,
                 HasNextPage = request.PageNumber < totalPages,
                 Summary = summary
@@ -247,8 +247,11 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
             Title = workPermit.Title,
             Description = workPermit.Description,
             Type = workPermit.Type.ToString(),
+            TypeDisplay = GetTypeDisplay(workPermit.Type),
             Status = workPermit.Status.ToString(),
+            StatusDisplay = GetStatusDisplay(workPermit.Status),
             Priority = workPermit.Priority.ToString(),
+            PriorityDisplay = GetPriorityDisplay(workPermit.Priority),
             WorkLocation = workPermit.WorkLocation,
             GeoLocation = workPermit.GeoLocation != null ? new GeoLocationDto
             {
@@ -288,6 +291,7 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
             HasSMK3Compliance = workPermit.HasSMK3Compliance,
             EnvironmentalPermitNumber = workPermit.EnvironmentalPermitNumber,
             RiskLevel = workPermit.RiskLevel.ToString(),
+            RiskLevelDisplay = GetRiskLevelDisplay(workPermit.RiskLevel),
             RiskAssessmentSummary = workPermit.RiskAssessmentSummary,
             EmergencyProcedures = workPermit.EmergencyProcedures,
             CompletionNotes = workPermit.CompletionNotes,
@@ -358,6 +362,60 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
                 K3StandardReference = p.K3StandardReference,
                 IsMandatoryByLaw = p.IsMandatoryByLaw
             }).ToList()
+        };
+    }
+
+    private static string GetTypeDisplay(WorkPermitType type)
+    {
+        return type switch
+        {
+            WorkPermitType.General => "General Work",
+            WorkPermitType.HotWork => "Hot Work",
+            WorkPermitType.ColdWork => "Cold Work", 
+            WorkPermitType.ConfinedSpace => "Confined Space",
+            WorkPermitType.ElectricalWork => "Electrical Work",
+            WorkPermitType.Special => "Special Work",
+            _ => type.ToString()
+        };
+    }
+
+    private static string GetStatusDisplay(WorkPermitStatus status)
+    {
+        return status switch
+        {
+            WorkPermitStatus.Draft => "Draft",
+            WorkPermitStatus.PendingApproval => "Pending Approval",
+            WorkPermitStatus.Approved => "Approved",
+            WorkPermitStatus.Rejected => "Rejected",
+            WorkPermitStatus.InProgress => "In Progress",
+            WorkPermitStatus.Completed => "Completed",
+            WorkPermitStatus.Cancelled => "Cancelled",
+            WorkPermitStatus.Expired => "Expired",
+            _ => status.ToString()
+        };
+    }
+
+    private static string GetPriorityDisplay(WorkPermitPriority priority)
+    {
+        return priority switch
+        {
+            WorkPermitPriority.Low => "Low",
+            WorkPermitPriority.Medium => "Medium",
+            WorkPermitPriority.High => "High",
+            WorkPermitPriority.Critical => "Critical",
+            _ => priority.ToString()
+        };
+    }
+
+    private static string GetRiskLevelDisplay(RiskLevel riskLevel)
+    {
+        return riskLevel switch
+        {
+            RiskLevel.Low => "Low",
+            RiskLevel.Medium => "Medium",
+            RiskLevel.High => "High",
+            RiskLevel.Critical => "Critical",
+            _ => riskLevel.ToString()
         };
     }
 

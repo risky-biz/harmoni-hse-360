@@ -166,33 +166,49 @@ export const workPermitApi = createApi({
       ],
     }),
 
-    completeWork: builder.mutation<WorkPermitDto, { id: string; completionNotes: string; isCompletedSafely: boolean; lessonsLearned?: string }>({
-      query: ({ id, ...body }) => ({
-        url: `/${id}/complete`,
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        'WorkPermit',
-        'WorkPermitDashboard',
-        'MyWorkPermits',
-        'WorkPermitStatistics',
-        { type: 'WorkPermitDetail', id }
-      ],
+    completeWork: builder.mutation<WorkPermitDto, string | { id: string; completionNotes?: string; isCompletedSafely?: boolean; lessonsLearned?: string }>({
+      query: (arg) => {
+        const id = typeof arg === 'string' ? arg : arg.id;
+        const body = typeof arg === 'string' ? {} : { completionNotes: arg.completionNotes, isCompletedSafely: arg.isCompletedSafely, lessonsLearned: arg.lessonsLearned };
+        
+        return {
+          url: `/${id}/complete`,
+          method: 'POST',
+          body,
+        };
+      },
+      invalidatesTags: (result, error, arg) => {
+        const id = typeof arg === 'string' ? arg : arg.id;
+        return [
+          'WorkPermit',
+          'WorkPermitDashboard',
+          'MyWorkPermits',
+          'WorkPermitStatistics',
+          { type: 'WorkPermitDetail', id }
+        ];
+      },
     }),
 
-    cancelWorkPermit: builder.mutation<WorkPermitDto, { id: string; cancellationReason: string }>({
-      query: ({ id, cancellationReason }) => ({
-        url: `/${id}/cancel`,
-        method: 'POST',
-        body: { cancellationReason },
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        'WorkPermit',
-        'WorkPermitDashboard',
-        'MyWorkPermits',
-        { type: 'WorkPermitDetail', id }
-      ],
+    cancelWorkPermit: builder.mutation<WorkPermitDto, string | { id: string; cancellationReason?: string }>({
+      query: (arg) => {
+        const id = typeof arg === 'string' ? arg : arg.id;
+        const body = typeof arg === 'string' ? {} : { cancellationReason: arg.cancellationReason };
+        
+        return {
+          url: `/${id}/cancel`,
+          method: 'POST',
+          body,
+        };
+      },
+      invalidatesTags: (result, error, arg) => {
+        const id = typeof arg === 'string' ? arg : arg.id;
+        return [
+          'WorkPermit',
+          'WorkPermitDashboard',
+          'MyWorkPermits',
+          { type: 'WorkPermitDetail', id }
+        ];
+      },
     }),
 
     // Component Management
@@ -264,6 +280,7 @@ export const workPermitApi = createApi({
     uploadAttachment: builder.mutation<WorkPermitAttachmentDto, { workPermitId: string; file: File; attachmentType: string; description?: string }>({
       query: ({ workPermitId, file, attachmentType, description }) => {
         const formData = new FormData();
+        formData.append('workPermitId', workPermitId);
         formData.append('file', file);
         formData.append('attachmentType', attachmentType);
         if (description) formData.append('description', description);

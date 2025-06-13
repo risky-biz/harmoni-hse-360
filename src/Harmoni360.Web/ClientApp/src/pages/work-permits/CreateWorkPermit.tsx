@@ -46,10 +46,11 @@ import {
   faTrash,
   faFileContract,
   faCog,
-  faIndustry
+  faIndustry,
+  faFileUpload
 } from '@fortawesome/free-solid-svg-icons';
 
-import { useCreateWorkPermitMutation } from '../../features/work-permits/workPermitApi';
+import { useCreateWorkPermitMutation, useUploadAttachmentMutation } from '../../features/work-permits/workPermitApi';
 import { useGetDepartmentsQuery } from '../../api/configurationApi';
 import {
   WorkPermitFormData,
@@ -61,6 +62,7 @@ import {
   WorkPermitHazardDto,
   WorkPermitPrecautionDto
 } from '../../types/workPermit';
+import { WorkPermitAttachmentManager } from '../../components/work-permits';
 import { format, addDays } from 'date-fns';
 
 // Validation schema
@@ -108,6 +110,7 @@ const WORKPERMIT_ICONS = {
   safetyRequirements: faShieldAlt,
   k3Compliance: faCheck,
   riskAssessment: faExclamationTriangle,
+  attachments: faFileUpload,
   reviewSubmit: faCheck,
   
   // Action icons
@@ -125,6 +128,7 @@ const CreateWorkPermit: React.FC = () => {
   // API calls
   const { data: departments } = useGetDepartmentsQuery({});
   const [createWorkPermit, { isLoading }] = useCreateWorkPermitMutation();
+  const [uploadAttachment] = useUploadAttachmentMutation();
 
   // Form state
   const {
@@ -176,6 +180,7 @@ const CreateWorkPermit: React.FC = () => {
 
   // Additional state for complex data
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<any[]>([]); // For file attachments in create mode
   const [currentHazard, setCurrentHazard] = useState<Partial<WorkPermitHazardDto>>({
     hazardDescription: '',
     category: 'Physical',
@@ -304,11 +309,31 @@ const CreateWorkPermit: React.FC = () => {
 
       // Submit to API
       const result = await createWorkPermit(command).unwrap();
+      console.log('✅ Work permit created:', result);
+
+      // Upload pending attachments if any
+      if (pendingAttachments.length > 0 && result.id) {
+        console.log(`📎 Uploading ${pendingAttachments.length} attachments...`);
+        try {
+          for (const attachment of pendingAttachments) {
+            await uploadAttachment({
+              workPermitId: result.id.toString(),
+              file: attachment.file,
+              attachmentType: attachment.attachmentType,
+              description: attachment.description,
+            }).unwrap();
+          }
+          console.log('✅ All attachments uploaded successfully');
+        } catch (uploadError) {
+          console.error('❌ Failed to upload some attachments:', uploadError);
+          // Continue anyway - the work permit was created successfully
+        }
+      }
 
       // Navigate to work permits list with success message
       navigate('/work-permits', {
         state: {
-          message: 'Work permit created successfully!',
+          message: `Work permit created successfully!${pendingAttachments.length > 0 ? ` ${pendingAttachments.length} attachment(s) uploaded.` : ''}`,
           type: 'success',
         },
       });
@@ -1209,8 +1234,41 @@ const CreateWorkPermit: React.FC = () => {
                   </CAccordionBody>
                 </CAccordionItem>
 
-                {/* Section 6: Review & Submit */}
+                {/* Section 6: Attachments */}
                 <CAccordionItem itemKey={6}>
+                  <CAccordionHeader>
+                    <div className="d-flex align-items-center">
+                      <FontAwesomeIcon icon={WORKPERMIT_ICONS.attachments} className="me-2 text-info" />
+                      <strong>Supporting Documents & Attachments</strong>
+                    </div>
+                  </CAccordionHeader>
+                  <CAccordionBody>
+                    <div className="mb-3">
+                      <p className="text-muted">
+                        Upload supporting documents such as work plans, safety procedures, risk assessments, 
+                        method statements, and other relevant documentation for this work permit.
+                      </p>
+                    </div>
+                    
+                    <WorkPermitAttachmentManager
+                      attachments={[]}
+                      onAttachmentsChange={setPendingAttachments}
+                      allowUpload={true}
+                      allowDelete={true}
+                      readonly={false}
+                    />
+                    
+                    {pendingAttachments.length > 0 && (
+                      <CAlert color="info" className="mt-3">
+                        <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+                        {pendingAttachments.length} file{pendingAttachments.length !== 1 ? 's' : ''} will be uploaded after the work permit is created.
+                      </CAlert>
+                    )}
+                  </CAccordionBody>
+                </CAccordionItem>
+
+                {/* Section 7: Review & Submit */}
+                <CAccordionItem itemKey={7}>
                   <CAccordionHeader>
                     <div className="d-flex align-items-center">
                       <FontAwesomeIcon icon={WORKPERMIT_ICONS.reviewSubmit} className="me-2 text-success" />
@@ -1272,6 +1330,12 @@ const CreateWorkPermit: React.FC = () => {
                       {(watch('precautions') || []).length > 0 && (
                         <div className="mb-3">
                           <strong>Safety Precautions:</strong> {(watch('precautions') || []).length}
+                        </div>
+                      )}
+
+                      {pendingAttachments.length > 0 && (
+                        <div className="mb-3">
+                          <strong>Attachments:</strong> {pendingAttachments.length} document{pendingAttachments.length !== 1 ? 's' : ''} ready for upload
                         </div>
                       )}
 

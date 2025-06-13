@@ -299,6 +299,68 @@ const PPEDetail = React.lazy(() =>
   })
 );
 
+// Inspection Management Pages
+const InspectionDashboard = React.lazy(() =>
+  import('./pages/inspections/InspectionDashboard').then(module => ({
+    default: module.InspectionDashboard
+  })).catch((err) => {
+    console.error('Failed to load InspectionDashboard:', err);
+    return {
+      default: () => <div>Error loading Inspection Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const InspectionList = React.lazy(() =>
+  import('./pages/inspections/InspectionList').then(module => ({
+    default: module.InspectionList
+  })).catch((err) => {
+    console.error('Failed to load InspectionList:', err);
+    return {
+      default: () => <div>Error loading Inspection List. Please refresh.</div>,
+    };
+  })
+);
+const CreateInspection = React.lazy(() =>
+  import('./pages/inspections/CreateInspection').then(module => ({
+    default: module.CreateInspection
+  })).catch((err) => {
+    console.error('Failed to load CreateInspection:', err);
+    return {
+      default: () => <div>Error loading Create Inspection. Please refresh.</div>,
+    };
+  })
+);
+const InspectionDetail = React.lazy(() =>
+  import('./pages/inspections/InspectionDetail').then(module => ({
+    default: module.InspectionDetail
+  })).catch((err) => {
+    console.error('Failed to load InspectionDetail:', err);
+    return {
+      default: () => <div>Error loading Inspection Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditInspection = React.lazy(() =>
+  import('./pages/inspections/EditInspection').then(module => ({
+    default: module.EditInspection
+  })).catch((err) => {
+    console.error('Failed to load EditInspection:', err);
+    return {
+      default: () => <div>Error loading Edit Inspection. Please refresh.</div>,
+    };
+  })
+);
+const MyInspections = React.lazy(() =>
+  import('./pages/inspections/MyInspections').then(module => ({
+    default: module.MyInspections
+  })).catch((err) => {
+    console.error('Failed to load MyInspections:', err);
+    return {
+      default: () => <div>Error loading My Inspections. Please refresh.</div>,
+    };
+  })
+);
+
 // Work Permit Management Pages
 const WorkPermitDashboard = React.lazy(() =>
   import('./pages/work-permits/WorkPermitDashboard').catch((err) => {
@@ -656,6 +718,14 @@ function App() {
                 <Route path="/risk-assessments/:id" element={<RiskAssessmentDetail />} />
                 <Route path="/risk-assessments/:id/edit" element={<CreateRiskAssessment />} />
                 <Route path="/risk-assessments/:id/reassess" element={<CreateRiskAssessment />} />
+
+                {/* Inspection Management */}
+                <Route path="/inspections" element={<InspectionList />} />
+                <Route path="/inspections/dashboard" element={<InspectionDashboard />} />
+                <Route path="/inspections/create" element={<CreateInspection />} />
+                <Route path="/inspections/my-inspections" element={<MyInspections />} />
+                <Route path="/inspections/:id" element={<InspectionDetail />} />
+                <Route path="/inspections/:id/edit" element={<EditInspection />} />
 
                 {/* PPE Management */}
                 <Route path="/ppe" element={<PPEList />} />

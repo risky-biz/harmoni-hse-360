@@ -66,7 +66,7 @@ export interface GeoLocationDto {
 }
 
 export interface WorkPermitDto {
-  id: string;
+  id: number;
   permitNumber: string;
   title: string;
   description: string;
@@ -87,7 +87,7 @@ export interface WorkPermitDto {
   estimatedDuration: number;
   
   // Personnel Information
-  requestedById: string;
+  requestedById: number;
   requestedByName: string;
   requestedByDepartment: string;
   requestedByPosition: string;
@@ -149,8 +149,8 @@ export interface WorkPermitDto {
 }
 
 export interface WorkPermitAttachmentDto {
-  id: string;
-  workPermitId: string;
+  id: number;
+  workPermitId: number;
   fileName: string;
   originalFileName: string;
   contentType: string;
@@ -163,9 +163,9 @@ export interface WorkPermitAttachmentDto {
 }
 
 export interface WorkPermitApprovalDto {
-  id: string;
-  workPermitId: string;
-  approvedById: string;
+  id: number;
+  workPermitId: number;
+  approvedById: number;
   approvedByName: string;
   approvalLevel: string;
   approvedAt: string;
@@ -178,8 +178,8 @@ export interface WorkPermitApprovalDto {
 }
 
 export interface WorkPermitHazardDto {
-  id: string;
-  workPermitId: string;
+  id: number;
+  workPermitId: number;
   hazardDescription: string;
   category: HazardCategory;
   categoryDisplay: string;
@@ -198,8 +198,8 @@ export interface WorkPermitHazardDto {
 }
 
 export interface WorkPermitPrecautionDto {
-  id: string;
-  workPermitId: string;
+  id: number;
+  workPermitId: number;
   precautionDescription: string;
   category: PrecautionCategory;
   categoryDisplay: string;
@@ -318,7 +318,7 @@ export interface CreateWorkPermitRequest {
 }
 
 export interface UpdateWorkPermitRequest extends CreateWorkPermitRequest {
-  id: string;
+  id: number;
 }
 
 export interface GetWorkPermitsParams {

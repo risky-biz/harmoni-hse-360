@@ -49,30 +49,36 @@ public enum RoleType
     HealthMonitor = 7,
 
     /// <summary>
+    /// Inspection Manager - RESTRICTED access ONLY to Inspection Management module and its related features 
+    /// (inspection creation, scheduling, completion, findings management, compliance tracking)
+    /// </summary>
+    InspectionManager = 8,
+
+    /// <summary>
     /// Security Manager - COMPREHENSIVE access to ALL Security modules (Physical Security, Information Security, Personnel Security)
     /// and their related features (access control, security incidents, security risk assessment, threat monitoring)
     /// </summary>
-    SecurityManager = 8,
+    SecurityManager = 9,
 
     /// <summary>
     /// Security Officer - OPERATIONAL access to day-to-day Security operations including Security incident management, 
     /// physical security monitoring, and security data entry (excluding strategic security configuration)
     /// </summary>
-    SecurityOfficer = 9,
+    SecurityOfficer = 10,
 
     /// <summary>
     /// Compliance Officer - ENHANCED access to HSSE compliance management across ALL domains 
     /// (Health, Safety, Security, Environment) including audit management, regulatory reporting, and compliance monitoring
     /// </summary>
-    ComplianceOfficer = 10,
+    ComplianceOfficer = 11,
 
     /// <summary>
     /// Reporter - READ-ONLY access to reporting functionality across modules they have permission for
     /// </summary>
-    Reporter = 11,
+    Reporter = 12,
 
     /// <summary>
     /// Viewer - READ-ONLY access to basic dashboard and summary information (no create/update/delete permissions)
     /// </summary>
-    Viewer = 12
+    Viewer = 13
 }

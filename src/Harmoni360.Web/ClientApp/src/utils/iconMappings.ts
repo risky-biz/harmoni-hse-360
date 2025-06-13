@@ -70,6 +70,9 @@ import {
   faTriangleExclamation,
   faCamera,
   faStickyNote,
+  faClipboardCheck,
+  faListCheck,
+  faTasks,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Action Icons - Common actions across the incident management system
@@ -194,6 +197,14 @@ export const CONTEXT_ICONS = {
   stethoscope: faStethoscope,
   emergency: faPhone,
   analytics: faChartLine,
+
+  // Inspection Management
+  inspection: faClipboardCheck,
+  inspections: faClipboardCheck,
+  checklist: faListCheck,
+  audit: faTasks,
+  quality: faClipboardCheck,
+  compliance: faClipboardCheck,
   
   // System & Interface
   print: faPrint,

@@ -238,18 +238,50 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // 3. Inspection Management (Placeholder)
+  // 3. Inspection Management
   {
     component: 'CNavTitle',
     name: 'Inspection Management',
-    adminOnly: true, // Temporary until module is implemented
+    module: ModuleType.InspectionManagement,
+    requireAnyPermission: true,
   },
   {
-    component: 'CNavItem',
-    name: 'Inspections (Coming Soon)',
-    to: '#',
+    component: 'CNavGroup',
+    name: 'Inspections',
+    to: '#inspections',
     icon: null,
-    adminOnly: true,
+    module: ModuleType.InspectionManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Inspection Dashboard',
+        to: '/inspections/dashboard',
+        module: ModuleType.InspectionManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Create Inspection',
+        to: '/inspections/create',
+        module: ModuleType.InspectionManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'View Inspections',
+        to: '/inspections',
+        module: ModuleType.InspectionManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Inspections',
+        to: '/inspections/my-inspections',
+        module: ModuleType.InspectionManagement,
+        permission: PermissionType.Read,
+      },
+    ],
   },
 
   // 4. Audit Management (Placeholder)

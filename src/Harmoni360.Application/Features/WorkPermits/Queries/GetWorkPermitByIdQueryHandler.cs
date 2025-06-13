@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Harmoni360.Application.Features.WorkPermits.Queries
 {
-    public class GetWorkPermitByIdQueryHandler : IRequestHandler<GetWorkPermitByIdQuery, WorkPermitDto>
+    public class GetWorkPermitByIdQueryHandler : IRequestHandler<GetWorkPermitByIdQuery, WorkPermitDto?>
     {
         private readonly IApplicationDbContext _context;
         private readonly ILogger<GetWorkPermitByIdQueryHandler> _logger;
@@ -17,7 +17,7 @@ namespace Harmoni360.Application.Features.WorkPermits.Queries
             _logger = logger;
         }
 
-        public async Task<WorkPermitDto> Handle(GetWorkPermitByIdQuery request, CancellationToken cancellationToken)
+        public async Task<WorkPermitDto?> Handle(GetWorkPermitByIdQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Retrieving work permit with ID: {Id}", request.Id);
 

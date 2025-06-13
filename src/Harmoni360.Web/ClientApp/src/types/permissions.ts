@@ -2,8 +2,10 @@
 
 export enum ModuleType {
   Dashboard = 'Dashboard',
+  WorkPermitManagement = 'WorkPermitManagement',
   IncidentManagement = 'IncidentManagement',
   RiskManagement = 'RiskManagement',
+  InspectionManagement = 'InspectionManagement',
   PPEManagement = 'PPEManagement',
   HealthMonitoring = 'HealthMonitoring',
   PhysicalSecurity = 'PhysicalSecurity',
@@ -108,8 +110,10 @@ export const READ_ONLY_ROLES: RoleType[] = [
 export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   [RoleType.SuperAdmin]: [
     ModuleType.Dashboard,
+    ModuleType.WorkPermitManagement,
     ModuleType.IncidentManagement,
     ModuleType.RiskManagement,
+    ModuleType.InspectionManagement,
     ModuleType.PPEManagement,
     ModuleType.HealthMonitoring,
     ModuleType.SecurityIncidentManagement,
@@ -119,8 +123,10 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   ],
   [RoleType.Developer]: [
     ModuleType.Dashboard,
+    ModuleType.WorkPermitManagement,
     ModuleType.IncidentManagement,
     ModuleType.RiskManagement,
+    ModuleType.InspectionManagement,
     ModuleType.PPEManagement,
     ModuleType.HealthMonitoring,
     ModuleType.SecurityIncidentManagement,
@@ -130,8 +136,10 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   ],
   [RoleType.Admin]: [
     ModuleType.Dashboard,
+    ModuleType.WorkPermitManagement,
     ModuleType.IncidentManagement,
     ModuleType.RiskManagement,
+    ModuleType.InspectionManagement,
     ModuleType.PPEManagement,
     ModuleType.HealthMonitoring,
     ModuleType.SecurityIncidentManagement,
@@ -171,8 +179,10 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   ],
   [RoleType.ComplianceOfficer]: [
     ModuleType.Dashboard,
+    ModuleType.WorkPermitManagement,
     ModuleType.IncidentManagement,
     ModuleType.RiskManagement,
+    ModuleType.InspectionManagement,
     ModuleType.PPEManagement,
     ModuleType.HealthMonitoring,
     ModuleType.SecurityIncidentManagement,
@@ -180,8 +190,10 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   ],
   [RoleType.Reporter]: [
     ModuleType.Dashboard,
+    ModuleType.WorkPermitManagement,
     ModuleType.IncidentManagement,
     ModuleType.RiskManagement,
+    ModuleType.InspectionManagement,
     ModuleType.PPEManagement,
     ModuleType.HealthMonitoring,
     ModuleType.Reporting

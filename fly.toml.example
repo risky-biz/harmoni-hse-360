@@ -1,7 +1,7 @@
-# Fly.io configuration file for Harmoni360
-# Copy this file to fly.toml and customize as needed
+# Fly.io configuration file for Harmoni360 Production
+# This is the production configuration for harmoni-hse-360
 
-app = "harmoni360-app"
+app = "harmoni-hse-360"
 primary_region = "sjc"
 
 [build]

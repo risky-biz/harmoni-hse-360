@@ -21,6 +21,7 @@ public static class ModulePermissionMap
             {
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
+                [ModuleType.InspectionManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -40,6 +41,7 @@ public static class ModulePermissionMap
             {
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
+                [ModuleType.InspectionManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -59,6 +61,7 @@ public static class ModulePermissionMap
             {
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
+                [ModuleType.InspectionManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -109,6 +112,15 @@ public static class ModulePermissionMap
                 // All other modules - NO ACCESS
             },
 
+            // InspectionManager - RESTRICTED access ONLY to Inspection Management module
+            [RoleType.InspectionManager] = new Dictionary<ModuleType, List<PermissionType>>
+            {
+                [ModuleType.Dashboard] = ReadOnlyPermissions(),
+                [ModuleType.InspectionManagement] = AllPermissions(),
+                [ModuleType.Reporting] = ReadOnlyPermissions() // Can view reports for inspections
+                // All other modules - NO ACCESS
+            },
+
             // SecurityManager - COMPREHENSIVE access to ALL Security modules
             [RoleType.SecurityManager] = new Dictionary<ModuleType, List<PermissionType>>
             {
@@ -139,6 +151,7 @@ public static class ModulePermissionMap
             [RoleType.ComplianceOfficer] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.InspectionManagement] = ReadOnlyPermissions(), // Can view inspections for compliance
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(), // Can view HSE incidents for compliance
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(), // Can view risk assessments for compliance
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(), // Can view PPE compliance
@@ -156,6 +169,7 @@ public static class ModulePermissionMap
             [RoleType.Reporter] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = ReadOnlyPermissions(),
+                [ModuleType.InspectionManagement] = ReadOnlyPermissions(),
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(),
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(),
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(),

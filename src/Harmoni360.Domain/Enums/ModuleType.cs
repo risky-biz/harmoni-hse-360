@@ -73,8 +73,13 @@ public enum ModuleType
     WorkPermitManagement = 14,
 
     /// <summary>
+    /// Inspection Management Module - Safety, environmental, equipment, and compliance inspections with comprehensive workflow management
+    /// </summary>
+    InspectionManagement = 15,
+
+    /// <summary>
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>
-    ApplicationSettings = 15
+    ApplicationSettings = 16
 }

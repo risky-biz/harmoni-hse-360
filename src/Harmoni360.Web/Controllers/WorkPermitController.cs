@@ -354,6 +354,31 @@ namespace Harmoni360.Web.Controllers
         }
 
         /// <summary>
+        /// Downloads an attachment from the work permit
+        /// </summary>
+        [HttpGet("{id}/attachments/{attachmentId}/download")]
+        [RequireModulePermission(ModuleType.WorkPermitManagement, PermissionType.Read)]
+        public async Task<IActionResult> DownloadAttachment(int id, int attachmentId)
+        {
+            _logger.LogInformation("Downloading attachment {AttachmentId} from work permit {Id}", attachmentId, id);
+            
+            var query = new GetWorkPermitAttachmentQuery 
+            { 
+                WorkPermitId = id, 
+                AttachmentId = attachmentId 
+            };
+            
+            var result = await _mediator.Send(query);
+            
+            if (result?.FileContent == null)
+            {
+                return NotFound();
+            }
+            
+            return File(result.FileContent, result.ContentType, result.FileName);
+        }
+
+        /// <summary>
         /// Gets work permit dashboard metrics
         /// </summary>
         [HttpGet("dashboard")]

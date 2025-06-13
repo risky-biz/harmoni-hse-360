@@ -39,13 +39,13 @@ public class GetWorkPermitsQuery : IRequest<GetWorkPermitsResponse>
 
 public class GetWorkPermitsResponse
 {
-    public List<WorkPermitDto> WorkPermits { get; set; } = new();
+    public List<WorkPermitDto> Items { get; set; } = new();
     public int TotalCount { get; set; }
-    public int PageNumber { get; set; }
+    public int PageCount { get; set; }
+    public int CurrentPage { get; set; }
     public int PageSize { get; set; }
-    public int TotalPages { get; set; }
-    public bool HasPreviousPage { get; set; }
     public bool HasNextPage { get; set; }
+    public bool HasPreviousPage { get; set; }
     
     // Summary Statistics
     public WorkPermitSummaryDto Summary { get; set; } = new();

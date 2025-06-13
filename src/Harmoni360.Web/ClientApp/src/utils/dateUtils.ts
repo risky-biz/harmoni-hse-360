@@ -4,9 +4,13 @@
  */
 
 export const formatDate = (
-  date: string | Date,
+  date: string | Date | undefined | null,
   includeTime: boolean = true
 ): string => {
+  if (!date) {
+    return 'Not specified';
+  }
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
@@ -31,15 +35,19 @@ export const formatDate = (
   return `${day} ${month} ${year} ${hours12Padded}:${minutes} ${ampm}`;
 };
 
-export const formatDateOnly = (date: string | Date): string => {
+export const formatDateOnly = (date: string | Date | undefined | null): string => {
   return formatDate(date, false);
 };
 
-export const formatDateTime = (date: string | Date): string => {
+export const formatDateTime = (date: string | Date | undefined | null): string => {
   return formatDate(date, true);
 };
 
-export const formatRelativeTime = (date: string | Date): string => {
+export const formatRelativeTime = (date: string | Date | undefined | null): string => {
+  if (!date) {
+    return 'Not specified';
+  }
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);

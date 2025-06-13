@@ -60,7 +60,11 @@ const getNavigationIcon = (name: string) => {
     'Work Permits (Coming Soon)': <FontAwesomeIcon icon={faFileAlt} className="nav-icon" />,
     'Hazard & Risk': <FontAwesomeIcon icon={HAZARD_ICONS.reporting} className="nav-icon" />,
     'Risk Analytics': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
-    'Inspections (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'Inspections': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'Inspection Dashboard': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'Create Inspection': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'View Inspections': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
+    'My Inspections': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
     'Audits (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
     'Incidents': <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />,
     'PPE': <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
@@ -165,7 +169,7 @@ const DefaultLayout: React.FC = () => {
                       <NavLink
                         to={subItem.to || '#'}
                         className="nav-link"
-                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards'}
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards' || subItem.to === '/work-permits'}
                       >
                         {subItem.name}
                       </NavLink>

@@ -24,6 +24,8 @@ public class DataSeeder : IDataSeeder
     private readonly HealthDataSeeder _healthDataSeeder;
     private readonly SecurityDataSeeder _securityDataSeeder;
     private readonly ConfigurationDataSeeder _configurationDataSeeder;
+    private readonly WorkPermitDataSeeder _workPermitDataSeeder;
+    private readonly InspectionDataSeeder _inspectionDataSeeder;
 
     public DataSeeder(
         ApplicationDbContext context, 
@@ -38,7 +40,9 @@ public class DataSeeder : IDataSeeder
         HazardDataSeeder hazardDataSeeder,
         HealthDataSeeder healthDataSeeder,
         SecurityDataSeeder securityDataSeeder,
-        ConfigurationDataSeeder configurationDataSeeder)
+        ConfigurationDataSeeder configurationDataSeeder,
+        WorkPermitDataSeeder workPermitDataSeeder,
+        InspectionDataSeeder inspectionDataSeeder)
     {
         _context = context;
         _logger = logger;
@@ -54,6 +58,8 @@ public class DataSeeder : IDataSeeder
         _healthDataSeeder = healthDataSeeder;
         _securityDataSeeder = securityDataSeeder;
         _configurationDataSeeder = configurationDataSeeder;
+        _workPermitDataSeeder = workPermitDataSeeder;
+        _inspectionDataSeeder = inspectionDataSeeder;
     }
 
     public async Task SeedAsync()
@@ -147,6 +153,7 @@ public class DataSeeder : IDataSeeder
                 _logger.LogInformation("DEBUG: seedSampleData={SeedSampleData}, forceReseed={ForceReseed}", seedSampleData, forceReseed);
                 _logger.LogInformation("  - Incident Management sample data (View Incidents, My Reports)");
                 _logger.LogInformation("  - Risk Management sample data (Hazard Register, My Hazards, Risk Assessments)");
+                _logger.LogInformation("  - Work Permit Management sample data (Work Permits, Pending Approvals)");
                 _logger.LogInformation("  - PPE Management sample data (PPE Inventory, PPE Management)");
                 _logger.LogInformation("  - Health Management sample data");
                 _logger.LogInformation("  - Security Management sample data");
@@ -181,6 +188,18 @@ public class DataSeeder : IDataSeeder
                 await _context.SaveChangesAsync();
                 var securityCount = await _context.SecurityIncidents.CountAsync();
                 _logger.LogInformation("DEBUG: Security Incidents seeded. Count: {SecurityCount}", securityCount);
+                
+                _logger.LogInformation("DEBUG: Calling WorkPermitDataSeeder...");
+                await _workPermitDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+                var workPermitCount = await _context.WorkPermits.CountAsync();
+                _logger.LogInformation("DEBUG: Work Permits seeded. Count: {WorkPermitCount}", workPermitCount);
+
+                _logger.LogInformation("DEBUG: Calling InspectionDataSeeder...");
+                await _inspectionDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+                var inspectionCount = await _context.Inspections.CountAsync();
+                _logger.LogInformation("DEBUG: Inspections seeded. Count: {InspectionCount}", inspectionCount);
                 
                 _logger.LogInformation("Sample data seeding completed");
             }
@@ -274,6 +293,74 @@ public class DataSeeder : IDataSeeder
             if (await _context.Incidents.AnyAsync())
             {
                 _context.Incidents.RemoveRange(_context.Incidents);
+                await _context.SaveChangesAsync();
+            }
+            
+            // Work permit dependencies
+            if (await _context.WorkPermitAttachments.AnyAsync())
+            {
+                _context.WorkPermitAttachments.RemoveRange(_context.WorkPermitAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.WorkPermitApprovals.AnyAsync())
+            {
+                _context.WorkPermitApprovals.RemoveRange(_context.WorkPermitApprovals);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.WorkPermitPrecautions.AnyAsync())
+            {
+                _context.WorkPermitPrecautions.RemoveRange(_context.WorkPermitPrecautions);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.WorkPermitHazards.AnyAsync())
+            {
+                _context.WorkPermitHazards.RemoveRange(_context.WorkPermitHazards);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.WorkPermits.AnyAsync())
+            {
+                _context.WorkPermits.RemoveRange(_context.WorkPermits);
+                await _context.SaveChangesAsync();
+            }
+            
+            // Inspection dependencies (must be removed before users due to InspectorId FK)
+            if (await _context.FindingAttachments.AnyAsync())
+            {
+                _context.FindingAttachments.RemoveRange(_context.FindingAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.InspectionFindings.AnyAsync())
+            {
+                _context.InspectionFindings.RemoveRange(_context.InspectionFindings);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.InspectionAttachments.AnyAsync())
+            {
+                _context.InspectionAttachments.RemoveRange(_context.InspectionAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.InspectionComments.AnyAsync())
+            {
+                _context.InspectionComments.RemoveRange(_context.InspectionComments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.InspectionItems.AnyAsync())
+            {
+                _context.InspectionItems.RemoveRange(_context.InspectionItems);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Inspections.AnyAsync())
+            {
+                _context.Inspections.RemoveRange(_context.Inspections);
                 await _context.SaveChangesAsync();
             }
             
@@ -464,6 +551,7 @@ public class DataSeeder : IDataSeeder
             "HazardCategories", "HazardTypes", "PPECategories", "PPESizes", "PPEStorageLocations",
             "Incidents", "Hazards", "PPEItems", "PPEAssignments", "PPEInspections", "PPERequests", 
             "PPEComplianceRequirements", "HealthRecords", 
+            "WorkPermits", "WorkPermitHazards", "WorkPermitPrecautions", "WorkPermitApprovals", "WorkPermitAttachments",
             "SecurityIncidents", "SecurityControls", "SecurityIncidentAttachments", "SecurityIncidentInvolvedPersons",
             "SecurityIncidentResponses", "ThreatAssessments", "ThreatIndicators", "SecurityAuditLogs"
         };

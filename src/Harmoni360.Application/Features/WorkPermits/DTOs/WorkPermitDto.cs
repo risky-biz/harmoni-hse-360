@@ -11,8 +11,11 @@ public class WorkPermitDto
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty;
+    public string TypeDisplay { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public string StatusDisplay { get; set; } = string.Empty;
     public string Priority { get; set; } = string.Empty;
+    public string PriorityDisplay { get; set; } = string.Empty;
     
     // Work Details
     public string WorkLocation { get; set; } = string.Empty;
@@ -58,6 +61,7 @@ public class WorkPermitDto
     
     // Risk Assessment
     public string RiskLevel { get; set; } = string.Empty;
+    public string RiskLevelDisplay { get; set; } = string.Empty;
     public string RiskAssessmentSummary { get; set; } = string.Empty;
     public string EmergencyProcedures { get; set; } = string.Empty;
     
@@ -85,10 +89,15 @@ public class WorkPermitDto
     public bool CanStart => Status == "Approved";
     public bool CanComplete => Status == "InProgress";
     public bool IsExpired => Status != "Completed" && Status != "Cancelled" && PlannedEndDate < DateTime.UtcNow;
+    public bool IsOverdue => Status != "Completed" && Status != "Cancelled" && PlannedEndDate < DateTime.UtcNow;
+    public bool IsHighRisk => RiskLevel == "High" || RiskLevel == "Critical";
     public bool HasRequiredInfo => !string.IsNullOrEmpty(Title) && !string.IsNullOrEmpty(WorkScope) && NumberOfWorkers > 0;
     public int DaysUntilStart => (PlannedStartDate.Date - DateTime.UtcNow.Date).Days;
     public int DaysUntilEnd => (PlannedEndDate.Date - DateTime.UtcNow.Date).Days;
+    public int DaysUntilExpiry => DaysUntilEnd;
     public double ProgressPercentage => CalculateProgress();
+    public double CompletionPercentage => CalculateProgress();
+    public double PrecautionCompletionPercentage => CalculatePrecautionProgress();
     
     private double CalculateProgress()
     {
@@ -102,6 +111,13 @@ public class WorkPermitDto
             "Cancelled" => 0,
             _ => 0
         };
+    }
+    
+    private double CalculatePrecautionProgress()
+    {
+        if (Precautions == null || Precautions.Count == 0) return 100;
+        var completed = Precautions.Count(p => p.IsCompleted);
+        return (double)completed / Precautions.Count * 100;
     }
 }
 

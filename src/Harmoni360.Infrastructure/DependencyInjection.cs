@@ -71,6 +71,8 @@ public static class DependencyInjection
         services.AddScoped<HazardDataSeeder>();
         services.AddScoped<HealthDataSeeder>();
         services.AddScoped<SecurityDataSeeder>();
+        services.AddScoped<WorkPermitDataSeeder>();
+        services.AddScoped<InspectionDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();

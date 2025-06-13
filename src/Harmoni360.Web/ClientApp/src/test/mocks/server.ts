@@ -4,6 +4,7 @@ import { healthHandlers } from './handlers/health';
 import { incidentHandlers } from './handlers/incidents';
 import { ppeHandlers } from './handlers/ppe';
 import { hazardHandlers } from './handlers/hazards';
+import { inspectionHandlers } from './handlers/inspections';
 
 // This configures a request mocking server with the given request handlers
 export const server = setupServer(
@@ -11,5 +12,6 @@ export const server = setupServer(
   ...healthHandlers,
   ...incidentHandlers,
   ...ppeHandlers,
-  ...hazardHandlers
+  ...hazardHandlers,
+  ...inspectionHandlers
 );

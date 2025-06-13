@@ -20,6 +20,12 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Log startup information for debugging
+Console.WriteLine($"Starting Harmoni360 application...");
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"ASPNETCORE_URLS: {Environment.GetEnvironmentVariable("ASPNETCORE_URLS")}");
+Console.WriteLine($"Content Root: {builder.Environment.ContentRootPath}");
+
 // Configure Serilog
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
@@ -139,7 +145,8 @@ builder.Services.AddSpaStaticFiles(configuration =>
 });
 
 // Add Health Checks
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("Application is running"));
 
 // Add Rate Limiting for API protection
 builder.Services.AddRateLimiter(options =>
@@ -247,7 +254,11 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in development - Fly.io handles HTTPS termination
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseSerilogRequestLogging();
 
 // Add CORS for development
@@ -354,11 +365,11 @@ app.UseSpa(spa =>
 // Seed database if needed
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
     try
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
         logger.LogInformation("Checking database migrations...");
 
         // Check if database exists and create/migrate if needed
@@ -389,15 +400,25 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while migrating or seeding the database");
 
         // Don't crash the app if migration fails - let the user run migrations manually
-        if (!app.Environment.IsDevelopment())
+        // In production, we'll run migrations separately via flyctl ssh console
+        if (app.Environment.IsDevelopment())
         {
             throw;
         }
+        else
+        {
+            logger.LogWarning("Database migration failed in production - continuing startup. Run migrations manually via: flyctl ssh console -C 'cd /app && dotnet ef database update'");
+        }
     }
 }
+
+// Log final startup information
+var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+startupLogger.LogInformation("Harmoni360 application starting...");
+startupLogger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
+startupLogger.LogInformation("URLs: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 
 await app.RunAsync();

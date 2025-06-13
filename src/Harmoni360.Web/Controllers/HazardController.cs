@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Harmoni360.Application.Features.Hazards.Commands;
 using Harmoni360.Application.Features.Hazards.Queries;
 using Harmoni360.Application.Features.Hazards.DTOs;
@@ -257,7 +258,7 @@ public class HazardController : ControllerBase
     /// </summary>
     [HttpGet("{id:int}/attachments/{attachmentId:int}/download")]
     [RequireModulePermission(ModuleType.RiskManagement, PermissionType.Read)]
-    public Task<ActionResult> DownloadAttachment(int id, int attachmentId)
+    public async Task<ActionResult> DownloadAttachment(int id, int attachmentId)
     {
         try
         {
@@ -278,7 +279,7 @@ public class HazardController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error downloading attachment {AttachmentId} for hazard {HazardId}", attachmentId, id);
-            return Task.FromResult<ActionResult>(StatusCode(500, "An error occurred while downloading the attachment"));
+            return StatusCode(500, "An error occurred while downloading the attachment");
         }
     }
 

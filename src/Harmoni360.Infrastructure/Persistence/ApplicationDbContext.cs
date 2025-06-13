@@ -2,6 +2,7 @@ using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Domain.Common;
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
+using Harmoni360.Domain.Entities.Inspections;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -83,6 +84,14 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WorkPermitApproval> WorkPermitApprovals => Set<WorkPermitApproval>();
     public DbSet<WorkPermitHazard> WorkPermitHazards => Set<WorkPermitHazard>();
     public DbSet<WorkPermitPrecaution> WorkPermitPrecautions => Set<WorkPermitPrecaution>();
+    
+    // Inspection Management
+    public DbSet<Inspection> Inspections => Set<Inspection>();
+    public DbSet<InspectionItem> InspectionItems => Set<InspectionItem>();
+    public DbSet<InspectionFinding> InspectionFindings => Set<InspectionFinding>();
+    public DbSet<InspectionAttachment> InspectionAttachments => Set<InspectionAttachment>();
+    public DbSet<InspectionComment> InspectionComments => Set<InspectionComment>();
+    public DbSet<FindingAttachment> FindingAttachments => Set<FindingAttachment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
