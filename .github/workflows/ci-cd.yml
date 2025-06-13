@@ -181,14 +181,21 @@ jobs:
       uses: superfly/flyctl-actions/setup-flyctl@master
 
     - name: Deploy to Fly.io Staging
-      run: flyctl deploy --config fly.staging.toml
+      run: |
+        flyctl deploy --config fly.toml --env ASPNETCORE_ENVIRONMENT=Staging
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    - name: Set staging environment secrets
+      run: |
+        flyctl secrets set ASPNETCORE_ENVIRONMENT="Staging" -a harmoni-hse-360
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmoni360-staging.fly.dev/health || exit 1
+        curl -f https://harmoni-hse-360.fly.dev/health || exit 1
 
   deploy-production:
     needs: docker-build
@@ -203,11 +210,18 @@ jobs:
       uses: superfly/flyctl-actions/setup-flyctl@master
 
     - name: Deploy to Fly.io Production
-      run: flyctl deploy --config fly.toml
+      run: |
+        flyctl deploy --config fly.toml --env ASPNETCORE_ENVIRONMENT=Production
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    - name: Set production environment secrets
+      run: |
+        flyctl secrets set ASPNETCORE_ENVIRONMENT="Production" -a harmoni-hse-360
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
     - name: Health check
       run: |
         sleep 30
-        curl -f https://harmoni360-app.fly.dev/health || exit 1
+        curl -f https://harmoni-hse-360.fly.dev/health || exit 1

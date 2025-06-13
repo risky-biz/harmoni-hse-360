@@ -2,7 +2,15 @@
 
 ## 🎯 Overview
 
-This document summarizes all the updates applied to the staging environment configuration to ensure consistency with the production fixes while maintaining staging-specific optimizations.
+⚠️ **DEPRECATED**: This document describes the old dual-app staging configuration approach. The project has migrated to a single-app strategy using `harmoni-hse-360` for both staging and production environments.
+
+**Current Strategy**: See [Single_Hostname_Deployment_Strategy.md](./Single_Hostname_Deployment_Strategy.md) for the current deployment approach.
+
+---
+
+## Historical Information (Pre-Migration)
+
+This document summarizes the updates that were applied to the staging environment configuration before migrating to the single-app strategy.
 
 ## ✅ Applied Updates to Staging Environment
 
