@@ -1,6 +1,6 @@
 # Icon Library Integration Guide
 
-This guide explains how to use both CoreUI icons and Font Awesome icons together in the HarmoniHSE360 application.
+This guide explains how to use both CoreUI icons and Font Awesome icons together in the Harmoni360 application.
 
 ## Overview
 
@@ -13,7 +13,7 @@ Since CoreUI icons have a limited set compared to Font Awesome, we can use both 
 ### 1. Install Font Awesome React Components
 
 ```bash
-cd src/HarmoniHSE360.Web/ClientApp
+cd src/Harmoni360.Web/ClientApp
 npm install --save @fortawesome/fontawesome-svg-core
 npm install --save @fortawesome/free-solid-svg-icons
 npm install --save @fortawesome/free-regular-svg-icons
@@ -97,7 +97,7 @@ const MyComponent = () => {
 };
 ```
 
-### 2. Fixing Missing Icons in HarmoniHSE360
+### 2. Fixing Missing Icons in Harmoni360
 
 Here's how to fix the missing icons in our incident pages:
 
@@ -252,4 +252,4 @@ library.add(
 ---
 
 **Last Updated**: December 2024  
-**Applies to**: HarmoniHSE360 v1.0
+**Applies to**: Harmoni360 v1.0

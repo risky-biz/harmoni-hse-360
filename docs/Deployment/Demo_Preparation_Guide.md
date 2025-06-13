@@ -1,8 +1,8 @@
-# HarmoniHSE360 Demo Preparation Guide
+# Harmoni360 Demo Preparation Guide
 
 ## Overview
 
-This guide provides step-by-step instructions for preparing your HarmoniHSE360 application for client demonstrations after successful deployment to Fly.io.
+This guide provides step-by-step instructions for preparing your Harmoni360 application for client demonstrations after successful deployment to Fly.io.
 
 ## Pre-Demo Checklist
 
@@ -11,13 +11,13 @@ This guide provides step-by-step instructions for preparing your HarmoniHSE360 a
 **Check Application Status:**
 ```bash
 # Verify application is running
-fly status -a harmonihse360-app
+fly status -a harmoni360-app
 
 # Check health endpoint
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 
 # Monitor logs for errors
-fly logs -a harmonihse360-app | grep -i error
+fly logs -a harmoni360-app | grep -i error
 ```
 
 **Expected Results:**
@@ -29,7 +29,7 @@ fly logs -a harmonihse360-app | grep -i error
 
 ```bash
 # Connect to application console
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 
 # Test database connection
 cd /app
@@ -45,7 +45,7 @@ dotnet ef database update --dry-run
 
 ```bash
 # Test Redis connection from application
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 
 # Test Redis connectivity (if redis-cli available)
 redis-cli -u $ConnectionStrings__Redis ping
@@ -61,7 +61,7 @@ redis-cli -u $ConnectionStrings__Redis ping
 
 **Access Application Console:**
 ```bash
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 cd /app
 ```
 
@@ -75,23 +75,23 @@ dotnet run --seed-users
 
 | Role | Email | Password | Purpose |
 |------|-------|----------|---------|
-| Admin | admin@harmonihse360.com | Admin123! | Full system access |
-| HSE Manager | manager@harmonihse360.com | Manager123! | Management features |
-| HSE Officer | officer@harmonihse360.com | Officer123! | Field operations |
-| Employee | employee@harmonihse360.com | Employee123! | Basic user access |
+| Admin | admin@harmoni360.com | Admin123! | Full system access |
+| HSE Manager | manager@harmoni360.com | Manager123! | Management features |
+| HSE Officer | officer@harmoni360.com | Officer123! | Field operations |
+| Employee | employee@harmoni360.com | Employee123! | Basic user access |
 
 ### 2. Sample Incident Data
 
 **Create Sample Incidents:**
 ```sql
 -- Connect to database
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 -- Insert sample incidents
 INSERT INTO Incidents (Title, Description, Severity, Status, ReportedBy, CreatedAt) VALUES
-('Slip and Fall in Warehouse', 'Employee slipped on wet floor in warehouse area', 'Medium', 'Open', 'employee@harmonihse360.com', NOW()),
-('Chemical Spill in Lab', 'Minor chemical spill in laboratory requiring cleanup', 'High', 'InProgress', 'officer@harmonihse360.com', NOW() - INTERVAL '2 days'),
-('Equipment Malfunction', 'Safety equipment malfunction detected during inspection', 'Low', 'Resolved', 'manager@harmonihse360.com', NOW() - INTERVAL '1 week');
+('Slip and Fall in Warehouse', 'Employee slipped on wet floor in warehouse area', 'Medium', 'Open', 'employee@harmoni360.com', NOW()),
+('Chemical Spill in Lab', 'Minor chemical spill in laboratory requiring cleanup', 'High', 'InProgress', 'officer@harmoni360.com', NOW() - INTERVAL '2 days'),
+('Equipment Malfunction', 'Safety equipment malfunction detected during inspection', 'Low', 'Resolved', 'manager@harmoni360.com', NOW() - INTERVAL '1 week');
 ```
 
 ### 3. Sample Company Data
@@ -110,7 +110,7 @@ INSERT INTO Organizations (Name, Description, CreatedAt) VALUES
 **Prepare Sample Files:**
 ```bash
 # Create sample files for upload testing
-fly ssh console -a harmonihse360-app
+fly ssh console -a harmoni360-app
 cd /app/uploads
 
 # Create test directories
@@ -167,44 +167,44 @@ ls -la
 
 ```bash
 # Pre-warm the application
-curl https://harmonihse360-app.fly.dev/
-curl https://harmonihse360-app.fly.dev/api/health
-curl https://harmonihse360-app.fly.dev/incidents
+curl https://harmoni360-app.fly.dev/
+curl https://harmoni360-app.fly.dev/api/health
+curl https://harmoni360-app.fly.dev/incidents
 ```
 
 ### 2. Scale for Demo
 
 ```bash
 # Scale up for demo if needed
-fly scale count 2 -a harmonihse360-app
-fly scale memory 1024 -a harmonihse360-app
+fly scale count 2 -a harmoni360-app
+fly scale memory 1024 -a harmoni360-app
 ```
 
 ### 3. Monitor During Demo
 
 ```bash
 # Monitor logs during demo
-fly logs -f -a harmonihse360-app
+fly logs -f -a harmoni360-app
 
 # Monitor metrics
-fly metrics -a harmonihse360-app
+fly metrics -a harmoni360-app
 ```
 
 ## Demo Environment URLs
 
 ### Primary URLs
-- **Application:** https://harmonihse360-app.fly.dev
-- **Health Check:** https://harmonihse360-app.fly.dev/health
-- **API Documentation:** https://harmonihse360-app.fly.dev/swagger
+- **Application:** https://harmoni360-app.fly.dev
+- **Health Check:** https://harmoni360-app.fly.dev/health
+- **API Documentation:** https://harmoni360-app.fly.dev/swagger
 
 ### Custom Domain (if configured)
-- **Production URL:** https://harmonihse360.yourdomain.com
+- **Production URL:** https://harmoni360.yourdomain.com
 
 ## Demo Script Template
 
 ### Introduction (2 minutes)
 ```
-"Welcome to HarmoniHSE360, a comprehensive Health, Safety, and Environment management system built with modern technology stack including .NET 8, React 18, and real-time capabilities."
+"Welcome to Harmoni360, a comprehensive Health, Safety, Security, and Environment management system built with modern technology stack including .NET 8, React 18, and real-time capabilities."
 ```
 
 ### Key Features Demonstration (15 minutes)
@@ -253,26 +253,26 @@ fly metrics -a harmonihse360-app
 
 ```bash
 # Clear demo incidents
-fly postgres connect -a harmonihse360-db
-DELETE FROM Incidents WHERE ReportedBy LIKE '%@harmonihse360.com';
+fly postgres connect -a harmoni360-db
+DELETE FROM Incidents WHERE ReportedBy LIKE '%@harmoni360.com';
 
 # Reset user accounts
-UPDATE Users SET LastLoginAt = NULL WHERE Email LIKE '%@harmonihse360.com';
+UPDATE Users SET LastLoginAt = NULL WHERE Email LIKE '%@harmoni360.com';
 ```
 
 ### 2. Scale Down Resources
 
 ```bash
 # Scale back to minimal resources
-fly scale count 1 -a harmonihse360-app
-fly scale memory 512 -a harmonihse360-app
+fly scale count 1 -a harmoni360-app
+fly scale memory 512 -a harmoni360-app
 ```
 
 ### 3. Backup Demo State
 
 ```bash
 # Create backup of demo state
-fly postgres backup create -a harmonihse360-db
+fly postgres backup create -a harmoni360-db
 ```
 
 ## Troubleshooting During Demo
@@ -282,19 +282,19 @@ fly postgres backup create -a harmonihse360-db
 **Application Slow to Load:**
 ```bash
 # Quick restart
-fly restart -a harmonihse360-app
+fly restart -a harmoni360-app
 ```
 
 **Database Connection Issues:**
 ```bash
 # Check database status
-fly status -a harmonihse360-db
+fly status -a harmoni360-db
 ```
 
 **Real-time Features Not Working:**
 ```bash
 # Check Redis status
-fly ext redis status harmonihse360-redis
+fly ext redis status harmoni360-redis
 ```
 
 ### Emergency Contacts

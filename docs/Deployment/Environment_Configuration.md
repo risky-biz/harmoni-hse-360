@@ -1,8 +1,8 @@
-# Environment Configuration Guide for HarmoniHSE360
+# Environment Configuration Guide for Harmoni360
 
 ## 📋 Overview
 
-This guide provides comprehensive documentation for configuring environments, managing secrets, and setting up environment-specific configurations for the HarmoniHSE360 application across development, staging, and production environments.
+This guide provides comprehensive documentation for configuring environments, managing secrets, and setting up environment-specific configurations for the Harmoni360 application across development, staging, and production environments.
 
 ## 🌍 Environment Architecture
 
@@ -17,13 +17,13 @@ graph TB
     end
     
     subgraph "Staging"
-        STAGE_APP[Staging App<br/>harmonihse360-staging.fly.dev]
+        STAGE_APP[Staging App<br/>harmoni360-staging.fly.dev]
         STAGE_DB[(Staging PostgreSQL<br/>Fly.io)]
         STAGE_REDIS[(Staging Redis<br/>Fly.io)]
     end
     
     subgraph "Production"
-        PROD_APP[Production App<br/>harmonihse360-app.fly.dev]
+        PROD_APP[Production App<br/>harmoni360-app.fly.dev]
         PROD_DB[(Production PostgreSQL<br/>Fly.io)]
         PROD_REDIS[(Production Redis<br/>Fly.io)]
     end
@@ -76,31 +76,31 @@ Configuration Priority (highest to lowest):
 
 <augment_code_snippet path=".env.example" mode="EXCERPT">
 ````bash
-# HarmoniHSE360 Environment Configuration
+# Harmoni360 Environment Configuration
 # Copy this file to .env and update with your values
 
 # Application Settings
 APP_PORT=8080
 
 # Database Configuration
-POSTGRES_DB=HarmoniHSE360
+POSTGRES_DB=Harmoni360
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=YourStrongProductionPassword123!
 
 # JWT Configuration
 JWT_KEY=YourSuperSecretProductionJwtKeyThatMustBeAtLeast32CharactersLong!
-JWT_ISSUER=HarmoniHSE360
-JWT_AUDIENCE=HarmoniHSE360Users
+JWT_ISSUER=Harmoni360
+JWT_AUDIENCE=Harmoni360Users
 ````
 </augment_code_snippet>
 
 #### Development Configuration
 
-<augment_code_snippet path="src/HarmoniHSE360.Web/appsettings.Development.json" mode="EXCERPT">
+<augment_code_snippet path="src/Harmoni360.Web/appsettings.Development.json" mode="EXCERPT">
 ````json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=HarmoniHSE360_Dev;Username=postgres;Password=postgres123"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=Harmoni360_Dev;Username=postgres;Password=postgres123"
   },
   "Jwt": {
     "Key": "YourSuperSecretDevelopmentJwtKeyThatIsAtLeast32CharactersLong!",
@@ -122,9 +122,9 @@ JWT_AUDIENCE=HarmoniHSE360Users
 
 <augment_code_snippet path="fly.staging.toml" mode="EXCERPT">
 ````toml
-# Fly.io configuration file for HarmoniHSE360 Staging Environment
+# Fly.io configuration file for Harmoni360 Staging Environment
 
-app = "harmonihse360-staging"
+app = "harmoni360-staging"
 primary_region = "sjc"
 
 [env]
@@ -142,20 +142,20 @@ primary_region = "sjc"
 
 ```bash
 # Database connection
-fly secrets set ConnectionStrings__DefaultConnection="Host=harmonihse360-staging-db.internal;Port=5432;Database=harmonihse360_staging;Username=postgres;Password=[staging-db-password]" -a harmonihse360-staging
+fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-staging-db.internal;Port=5432;Database=harmoni360_staging;Username=postgres;Password=[staging-db-password]" -a harmoni360-staging
 
 # Redis connection
-fly secrets set ConnectionStrings__Redis="redis://default:[staging-redis-password]@harmonihse360-staging-redis.internal:6379" -a harmonihse360-staging
+fly secrets set ConnectionStrings__Redis="redis://default:[staging-redis-password]@harmoni360-staging-redis.internal:6379" -a harmoni360-staging
 
 # JWT configuration
-fly secrets set Jwt__Key="HarmoniHSE360-Staging-JWT-$(date +%s)-$(openssl rand -hex 16)" -a harmonihse360-staging
+fly secrets set Jwt__Key="Harmoni360-Staging-JWT-$(date +%s)-$(openssl rand -hex 16)" -a harmoni360-staging
 ```
 
 ### Production Environment
 
 #### Production Configuration Template
 
-<augment_code_snippet path="src/HarmoniHSE360.Web/appsettings.Production.json" mode="EXCERPT">
+<augment_code_snippet path="src/Harmoni360.Web/appsettings.Production.json" mode="EXCERPT">
 ````json
 {
   "Logging": {
@@ -171,8 +171,8 @@ fly secrets set Jwt__Key="HarmoniHSE360-Staging-JWT-$(date +%s)-$(openssl rand -
   },
   "Jwt": {
     "Key": "",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationMinutes": "60",
     "RefreshTokenExpirationDays": "7"
   }
@@ -184,14 +184,14 @@ fly secrets set Jwt__Key="HarmoniHSE360-Staging-JWT-$(date +%s)-$(openssl rand -
 
 ```bash
 # Database connection (replace with actual values)
-fly secrets set ConnectionStrings__DefaultConnection="Host=harmonihse360-db.internal;Port=5432;Database=harmonihse360_production;Username=postgres;Password=[production-db-password]" -a harmonihse360-app
+fly secrets set ConnectionStrings__DefaultConnection="Host=harmoni360-db.internal;Port=5432;Database=harmoni360_production;Username=postgres;Password=[production-db-password]" -a harmoni360-app
 
 # Redis connection (replace with actual values)
-fly secrets set ConnectionStrings__Redis="redis://default:[production-redis-password]@harmonihse360-redis.internal:6379" -a harmonihse360-app
+fly secrets set ConnectionStrings__Redis="redis://default:[production-redis-password]@harmoni360-redis.internal:6379" -a harmoni360-app
 
 # JWT configuration (generate secure key)
-JWT_KEY="HarmoniHSE360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
-fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
+JWT_KEY="Harmoni360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
+fly secrets set Jwt__Key="$JWT_KEY" -a harmoni360-app
 ```
 
 ## 📊 Environment Variables Reference
@@ -210,8 +210,8 @@ fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
 
 | Variable | Default | Description | Environment |
 |----------|---------|-------------|-------------|
-| `Jwt__Issuer` | HarmoniHSE360 | JWT token issuer | All |
-| `Jwt__Audience` | HarmoniHSE360Users | JWT token audience | All |
+| `Jwt__Issuer` | Harmoni360 | JWT token issuer | All |
+| `Jwt__Audience` | Harmoni360Users | JWT token audience | All |
 | `Jwt__ExpirationMinutes` | 60 | Token expiration time | All |
 | `Jwt__RefreshTokenExpirationDays` | 7 | Refresh token expiration | All |
 | `Seq__ServerUrl` | - | Structured logging endpoint | Production |
@@ -235,8 +235,8 @@ fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
 {
   "Jwt": {
     "Key": "YourSuperSecretDevelopmentJwtKeyThatIsAtLeast32CharactersLong!",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationMinutes": 1440,
     "RefreshTokenExpirationDays": 30
   }
@@ -246,12 +246,12 @@ fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
 #### Production Settings
 ```bash
 # Generate secure production JWT key
-JWT_KEY="HarmoniHSE360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
+JWT_KEY="Harmoni360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
 
 # Set via Fly.io secrets
-fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
-fly secrets set Jwt__ExpirationMinutes="60" -a harmonihse360-app
-fly secrets set Jwt__RefreshTokenExpirationDays="7" -a harmonihse360-app
+fly secrets set Jwt__Key="$JWT_KEY" -a harmoni360-app
+fly secrets set Jwt__ExpirationMinutes="60" -a harmoni360-app
+fly secrets set Jwt__RefreshTokenExpirationDays="7" -a harmoni360-app
 ```
 
 ### Database Security
@@ -270,13 +270,13 @@ fly secrets set Jwt__RefreshTokenExpirationDays="7" -a harmonihse360-app
 #### Database User Permissions
 ```sql
 -- Create application-specific database user
-CREATE USER harmonihse360_app WITH PASSWORD 'secure_password';
+CREATE USER harmoni360_app WITH PASSWORD 'secure_password';
 
 -- Grant minimal required permissions
-GRANT CONNECT ON DATABASE harmonihse360_production TO harmonihse360_app;
-GRANT USAGE ON SCHEMA public TO harmonihse360_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmonihse360_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmonihse360_app;
+GRANT CONNECT ON DATABASE harmoni360_production TO harmoni360_app;
+GRANT USAGE ON SCHEMA public TO harmoni360_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360_app;
 ```
 
 ## 🔄 Configuration Management Scripts
@@ -297,13 +297,13 @@ case $ENVIRONMENT in
     ;;
   "staging")
     echo "Setting up staging environment..."
-    fly secrets set ConnectionStrings__DefaultConnection="$STAGING_DB_CONNECTION" -a harmonihse360-staging
-    fly secrets set ConnectionStrings__Redis="$STAGING_REDIS_CONNECTION" -a harmonihse360-staging
+    fly secrets set ConnectionStrings__DefaultConnection="$STAGING_DB_CONNECTION" -a harmoni360-staging
+    fly secrets set ConnectionStrings__Redis="$STAGING_REDIS_CONNECTION" -a harmoni360-staging
     ;;
   "production")
     echo "Setting up production environment..."
-    fly secrets set ConnectionStrings__DefaultConnection="$PRODUCTION_DB_CONNECTION" -a harmonihse360-app
-    fly secrets set ConnectionStrings__Redis="$PRODUCTION_REDIS_CONNECTION" -a harmonihse360-app
+    fly secrets set ConnectionStrings__DefaultConnection="$PRODUCTION_DB_CONNECTION" -a harmoni360-app
+    fly secrets set ConnectionStrings__Redis="$PRODUCTION_REDIS_CONNECTION" -a harmoni360-app
     ;;
   *)
     echo "Usage: $0 {development|staging|production}"
@@ -318,7 +318,7 @@ esac
 #!/bin/bash
 # validate-secrets.sh
 
-APP_NAME=${1:-harmonihse360-app}
+APP_NAME=${1:-harmoni360-app}
 
 echo "Validating secrets for $APP_NAME..."
 
@@ -351,28 +351,28 @@ echo "Validation complete."
 #### 1. Missing Environment Variables
 ```bash
 # Check current environment variables
-fly ssh console -a harmonihse360-app -C "env | grep -E '(ConnectionStrings|Jwt)'"
+fly ssh console -a harmoni360-app -C "env | grep -E '(ConnectionStrings|Jwt)'"
 
 # Verify secrets are set
-fly secrets list -a harmonihse360-app
+fly secrets list -a harmoni360-app
 ```
 
 #### 2. Database Connection Issues
 ```bash
 # Test database connectivity
-fly postgres connect -a harmonihse360-db
+fly postgres connect -a harmoni360-db
 
 # Check connection string format
-fly secrets list -a harmonihse360-app | grep ConnectionStrings
+fly secrets list -a harmoni360-app | grep ConnectionStrings
 ```
 
 #### 3. JWT Configuration Problems
 ```bash
 # Verify JWT key length (must be 32+ characters)
-fly ssh console -a harmonihse360-app -C "echo \$Jwt__Key | wc -c"
+fly ssh console -a harmoni360-app -C "echo \$Jwt__Key | wc -c"
 
 # Test JWT token generation
-curl -X POST https://harmonihse360-app.fly.dev/api/auth/login \
+curl -X POST https://harmoni360-app.fly.dev/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password"}'
 ```
@@ -382,7 +382,7 @@ curl -X POST https://harmonihse360-app.fly.dev/api/auth/login \
 #### Health Check Endpoint
 ```bash
 # Check application health
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 
 # Expected response:
 {
@@ -400,10 +400,10 @@ curl https://harmonihse360-app.fly.dev/health
 curl http://localhost:5000/health
 
 # Staging
-curl https://harmonihse360-staging.fly.dev/health
+curl https://harmoni360-staging.fly.dev/health
 
 # Production
-curl https://harmonihse360-app.fly.dev/health
+curl https://harmoni360-app.fly.dev/health
 ```
 
 ## 📈 Configuration Best Practices

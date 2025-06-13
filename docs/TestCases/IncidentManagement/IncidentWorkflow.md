@@ -1,7 +1,7 @@
 # Incident Workflow - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for incident status workflow and lifecycle management in the HarmoniHSE360 system.
+This document contains comprehensive test cases for incident status workflow and lifecycle management in the Harmoni360 system.
 
 ---
 

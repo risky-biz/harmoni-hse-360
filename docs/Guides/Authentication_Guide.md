@@ -1,13 +1,13 @@
-# HarmoniHSE360 Authentication Guide
+# Harmoni360 Authentication Guide
 
 ## Overview
 
-HarmoniHSE360 uses JWT-based authentication with role-based access control (RBAC). The system comes pre-seeded with default users for testing and initial setup.
+Harmoni360 uses JWT-based authentication with role-based access control (RBAC). The system comes pre-seeded with default users for testing and initial setup.
 
 ## Quick Start
 
 ### Default Password
-All seeded users use the default password: **`HarmoniHSE360!`**
+All seeded users use the default password: **`Harmoni360!`**
 
 ### Authentication Endpoints
 
@@ -20,27 +20,27 @@ All seeded users use the default password: **`HarmoniHSE360!`**
 The system comes with pre-configured users representing different roles and access levels:
 
 ### 🔑 System Administrator
-- **Email**: `admin@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `admin@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: System Administrator
 - **Access**: Full system access, all modules and configurations
 - **Department**: IT
 - **Position**: System Administrator
 
 ### 👤 HSE Manager
-- **Email**: `hse.manager@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `hse.manager@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: HSE Manager
 - **Access**: HSE module management, reporting, compliance oversight
-- **Department**: Health, Safety & Environment
+- **Department**: Health, Safety, Security, & Environment
 - **Position**: HSE Manager
 - **Certifications**: NEBOSH General Certificate, IOSH Managing Safely, ISO 14001 Lead Auditor
 
 ### 🏢 Department Heads
 
 #### Engineering Department Head
-- **Email**: `dept.head.engineering@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `dept.head.engineering@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: Department Head
 - **Access**: Engineering department oversight, safety management
 - **Department**: Engineering
@@ -48,8 +48,8 @@ The system comes with pre-configured users representing different roles and acce
 - **Certifications**: Professional Engineer (PE), Certified Safety Professional (CSP)
 
 #### Operations Department Head
-- **Email**: `dept.head.operations@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `dept.head.operations@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: Department Head
 - **Access**: Operations department oversight, facility operations
 - **Department**: Operations
@@ -59,17 +59,17 @@ The system comes with pre-configured users representing different roles and acce
 ### 👷 Employees
 
 #### Safety Officer
-- **Email**: `safety.officer@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `safety.officer@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: Employee
 - **Access**: Incident reporting, safety protocols, compliance monitoring
-- **Department**: Health, Safety & Environment
+- **Department**: Health, Safety, Security, & Environment
 - **Position**: Safety Officer
 - **Certifications**: OSHA 30-Hour Construction, First Aid/CPR Certified, Incident Investigation
 
 #### Senior Engineer
-- **Email**: `engineer@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `engineer@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: Employee
 - **Access**: Engineering processes, risk assessment, safety protocols
 - **Department**: Engineering
@@ -77,8 +77,8 @@ The system comes with pre-configured users representing different roles and acce
 - **Certifications**: Process Safety Management, Hazard Analysis (HAZOP)
 
 #### Senior Technician
-- **Email**: `technician@harmonihse360.com`
-- **Password**: `HarmoniHSE360!`
+- **Email**: `technician@harmoni360.com`
+- **Password**: `Harmoni360!`
 - **Role**: Employee
 - **Access**: Equipment maintenance, safety procedures, operational tasks
 - **Department**: Operations
@@ -89,7 +89,7 @@ The system comes with pre-configured users representing different roles and acce
 
 #### Contractor
 - **Email**: `contractor@externalcompany.com`
-- **Password**: `HarmoniHSE360!`
+- **Password**: `Harmoni360!`
 - **Role**: Contractor
 - **Access**: Limited access for contractor-specific tasks and safety compliance
 - **Department**: External Contractor
@@ -98,7 +98,7 @@ The system comes with pre-configured users representing different roles and acce
 
 #### Student
 - **Email**: `student@university.edu`
-- **Password**: `HarmoniHSE360!`
+- **Password**: `Harmoni360!`
 - **Role**: Student
 - **Access**: Educational access, research data, learning materials
 - **Department**: Student Services
@@ -106,7 +106,7 @@ The system comes with pre-configured users representing different roles and acce
 
 #### Parent/Guardian
 - **Email**: `parent@email.com`
-- **Password**: `HarmoniHSE360!`
+- **Password**: `Harmoni360!`
 - **Role**: Parent
 - **Access**: Safety notifications, incident reports affecting students
 - **Department**: External
@@ -120,8 +120,8 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@harmonihse360.com",
-  "password": "HarmoniHSE360!"
+  "email": "admin@harmoni360.com",
+  "password": "Harmoni360!"
 }
 ```
 
@@ -251,8 +251,8 @@ The JWT token includes the following claims:
 {
   "JwtSettings": {
     "SecretKey": "YourSecretKeyHereWhichShouldBeAtLeast32CharactersLongForProduction",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationInHours": 1
   }
 }
@@ -262,7 +262,7 @@ The JWT token includes the following claims:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=timescaledb;Database=harmonihse360_dev;Username=harmonihse360;Password=HarmoniHSE360!2024;Port=5432"
+    "DefaultConnection": "Host=timescaledb;Database=harmoni360_dev;Username=harmoni360;Password=Harmoni360!2024;Port=5432"
   }
 }
 ```
@@ -273,7 +273,7 @@ The JWT token includes the following claims:
 
 1. **"Invalid email or password"**
    - Verify you're using the correct email from the seeded users list
-   - Ensure password is exactly: `HarmoniHSE360!`
+   - Ensure password is exactly: `Harmoni360!`
    - Check that seeding completed successfully in API logs
 
 2. **"User account is deactivated"**

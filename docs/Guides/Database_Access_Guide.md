@@ -7,9 +7,9 @@
 Host: timescaledb (from Docker containers)
 Host: localhost (from your computer)
 Port: 5432
-Database: harmonihse360_dev
-Username: harmonihse360
-Password: HarmoniHSE360!2024
+Database: harmoni360_dev
+Username: harmoni360
+Password: Harmoni360!2024
 ```
 
 ## 📊 pgAdmin Web Interface
@@ -23,20 +23,20 @@ docker-compose up -d pgadmin
 Open your browser: http://localhost:5050
 
 ### 3. Login Credentials
-- **Email**: `admin@harmonihse360.com`
+- **Email**: `admin@harmoni360.com`
 - **Password**: `PgAdmin2024!`
 
 ### 4. Add Database Server in pgAdmin
 
 1. Right-click "Servers" → "Register" → "Server"
 2. **General tab**: 
-   - Name: `HarmoniHSE360 Dev`
+   - Name: `Harmoni360 Dev`
 3. **Connection tab**:
    - **Host**: `timescaledb` (⚠️ NOT localhost - pgAdmin runs in Docker)
    - **Port**: `5432`
-   - **Database**: `harmonihse360_dev`
-   - **Username**: `harmonihse360`
-   - **Password**: `HarmoniHSE360!2024`
+   - **Database**: `harmoni360_dev`
+   - **Username**: `harmoni360`
+   - **Password**: `Harmoni360!2024`
    - **Save password**: ✓ (check this)
 4. Click "Save"
 
@@ -47,9 +47,9 @@ Use hostname `timescaledb`:
 ```
 Host: timescaledb
 Port: 5432
-Database: harmonihse360_dev
-Username: harmonihse360
-Password: HarmoniHSE360!2024
+Database: harmoni360_dev
+Username: harmoni360
+Password: Harmoni360!2024
 ```
 
 ### From Your Computer (External)
@@ -57,14 +57,14 @@ Use `localhost`:
 ```
 Host: localhost
 Port: 5432
-Database: harmonihse360_dev
-Username: harmonihse360
-Password: HarmoniHSE360!2024
+Database: harmoni360_dev
+Username: harmoni360
+Password: Harmoni360!2024
 ```
 
 ### Connection String for .NET Apps
 ```
-Host=localhost;Port=5432;Database=harmonihse360_dev;Username=harmonihse360;Password=HarmoniHSE360!2024
+Host=localhost;Port=5432;Database=harmoni360_dev;Username=harmoni360;Password=Harmoni360!2024
 ```
 
 ## 🛠️ Alternative Database Tools
@@ -72,19 +72,19 @@ Host=localhost;Port=5432;Database=harmonihse360_dev;Username=harmonihse360;Passw
 ### Command Line (psql)
 ```bash
 # From your computer
-psql -h localhost -p 5432 -U harmonihse360 -d harmonihse360_dev
+psql -h localhost -p 5432 -U harmoni360 -d harmoni360_dev
 
 # From inside container
-docker exec harmonihse360-timescaledb psql -U harmonihse360 -d harmonihse360_dev
+docker exec harmoni360-timescaledb psql -U harmoni360 -d harmoni360_dev
 ```
 
 ### Desktop Applications
 For TablePlus, DBeaver, DataGrip, etc.:
 - Host: `localhost`
 - Port: `5432`
-- Database: `harmonihse360_dev`
-- Username: `harmonihse360`
-- Password: `HarmoniHSE360!2024`
+- Database: `harmoni360_dev`
+- Username: `harmoni360`
+- Password: `Harmoni360!2024`
 
 ## 🔍 Useful SQL Queries
 
@@ -108,7 +108,7 @@ ORDER BY table_name;
 SELECT pg_database.datname,
        pg_size_pretty(pg_database_size(pg_database.datname)) AS size
 FROM pg_database
-WHERE datname = 'harmonihse360_dev';
+WHERE datname = 'harmoni360_dev';
 ```
 
 ### List Hypertables (TimescaleDB)
@@ -140,16 +140,16 @@ CREATE SCHEMA IF NOT EXISTS analytics;
    ```
 
 2. **Check the password in use:**
-   The `docker-compose.override.yml` file sets the password. Make sure you're using: `HarmoniHSE360!2024`
+   The `docker-compose.override.yml` file sets the password. Make sure you're using: `Harmoni360!2024`
 
 3. **Test connection from command line:**
    ```bash
-   docker exec harmonihse360-timescaledb psql -U harmonihse360 -d harmonihse360_dev -c "SELECT 1;"
+   docker exec harmoni360-timescaledb psql -U harmoni360 -d harmoni360_dev -c "SELECT 1;"
    ```
 
 4. **Check Docker network:**
    ```bash
-   docker network inspect harmoni-hse-360_harmonihse360-network
+   docker network inspect harmoni-hse-360_harmoni360-network
    ```
 
 ### Reset Everything
@@ -190,10 +190,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ### 3. Regular Backups
 ```bash
 # Backup
-docker exec harmonihse360-timescaledb pg_dump -U harmonihse360 harmonihse360_dev > backup_$(date +%Y%m%d).sql
+docker exec harmoni360-timescaledb pg_dump -U harmoni360 harmoni360_dev > backup_$(date +%Y%m%d).sql
 
 # Restore
-docker exec -i harmonihse360-timescaledb psql -U harmonihse360 harmonihse360_dev < backup_20240601.sql
+docker exec -i harmoni360-timescaledb psql -U harmoni360 harmoni360_dev < backup_20240601.sql
 ```
 
 ## 🔐 Security Notes
@@ -208,9 +208,9 @@ docker exec -i harmonihse360-timescaledb psql -U harmonihse360 harmonihse360_dev
 
 | Service | URL/Port | Credentials |
 |---------|----------|-------------|
-| pgAdmin | http://localhost:5050 | admin@harmonihse360.com / PgAdmin2024! |
-| PostgreSQL | localhost:5432 | harmonihse360 / HarmoniHSE360!2024 |
-| Database | harmonihse360_dev | - |
+| pgAdmin | http://localhost:5050 | admin@harmoni360.com / PgAdmin2024! |
+| PostgreSQL | localhost:5432 | harmoni360 / Harmoni360!2024 |
+| Database | harmoni360_dev | - |
 
 ---
 

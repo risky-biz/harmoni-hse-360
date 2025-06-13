@@ -1,7 +1,7 @@
 # Integration Testing - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive end-to-end integration test cases for the HarmoniHSE360 incident management system, covering cross-module functionality and complete user workflows.
+This document contains comprehensive end-to-end integration test cases for the Harmoni360 incident management system, covering cross-module functionality and complete user workflows.
 
 ---
 

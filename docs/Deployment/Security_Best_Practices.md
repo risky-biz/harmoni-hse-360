@@ -1,8 +1,8 @@
-# Security and Best Practices Guide for HarmoniHSE360
+# Security and Best Practices Guide for Harmoni360
 
 ## 📋 Overview
 
-This guide outlines comprehensive security measures, best practices, and compliance considerations for deploying and maintaining the HarmoniHSE360 application in production environments.
+This guide outlines comprehensive security measures, best practices, and compliance considerations for deploying and maintaining the Harmoni360 application in production environments.
 
 ## 🛡️ Security Architecture
 
@@ -58,8 +58,8 @@ graph TB
 {
   "Jwt": {
     "Key": "[256-bit-secure-key]",
-    "Issuer": "HarmoniHSE360",
-    "Audience": "HarmoniHSE360Users",
+    "Issuer": "Harmoni360",
+    "Audience": "Harmoni360Users",
     "ExpirationMinutes": 60,
     "RefreshTokenExpirationDays": 7,
     "Algorithm": "HS256"
@@ -85,13 +85,13 @@ graph TB
 #### JWT Key Generation
 ```bash
 # Generate secure JWT key for production
-JWT_KEY="HarmoniHSE360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
+JWT_KEY="Harmoni360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
 
 # Verify key strength
 echo "$JWT_KEY" | wc -c  # Should be 64+ characters
 
 # Set in Fly.io secrets
-fly secrets set Jwt__Key="$JWT_KEY" -a harmonihse360-app
+fly secrets set Jwt__Key="$JWT_KEY" -a harmoni360-app
 ```
 
 ### Role-Based Access Control (RBAC)
@@ -157,7 +157,7 @@ services.AddCors(options =>
 {
     options.AddPolicy("ProductionPolicy", builder =>
     {
-        builder.WithOrigins("https://harmonihse360-app.fly.dev")
+        builder.WithOrigins("https://harmoni360-app.fly.dev")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
@@ -193,7 +193,7 @@ EXPOSE 8080
 - name: Run Trivy vulnerability scanner
   uses: aquasecurity/trivy-action@master
   with:
-    image-ref: 'harmonihse360:latest'
+    image-ref: 'harmoni360:latest'
     format: 'sarif'
     output: 'trivy-results.sarif'
     severity: 'CRITICAL,HIGH'
@@ -229,17 +229,17 @@ ConnectionStrings__DefaultConnection="Host=hostname;Port=5432;Database=dbname;Us
 #### Database User Permissions
 ```sql
 -- Create application-specific user with minimal permissions
-CREATE USER harmonihse360_app WITH PASSWORD 'secure_random_password';
+CREATE USER harmoni360_app WITH PASSWORD 'secure_random_password';
 
 -- Grant only necessary permissions
-GRANT CONNECT ON DATABASE harmonihse360_production TO harmonihse360_app;
-GRANT USAGE ON SCHEMA public TO harmonihse360_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmonihse360_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmonihse360_app;
+GRANT CONNECT ON DATABASE harmoni360_production TO harmoni360_app;
+GRANT USAGE ON SCHEMA public TO harmoni360_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO harmoni360_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO harmoni360_app;
 
 -- Revoke dangerous permissions
-REVOKE CREATE ON SCHEMA public FROM harmonihse360_app;
-REVOKE ALL ON pg_catalog FROM harmonihse360_app;
+REVOKE CREATE ON SCHEMA public FROM harmoni360_app;
+REVOKE ALL ON pg_catalog FROM harmoni360_app;
 ```
 
 ### Data Encryption
@@ -282,8 +282,8 @@ public class DataRetentionService
 #### Secret Storage Best Practices
 ```bash
 # Use Fly.io secrets for sensitive data
-fly secrets set ConnectionStrings__DefaultConnection="..." -a harmonihse360-app
-fly secrets set Jwt__Key="..." -a harmonihse360-app
+fly secrets set ConnectionStrings__DefaultConnection="..." -a harmoni360-app
+fly secrets set Jwt__Key="..." -a harmoni360-app
 
 # Never store secrets in:
 # - Source code
@@ -298,16 +298,16 @@ fly secrets set Jwt__Key="..." -a harmonihse360-app
 # rotate-secrets.sh
 
 # Generate new JWT key
-NEW_JWT_KEY="HarmoniHSE360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
+NEW_JWT_KEY="Harmoni360-Production-JWT-$(date +%s)-$(openssl rand -hex 32)"
 
 # Update secret
-fly secrets set Jwt__Key="$NEW_JWT_KEY" -a harmonihse360-app
+fly secrets set Jwt__Key="$NEW_JWT_KEY" -a harmoni360-app
 
 # Verify deployment
-fly deploy -a harmonihse360-app
+fly deploy -a harmoni360-app
 
 # Test application
-curl -f https://harmonihse360-app.fly.dev/health
+curl -f https://harmoni360-app.fly.dev/health
 ```
 
 ### GitHub Secrets Security
@@ -408,16 +408,16 @@ jobs:
 1. **Identify and Contain**
    ```bash
    # Scale down application if under attack
-   fly scale count 0 -a harmonihse360-app
+   fly scale count 0 -a harmoni360-app
    
    # Check logs for attack patterns
-   fly logs -a harmonihse360-app | grep -i "error\|attack\|suspicious"
+   fly logs -a harmoni360-app | grep -i "error\|attack\|suspicious"
    ```
 
 2. **Assess Impact**
    ```bash
    # Check database for unauthorized access
-   fly postgres connect -a harmonihse360-db
+   fly postgres connect -a harmoni360-db
    SELECT * FROM audit_log WHERE created_at > NOW() - INTERVAL '1 hour';
    ```
 
@@ -428,13 +428,13 @@ jobs:
    ./scripts/rotate-secrets.sh
    
    # Rotate database passwords
-   fly postgres update --password -a harmonihse360-db
+   fly postgres update --password -a harmoni360-db
    ```
 
 2. **Apply Security Patches**
    ```bash
    # Deploy security updates
-   fly deploy -a harmonihse360-app
+   fly deploy -a harmoni360-app
    ```
 
 #### Long-term Response (1-7 days)
@@ -448,21 +448,21 @@ jobs:
 #### Automated Backup Strategy
 ```bash
 # Database backups (automated by Fly.io)
-fly postgres backup list -a harmonihse360-db
+fly postgres backup list -a harmoni360-db
 
 # Application data backup
-fly volumes list -a harmonihse360-app
+fly volumes list -a harmoni360-app
 fly volumes snapshot create [volume-id]
 ```
 
 #### Disaster Recovery Plan
 ```bash
 # Emergency deployment from backup
-fly postgres restore [backup-id] -a harmonihse360-db-new
-fly deploy --image [backup-image] -a harmonihse360-app-new
+fly postgres restore [backup-id] -a harmoni360-db-new
+fly deploy --image [backup-image] -a harmoni360-app-new
 
 # DNS failover
-fly certs create yourdomain.com -a harmonihse360-app-new
+fly certs create yourdomain.com -a harmoni360-app-new
 ```
 
 ## 📋 Security Checklist

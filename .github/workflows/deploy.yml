@@ -1,4 +1,4 @@
-name: HarmoniHSE360 CI/CD Pipeline
+name: Harmoni360 CI/CD Pipeline
 
 "on":
   push:
@@ -27,7 +27,7 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-
+    
     services:
       postgres:
         image: postgres:15-alpine
@@ -41,7 +41,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
+      
       redis:
         image: redis:7-alpine
         options: >-
@@ -67,20 +67,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Restore .NET dependencies
         run: dotnet restore
 
       - name: Install Node.js dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci --legacy-peer-deps
 
       - name: Build .NET application
         run: dotnet build --no-restore --configuration Release
 
       - name: Build React application
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm run build
 
       - name: Run .NET tests
@@ -91,12 +91,12 @@ jobs:
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=cobertura
         env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmonihse360_test;Username=postgres;Password=postgres"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=harmoni360_test;Username=postgres;Password=postgres"
           ConnectionStrings__Redis: "localhost:6379"
           Jwt__Key: "TestJwtKeyThatIsAtLeast32CharactersLongForTesting"
 
       - name: Run Frontend tests
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm test -- --coverage --watchAll=false
 
       - name: Upload test results
@@ -106,22 +106,22 @@ jobs:
           name: test-results
           path: |
             TestResults/
-            src/HarmoniHSE360.Web/ClientApp/coverage/
+            src/Harmoni360.Web/ClientApp/coverage/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            src/HarmoniHSE360.Web/bin/Release/
-            src/HarmoniHSE360.Web/ClientApp/dist/
+            src/Harmoni360.Web/bin/Release/
+            src/Harmoni360.Web/ClientApp/dist/
 
   # Security Scanning Job
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
     needs: build-and-test
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -151,10 +151,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
 
       - name: Install Node.js dependencies for audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci --legacy-peer-deps
 
       - name: Install security scan tools
@@ -162,7 +162,7 @@ jobs:
           npm install -g audit-ci
 
       - name: Run npm audit
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: |
           npm audit --audit-level moderate || true
           audit-ci --config audit-ci.json || true
@@ -174,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-and-test, security-scan]
     if: github.event_name != 'pull_request'
-
+    
     outputs:
       image-digest: ${{ steps.build.outputs.digest }}
 
@@ -216,14 +216,14 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
-  # Deploy to Staging
+  # Deploy to Staging (using same app with staging environment)
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: docker-build
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment: staging
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -231,22 +231,31 @@ jobs:
       - name: Setup Fly CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy to Fly.io Staging
+      - name: Deploy to Fly.io Staging Environment
         run: |
-          flyctl deploy --config fly.staging.toml
+          # Deploy with staging environment variables
+          flyctl deploy --config fly.toml --env ASPNETCORE_ENVIRONMENT=Staging
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: Run database migrations
+      - name: Set staging environment secrets
         run: |
-          flyctl ssh console --config fly.staging.toml -C "cd /app && dotnet ef database update"
+          flyctl secrets set ASPNETCORE_ENVIRONMENT="Staging" -a harmoni-hse-360
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Run database migrations (staging)
+        run: |
+          flyctl ssh console -a harmoni-hse-360 -C "cd /app && dotnet ef database update"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Health check
         run: |
           sleep 30
-          curl -f https://harmonihse360-staging.fly.dev/health || exit 1
+          curl -f https://harmoni-hse-360.fly.dev/health || exit 1
+
+
 
   # Deploy to Production
   deploy-production:
@@ -255,7 +264,7 @@ jobs:
     needs: docker-build
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     environment: production
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -265,17 +274,25 @@ jobs:
 
       - name: Deploy to Fly.io Production
         run: |
-          flyctl deploy --config fly.toml
+          flyctl deploy --config fly.toml --env ASPNETCORE_ENVIRONMENT=Production
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Set production environment secrets
+        run: |
+          flyctl secrets set ASPNETCORE_ENVIRONMENT="Production" -a harmoni-hse-360
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Run database migrations
         run: |
-          flyctl ssh console --config fly.toml -C "cd /app && dotnet ef database update"
+          flyctl ssh console -a harmoni-hse-360 -C "cd /app && dotnet ef database update"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Health check
         run: |
           sleep 30
-          curl -f https://harmonihse360-app.fly.dev/health || exit 1
+          curl -f https://harmoni-hse-360.fly.dev/health || exit 1
+
+

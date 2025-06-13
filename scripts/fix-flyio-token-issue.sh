@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# HarmoniHSE360 - Fix Fly.io Token Authentication Issue
+# Harmoni360 - Fix Fly.io Token Authentication Issue
 # This script fixes the missing FLY_API_TOKEN_STAGING secret issue
 
 set -e
 
-echo "🔧 HarmoniHSE360 - Fixing Fly.io Token Authentication Issue"
+echo "🔧 Harmoni360 - Fixing Fly.io Token Authentication Issue"
 echo "============================================================"
 echo ""
 

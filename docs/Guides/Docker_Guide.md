@@ -1,6 +1,6 @@
-# Docker Setup Guide for HarmoniHSE360
+# Docker Setup Guide for Harmoni360
 
-This guide explains how to run HarmoniHSE360 using Docker for both development and production environments.
+This guide explains how to run Harmoni360 using Docker for both development and production environments.
 
 ## Prerequisites
 
@@ -22,13 +22,13 @@ This guide explains how to run HarmoniHSE360 using Docker for both development a
 
 2. **Run backend locally**
    ```bash
-   cd src/HarmoniHSE360.Web
+   cd src/Harmoni360.Web
    dotnet run
    ```
 
 3. **Run frontend locally** (new terminal)
    ```bash
-   cd src/HarmoniHSE360.Web/ClientApp
+   cd src/Harmoni360.Web/ClientApp
    npm install
    npm run dev
    ```
@@ -37,7 +37,7 @@ This guide explains how to run HarmoniHSE360 using Docker for both development a
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:5000
    - pgAdmin: http://localhost:5050
-     - Email: `dev@harmonihse360.com`
+     - Email: `dev@harmoni360.com`
      - Password: `DevPassword123!`
 
 #### Option 2: Full Docker Development (Advanced)
@@ -55,7 +55,7 @@ This guide explains how to run HarmoniHSE360 using Docker for both development a
 **Note**: The full Docker development setup requires building a custom development image which may take longer.
 
 ### Default Login Credentials
-- Username: `admin@harmonihse360.com`
+- Username: `admin@harmoni360.com`
 - Password: `Admin123!`
 - See `docs/Guides/Seeded_Users.md` for more test users
 
@@ -132,7 +132,7 @@ docker compose pull
 docker compose up -d
 
 # Backup database
-docker compose exec postgres pg_dump -U postgres HarmoniHSE360 > backup.sql
+docker compose exec postgres pg_dump -U postgres Harmoni360 > backup.sql
 ```
 
 ## Environment Variables
@@ -164,7 +164,7 @@ docker compose ps
 docker compose logs postgres
 
 # Connect to database manually
-docker compose exec postgres psql -U postgres -d HarmoniHSE360
+docker compose exec postgres psql -U postgres -d Harmoni360
 ```
 
 ### Permission Issues
@@ -190,19 +190,19 @@ Increase Docker Desktop memory allocation:
 **Backup:**
 ```bash
 # Database
-docker compose exec postgres pg_dump -U postgres HarmoniHSE360 > backup_$(date +%Y%m%d).sql
+docker compose exec postgres pg_dump -U postgres Harmoni360 > backup_$(date +%Y%m%d).sql
 
 # Uploads
-docker run --rm -v harmonihse360_app_uploads:/data -v $(pwd):/backup alpine tar czf /backup/uploads_$(date +%Y%m%d).tar.gz -C /data .
+docker run --rm -v harmoni360_app_uploads:/data -v $(pwd):/backup alpine tar czf /backup/uploads_$(date +%Y%m%d).tar.gz -C /data .
 ```
 
 **Restore:**
 ```bash
 # Database
-docker compose exec -T postgres psql -U postgres HarmoniHSE360 < backup_20240101.sql
+docker compose exec -T postgres psql -U postgres Harmoni360 < backup_20240101.sql
 
 # Uploads
-docker run --rm -v harmonihse360_app_uploads:/data -v $(pwd):/backup alpine tar xzf /backup/uploads_20240101.tar.gz -C /data
+docker run --rm -v harmoni360_app_uploads:/data -v $(pwd):/backup alpine tar xzf /backup/uploads_20240101.tar.gz -C /data
 ```
 
 ## Security Considerations

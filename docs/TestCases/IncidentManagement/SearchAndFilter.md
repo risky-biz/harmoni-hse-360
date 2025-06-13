@@ -1,7 +1,7 @@
 # Search and Filter - Manual Test Cases
 
 ## Test Case Overview
-This document contains comprehensive test cases for incident search and filtering functionality in the HarmoniHSE360 system.
+This document contains comprehensive test cases for incident search and filtering functionality in the Harmoni360 system.
 
 ---
 

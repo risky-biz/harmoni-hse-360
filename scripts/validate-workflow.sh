@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# HarmoniHSE360 GitHub Actions Workflow Validation Script
+# Harmoni360 GitHub Actions Workflow Validation Script
 # This script validates the GitHub Actions workflow configuration
 
 set -e
 
-echo "🔍 Validating HarmoniHSE360 GitHub Actions Workflow"
+echo "🔍 Validating Harmoni360 GitHub Actions Workflow"
 echo "=================================================="
 
 # Check if GitHub CLI is installed
@@ -59,7 +59,7 @@ CONFIG_FILES=(
     "Dockerfile.flyio"
     "fly.toml.example"
     "fly.staging.toml"
-    "src/HarmoniHSE360.Web/ClientApp/audit-ci.json"
+    "src/Harmoni360.Web/ClientApp/audit-ci.json"
 )
 
 echo ""

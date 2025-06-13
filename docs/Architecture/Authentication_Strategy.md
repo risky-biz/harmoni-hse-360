@@ -1,7 +1,7 @@
-# HarmoniHSE360 Authentication Strategy
+# Harmoni360 Authentication Strategy
 
 ## Overview
-HarmoniHSE360 implements a flexible authentication system that supports multiple authentication methods to accommodate different deployment scenarios and organizational requirements.
+Harmoni360 implements a flexible authentication system that supports multiple authentication methods to accommodate different deployment scenarios and organizational requirements.
 
 ## Authentication Options
 
@@ -34,7 +34,7 @@ HarmoniHSE360 implements a flexible authentication system that supports multiple
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  HarmoniHSE360                      │
+│                  Harmoni360                         │
 ├─────────────────────────────────────────────────────┤
 │              Authentication Layer                    │
 │  ┌────────────────────────────────────────────┐    │

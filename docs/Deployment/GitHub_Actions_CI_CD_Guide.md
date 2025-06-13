@@ -1,8 +1,8 @@
-# HarmoniHSE360 GitHub Actions CI/CD Implementation Guide
+# Harmoni360 GitHub Actions CI/CD Implementation Guide
 
 ## Overview
 
-This guide provides comprehensive instructions for implementing automated CI/CD pipelines for the HarmoniHSE360 application using GitHub Actions and Fly.io deployment.
+This guide provides comprehensive instructions for implementing automated CI/CD pipelines for the Harmoni360 application using GitHub Actions and Fly.io deployment.
 
 ## Table of Contents
 
@@ -123,16 +123,16 @@ Configure environment-specific variables:
 
 **Production Environment:**
 ```bash
-fly secrets set ConnectionStrings__DefaultConnection="postgres://..." -a harmonihse360-app
-fly secrets set ConnectionStrings__Redis="redis://..." -a harmonihse360-app
-fly secrets set Jwt__Key="production-jwt-key-32-chars-min" -a harmonihse360-app
+fly secrets set ConnectionStrings__DefaultConnection="postgres://..." -a harmoni360-app
+fly secrets set ConnectionStrings__Redis="redis://..." -a harmoni360-app
+fly secrets set Jwt__Key="production-jwt-key-32-chars-min" -a harmoni360-app
 ```
 
 **Staging Environment:**
 ```bash
-fly secrets set ConnectionStrings__DefaultConnection="postgres://..." -a harmonihse360-staging
-fly secrets set ConnectionStrings__Redis="redis://..." -a harmonihse360-staging
-fly secrets set Jwt__Key="staging-jwt-key-32-chars-min" -a harmonihse360-staging
+fly secrets set ConnectionStrings__DefaultConnection="postgres://..." -a harmoni360-staging
+fly secrets set ConnectionStrings__Redis="redis://..." -a harmoni360-staging
+fly secrets set Jwt__Key="staging-jwt-key-32-chars-min" -a harmoni360-staging
 ```
 
 ---
@@ -143,16 +143,16 @@ fly secrets set Jwt__Key="staging-jwt-key-32-chars-min" -a harmonihse360-staging
 
 ```bash
 # Create staging app
-fly launch --no-deploy --name harmonihse360-staging --region sjc
+fly launch --no-deploy --name harmoni360-staging --region sjc
 
 # Create staging database
-fly postgres create --name harmonihse360-staging-db --region sjc
+fly postgres create --name harmoni360-staging-db --region sjc
 
 # Create staging Redis
-fly ext redis create --name harmonihse360-staging-redis
+fly ext redis create --name harmoni360-staging-redis
 
 # Create staging volume
-fly volumes create harmonihse360_staging_uploads --region sjc --size 1 -a harmonihse360-staging
+fly volumes create harmoni360_staging_uploads --region sjc --size 1 -a harmoni360-staging
 ```
 
 ### 2. GitHub Environments
@@ -214,13 +214,13 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: src/HarmoniHSE360.Web/ClientApp/package-lock.json
+          cache-dependency-path: src/Harmoni360.Web/ClientApp/package-lock.json
       
       - name: Restore dependencies
         run: dotnet restore
       
       - name: Install Node dependencies
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm ci
       
       - name: Build application
@@ -230,7 +230,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal
       
       - name: Run frontend tests
-        working-directory: src/HarmoniHSE360.Web/ClientApp
+        working-directory: src/Harmoni360.Web/ClientApp
         run: npm test -- --watchAll=false
 ```
 
@@ -250,7 +250,7 @@ updates:
     
   # Node.js dependencies
   - package-ecosystem: "npm"
-    directory: "/src/HarmoniHSE360.Web/ClientApp"
+    directory: "/src/Harmoni360.Web/ClientApp"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -342,14 +342,14 @@ gh run list --workflow=deploy.yml
 gh run view <run-id> --log
 
 # Local debugging
-docker build -f Dockerfile.flyio -t harmonihse360:debug .
+docker build -f Dockerfile.flyio -t harmoni360:debug .
 ```
 
 **2. Deployment Failures**
 ```bash
 # Check Fly.io status
-fly status -a harmonihse360-app
-fly logs -a harmonihse360-app
+fly status -a harmoni360-app
+fly logs -a harmoni360-app
 
 # Manual deployment
 fly deploy --config fly.toml
@@ -450,7 +450,7 @@ Before using in production:
 
 ---
 
-*This guide provides a production-ready CI/CD implementation for HarmoniHSE360. For questions or improvements, please create an issue or submit a pull request.*
+*This guide provides a production-ready CI/CD implementation for Harmoni360. For questions or improvements, please create an issue or submit a pull request.*
 
 *Last Updated: January 2025*
 *Version: 2.0 - Enhanced with Workflow Fixes*

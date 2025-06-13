@@ -1,14 +1,14 @@
-# Docker Configuration Guide for HarmoniHSE360
+# Docker Configuration Guide for Harmoni360
 
 ## 📋 Overview
 
-This guide provides comprehensive documentation for Docker containerization of the HarmoniHSE360 application, including production-optimized configurations for Fly.io deployment.
+This guide provides comprehensive documentation for Docker containerization of the Harmoni360 application, including production-optimized configurations for Fly.io deployment.
 
 ## 🐳 Docker Architecture
 
 ### Container Strategy
 
-The HarmoniHSE360 application uses a **multi-stage Docker build** approach optimized for:
+The Harmoni360 application uses a **multi-stage Docker build** approach optimized for:
 - **Build Efficiency**: Separate build and runtime environments
 - **Security**: Minimal attack surface with Alpine Linux
 - **Performance**: Optimized image size and startup time
@@ -36,11 +36,11 @@ WORKDIR /src
 RUN apk add --no-cache nodejs npm
 
 # Copy csproj files and restore
-COPY ["src/HarmoniHSE360.Web/HarmoniHSE360.Web.csproj", "HarmoniHSE360.Web/"]
-COPY ["src/HarmoniHSE360.Application/HarmoniHSE360.Application.csproj", "HarmoniHSE360.Application/"]
-COPY ["src/HarmoniHSE360.Domain/HarmoniHSE360.Domain.csproj", "HarmoniHSE360.Domain/"]
-COPY ["src/HarmoniHSE360.Infrastructure/HarmoniHSE360.Infrastructure.csproj", "HarmoniHSE360.Infrastructure/"]
-RUN dotnet restore "HarmoniHSE360.Web/HarmoniHSE360.Web.csproj"
+COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
+COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "Harmoni360.Application/"]
+COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "Harmoni360.Domain/"]
+COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "Harmoni360.Infrastructure/"]
+RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
 ````
 </augment_code_snippet>
 
@@ -83,9 +83,9 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: harmonihse360-db
+    container_name: harmoni360-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-HarmoniHSE360}
+      POSTGRES_DB: ${POSTGRES_DB:-Harmoni360}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-StrongProductionPassword123!}
 ````
@@ -96,12 +96,12 @@ services:
 <augment_code_snippet path="docker-compose.dev.yml" mode="EXCERPT">
 ````yaml
 services:
-  # HarmoniHSE360 Development Application
+  # Harmoni360 Development Application
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: harmonihse360-app-dev
+    container_name: harmoni360-app-dev
     ports:
       - "5000:5000"  # Backend API
       - "5173:5173"  # Vite dev server
@@ -166,7 +166,7 @@ The Docker images are automatically scanned for vulnerabilities:
 - name: Run Trivy vulnerability scanner
   uses: aquasecurity/trivy-action@master
   with:
-    image-ref: 'harmonihse360:latest'
+    image-ref: 'harmoni360:latest'
     format: 'sarif'
     output: 'trivy-results.sarif'
 ```
@@ -207,7 +207,7 @@ RUN mkdir -p uploads && chown -R appuser:appgroup uploads
 
 ```toml
 [mounts]
-  source = "harmonihse360_uploads"
+  source = "harmoni360_uploads"
   destination = "/app/uploads"
 ```
 
@@ -217,7 +217,7 @@ RUN mkdir -p uploads && chown -R appuser:appgroup uploads
 
 ```bash
 # Build development image
-docker build -f Dockerfile.dev -t harmonihse360:dev .
+docker build -f Dockerfile.dev -t harmoni360:dev .
 
 # Run with docker-compose
 docker-compose -f docker-compose.dev.yml up --build
@@ -227,13 +227,13 @@ docker-compose -f docker-compose.dev.yml up --build
 
 ```bash
 # Build production image
-docker build -f Dockerfile.flyio -t harmonihse360:prod .
+docker build -f Dockerfile.flyio -t harmoni360:prod .
 
 # Run production container
 docker run -p 8080:8080 \
   -e ASPNETCORE_ENVIRONMENT=Production \
   -e ConnectionStrings__DefaultConnection="Host=localhost;..." \
-  harmonihse360:prod
+  harmoni360:prod
 ```
 
 ### Fly.io Deployment Build
@@ -260,13 +260,13 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 ```bash
 # Test container startup
-docker run --rm -p 8080:8080 harmonihse360:prod
+docker run --rm -p 8080:8080 harmoni360:prod
 
 # Check container logs
-docker logs harmonihse360-app
+docker logs harmoni360-app
 
 # Execute commands in container
-docker exec -it harmonihse360-app /bin/sh
+docker exec -it harmoni360-app /bin/sh
 
 # Test health endpoint
 curl http://localhost:8080/health
@@ -279,31 +279,31 @@ curl http://localhost:8080/health
 1. **Node.js Build Failures**
    ```bash
    # Check Node.js version in container
-   docker run --rm harmonihse360:build node --version
+   docker run --rm harmoni360:build node --version
    
    # Debug npm install issues
-   docker run --rm -it harmonihse360:build /bin/sh
-   cd /src/HarmoniHSE360.Web/ClientApp
+   docker run --rm -it harmoni360:build /bin/sh
+   cd /src/Harmoni360.Web/ClientApp
    npm install --verbose
    ```
 
 2. **Permission Issues**
    ```bash
    # Check file permissions
-   docker run --rm harmonihse360:prod ls -la /app/uploads
+   docker run --rm harmoni360:prod ls -la /app/uploads
    
    # Fix permission issues
-   docker run --rm harmonihse360:prod chown -R appuser:appgroup /app/uploads
+   docker run --rm harmoni360:prod chown -R appuser:appgroup /app/uploads
    ```
 
 3. **Runtime Errors**
    ```bash
    # Check environment variables
-   docker run --rm harmonihse360:prod env
+   docker run --rm harmoni360:prod env
    
    # Debug startup issues
-   docker run --rm -it harmonihse360:prod /bin/sh
-   dotnet HarmoniHSE360.Web.dll --urls http://+:8080
+   docker run --rm -it harmoni360:prod /bin/sh
+   dotnet Harmoni360.Web.dll --urls http://+:8080
    ```
 
 ### Performance Optimization
@@ -320,10 +320,10 @@ curl http://localhost:8080/health
 2. **Image Size Reduction**
    ```bash
    # Analyze image layers
-   docker history harmonihse360:prod
+   docker history harmoni360:prod
    
    # Check image size
-   docker images harmonihse360:prod
+   docker images harmoni360:prod
    ```
 
 ## 📊 Monitoring and Logging
@@ -332,26 +332,26 @@ curl http://localhost:8080/health
 
 ```bash
 # Monitor container resources
-docker stats harmonihse360-app
+docker stats harmoni360-app
 
 # Check container processes
-docker top harmonihse360-app
+docker top harmoni360-app
 
 # Inspect container configuration
-docker inspect harmonihse360-app
+docker inspect harmoni360-app
 ```
 
 ### Log Management
 
 ```bash
 # View container logs
-docker logs -f harmonihse360-app
+docker logs -f harmoni360-app
 
 # Export logs to file
-docker logs harmonihse360-app > app.log 2>&1
+docker logs harmoni360-app > app.log 2>&1
 
 # Rotate logs (production)
-docker logs --since="1h" harmonihse360-app
+docker logs --since="1h" harmoni360-app
 ```
 
 ---
