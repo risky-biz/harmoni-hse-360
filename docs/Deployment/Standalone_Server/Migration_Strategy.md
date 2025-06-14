@@ -124,6 +124,9 @@ docker-compose -f docker-compose.prod.yml start app
 
 #### Step 4: DNS and SSL Configuration
 
+See [DNS Configuration](./DNS_Configuration.md) for detailed steps on creating A
+and CNAME records before updating SSL certificates.
+
 ```bash
 # Update DNS records to point to standalone server
 # A record: your-domain.com -> your-server-ip

@@ -229,6 +229,15 @@ chmod 600 /opt/harmoni360/ssl/key.pem
 chmod 644 /opt/harmoni360/ssl/cert.pem
 ```
 
+### DNS Configuration
+
+See [DNS_Configuration.md](./DNS_Configuration.md) for details on setting up DNS
+records. You will need to create an **A record** pointing your domain to the
+server's public IP and optionally a **CNAME** for `www`. DNS changes can take
+several hours to propagate, so verify with `dig` or `nslookup` before
+continuing. Additional guidance is available in the
+[Migration Strategy](./Migration_Strategy.md#step-4-dns-and-ssl-configuration).
+
 ## Configuration
 
 ### 1. Environment Configuration
