@@ -206,6 +206,8 @@ Access at: `http://localhost:5341` or via ngrok tunnel
 
 ## 🧪 Testing Procedures
 
+For a complete verification checklist, see [Testing Procedures](./Testing_Procedures.md).
+
 ### Automated Testing
 ```powershell
 # Run health checks
