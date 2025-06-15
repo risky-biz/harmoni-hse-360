@@ -106,7 +106,23 @@
       "Bash(rsync:*)",
       "Bash(env)",
       "Bash(export PATH=\"$PATH:/root/.dotnet/tools\")",
-      "Bash(/usr/local/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg -A 10 -B 10 \"Security|SecurityIncidentManagement\" \"/mnt/d/Projects/harmoni-hse-360/src/Harmoni360.Infrastructure/Services/DataSeeder.cs\")"
+      "Bash(/usr/local/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg -A 10 -B 10 \"Security|SecurityIncidentManagement\" \"/mnt/d/Projects/harmoni-hse-360/src/Harmoni360.Infrastructure/Services/DataSeeder.cs\")",
+      "Bash(npx sass:*)",
+      "Bash(~/.dotnet/tools/dotnet-ef migrations add AddManualPersonFieldsToInvolvedPersons -p src/Harmoni360.Infrastructure -s src/Harmoni360.Web)",
+      "Bash(~/.dotnet/tools/dotnet-ef migrations list:*)",
+      "Bash(~/.dotnet/tools/dotnet-ef migrations add AddHazardAuditLogsSupport --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web)",
+      "Bash(~/.dotnet/tools/dotnet-ef database update:*)",
+      "Bash(~/.dotnet/tools/dotnet-ef migrations remove:*)",
+      "Bash(~/.dotnet/tools/dotnet-ef migrations add:*)",
+      "Bash(~/.dotnet/tools/dotnet-ef:*)",
+      "Bash(./test-seeding.sh:*)",
+      "Bash(bash:*)",
+      "Bash(export PATH=$PATH:/root/.dotnet/tools)",
+      "Bash(/root/.dotnet/tools/dotnet-ef migrations add AddWorkPermitTables --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web)",
+      "Bash(export PATH=/root/.dotnet/tools:$PATH)",
+      "Bash(export:*)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Production dotnet run --urls=\"http://localhost:5001\")",
+      "Bash(/home/risky_biz/.dotnet/tools/dotnet-ef migrations add AddAuditEntities --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web --context ApplicationDbContext)"
     ]
   },
   "enableAllProjectMcpServers": false

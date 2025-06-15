@@ -1,4 +1,5 @@
 using Harmoni360.Application.Common.Interfaces;
+using Harmoni360.Application.Features.Trainings.Services;
 using Harmoni360.Domain.Interfaces;
 using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Infrastructure.Persistence.Repositories;
@@ -73,9 +74,18 @@ public static class DependencyInjection
         services.AddScoped<SecurityDataSeeder>();
         services.AddScoped<WorkPermitDataSeeder>();
         services.AddScoped<InspectionDataSeeder>();
+        services.AddScoped<AuditDataSeeder>();
+        services.AddScoped<TrainingDataSeeder>();
+        services.AddScoped<LicenseDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();
+        
+        // Add training services
+        services.AddScoped<ICachedTrainingService, CachedTrainingService>();
+        
+        // Add performance monitoring
+        services.AddSingleton<IPerformanceMetricsService, PerformanceMetricsService>();
 
         // Add notification and escalation services
         services.AddScoped<INotificationService, NotificationService>();

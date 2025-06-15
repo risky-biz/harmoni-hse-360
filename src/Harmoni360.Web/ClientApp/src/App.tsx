@@ -419,6 +419,90 @@ const MyWorkPermits = React.lazy(() =>
   })
 );
 
+// License Management Pages
+const LicenseDashboard = React.lazy(() =>
+  import('./pages/licenses/LicenseDashboard').catch((err) => {
+    console.error('Failed to load LicenseDashboard:', err);
+    return {
+      default: () => <div>Error loading License Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const LicenseList = React.lazy(() =>
+  import('./pages/licenses/LicenseList').catch((err) => {
+    console.error('Failed to load LicenseList:', err);
+    return {
+      default: () => <div>Error loading License List. Please refresh.</div>,
+    };
+  })
+);
+const CreateLicense = React.lazy(() =>
+  import('./pages/licenses/CreateLicense').catch((err) => {
+    console.error('Failed to load CreateLicense:', err);
+    return {
+      default: () => <div>Error loading Create License. Please refresh.</div>,
+    };
+  })
+);
+const LicenseDetail = React.lazy(() =>
+  import('./pages/licenses/LicenseDetail').catch((err) => {
+    console.error('Failed to load LicenseDetail:', err);
+    return {
+      default: () => <div>Error loading License Detail. Please refresh.</div>,
+    };
+  })
+);
+
+// Audit Management Pages
+const AuditDashboard = React.lazy(() =>
+  import('./pages/audits/AuditDashboard').catch((err) => {
+    console.error('Failed to load AuditDashboard:', err);
+    return {
+      default: () => <div>Error loading Audit Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const AuditList = React.lazy(() =>
+  import('./pages/audits/AuditList').catch((err) => {
+    console.error('Failed to load AuditList:', err);
+    return {
+      default: () => <div>Error loading Audit List. Please refresh.</div>,
+    };
+  })
+);
+const CreateAudit = React.lazy(() =>
+  import('./pages/audits/CreateAudit').catch((err) => {
+    console.error('Failed to load CreateAudit:', err);
+    return {
+      default: () => <div>Error loading Create Audit. Please refresh.</div>,
+    };
+  })
+);
+const MyAudits = React.lazy(() =>
+  import('./pages/audits/MyAudits').catch((err) => {
+    console.error('Failed to load MyAudits:', err);
+    return {
+      default: () => <div>Error loading My Audits. Please refresh.</div>,
+    };
+  })
+);
+const AuditDetail = React.lazy(() =>
+  import('./pages/audits/AuditDetail').catch((err) => {
+    console.error('Failed to load AuditDetail:', err);
+    return {
+      default: () => <div>Error loading Audit Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditAudit = React.lazy(() =>
+  import('./pages/audits/EditAudit').catch((err) => {
+    console.error('Failed to load EditAudit:', err);
+    return {
+      default: () => <div>Error loading Edit Audit. Please refresh.</div>,
+    };
+  })
+);
+
 // Security Management Pages
 const SecurityDashboard = React.lazy(() =>
   import('./pages/security/SecurityDashboard').catch((err) => {
@@ -449,6 +533,56 @@ const SecurityIncidentDetail = React.lazy(() =>
     console.error('Failed to load SecurityIncidentDetail:', err);
     return {
       default: () => <div>Error loading Security Incident Detail. Please refresh.</div>,
+    };
+  })
+);
+
+// Training Management Pages
+const TrainingDashboard = React.lazy(() =>
+  import('./pages/trainings/TrainingDashboard').catch((err) => {
+    console.error('Failed to load TrainingDashboard:', err);
+    return {
+      default: () => <div>Error loading Training Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const TrainingList = React.lazy(() =>
+  import('./pages/trainings/TrainingList').catch((err) => {
+    console.error('Failed to load TrainingList:', err);
+    return {
+      default: () => <div>Error loading Training List. Please refresh.</div>,
+    };
+  })
+);
+const CreateTraining = React.lazy(() =>
+  import('./pages/trainings/CreateTraining').catch((err) => {
+    console.error('Failed to load CreateTraining:', err);
+    return {
+      default: () => <div>Error loading Create Training. Please refresh.</div>,
+    };
+  })
+);
+const EditTraining = React.lazy(() =>
+  import('./pages/trainings/EditTraining').catch((err) => {
+    console.error('Failed to load EditTraining:', err);
+    return {
+      default: () => <div>Error loading Edit Training. Please refresh.</div>,
+    };
+  })
+);
+const TrainingDetail = React.lazy(() =>
+  import('./pages/trainings/TrainingDetail').catch((err) => {
+    console.error('Failed to load TrainingDetail:', err);
+    return {
+      default: () => <div>Error loading Training Detail. Please refresh.</div>,
+    };
+  })
+);
+const MyTrainings = React.lazy(() =>
+  import('./pages/trainings/MyTrainings').catch((err) => {
+    console.error('Failed to load MyTrainings:', err);
+    return {
+      default: () => <div>Error loading My Trainings. Please refresh.</div>,
     };
   })
 );
@@ -744,6 +878,20 @@ function App() {
                 <Route path="/work-permits/:id/edit" element={<EditWorkPermit />} />
                 <Route path="/work-permits/:id/approve" element={<WorkPermitApproval />} />
 
+                {/* License Management */}
+                <Route path="/licenses" element={<LicenseList />} />
+                <Route path="/licenses/dashboard" element={<LicenseDashboard />} />
+                <Route path="/licenses/create" element={<CreateLicense />} />
+                <Route path="/licenses/:id" element={<LicenseDetail />} />
+
+                {/* Audit Management */}
+                <Route path="/audits" element={<AuditList />} />
+                <Route path="/audits/dashboard" element={<AuditDashboard />} />
+                <Route path="/audits/create" element={<CreateAudit />} />
+                <Route path="/audits/my-audits" element={<MyAudits />} />
+                <Route path="/audits/:id" element={<AuditDetail />} />
+                <Route path="/audits/:id/edit" element={<EditAudit />} />
+
                 {/* Health Management */}
                 <Route path="/health" element={<HealthList />} />
                 <Route path="/health/dashboard" element={<HealthDashboard />} />
@@ -760,6 +908,15 @@ function App() {
                 <Route path="/security/incidents/create" element={<CreateSecurityIncident />} />
                 <Route path="/security/incidents/:id" element={<SecurityIncidentDetail />} />
                 <Route path="/security/incidents/:id/edit" element={<CreateSecurityIncident />} />
+
+                {/* Training Management */}
+                <Route path="/trainings" element={<TrainingList />} />
+                <Route path="/trainings/dashboard" element={<TrainingDashboard />} />
+                <Route path="/trainings/create" element={<CreateTraining />} />
+                <Route path="/trainings/my-trainings" element={<MyTrainings />} />
+                <Route path="/trainings/:id" element={<TrainingDetail />} />
+                <Route path="/trainings/:id/edit" element={<EditTraining />} />
+                <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
 
                 {/* Admin Routes - Protected by AdminRoute */}
                 <Route

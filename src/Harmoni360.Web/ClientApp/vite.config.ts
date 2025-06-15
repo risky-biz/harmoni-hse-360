@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 export default defineConfig({
+  base: '/',
+  publicDir: 'public',
   css: {
     preprocessorOptions: {
       scss: {
@@ -97,6 +99,7 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
+    copyPublicDir: true,
     rollupOptions: {
       onwarn(warning, warn) {
         // Ignore certain warnings
@@ -132,6 +135,38 @@ export default defineConfig({
             './src/pages/hazards/HazardDashboard',
             './src/pages/hazards/HazardList',
             './src/pages/hazards/HazardDetail'
+          ],
+          'training-pages': [
+            './src/pages/trainings/TrainingDashboard',
+            './src/pages/trainings/TrainingList',
+            './src/pages/trainings/TrainingDetail',
+            './src/pages/trainings/CreateTraining',
+            './src/pages/trainings/EditTraining',
+            './src/pages/trainings/MyTrainings'
+          ],
+          'work-permit-pages': [
+            './src/pages/work-permits/WorkPermitDashboard',
+            './src/pages/work-permits/WorkPermitList', 
+            './src/pages/work-permits/WorkPermitDetail',
+            './src/pages/work-permits/CreateWorkPermit',
+            './src/pages/work-permits/EditWorkPermit'
+          ],
+          'security-pages': [
+            './src/pages/security/SecurityDashboard',
+            './src/pages/security/SecurityIncidentList',
+            './src/pages/security/SecurityIncidentDetail',
+            './src/pages/security/CreateSecurityIncident'
+          ],
+          'risk-assessment-pages': [
+            './src/pages/risk-assessments/RiskAssessmentList',
+            './src/pages/risk-assessments/RiskAssessmentDetail',
+            './src/pages/risk-assessments/CreateRiskAssessment'
+          ],
+          'inspection-pages': [
+            './src/pages/inspections/InspectionDashboard',
+            './src/pages/inspections/InspectionList',
+            './src/pages/inspections/InspectionDetail',
+            './src/pages/inspections/CreateInspection'
           ]
         },
         assetFileNames: (assetInfo) => {
