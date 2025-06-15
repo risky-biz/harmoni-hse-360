@@ -78,6 +78,25 @@ public enum ModuleType
     InspectionManagement = 15,
 
     /// <summary>
+    /// Audit Management Module - Comprehensive HSSE audit management with checklist-based assessments, findings tracking, and compliance monitoring
+    /// </summary>
+    AuditManagement = 16,
+
+    /// <summary>
+    /// Training Management Module - Comprehensive HSSE training management with participant tracking, certification management, and compliance monitoring
+    /// </summary>
+    TrainingManagement = 17,
+
+    /// <summary>
+    /// License Management Module - Comprehensive license, permit, and certification management with renewal tracking, compliance monitoring, and regulatory oversight
+    /// </summary>
+    LicenseManagement = 18,
+
+    /// <summary>
+    /// Application Settings Module - System configuration, module settings, security settings
+    /// (SuperAdmin/Developer only)
+    /// </summary>
+    ApplicationSettings = 19
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>

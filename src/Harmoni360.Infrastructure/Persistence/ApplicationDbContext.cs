@@ -3,6 +3,7 @@ using Harmoni360.Domain.Common;
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
 using Harmoni360.Domain.Entities.Inspections;
+using Harmoni360.Domain.Entities.Audits;
 using Harmoni360.Domain.Entities.Waste;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -92,6 +93,30 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<InspectionFinding> InspectionFindings => Set<InspectionFinding>();
     public DbSet<InspectionAttachment> InspectionAttachments => Set<InspectionAttachment>();
     public DbSet<InspectionComment> InspectionComments => Set<InspectionComment>();
+    public DbSet<Domain.Entities.Inspections.FindingAttachment> FindingAttachments => Set<Domain.Entities.Inspections.FindingAttachment>();
+    
+    // Audit Management
+    public DbSet<Audit> Audits => Set<Audit>();
+    public DbSet<AuditItem> AuditItems => Set<AuditItem>();
+    public DbSet<AuditFinding> AuditFindings => Set<AuditFinding>();
+    public DbSet<AuditAttachment> AuditAttachments => Set<AuditAttachment>();
+    public DbSet<AuditComment> AuditComments => Set<AuditComment>();
+    public DbSet<Domain.Entities.Audits.FindingAttachment> AuditFindingAttachments => Set<Domain.Entities.Audits.FindingAttachment>();
+    
+    // Training Management
+    public DbSet<Training> Trainings => Set<Training>();
+    public DbSet<TrainingParticipant> TrainingParticipants => Set<TrainingParticipant>();
+    public DbSet<TrainingRequirement> TrainingRequirements => Set<TrainingRequirement>();
+    public DbSet<TrainingAttachment> TrainingAttachments => Set<TrainingAttachment>();
+    public DbSet<TrainingComment> TrainingComments => Set<TrainingComment>();
+    public DbSet<TrainingCertification> TrainingCertifications => Set<TrainingCertification>();
+    
+    // License Management
+    public DbSet<License> Licenses => Set<License>();
+    public DbSet<LicenseAttachment> LicenseAttachments => Set<LicenseAttachment>();
+    public DbSet<LicenseRenewal> LicenseRenewals => Set<LicenseRenewal>();
+    public DbSet<LicenseCondition> LicenseConditions => Set<LicenseCondition>();
+    public DbSet<LicenseAuditLog> LicenseAuditLogs => Set<LicenseAuditLog>();
     public DbSet<FindingAttachment> FindingAttachments => Set<FindingAttachment>();
 
     // Waste Management

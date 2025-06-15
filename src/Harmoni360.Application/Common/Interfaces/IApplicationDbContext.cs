@@ -1,6 +1,7 @@
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
 using Harmoni360.Domain.Entities.Inspections;
+using Harmoni360.Domain.Entities.Audits;
 using Harmoni360.Domain.Entities.Waste;
 using Microsoft.EntityFrameworkCore;
 
@@ -74,8 +75,30 @@ public interface IApplicationDbContext
     DbSet<InspectionFinding> InspectionFindings { get; }
     DbSet<InspectionAttachment> InspectionAttachments { get; }
     DbSet<InspectionComment> InspectionComments { get; }
-    DbSet<FindingAttachment> FindingAttachments { get; }
-
+    DbSet<Domain.Entities.Inspections.FindingAttachment> FindingAttachments { get; }
+    
+    // Audit Management
+    DbSet<Audit> Audits { get; }
+    DbSet<AuditItem> AuditItems { get; }
+    DbSet<AuditFinding> AuditFindings { get; }
+    DbSet<AuditAttachment> AuditAttachments { get; }
+    DbSet<AuditComment> AuditComments { get; }
+    DbSet<Domain.Entities.Audits.FindingAttachment> AuditFindingAttachments { get; }
+    
+    // Training Management
+    DbSet<Training> Trainings { get; }
+    DbSet<TrainingParticipant> TrainingParticipants { get; }
+    DbSet<TrainingRequirement> TrainingRequirements { get; }
+    DbSet<TrainingAttachment> TrainingAttachments { get; }
+    DbSet<TrainingComment> TrainingComments { get; }
+    DbSet<TrainingCertification> TrainingCertifications { get; }
+    
+    // License Management
+    DbSet<License> Licenses { get; }
+    DbSet<LicenseAttachment> LicenseAttachments { get; }
+    DbSet<LicenseRenewal> LicenseRenewals { get; }
+    DbSet<LicenseCondition> LicenseConditions { get; }
+    DbSet<LicenseAuditLog> LicenseAuditLogs { get; }
     // Waste Management
     DbSet<WasteReport> WasteReports { get; }
     DbSet<WasteAttachment> WasteAttachments { get; }

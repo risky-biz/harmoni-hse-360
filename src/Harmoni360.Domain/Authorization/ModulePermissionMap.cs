@@ -22,6 +22,9 @@ public static class ModulePermissionMap
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.InspectionManagement] = AllPermissions(),
+                [ModuleType.AuditManagement] = AllPermissions(),
+                [ModuleType.TrainingManagement] = AllPermissions(),
+                [ModuleType.LicenseManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -42,6 +45,9 @@ public static class ModulePermissionMap
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.InspectionManagement] = AllPermissions(),
+                [ModuleType.AuditManagement] = AllPermissions(),
+                [ModuleType.TrainingManagement] = AllPermissions(),
+                [ModuleType.LicenseManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -62,6 +68,9 @@ public static class ModulePermissionMap
                 [ModuleType.Dashboard] = AllPermissions(),
                 [ModuleType.WorkPermitManagement] = AllPermissions(),
                 [ModuleType.InspectionManagement] = AllPermissions(),
+                [ModuleType.AuditManagement] = AllPermissions(),
+                [ModuleType.TrainingManagement] = AllPermissions(),
+                [ModuleType.LicenseManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -117,6 +126,7 @@ public static class ModulePermissionMap
             {
                 [ModuleType.Dashboard] = ReadOnlyPermissions(),
                 [ModuleType.InspectionManagement] = AllPermissions(),
+                [ModuleType.AuditManagement] = ReadOnlyPermissions(), // Can view audits related to inspections
                 [ModuleType.Reporting] = ReadOnlyPermissions() // Can view reports for inspections
                 // All other modules - NO ACCESS
             },
@@ -125,6 +135,7 @@ public static class ModulePermissionMap
             [RoleType.SecurityManager] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.AuditManagement] = AllPermissions(), // Full access for security audits
                 [ModuleType.PhysicalSecurity] = AllPermissions(),
                 [ModuleType.InformationSecurity] = AllPermissions(),
                 [ModuleType.PersonnelSecurity] = AllPermissions(),
@@ -151,7 +162,11 @@ public static class ModulePermissionMap
             [RoleType.ComplianceOfficer] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = AllPermissions(),
+                [ModuleType.WorkPermitManagement] = ReadOnlyPermissions(), // Can view work permits for compliance
                 [ModuleType.InspectionManagement] = ReadOnlyPermissions(), // Can view inspections for compliance
+                [ModuleType.AuditManagement] = AllPermissions(), // Full access to audit management - core compliance function
+                [ModuleType.TrainingManagement] = AllPermissions(), // Full access to training compliance management
+                [ModuleType.LicenseManagement] = AllPermissions(), // Full access to license compliance management
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(), // Can view HSE incidents for compliance
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(), // Can view risk assessments for compliance
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(), // Can view PPE compliance
@@ -169,7 +184,11 @@ public static class ModulePermissionMap
             [RoleType.Reporter] = new Dictionary<ModuleType, List<PermissionType>>
             {
                 [ModuleType.Dashboard] = ReadOnlyPermissions(),
+                [ModuleType.WorkPermitManagement] = ReadOnlyPermissions(),
                 [ModuleType.InspectionManagement] = ReadOnlyPermissions(),
+                [ModuleType.AuditManagement] = ReadOnlyPermissions(), // Can view audit data for reporting
+                [ModuleType.TrainingManagement] = ReadOnlyPermissions(), // Can view training data for reporting
+                [ModuleType.LicenseManagement] = ReadOnlyPermissions(), // Can view license data for reporting
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(),
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(),
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(),

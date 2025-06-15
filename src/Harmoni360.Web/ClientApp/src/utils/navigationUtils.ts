@@ -284,18 +284,50 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // 4. Audit Management (Placeholder)
+  // 4. Audit Management
   {
     component: 'CNavTitle',
     name: 'Audit Management',
-    adminOnly: true, // Temporary until module is implemented
+    module: ModuleType.AuditManagement,
+    requireAnyPermission: true,
   },
   {
-    component: 'CNavItem',
-    name: 'Audits (Coming Soon)',
-    to: '#',
+    component: 'CNavGroup',
+    name: 'Audits',
+    to: '#audits',
     icon: null,
-    adminOnly: true,
+    module: ModuleType.AuditManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Audit Dashboard',
+        to: '/audits/dashboard',
+        module: ModuleType.AuditManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Create Audit',
+        to: '/audits/create',
+        module: ModuleType.AuditManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'View Audits',
+        to: '/audits',
+        module: ModuleType.AuditManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Audits',
+        to: '/audits/my-audits',
+        module: ModuleType.AuditManagement,
+        permission: PermissionType.Read,
+      },
+    ],
   },
   
   // 5. Incident Management Section (moved down from top)
@@ -390,32 +422,103 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // 7. Training Management (Placeholder)
+  // 7. Training Management
   {
     component: 'CNavTitle',
     name: 'Training Management',
-    adminOnly: true, // Temporary until module is implemented
+    module: ModuleType.TrainingManagement,
+    requireAnyPermission: true,
   },
   {
-    component: 'CNavItem',
-    name: 'Training (Coming Soon)',
-    to: '#',
+    component: 'CNavGroup',
+    name: 'Training',
+    to: '#training',
     icon: null,
-    adminOnly: true,
+    module: ModuleType.TrainingManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Training Dashboard',
+        to: '/trainings/dashboard',
+        module: ModuleType.TrainingManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Create Training',
+        to: '/trainings/create',
+        module: ModuleType.TrainingManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'View Trainings',
+        to: '/trainings',
+        module: ModuleType.TrainingManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Trainings',
+        to: '/trainings/my-trainings',
+        module: ModuleType.TrainingManagement,
+        permission: PermissionType.Read,
+      },
+    ],
   },
 
-  // 8. License Management (Placeholder)
+  // 8. License Management
   {
     component: 'CNavTitle',
     name: 'License Management',
-    adminOnly: true, // Temporary until module is implemented
+    module: ModuleType.LicenseManagement,
+    requireAnyPermission: true,
   },
   {
-    component: 'CNavItem',
-    name: 'Licenses (Coming Soon)',
-    to: '#',
+    component: 'CNavGroup',
+    name: 'Licenses',
+    to: '#licenses',
     icon: null,
-    adminOnly: true,
+    module: ModuleType.LicenseManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'License Dashboard',
+        to: '/licenses/dashboard',
+        module: ModuleType.LicenseManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Create License',
+        to: '/licenses/create',
+        module: ModuleType.LicenseManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'View Licenses',
+        to: '/licenses',
+        module: ModuleType.LicenseManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Licenses',
+        to: '/licenses/my-licenses',
+        module: ModuleType.LicenseManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Expiring Licenses',
+        to: '/licenses/expiring',
+        module: ModuleType.LicenseManagement,
+        permission: PermissionType.Read,
+      },
+    ],
   },
 
   // 9. Waste Management (Placeholder)

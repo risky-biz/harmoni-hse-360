@@ -270,6 +270,17 @@ public class InspectionDataSeeder : IDataSeeder
             "Strong safety culture demonstrated by team",
             "Effective use of technology to enhance safety",
             "Exemplary documentation and record keeping"
+        },
+        [FindingType.CriticalNonConformance] = new[]
+        {
+            "Critical safety equipment failure posing immediate danger",
+            "Life-threatening working conditions identified",
+            "Severe regulatory violations requiring immediate action",
+            "Major environmental contamination incident",
+            "Critical structural integrity issues discovered",
+            "Immediate fire or explosion hazard present",
+            "Catastrophic equipment failure with safety implications",
+            "Critical breaches of safety protocols causing imminent danger"
         }
     };
 

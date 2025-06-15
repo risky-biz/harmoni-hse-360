@@ -61,27 +61,4 @@ public enum InspectionItemStatus
     NotApplicable = 5
 }
 
-public enum FindingType
-{
-    NonConformance = 1,
-    Observation = 2,
-    OpportunityForImprovement = 3,
-    PositiveFinding = 4
-}
-
-public enum FindingSeverity
-{
-    Minor = 1,
-    Moderate = 2,
-    Major = 3,
-    Critical = 4
-}
-
-public enum FindingStatus
-{
-    Open = 1,
-    InProgress = 2,
-    Resolved = 3,
-    Verified = 4,
-    Closed = 5
-}
+// Finding-related enums are now shared in AuditEnums.cs and imported via using statements
