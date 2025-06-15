@@ -81,5 +81,10 @@ public enum ModuleType
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>
-    ApplicationSettings = 16
+    ApplicationSettings = 16,
+
+    /// <summary>
+    /// Waste Management Module - Waste reporting, classification, disposal tracking
+    /// </summary>
+    WasteManagement = 17
 }

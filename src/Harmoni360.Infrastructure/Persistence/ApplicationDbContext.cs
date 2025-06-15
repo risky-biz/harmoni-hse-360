@@ -3,6 +3,7 @@ using Harmoni360.Domain.Common;
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
 using Harmoni360.Domain.Entities.Inspections;
+using Harmoni360.Domain.Entities.Waste;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -92,6 +93,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<InspectionAttachment> InspectionAttachments => Set<InspectionAttachment>();
     public DbSet<InspectionComment> InspectionComments => Set<InspectionComment>();
     public DbSet<FindingAttachment> FindingAttachments => Set<FindingAttachment>();
+
+    // Waste Management
+    public DbSet<WasteReport> WasteReports => Set<WasteReport>();
+    public DbSet<WasteAttachment> WasteAttachments => Set<WasteAttachment>();
+    public DbSet<WasteType> WasteTypes => Set<WasteType>();
+    public DbSet<DisposalProvider> DisposalProviders => Set<DisposalProvider>();
+    public DbSet<WasteDisposalRecord> WasteDisposalRecords => Set<WasteDisposalRecord>();
+    public DbSet<WasteComment> WasteComments => Set<WasteComment>();
+    public DbSet<WasteCompliance> WasteCompliances => Set<WasteCompliance>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,6 +1,7 @@
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
 using Harmoni360.Domain.Entities.Inspections;
+using Harmoni360.Domain.Entities.Waste;
 using Microsoft.EntityFrameworkCore;
 
 namespace Harmoni360.Application.Common.Interfaces;
@@ -74,6 +75,15 @@ public interface IApplicationDbContext
     DbSet<InspectionAttachment> InspectionAttachments { get; }
     DbSet<InspectionComment> InspectionComments { get; }
     DbSet<FindingAttachment> FindingAttachments { get; }
+
+    // Waste Management
+    DbSet<WasteReport> WasteReports { get; }
+    DbSet<WasteAttachment> WasteAttachments { get; }
+    DbSet<WasteType> WasteTypes { get; }
+    DbSet<DisposalProvider> DisposalProviders { get; }
+    DbSet<WasteDisposalRecord> WasteDisposalRecords { get; }
+    DbSet<WasteComment> WasteComments { get; }
+    DbSet<WasteCompliance> WasteCompliances { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
