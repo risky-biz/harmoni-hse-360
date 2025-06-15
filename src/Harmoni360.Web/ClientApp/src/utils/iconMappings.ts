@@ -73,6 +73,8 @@ import {
   faClipboardCheck,
   faListCheck,
   faTasks,
+  faRecycle,
+  faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Action Icons - Common actions across the incident management system
@@ -205,6 +207,11 @@ export const CONTEXT_ICONS = {
   audit: faTasks,
   quality: faClipboardCheck,
   compliance: faClipboardCheck,
+
+  // Waste Management
+  waste: faRecycle,
+  wasteManagement: faRecycle,
+  disposal: faTrashAlt,
   
   // System & Interface
   print: faPrint,

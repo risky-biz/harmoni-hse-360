@@ -512,7 +512,6 @@ const SecurityDashboard = React.lazy(() =>
     };
   })
 );
-
 // HSSE Statistics Dashboard
 const HsseDashboard = React.lazy(() =>
   import('./pages/hsse/HsseDashboard').catch((err) => {
@@ -651,6 +650,64 @@ const HealthCompliance = React.lazy(() =>
     console.error('Failed to load HealthCompliance:', err);
     return {
       default: () => <div>Error loading Health Compliance. Please refresh.</div>,
+    };
+  })
+);
+
+// Waste Management Pages
+const WasteReportList = React.lazy(() =>
+  import('./pages/waste-management/WasteReportList').catch((err) => {
+    console.error('Failed to load WasteReportList:', err);
+    return {
+      default: () => <div>Error loading Waste Report List. Please refresh.</div>,
+    };
+  })
+);
+const WasteReportForm = React.lazy(() =>
+  import('./pages/waste-management/WasteReportForm').catch((err) => {
+    console.error('Failed to load WasteReportForm:', err);
+    return {
+      default: () => <div>Error loading Waste Report Form. Please refresh.</div>,
+    };
+  })
+);
+const WasteDashboard = React.lazy(() =>
+  import('./pages/waste-management/WasteDashboard').catch((err) => {
+    console.error('Failed to load WasteDashboard:', err);
+    return {
+      default: () => <div>Error loading Waste Dashboard. Please refresh.</div>,
+    };
+  })
+);
+const WasteReportDetail = React.lazy(() =>
+  import('./pages/waste-management/WasteReportDetail').catch((err) => {
+    console.error('Failed to load WasteReportDetail:', err);
+    return {
+      default: () => <div>Error loading Waste Report Detail. Please refresh.</div>,
+    };
+  })
+);
+const MyWasteReports = React.lazy(() =>
+  import('./pages/waste-management/MyWasteReports').catch((err) => {
+    console.error('Failed to load MyWasteReports:', err);
+    return {
+      default: () => <div>Error loading My Waste Reports. Please refresh.</div>,
+    };
+  })
+);
+const DisposalProviders = React.lazy(() =>
+  import('./pages/waste-management/DisposalProviders').catch((err) => {
+    console.error('Failed to load DisposalProviders:', err);
+    return {
+      default: () => <div>Error loading Disposal Providers. Please refresh.</div>,
+    };
+  })
+);
+const CreateWasteReport = React.lazy(() =>
+  import('./pages/waste-management/CreateWasteReport').catch((err) => {
+    console.error('Failed to load CreateWasteReport:', err);
+    return {
+      default: () => <div>Error loading Create Waste Report. Please refresh.</div>,
     };
   })
 );
@@ -928,6 +985,14 @@ function App() {
                 <Route path="/trainings/:id" element={<TrainingDetail />} />
                 <Route path="/trainings/:id/edit" element={<EditTraining />} />
                 <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
+		{/* Waste Management */}
+                <Route path="/waste-management" element={<WasteReportList />} />
+                <Route path="/waste-management/dashboard" element={<WasteDashboard />} />
+                <Route path="/waste-management/create" element={<CreateWasteReport />} />
+                <Route path="/waste-management/my-reports" element={<MyWasteReports />} />
+                <Route path="/waste-management/providers" element={<DisposalProviders />} />
+                <Route path="/waste-management/:id" element={<WasteReportDetail />} />
+                <Route path="/waste-management/:id/edit" element={<WasteReportForm />} />
 
                 {/* Admin Routes - Protected by AdminRoute */}
                 <Route

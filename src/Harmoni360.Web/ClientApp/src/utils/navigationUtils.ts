@@ -521,18 +521,62 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // 9. Waste Management (Placeholder)
+  // 9. Waste Management
   {
     component: 'CNavTitle',
     name: 'Waste Management',
-    adminOnly: true, // Temporary until module is implemented
+    module: ModuleType.WasteManagement,
+    requireAnyPermission: true,
   },
   {
-    component: 'CNavItem',
-    name: 'Waste Management (Coming Soon)',
-    to: '#',
+    component: 'CNavGroup',
+    name: 'Waste Management',
+    to: '#waste',
     icon: null,
-    adminOnly: true,
+    module: ModuleType.WasteManagement,
+    requireAnyPermission: true,
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Waste Dashboard',
+        to: '/waste-management/dashboard',
+        icon: null,
+        module: ModuleType.WasteManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Waste Reports',
+        to: '/waste-management',
+        icon: null,
+        module: ModuleType.WasteManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Create Report',
+        to: '/waste-management/create',
+        icon: null,
+        module: ModuleType.WasteManagement,
+        permission: PermissionType.Create,
+      },
+      {
+        component: 'CNavItem',
+        name: 'My Reports',
+        to: '/waste-management/my-reports',
+        icon: null,
+        module: ModuleType.WasteManagement,
+        permission: PermissionType.Read,
+      },
+      {
+        component: 'CNavItem',
+        name: 'Disposal Providers',
+        to: '/waste-management/providers',
+        icon: null,
+        module: ModuleType.WasteManagement,
+        permission: PermissionType.Read,
+      },
+    ],
   },
 
   // 10. HSE Statistics/Dashboard (Placeholder)
