@@ -535,6 +535,11 @@
           "System.IO.Pipelines": "5.0.1"
         }
       },
+      "QuestPDF": {
+        "type": "Transitive",
+        "resolved": "2024.3.0",
+        "contentHash": "3UsHztlheCEa+EgGaND8jSwQrAduayBwwerzAfb40AJM+epRCz/jome2qadEeFrmAC7bqSsggalsSsAriCKHnA=="
+      },
       "StackExchange.Redis": {
         "type": "Transitive",
         "resolved": "2.7.27",
@@ -654,7 +659,8 @@
           "Microsoft.AspNetCore.Http.Features": "[5.0.17, )",
           "Microsoft.EntityFrameworkCore": "[9.0.1, )",
           "Microsoft.Extensions.Caching.Memory": "[9.0.5, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )",
+          "QuestPDF": "[2024.3.0, )"
         }
       },
       "harmoni360.domain": {

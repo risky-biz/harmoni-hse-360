@@ -77,6 +77,12 @@
           "System.Diagnostics.DiagnosticSource": "9.0.5"
         }
       },
+      "QuestPDF": {
+        "type": "Direct",
+        "requested": "[2024.3.0, )",
+        "resolved": "2024.3.0",
+        "contentHash": "3UsHztlheCEa+EgGaND8jSwQrAduayBwwerzAfb40AJM+epRCz/jome2qadEeFrmAC7bqSsggalsSsAriCKHnA=="
+      },
       "AutoMapper": {
         "type": "Transitive",
         "resolved": "12.0.1",
