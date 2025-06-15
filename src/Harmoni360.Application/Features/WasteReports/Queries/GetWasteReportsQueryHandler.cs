@@ -1,11 +1,14 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Harmoni360.Application.Common.Interfaces;
+using Harmoni360.Application.Common.Models;
 using Harmoni360.Application.Features.WasteReports.DTOs;
+using System.Linq.Expressions;
+using Harmoni360.Domain.Entities.Waste;
 
 namespace Harmoni360.Application.Features.WasteReports.Queries;
 
-public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery, List<WasteReportDto>>
+public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery, PagedList<WasteReportDto>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -14,24 +17,24 @@ public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery,
         _context = context;
     }
 
-    public async Task<List<WasteReportDto>> Handle(GetWasteReportsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<WasteReportDto>> Handle(GetWasteReportsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.WasteReports
             .Include(w => w.Reporter)
+            .Include(w => w.Attachments)
             .AsQueryable();
 
-        if (request.Category.HasValue)
-        {
-            query = query.Where(w => w.Category == request.Category.Value);
-        }
+        // Apply filters
+        query = ApplyFilters(query, request);
 
-        if (!string.IsNullOrWhiteSpace(request.Search))
-        {
-            query = query.Where(w => w.Title.Contains(request.Search!) || w.Description.Contains(request.Search!));
-        }
+        // Apply sorting
+        query = ApplySorting(query, request.SortBy, request.SortDescending);
 
-        return await query
-            .OrderByDescending(w => w.GeneratedDate)
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        // Apply pagination
+        var items = await query
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(w => new WasteReportDto
@@ -40,12 +43,79 @@ public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery,
                 Title = w.Title,
                 Description = w.Description,
                 Category = w.Category.ToString(),
+                Status = w.DisposalStatus.ToString(),
                 GeneratedDate = w.GeneratedDate,
                 Location = w.Location,
                 ReporterId = w.ReporterId,
                 ReporterName = w.Reporter != null ? w.Reporter.Name : null,
-                AttachmentsCount = w.Attachments.Count
+                AttachmentsCount = w.Attachments.Count,
+                CreatedAt = w.CreatedAt,
+                CreatedBy = w.CreatedBy
             })
             .ToListAsync(cancellationToken);
+
+        return new PagedList<WasteReportDto>(items, totalCount, request.Page, request.PageSize);
+    }
+
+    private static IQueryable<WasteReport> ApplyFilters(IQueryable<WasteReport> query, GetWasteReportsQuery request)
+    {
+        if (request.Category.HasValue)
+        {
+            query = query.Where(w => w.Category == request.Category.Value);
+        }
+
+        if (request.Status.HasValue)
+        {
+            query = query.Where(w => w.DisposalStatus == (WasteDisposalStatus)request.Status.Value);
+        }
+
+        if (request.FromDate.HasValue)
+        {
+            query = query.Where(w => w.GeneratedDate >= request.FromDate.Value);
+        }
+
+        if (request.ToDate.HasValue)
+        {
+            query = query.Where(w => w.GeneratedDate <= request.ToDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Location))
+        {
+            query = query.Where(w => w.Location.Contains(request.Location));
+        }
+
+        if (request.ReporterId.HasValue)
+        {
+            query = query.Where(w => w.ReporterId == request.ReporterId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var searchLower = request.Search.ToLower();
+            query = query.Where(w => 
+                w.Title.ToLower().Contains(searchLower) || 
+                w.Description.ToLower().Contains(searchLower) ||
+                w.Location.ToLower().Contains(searchLower));
+        }
+
+        return query;
+    }
+
+    private static IQueryable<WasteReport> ApplySorting(IQueryable<WasteReport> query, string? sortBy, bool sortDescending)
+    {
+        Expression<Func<WasteReport, object>> sortExpression = sortBy?.ToLower() switch
+        {
+            "title" => w => w.Title,
+            "category" => w => w.Category,
+            "status" => w => w.DisposalStatus,
+            "location" => w => w.Location,
+            "reporter" => w => w.Reporter != null ? w.Reporter.Name : string.Empty,
+            "createdat" => w => w.CreatedAt,
+            _ => w => w.GeneratedDate // Default sort by GeneratedDate
+        };
+
+        return sortDescending 
+            ? query.OrderByDescending(sortExpression) 
+            : query.OrderBy(sortExpression);
     }
 }

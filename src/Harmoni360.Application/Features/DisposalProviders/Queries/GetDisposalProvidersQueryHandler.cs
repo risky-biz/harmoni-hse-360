@@ -23,7 +23,13 @@ public class GetDisposalProvidersQueryHandler : IRequestHandler<GetDisposalProvi
                 Id = p.Id,
                 Name = p.Name,
                 LicenseNumber = p.LicenseNumber,
-                LicenseExpiryDate = p.LicenseExpiryDate
+                LicenseExpiryDate = p.LicenseExpiryDate,
+                Status = p.Status,
+                IsActive = p.IsActive,
+                CreatedAt = p.CreatedAt,
+                CreatedBy = p.CreatedBy,
+                LastModifiedAt = p.LastModifiedAt,
+                LastModifiedBy = p.LastModifiedBy
             })
             .ToListAsync(cancellationToken);
     }

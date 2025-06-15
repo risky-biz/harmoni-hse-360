@@ -79,6 +79,7 @@ public static class DependencyInjection
         services.AddScoped<AuditDataSeeder>();
         services.AddScoped<TrainingDataSeeder>();
         services.AddScoped<LicenseDataSeeder>();
+        services.AddScoped<WasteDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();

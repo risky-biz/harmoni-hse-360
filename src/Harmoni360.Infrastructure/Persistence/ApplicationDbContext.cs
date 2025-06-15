@@ -117,7 +117,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<LicenseRenewal> LicenseRenewals => Set<LicenseRenewal>();
     public DbSet<LicenseCondition> LicenseConditions => Set<LicenseCondition>();
     public DbSet<LicenseAuditLog> LicenseAuditLogs => Set<LicenseAuditLog>();
-    public DbSet<FindingAttachment> FindingAttachments => Set<FindingAttachment>();
 
     // Waste Management
     public DbSet<WasteReport> WasteReports => Set<WasteReport>();

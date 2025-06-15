@@ -73,6 +73,7 @@ public static class AuthorizationConstants
         public const string RiskManagement = "RiskManagement";
         public const string PPEManagement = "PPEManagement";
         public const string HealthMonitoring = "HealthMonitoring";
+        public const string WasteManagement = "WasteManagement";
         public const string Reporting = "Reporting";
         public const string UserManagement = "UserManagement";
         public const string ApplicationSettings = "ApplicationSettings";
@@ -83,7 +84,7 @@ public static class AuthorizationConstants
         public static readonly string[] AllModules = 
         {
             Dashboard, IncidentManagement, RiskManagement, PPEManagement,
-            HealthMonitoring, Reporting, UserManagement, ApplicationSettings
+            HealthMonitoring, WasteManagement, Reporting, UserManagement, ApplicationSettings
         };
 
         /// <summary>
@@ -92,7 +93,7 @@ public static class AuthorizationConstants
         public static readonly string[] FunctionalModules = 
         {
             Dashboard, IncidentManagement, RiskManagement, PPEManagement,
-            HealthMonitoring, Reporting
+            HealthMonitoring, WasteManagement, Reporting
         };
 
         /// <summary>
@@ -161,6 +162,7 @@ public static class AuthorizationConstants
         public const string RiskManagementAccess = "RiskManagementAccess";
         public const string PPEManagementAccess = "PPEManagementAccess";
         public const string HealthMonitoringAccess = "HealthMonitoringAccess";
+        public const string WasteManagementAccess = "WasteManagementAccess";
         public const string ReportingAccess = "ReportingAccess";
         public const string UserManagementAccess = "UserManagementAccess";
         public const string ApplicationSettingsAccess = "ApplicationSettingsAccess";

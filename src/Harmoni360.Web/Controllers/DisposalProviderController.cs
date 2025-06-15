@@ -1,6 +1,8 @@
 using Harmoni360.Application.Features.DisposalProviders.Commands;
 using Harmoni360.Application.Features.DisposalProviders.DTOs;
 using Harmoni360.Application.Features.DisposalProviders.Queries;
+using Harmoni360.Domain.Enums;
+using Harmoni360.Web.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +21,7 @@ public class DisposalProviderController : ControllerBase
     }
 
     [HttpGet]
+    [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Read)]
     public async Task<ActionResult<List<DisposalProviderDto>>> GetAll()
     {
         var result = await _mediator.Send(new GetDisposalProvidersQuery());
@@ -26,6 +29,7 @@ public class DisposalProviderController : ControllerBase
     }
 
     [HttpPost]
+    [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Create)]
     public async Task<ActionResult<DisposalProviderDto>> Create(CreateDisposalProviderCommand command)
     {
         var result = await _mediator.Send(command);

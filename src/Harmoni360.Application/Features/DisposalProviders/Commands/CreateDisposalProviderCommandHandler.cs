@@ -27,7 +27,13 @@ public class CreateDisposalProviderCommandHandler : IRequestHandler<CreateDispos
             Id = entity.Id,
             Name = entity.Name,
             LicenseNumber = entity.LicenseNumber,
-            LicenseExpiryDate = entity.LicenseExpiryDate
+            LicenseExpiryDate = entity.LicenseExpiryDate,
+            Status = entity.Status,
+            IsActive = entity.IsActive,
+            CreatedAt = entity.CreatedAt,
+            CreatedBy = entity.CreatedBy,
+            LastModifiedAt = entity.LastModifiedAt,
+            LastModifiedBy = entity.LastModifiedBy
         };
     }
 }
