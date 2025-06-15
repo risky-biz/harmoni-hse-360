@@ -512,6 +512,15 @@ const SecurityDashboard = React.lazy(() =>
     };
   })
 );
+// HSSE Statistics Dashboard
+const HsseDashboard = React.lazy(() =>
+  import('./pages/hsse/HsseDashboard').catch((err) => {
+    console.error('Failed to load HsseDashboard:', err);
+    return {
+      default: () => <div>Error loading HSSE Dashboard. Please refresh.</div>,
+    };
+  })
+);
 const SecurityIncidentList = React.lazy(() =>
   import('./pages/security/SecurityIncidentList').catch((err) => {
     console.error('Failed to load SecurityIncidentList:', err);
@@ -876,6 +885,7 @@ function App() {
                   element={<Navigate to="/dashboard" replace />}
                 />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/hsse/dashboard" element={<HsseDashboard />} />
 
                 {/* Incident Management */}
                 <Route path="/incidents" element={<IncidentList />} />
@@ -975,8 +985,7 @@ function App() {
                 <Route path="/trainings/:id" element={<TrainingDetail />} />
                 <Route path="/trainings/:id/edit" element={<EditTraining />} />
                 <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
-
-                {/* Waste Management */}
+		{/* Waste Management */}
                 <Route path="/waste-management" element={<WasteReportList />} />
                 <Route path="/waste-management/dashboard" element={<WasteDashboard />} />
                 <Route path="/waste-management/create" element={<CreateWasteReport />} />

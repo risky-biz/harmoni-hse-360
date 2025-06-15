@@ -173,6 +173,8 @@ class SignalRService {
         store.dispatch(
           ppeApi.util.invalidateTags(['PPEDashboard'])
         );
+        const { statisticsApi } = await import('../features/statistics/statisticsApi');
+        store.dispatch(statisticsApi.util.invalidateTags(['HsseStatistics']));
       } catch (error) {
         console.warn('Failed to invalidate PPE dashboard cache:', error);
       }

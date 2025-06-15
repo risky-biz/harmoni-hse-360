@@ -15,6 +15,7 @@ import { wasteApi } from '../features/waste-management/wasteApi';
 import { wasteManagementApi } from '../api/wasteManagementApi';
 import { disposalProvidersApi } from '../api/disposalProvidersApi';
 import { trainingApi } from '../features/trainings/trainingApi';
+import { statisticsApi } from '../features/statistics/statisticsApi';
 import { configurationApi } from '../api/configurationApi';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
@@ -36,6 +37,7 @@ export const store = configureStore({
     [wasteManagementApi.reducerPath]: wasteManagementApi.reducer,
     [disposalProvidersApi.reducerPath]: disposalProvidersApi.reducer,
     [trainingApi.reducerPath]: trainingApi.reducer,
+    [statisticsApi.reducerPath]: statisticsApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
@@ -60,6 +62,7 @@ export const store = configureStore({
       wasteManagementApi.middleware,
       disposalProvidersApi.middleware,
       trainingApi.middleware,
+      statisticsApi.middleware,
       configurationApi.middleware,
       hazardConfigurationApi.middleware,
       applicationModeApi.middleware
