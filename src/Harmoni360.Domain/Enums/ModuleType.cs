@@ -93,8 +93,13 @@ public enum ModuleType
     LicenseManagement = 18,
 
     /// <summary>
+    /// Waste Management Module - Comprehensive waste reporting, classification, disposal tracking, and environmental compliance monitoring
+    /// </summary>
+    WasteManagement = 19,
+
+    /// <summary>
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>
-    ApplicationSettings = 19
+    ApplicationSettings = 20
 }

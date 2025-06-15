@@ -11,6 +11,9 @@ import { riskAssessmentApi } from '../features/risk-assessments/riskAssessmentAp
 import { workPermitApi } from '../features/work-permits/workPermitApi';
 import { auditApi } from '../features/audits/auditApi';
 import { securityApi } from '../features/security/securityApi';
+import { wasteApi } from '../features/waste-management/wasteApi';
+import { wasteManagementApi } from '../api/wasteManagementApi';
+import { disposalProvidersApi } from '../api/disposalProvidersApi';
 import { trainingApi } from '../features/trainings/trainingApi';
 import { configurationApi } from '../api/configurationApi';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
@@ -29,6 +32,9 @@ export const store = configureStore({
     [workPermitApi.reducerPath]: workPermitApi.reducer,
     [auditApi.reducerPath]: auditApi.reducer,
     [securityApi.reducerPath]: securityApi.reducer,
+    [wasteApi.reducerPath]: wasteApi.reducer,
+    [wasteManagementApi.reducerPath]: wasteManagementApi.reducer,
+    [disposalProvidersApi.reducerPath]: disposalProvidersApi.reducer,
     [trainingApi.reducerPath]: trainingApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
@@ -50,6 +56,9 @@ export const store = configureStore({
       workPermitApi.middleware,
       auditApi.middleware,
       securityApi.middleware,
+      wasteApi.middleware,
+      wasteManagementApi.middleware,
+      disposalProvidersApi.middleware,
       trainingApi.middleware,
       configurationApi.middleware,
       hazardConfigurationApi.middleware,

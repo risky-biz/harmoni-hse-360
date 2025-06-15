@@ -25,6 +25,7 @@ public static class ModulePermissionMap
                 [ModuleType.AuditManagement] = AllPermissions(),
                 [ModuleType.TrainingManagement] = AllPermissions(),
                 [ModuleType.LicenseManagement] = AllPermissions(),
+                [ModuleType.WasteManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -48,6 +49,7 @@ public static class ModulePermissionMap
                 [ModuleType.AuditManagement] = AllPermissions(),
                 [ModuleType.TrainingManagement] = AllPermissions(),
                 [ModuleType.LicenseManagement] = AllPermissions(),
+                [ModuleType.WasteManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -71,6 +73,7 @@ public static class ModulePermissionMap
                 [ModuleType.AuditManagement] = AllPermissions(),
                 [ModuleType.TrainingManagement] = AllPermissions(),
                 [ModuleType.LicenseManagement] = AllPermissions(),
+                [ModuleType.WasteManagement] = AllPermissions(),
                 [ModuleType.IncidentManagement] = AllPermissions(),
                 [ModuleType.RiskManagement] = AllPermissions(),
                 [ModuleType.PPEManagement] = AllPermissions(),
@@ -167,6 +170,7 @@ public static class ModulePermissionMap
                 [ModuleType.AuditManagement] = AllPermissions(), // Full access to audit management - core compliance function
                 [ModuleType.TrainingManagement] = AllPermissions(), // Full access to training compliance management
                 [ModuleType.LicenseManagement] = AllPermissions(), // Full access to license compliance management
+                [ModuleType.WasteManagement] = AllPermissions(), // Full access to waste management compliance
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(), // Can view HSE incidents for compliance
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(), // Can view risk assessments for compliance
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(), // Can view PPE compliance
@@ -189,6 +193,7 @@ public static class ModulePermissionMap
                 [ModuleType.AuditManagement] = ReadOnlyPermissions(), // Can view audit data for reporting
                 [ModuleType.TrainingManagement] = ReadOnlyPermissions(), // Can view training data for reporting
                 [ModuleType.LicenseManagement] = ReadOnlyPermissions(), // Can view license data for reporting
+                [ModuleType.WasteManagement] = ReadOnlyPermissions(), // Can view waste data for reporting
                 [ModuleType.IncidentManagement] = ReadOnlyPermissions(),
                 [ModuleType.RiskManagement] = ReadOnlyPermissions(),
                 [ModuleType.PPEManagement] = ReadOnlyPermissions(),

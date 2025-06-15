@@ -36,6 +36,7 @@ public static class DependencyInjection
         // Add repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IIncidentRepository, IncidentRepository>();
+        services.AddScoped<IWasteReportRepository, WasteReportRepository>();
 
         // Add caching
         var redisConnectionString = configuration.GetConnectionString("Redis");
@@ -57,6 +58,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddSingleton<IAntivirusScanner, NullAntivirusScanner>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         
@@ -77,6 +79,7 @@ public static class DependencyInjection
         services.AddScoped<AuditDataSeeder>();
         services.AddScoped<TrainingDataSeeder>();
         services.AddScoped<LicenseDataSeeder>();
+        services.AddScoped<WasteDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();

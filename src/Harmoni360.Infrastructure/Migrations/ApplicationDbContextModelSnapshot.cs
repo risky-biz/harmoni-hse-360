@@ -1004,7 +1004,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Type");
 
-                    b.ToTable("EscalationActions", (string)null);
+                    b.ToTable("EscalationActions");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.EscalationHistory", b =>
@@ -1078,7 +1078,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("IsSuccessful");
 
-                    b.ToTable("EscalationHistories", (string)null);
+                    b.ToTable("EscalationHistories");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.EscalationRule", b =>
@@ -1151,7 +1151,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Priority");
 
-                    b.ToTable("EscalationRules", (string)null);
+                    b.ToTable("EscalationRules");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Hazard", b =>
@@ -1248,7 +1248,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status", "Severity");
 
-                    b.ToTable("Hazards", (string)null);
+                    b.ToTable("Hazards");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardAttachment", b =>
@@ -1303,7 +1303,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("UploadedAt");
 
-                    b.ToTable("HazardAttachments", (string)null);
+                    b.ToTable("HazardAttachments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardAuditLog", b =>
@@ -1536,7 +1536,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status", "TargetDate");
 
-                    b.ToTable("HazardMitigationActions", (string)null);
+                    b.ToTable("HazardMitigationActions");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardReassessment", b =>
@@ -1588,7 +1588,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("IsCompleted", "ScheduledDate");
 
-                    b.ToTable("HazardReassessments", (string)null);
+                    b.ToTable("HazardReassessments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HazardType", b =>
@@ -1939,7 +1939,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("Incidents", (string)null);
+                    b.ToTable("Incidents");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentAttachment", b =>
@@ -1975,7 +1975,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("IncidentId");
 
-                    b.ToTable("IncidentAttachments", (string)null);
+                    b.ToTable("IncidentAttachments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.IncidentAuditLog", b =>
@@ -3491,7 +3491,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("IncidentId", "RecipientId");
 
-                    b.ToTable("NotificationHistories", (string)null);
+                    b.ToTable("NotificationHistories");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPEAssignment", b =>
@@ -3564,7 +3564,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("PPEItemId", "Status");
 
-                    b.ToTable("PPEAssignments", (string)null);
+                    b.ToTable("PPEAssignments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPECategory", b =>
@@ -3720,7 +3720,7 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("RoleId", "CategoryId")
                         .IsUnique();
 
-                    b.ToTable("PPEComplianceRequirements", (string)null);
+                    b.ToTable("PPEComplianceRequirements");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPEInspection", b =>
@@ -3800,7 +3800,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("PPEItemId", "InspectionDate");
 
-                    b.ToTable("PPEInspections", (string)null);
+                    b.ToTable("PPEInspections");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPEItem", b =>
@@ -3920,7 +3920,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status", "CategoryId");
 
-                    b.ToTable("PPEItems", (string)null);
+                    b.ToTable("PPEItems");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPERequest", b =>
@@ -4030,7 +4030,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("Status", "Priority");
 
-                    b.ToTable("PPERequests", (string)null);
+                    b.ToTable("PPERequests");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPERequestItem", b =>
@@ -4064,7 +4064,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("RequestId");
 
-                    b.ToTable("PPERequestItems", (string)null);
+                    b.ToTable("PPERequestItems");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPESize", b =>
@@ -4364,7 +4364,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("RiskLevel", "IsActive");
 
-                    b.ToTable("RiskAssessments", (string)null);
+                    b.ToTable("RiskAssessments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Role", b =>
@@ -4408,7 +4408,7 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("RoleType")
                         .IsUnique();
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.RoleModulePermission", b =>
@@ -6769,7 +6769,7 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("EmployeeId")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.UserRole", b =>
@@ -6806,7 +6806,7 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.VaccinationRecord", b =>
@@ -6895,6 +6895,328 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasIndex("HealthRecordId", "VaccineName", "Status");
 
                     b.ToTable("VaccinationRecords", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.DisposalProvider", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LicenseExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DisposalProviders", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("WasteReportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WasteReportId");
+
+                    b.ToTable("WasteAttachments", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("CommentedById")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WasteReportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentedById");
+
+                    b.HasIndex("WasteReportId");
+
+                    b.ToTable("WasteComments", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteCompliance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegulationCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RegulationName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("RegulatoryBody")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WasteCompliances", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteDisposalRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ActualQuantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DisposalDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DisposalProviderId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WasteReportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisposalProviderId");
+
+                    b.HasIndex("WasteReportId");
+
+                    b.ToTable("WasteDisposalRecords", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisposalStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("GeneratedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("ReporterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReporterId");
+
+                    b.ToTable("WasteReports", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Classification")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRecyclable")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WasteTypes", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
@@ -7535,7 +7857,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("SecurityIncidentControls", b =>
@@ -7550,7 +7872,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("SecurityIncidentId");
 
-                    b.ToTable("SecurityIncidentControls", (string)null);
+                    b.ToTable("SecurityIncidentControls");
                 });
 
             modelBuilder.Entity("SecurityIncidentIndicators", b =>
@@ -7574,7 +7896,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                     b.HasIndex("ThreatIndicatorId");
 
-                    b.ToTable("SecurityIncidentIndicators", (string)null);
+                    b.ToTable("SecurityIncidentIndicators");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Audits.Audit", b =>
@@ -7795,7 +8117,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("HazardId");
 
-                            b1.ToTable("Hazards", (string)null);
+                            b1.ToTable("Hazards");
 
                             b1.WithOwner()
                                 .HasForeignKey("HazardId");
@@ -7961,7 +8283,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("IncidentId");
 
-                            b1.ToTable("Incidents", (string)null);
+                            b1.ToTable("Incidents");
 
                             b1.WithOwner()
                                 .HasForeignKey("IncidentId");
@@ -8035,7 +8357,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("IncidentLocationId");
 
-                            b1.ToTable("IncidentLocations", (string)null);
+                            b1.ToTable("IncidentLocations");
 
                             b1.WithOwner()
                                 .HasForeignKey("IncidentLocationId");
@@ -8318,7 +8640,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("PPEItemId");
 
-                            b1.ToTable("PPEItems", (string)null);
+                            b1.ToTable("PPEItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("PPEItemId");
@@ -8348,7 +8670,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("PPEItemId");
 
-                            b1.ToTable("PPEItems", (string)null);
+                            b1.ToTable("PPEItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("PPEItemId");
@@ -8539,7 +8861,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("SecurityIncidentId");
 
-                            b1.ToTable("SecurityIncidents", (string)null);
+                            b1.ToTable("SecurityIncidents");
 
                             b1.WithOwner()
                                 .HasForeignKey("SecurityIncidentId");
@@ -8641,7 +8963,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("TrainingId");
 
-                            b1.ToTable("Trainings", (string)null);
+                            b1.ToTable("Trainings");
 
                             b1.WithOwner()
                                 .HasForeignKey("TrainingId");
@@ -8754,6 +9076,63 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Navigation("HealthRecord");
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteAttachment", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.Waste.WasteReport", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("WasteReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteComment", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.User", "CommentedBy")
+                        .WithMany()
+                        .HasForeignKey("CommentedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Harmoni360.Domain.Entities.Waste.WasteReport", "WasteReport")
+                        .WithMany()
+                        .HasForeignKey("WasteReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CommentedBy");
+
+                    b.Navigation("WasteReport");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteDisposalRecord", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.Waste.DisposalProvider", "DisposalProvider")
+                        .WithMany()
+                        .HasForeignKey("DisposalProviderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Harmoni360.Domain.Entities.Waste.WasteReport", "WasteReport")
+                        .WithMany()
+                        .HasForeignKey("WasteReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DisposalProvider");
+
+                    b.Navigation("WasteReport");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteReport", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.User", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Reporter");
+                });
+
             modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
                 {
                     b.OwnsOne("Harmoni360.Domain.ValueObjects.GeoLocation", "GeoLocation", b1 =>
@@ -8773,7 +9152,7 @@ namespace Harmoni360.Infrastructure.Migrations
 
                             b1.HasKey("WorkPermitId");
 
-                            b1.ToTable("WorkPermits", (string)null);
+                            b1.ToTable("WorkPermits");
 
                             b1.WithOwner()
                                 .HasForeignKey("WorkPermitId");
@@ -9055,6 +9434,11 @@ namespace Harmoni360.Infrastructure.Migrations
             modelBuilder.Entity("Harmoni360.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Waste.WasteReport", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>

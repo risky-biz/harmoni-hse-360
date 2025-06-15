@@ -1,4 +1,5 @@
 using Harmoni360.Application.Common.Interfaces;
+using Harmoni360.Domain.Entities.Waste;
 using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Infrastructure.Services.DataSeeders;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ public class DataSeeder : IDataSeeder
     private readonly AuditDataSeeder _auditDataSeeder;
     private readonly TrainingDataSeeder _trainingDataSeeder;
     private readonly LicenseDataSeeder _licenseDataSeeder;
+    private readonly WasteDataSeeder _wasteDataSeeder;
 
     public DataSeeder(
         ApplicationDbContext context, 
@@ -48,7 +50,8 @@ public class DataSeeder : IDataSeeder
         InspectionDataSeeder inspectionDataSeeder,
         AuditDataSeeder auditDataSeeder,
         TrainingDataSeeder trainingDataSeeder,
-        LicenseDataSeeder licenseDataSeeder)
+        LicenseDataSeeder licenseDataSeeder,
+        WasteDataSeeder wasteDataSeeder)
     {
         _context = context;
         _logger = logger;
@@ -69,6 +72,7 @@ public class DataSeeder : IDataSeeder
         _auditDataSeeder = auditDataSeeder;
         _trainingDataSeeder = trainingDataSeeder;
         _licenseDataSeeder = licenseDataSeeder;
+        _wasteDataSeeder = wasteDataSeeder;
     }
 
     public async Task SeedAsync()
@@ -128,6 +132,10 @@ public class DataSeeder : IDataSeeder
 
                 // 2. ALL Configuration Data for ALL modules
                 await _configurationDataSeeder.SeedAsync(forceReseed);
+                await _context.SaveChangesAsync();
+
+                // 2.1. Waste Management Configuration Data
+                await _wasteDataSeeder.SeedAsync();
                 await _context.SaveChangesAsync();
 
                 // 3. Essential admin users (superadmin, developer, admin)
@@ -551,6 +559,45 @@ public class DataSeeder : IDataSeeder
                 _context.SecurityControls.RemoveRange(_context.SecurityControls);
                 await _context.SaveChangesAsync();
             }
+
+            // Waste management dependencies
+            if (await _context.Set<WasteComment>().AnyAsync())
+            {
+                _context.Set<WasteComment>().RemoveRange(_context.Set<WasteComment>());
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Set<WasteAttachment>().AnyAsync())
+            {
+                _context.Set<WasteAttachment>().RemoveRange(_context.Set<WasteAttachment>());
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Set<WasteDisposalRecord>().AnyAsync())
+            {
+                _context.Set<WasteDisposalRecord>().RemoveRange(_context.Set<WasteDisposalRecord>());
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.WasteReports.AnyAsync())
+            {
+                _context.WasteReports.RemoveRange(_context.WasteReports);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Set<WasteType>().AnyAsync())
+            {
+                _context.Set<WasteType>().RemoveRange(_context.Set<WasteType>());
+                await _context.SaveChangesAsync();
+            }
+            
+            // WasteCategory is an enum, not an entity, so skip this section
+            
+            if (await _context.Set<DisposalProvider>().AnyAsync())
+            {
+                _context.Set<DisposalProvider>().RemoveRange(_context.Set<DisposalProvider>());
+                await _context.SaveChangesAsync();
+            }
             
             // 2. Remove configuration data
             _logger.LogInformation("Removing configuration data...");
@@ -659,7 +706,8 @@ public class DataSeeder : IDataSeeder
             "Trainings", "TrainingParticipants", "TrainingRequirements", "TrainingAttachments", "TrainingComments", "TrainingCertifications",
             "SecurityIncidents", "SecurityControls", "SecurityIncidentAttachments", "SecurityIncidentInvolvedPersons",
             "SecurityIncidentResponses", "ThreatAssessments", "ThreatIndicators", "SecurityAuditLogs",
-            "Audits", "AuditItems", "AuditFindings", "AuditAttachments", "AuditComments", "AuditFindingAttachments"
+            "Audits", "AuditItems", "AuditFindings", "AuditAttachments", "AuditComments", "AuditFindingAttachments",
+            "WasteReports", "WasteTypes", "DisposalProviders", "WasteDisposalRecords", "WasteAttachments", "WasteComments", "WasteCompliances"
         };
 
         foreach (var table in tables)
