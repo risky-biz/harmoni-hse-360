@@ -12,6 +12,7 @@ import { workPermitApi } from '../features/work-permits/workPermitApi';
 import { auditApi } from '../features/audits/auditApi';
 import { securityApi } from '../features/security/securityApi';
 import { trainingApi } from '../features/trainings/trainingApi';
+import { statisticsApi } from '../features/statistics/statisticsApi';
 import { configurationApi } from '../api/configurationApi';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
@@ -30,6 +31,7 @@ export const store = configureStore({
     [auditApi.reducerPath]: auditApi.reducer,
     [securityApi.reducerPath]: securityApi.reducer,
     [trainingApi.reducerPath]: trainingApi.reducer,
+    [statisticsApi.reducerPath]: statisticsApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
@@ -51,6 +53,7 @@ export const store = configureStore({
       auditApi.middleware,
       securityApi.middleware,
       trainingApi.middleware,
+      statisticsApi.middleware,
       configurationApi.middleware,
       hazardConfigurationApi.middleware,
       applicationModeApi.middleware

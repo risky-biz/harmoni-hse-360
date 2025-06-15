@@ -32,6 +32,9 @@ Comprehensive guide for database access:
 - Connection credentials and methods
 - Useful SQL queries
 - Troubleshooting database issues
+#### 5. [HSSE Statistics Dashboard User Guide](./HSSE_Statistics_Dashboard_User_Guide.md)
+Step-by-step instructions for using the HSSE dashboard
+
 
 ## 🚀 Quick Links
 
