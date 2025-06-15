@@ -10,6 +10,7 @@ import { healthApi } from '../features/health/healthApi';
 import { riskAssessmentApi } from '../features/risk-assessments/riskAssessmentApi';
 import { workPermitApi } from '../features/work-permits/workPermitApi';
 import { securityApi } from '../features/security/securityApi';
+import { wasteApi } from '../features/waste-management/wasteApi';
 import { configurationApi } from '../api/configurationApi';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
@@ -26,6 +27,7 @@ export const store = configureStore({
     [riskAssessmentApi.reducerPath]: riskAssessmentApi.reducer,
     [workPermitApi.reducerPath]: workPermitApi.reducer,
     [securityApi.reducerPath]: securityApi.reducer,
+    [wasteApi.reducerPath]: wasteApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
@@ -45,6 +47,7 @@ export const store = configureStore({
       riskAssessmentApi.middleware,
       workPermitApi.middleware,
       securityApi.middleware,
+      wasteApi.middleware,
       configurationApi.middleware,
       hazardConfigurationApi.middleware,
       applicationModeApi.middleware

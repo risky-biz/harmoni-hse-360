@@ -29,6 +29,7 @@ public static class DependencyInjection
 
         // Add module-specific services
         services.AddIncidentModule();
+        services.AddWasteModule();
 
         return services;
     }
@@ -40,6 +41,12 @@ public static class DependencyInjection
         services.AddScoped<IIncidentCacheService, IncidentCacheService>();
 
         // Register incident-specific services here
+        return services;
+    }
+
+    private static IServiceCollection AddWasteModule(this IServiceCollection services)
+    {
+        // Placeholder for future waste-specific services
         return services;
     }
 }
