@@ -26,6 +26,9 @@ public class DataSeeder : IDataSeeder
     private readonly ConfigurationDataSeeder _configurationDataSeeder;
     private readonly WorkPermitDataSeeder _workPermitDataSeeder;
     private readonly InspectionDataSeeder _inspectionDataSeeder;
+    private readonly AuditDataSeeder _auditDataSeeder;
+    private readonly TrainingDataSeeder _trainingDataSeeder;
+    private readonly LicenseDataSeeder _licenseDataSeeder;
 
     public DataSeeder(
         ApplicationDbContext context, 
@@ -42,7 +45,10 @@ public class DataSeeder : IDataSeeder
         SecurityDataSeeder securityDataSeeder,
         ConfigurationDataSeeder configurationDataSeeder,
         WorkPermitDataSeeder workPermitDataSeeder,
-        InspectionDataSeeder inspectionDataSeeder)
+        InspectionDataSeeder inspectionDataSeeder,
+        AuditDataSeeder auditDataSeeder,
+        TrainingDataSeeder trainingDataSeeder,
+        LicenseDataSeeder licenseDataSeeder)
     {
         _context = context;
         _logger = logger;
@@ -60,6 +66,9 @@ public class DataSeeder : IDataSeeder
         _configurationDataSeeder = configurationDataSeeder;
         _workPermitDataSeeder = workPermitDataSeeder;
         _inspectionDataSeeder = inspectionDataSeeder;
+        _auditDataSeeder = auditDataSeeder;
+        _trainingDataSeeder = trainingDataSeeder;
+        _licenseDataSeeder = licenseDataSeeder;
     }
 
     public async Task SeedAsync()
@@ -157,6 +166,8 @@ public class DataSeeder : IDataSeeder
                 _logger.LogInformation("  - PPE Management sample data (PPE Inventory, PPE Management)");
                 _logger.LogInformation("  - Health Management sample data");
                 _logger.LogInformation("  - Security Management sample data");
+                _logger.LogInformation("  - Training Management sample data (Training Programs, Certifications)");
+                _logger.LogInformation("  - License Management sample data (Licenses, Renewals, Conditions)");
                 
                 // Sample data with real relationships between modules
                 _logger.LogInformation("DEBUG: Calling IncidentDataSeeder...");
@@ -200,6 +211,25 @@ public class DataSeeder : IDataSeeder
                 await _context.SaveChangesAsync();
                 var inspectionCount = await _context.Inspections.CountAsync();
                 _logger.LogInformation("DEBUG: Inspections seeded. Count: {InspectionCount}", inspectionCount);
+
+                _logger.LogInformation("DEBUG: Calling TrainingDataSeeder...");
+                await _trainingDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+                var trainingCount = await _context.Trainings.CountAsync();
+                _logger.LogInformation("DEBUG: Trainings seeded. Count: {TrainingCount}", trainingCount);
+
+                _logger.LogInformation("DEBUG: Calling LicenseDataSeeder...");
+                await _licenseDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+                var licenseCount = await _context.Licenses.CountAsync();
+                _logger.LogInformation("DEBUG: Licenses seeded. Count: {LicenseCount}", licenseCount);
+
+                // TODO: Enable audit data seeding after fixing domain model compatibility
+                // _logger.LogInformation("DEBUG: Calling AuditDataSeeder...");
+                // await _auditDataSeeder.SeedAsync();
+                // await _context.SaveChangesAsync();
+                // var auditCount = await _context.Audits.CountAsync();
+                // _logger.LogInformation("DEBUG: Audits seeded. Count: {AuditCount}", auditCount);
                 
                 _logger.LogInformation("Sample data seeding completed");
             }
@@ -364,6 +394,43 @@ public class DataSeeder : IDataSeeder
                 await _context.SaveChangesAsync();
             }
             
+            // Audit dependencies (must be removed before users due to AuditorId FK)
+            if (await _context.AuditFindingAttachments.AnyAsync())
+            {
+                _context.AuditFindingAttachments.RemoveRange(_context.AuditFindingAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.AuditFindings.AnyAsync())
+            {
+                _context.AuditFindings.RemoveRange(_context.AuditFindings);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.AuditAttachments.AnyAsync())
+            {
+                _context.AuditAttachments.RemoveRange(_context.AuditAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.AuditComments.AnyAsync())
+            {
+                _context.AuditComments.RemoveRange(_context.AuditComments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.AuditItems.AnyAsync())
+            {
+                _context.AuditItems.RemoveRange(_context.AuditItems);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Audits.AnyAsync())
+            {
+                _context.Audits.RemoveRange(_context.Audits);
+                await _context.SaveChangesAsync();
+            }
+            
             // Hazard dependencies
             if (await _context.HazardAttachments.AnyAsync())
             {
@@ -393,6 +460,43 @@ public class DataSeeder : IDataSeeder
             if (await _context.HealthRecords.AnyAsync())
             {
                 _context.HealthRecords.RemoveRange(_context.HealthRecords);
+                await _context.SaveChangesAsync();
+            }
+            
+            // Training dependencies
+            if (await _context.TrainingCertifications.AnyAsync())
+            {
+                _context.TrainingCertifications.RemoveRange(_context.TrainingCertifications);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.TrainingComments.AnyAsync())
+            {
+                _context.TrainingComments.RemoveRange(_context.TrainingComments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.TrainingAttachments.AnyAsync())
+            {
+                _context.TrainingAttachments.RemoveRange(_context.TrainingAttachments);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.TrainingRequirements.AnyAsync())
+            {
+                _context.TrainingRequirements.RemoveRange(_context.TrainingRequirements);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.TrainingParticipants.AnyAsync())
+            {
+                _context.TrainingParticipants.RemoveRange(_context.TrainingParticipants);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.Trainings.AnyAsync())
+            {
+                _context.Trainings.RemoveRange(_context.Trainings);
                 await _context.SaveChangesAsync();
             }
             
@@ -552,8 +656,10 @@ public class DataSeeder : IDataSeeder
             "Incidents", "Hazards", "PPEItems", "PPEAssignments", "PPEInspections", "PPERequests", 
             "PPEComplianceRequirements", "HealthRecords", 
             "WorkPermits", "WorkPermitHazards", "WorkPermitPrecautions", "WorkPermitApprovals", "WorkPermitAttachments",
+            "Trainings", "TrainingParticipants", "TrainingRequirements", "TrainingAttachments", "TrainingComments", "TrainingCertifications",
             "SecurityIncidents", "SecurityControls", "SecurityIncidentAttachments", "SecurityIncidentInvolvedPersons",
-            "SecurityIncidentResponses", "ThreatAssessments", "ThreatIndicators", "SecurityAuditLogs"
+            "SecurityIncidentResponses", "ThreatAssessments", "ThreatIndicators", "SecurityAuditLogs",
+            "Audits", "AuditItems", "AuditFindings", "AuditAttachments", "AuditComments", "AuditFindingAttachments"
         };
 
         foreach (var table in tables)

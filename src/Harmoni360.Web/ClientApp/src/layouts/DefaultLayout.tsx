@@ -65,9 +65,18 @@ const getNavigationIcon = (name: string) => {
     'Create Inspection': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
     'View Inspections': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
     'My Inspections': <FontAwesomeIcon icon={CONTEXT_ICONS.inspection} className="nav-icon" />,
-    'Audits (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'Audits': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'Audit Dashboard': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'Create Audit': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'View Audits': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
+    'My Audits': <FontAwesomeIcon icon={CONTEXT_ICONS.audit} className="nav-icon" />,
     'Incidents': <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="nav-icon" />,
     'PPE': <FontAwesomeIcon icon={faShieldAlt} className="nav-icon" />,
+    'Training': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
+    'Training Dashboard': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
+    'Create Training': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
+    'View Trainings': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
+    'My Trainings': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
     'Training (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
     'Licenses (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.license} className="nav-icon" />,
     'Waste Management (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
@@ -169,7 +178,7 @@ const DefaultLayout: React.FC = () => {
                       <NavLink
                         to={subItem.to || '#'}
                         className="nav-link"
-                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards' || subItem.to === '/work-permits'}
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards' || subItem.to === '/work-permits' || subItem.to === '/trainings'}
                       >
                         {subItem.name}
                       </NavLink>

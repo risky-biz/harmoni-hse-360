@@ -56,7 +56,6 @@ import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';
 import { formatDate } from '../../utils/ppeUtils';
 import { formatDistanceToNow } from 'date-fns';
-import { HubConnectionState } from '@microsoft/signalr';
 
 const PPEDashboard: React.FC = () => {
   const navigate = useNavigate();
