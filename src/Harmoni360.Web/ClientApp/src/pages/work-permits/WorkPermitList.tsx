@@ -205,6 +205,22 @@ const WorkPermitList: React.FC = () => {
     }
   };
 
+  const getRequiredAuthorityLevel = (permitType: string): string => {
+    // Return the first required approval level for each permit type
+    switch (permitType) {
+      case 'HotWork':
+        return 'SafetyOfficer';
+      case 'ConfinedSpace':
+        return 'SafetyOfficer';
+      case 'ElectricalWork':
+        return 'SafetyOfficer';
+      case 'Special':
+        return 'SafetyOfficer';
+      default:
+        return 'SafetyOfficer'; // Default for General and ColdWork
+    }
+  };
+
   const handleAction = async (action: string, permitId: string) => {
     try {
       switch (action) {
@@ -212,7 +228,15 @@ const WorkPermitList: React.FC = () => {
           await submitPermit(permitId).unwrap();
           break;
         case 'approve':
-          await approvePermit({ id: permitId }).unwrap();
+          // Find the permit to get its type
+          const permit = permitsData?.items.find(p => p.id.toString() === permitId);
+          const authorityLevel = permit ? getRequiredAuthorityLevel(permit.type) : 'SafetyOfficer';
+          
+          await approvePermit({ 
+            id: permitId, 
+            authorityLevel,
+            comments: `Approved as ${authorityLevel} from list view`
+          }).unwrap();
           break;
         case 'reject':
           await rejectPermit({ id: permitId, rejectionReason: 'Rejected from list view' }).unwrap();

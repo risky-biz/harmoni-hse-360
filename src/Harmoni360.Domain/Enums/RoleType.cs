@@ -73,12 +73,54 @@ public enum RoleType
     ComplianceOfficer = 11,
 
     /// <summary>
+    /// Safety Officer - SPECIALIZED access to safety operations and work permit approvals
+    /// (safety inspections, work permit reviews, safety compliance)
+    /// </summary>
+    SafetyOfficer = 12,
+
+    /// <summary>
+    /// Department Head - DEPARTMENTAL management access with approval authority
+    /// (department-level approvals, team management, departmental oversight)
+    /// </summary>
+    DepartmentHead = 13,
+
+    /// <summary>
+    /// Hot Work Specialist - SPECIALIZED access to hot work permit approvals and oversight
+    /// (hot work safety, fire prevention, welding/cutting safety)
+    /// </summary>
+    HotWorkSpecialist = 14,
+
+    /// <summary>
+    /// Confined Space Specialist - SPECIALIZED access to confined space permit approvals
+    /// (confined space entry safety, atmospheric monitoring, rescue procedures)
+    /// </summary>
+    ConfinedSpaceSpecialist = 15,
+
+    /// <summary>
+    /// Electrical Supervisor - SPECIALIZED access to electrical work permit approvals
+    /// (electrical safety, lockout/tagout, electrical hazard assessment)
+    /// </summary>
+    ElectricalSupervisor = 16,
+
+    /// <summary>
+    /// Special Work Specialist - SPECIALIZED access to special work permit approvals
+    /// (unique/high-risk work activities, specialized safety procedures)
+    /// </summary>
+    SpecialWorkSpecialist = 17,
+
+    /// <summary>
+    /// HSE Manager - COMPREHENSIVE access to Health, Safety, and Environment management
+    /// (HSE strategy, high-level approvals, HSE compliance oversight)
+    /// </summary>
+    HSEManager = 18,
+
+    /// <summary>
     /// Reporter - READ-ONLY access to reporting functionality across modules they have permission for
     /// </summary>
-    Reporter = 12,
+    Reporter = 19,
 
     /// <summary>
     /// Viewer - READ-ONLY access to basic dashboard and summary information (no create/update/delete permissions)
     /// </summary>
-    Viewer = 13
+    Viewer = 20
 }

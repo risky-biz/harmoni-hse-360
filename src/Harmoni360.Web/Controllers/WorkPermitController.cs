@@ -134,6 +134,10 @@ namespace Harmoni360.Web.Controllers
 
             _logger.LogInformation("Approving work permit {Id}", id);
             
+            // Check if user can bypass multi-level approvals (SuperAdmin, Developer, Admin)
+            var canBypass = User.IsInRole("SuperAdmin") || User.IsInRole("Developer") || User.IsInRole("Admin");
+            command.CanBypassApprovals = canBypass;
+            
             var result = await _mediator.Send(command);
             return Ok(result);
         }

@@ -53,7 +53,7 @@ namespace Harmoni360.Application.Features.WorkPermits.Commands
             _logger.LogInformation("Work permit {Id} updated successfully", request.Id);
 
             // Map to DTO
-            return new WorkPermitDto
+            var dto = new WorkPermitDto
             {
                 Id = workPermit.Id,
                 PermitNumber = workPermit.PermitNumber,
@@ -107,8 +107,18 @@ namespace Harmoni360.Application.Features.WorkPermits.Commands
                 IsCompletedSafely = workPermit.IsCompletedSafely,
                 LessonsLearned = workPermit.LessonsLearned,
                 CreatedAt = workPermit.CreatedAt,
-                UpdatedAt = workPermit.LastModifiedAt
+                UpdatedAt = workPermit.LastModifiedAt,
+                RequiredApprovalLevels = workPermit.GetRequiredApprovalLevels(),
+                ReceivedApprovalLevels = workPermit.GetReceivedApprovalLevels(),
+                MissingApprovalLevels = workPermit.GetMissingApprovalLevels()
             };
+            
+            // Calculate approval progress percentage
+            dto.ApprovalProgress = dto.RequiredApprovalLevels.Length > 0 
+                ? (int)Math.Round((double)dto.ReceivedApprovalLevels.Length / dto.RequiredApprovalLevels.Length * 100)
+                : 0;
+                
+            return dto;
         }
     }
 }

@@ -112,6 +112,15 @@ public class UserDataSeeder : IDataSeeder
         var securityOfficerRole = await _context.Roles.FirstAsync(r => r.Name == "SecurityOfficer");
         var complianceOfficerRole = await _context.Roles.FirstAsync(r => r.Name == "ComplianceOfficer");
         
+        // Work Permit Approval Roles - NEW
+        var safetyOfficerRole = await _context.Roles.FirstAsync(r => r.Name == "SafetyOfficer");
+        var departmentHeadRole = await _context.Roles.FirstAsync(r => r.Name == "DepartmentHead");
+        var hotWorkSpecialistRole = await _context.Roles.FirstAsync(r => r.Name == "HotWorkSpecialist");
+        var confinedSpaceSpecialistRole = await _context.Roles.FirstAsync(r => r.Name == "ConfinedSpaceSpecialist");
+        var electricalSupervisorRole = await _context.Roles.FirstAsync(r => r.Name == "ElectricalSupervisor");
+        var specialWorkSpecialistRole = await _context.Roles.FirstAsync(r => r.Name == "SpecialWorkSpecialist");
+        var hseManagerRole = await _context.Roles.FirstAsync(r => r.Name == "HSEManager");
+        
         // General Access Roles
         var reporterRole = await _context.Roles.FirstAsync(r => r.Name == "Reporter");
         var viewerRole = await _context.Roles.FirstAsync(r => r.Name == "Viewer");
@@ -133,6 +142,15 @@ public class UserDataSeeder : IDataSeeder
             User.Create("security.officer@harmoni360.com", passwordHashService.HashPassword("SecurityOfc123!"), "Security Officer", "SO001", "Security", "Security Operations Officer"),
             User.Create("compliance.officer@harmoni360.com", passwordHashService.HashPassword("ComplianceOfc123!"), "Compliance Officer", "CO001", "Compliance", "HSSE Compliance Specialist"),
             
+            // Work Permit Approval Specialists - NEW for work permit workflow
+            User.Create("safety.officer@harmoni360.com", passwordHashService.HashPassword("SafetyOfc123!"), "Safety Officer", "SFO001", "Health & Safety", "Work Permit Safety Specialist"),
+            User.Create("department.head@harmoni360.com", passwordHashService.HashPassword("DeptHead123!"), "Department Head", "DH001", "Operations", "Department Manager & Approver"),
+            User.Create("hotwork.specialist@harmoni360.com", passwordHashService.HashPassword("HotWork123!"), "Hot Work Specialist", "HWS001", "Health & Safety", "Hot Work & Fire Safety Expert"),
+            User.Create("confinedspace.specialist@harmoni360.com", passwordHashService.HashPassword("ConfinedSpace123!"), "Confined Space Specialist", "CSS001", "Health & Safety", "Confined Space Entry Expert"),
+            User.Create("electrical.supervisor@harmoni360.com", passwordHashService.HashPassword("ElecSup123!"), "Electrical Supervisor", "ES001", "Maintenance", "Electrical Safety Supervisor"),
+            User.Create("specialwork.specialist@harmoni360.com", passwordHashService.HashPassword("SpecialWork123!"), "Special Work Specialist", "SWS001", "Health & Safety", "High-Risk Work Specialist"),
+            User.Create("hse.manager@harmoni360.com", passwordHashService.HashPassword("HSEMgr123!"), "HSE Manager", "HSEM001", "Health & Safety", "Health Safety Environment Manager"),
+            
             // Reporter and Viewer roles
             User.Create("reporter@harmoni360.com", passwordHashService.HashPassword("Reporter123!"), "Safety Reporter", "REP001", "Health & Safety", "Safety Data Analyst"),
             User.Create("viewer@harmoni360.com", passwordHashService.HashPassword("Viewer123!"), "Safety Viewer", "VW001", "General", "Safety Information Viewer"),
@@ -153,11 +171,20 @@ public class UserDataSeeder : IDataSeeder
         demoUsers[5].AssignRole(securityOfficerRole);     // security.officer@harmoni360.com
         demoUsers[6].AssignRole(complianceOfficerRole);   // compliance.officer@harmoni360.com
         
+        // Work permit approval specialists
+        demoUsers[7].AssignRole(safetyOfficerRole);       // safety.officer@harmoni360.com
+        demoUsers[8].AssignRole(departmentHeadRole);      // department.head@harmoni360.com
+        demoUsers[9].AssignRole(hotWorkSpecialistRole);   // hotwork.specialist@harmoni360.com
+        demoUsers[10].AssignRole(confinedSpaceSpecialistRole); // confinedspace.specialist@harmoni360.com
+        demoUsers[11].AssignRole(electricalSupervisorRole);    // electrical.supervisor@harmoni360.com
+        demoUsers[12].AssignRole(specialWorkSpecialistRole);   // specialwork.specialist@harmoni360.com
+        demoUsers[13].AssignRole(hseManagerRole);         // hse.manager@harmoni360.com
+        
         // General access roles
-        demoUsers[7].AssignRole(reporterRole);            // reporter@harmoni360.com
-        demoUsers[8].AssignRole(viewerRole);              // viewer@harmoni360.com
-        demoUsers[9].AssignRole(reporterRole);            // john.doe@bsj.sch.id
-        demoUsers[10].AssignRole(viewerRole);             // jane.smith@bsj.sch.id
+        demoUsers[14].AssignRole(reporterRole);           // reporter@harmoni360.com
+        demoUsers[15].AssignRole(viewerRole);             // viewer@harmoni360.com
+        demoUsers[16].AssignRole(reporterRole);           // john.doe@bsj.sch.id
+        demoUsers[17].AssignRole(viewerRole);             // jane.smith@bsj.sch.id
 
         await _context.Users.AddRangeAsync(demoUsers);
         _logger.LogInformation("Seeded {Count} sample user accounts", demoUsers.Count);

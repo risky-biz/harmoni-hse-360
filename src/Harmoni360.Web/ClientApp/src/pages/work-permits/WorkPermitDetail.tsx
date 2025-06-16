@@ -72,6 +72,8 @@ import {
   useCancelWorkPermitMutation,
 } from '../../features/work-permits/workPermitApi';
 import WorkPermitAttachmentManager from '../../components/work-permits/WorkPermitAttachmentManager';
+import { ApprovalProgress } from '../../components/work-permits';
+import { useAuth } from '../../hooks/useAuth';
 import {
   getWorkPermitStatusBadge,
   getWorkPermitTypeBadge,
@@ -84,6 +86,7 @@ import {
 const WorkPermitDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { hasAnyRole } = useAuth();
   const [activeTab, setActiveTab] = useState('basic-info');
   const [showHazardsModal, setShowHazardsModal] = useState(false);
   const [showPrecautionsModal, setShowPrecautionsModal] = useState(false);
@@ -527,7 +530,7 @@ const WorkPermitDetail: React.FC = () => {
                   </CCard>
 
                   {/* Status & Current State */}
-                  <CCard className="border">
+                  <CCard className="border mb-4">
                     <CCardHeader className="bg-light">
                       <h6 className="mb-0">Current Status</h6>
                     </CCardHeader>
@@ -548,6 +551,18 @@ const WorkPermitDetail: React.FC = () => {
                       </div>
                     </CCardBody>
                   </CCard>
+
+                  {/* Approval Progress */}
+                  {(permit.status === 'PendingApproval' || permit.approvals?.length > 0 || permit.requiredApprovalLevels?.length > 0) && (
+                    <ApprovalProgress
+                      requiredApprovalLevels={permit.requiredApprovalLevels || []}
+                      receivedApprovalLevels={permit.receivedApprovalLevels || []}
+                      missingApprovalLevels={permit.missingApprovalLevels || []}
+                      approvalProgress={permit.approvalProgress || 0}
+                      workPermitType={permit.type}
+                      canBypassApprovals={hasAnyRole(['SuperAdmin', 'Developer', 'Admin'])}
+                    />
+                  )}
                 </CCol>
               </CRow>
             </CTabPane>

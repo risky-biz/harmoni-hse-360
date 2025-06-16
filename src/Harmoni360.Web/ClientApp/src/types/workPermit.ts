@@ -152,6 +152,12 @@ export interface WorkPermitDto {
   hazards: WorkPermitHazardDto[];
   precautions: WorkPermitPrecautionDto[];
   
+  // Approval Progress Information
+  requiredApprovalLevels: string[];
+  receivedApprovalLevels: string[];
+  missingApprovalLevels: string[];
+  approvalProgress: number; // Percentage: (received / required) * 100
+  
   // Computed Properties
   isOverdue: boolean;
   isHighRisk: boolean;
