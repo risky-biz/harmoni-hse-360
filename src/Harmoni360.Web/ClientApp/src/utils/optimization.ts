@@ -32,6 +32,9 @@ export const lazy = {
   HazardDetail: () => import('../pages/hazards/HazardDetail'),
   CreateHazard: () => import('../pages/hazards/CreateHazard'),
 
+  // HSSE dashboard
+  HsseDashboard: () => import('../pages/hsse/HsseDashboard'),
+
   // Heavy components
   Charts: () => import('../components/dashboard/ChartCard'),
   FileUploader: () => import('../components/common/AttachmentManager'),
@@ -113,6 +116,7 @@ export const bundleOptimization = {
       lazy.HealthDashboard,
       lazy.IncidentDashboard,
       lazy.PPEDashboard,
+      lazy.HsseDashboard,
     ];
 
     criticalRoutes.forEach(route => {
@@ -241,7 +245,7 @@ export const memoryOptimization = {
     
     return {
       get: (key: K): V | undefined => cache.get(key),
-      set: (key: K, value: V): void => cache.set(key, value),
+      set: (key: K, value: V): void => { cache.set(key, value); },
       has: (key: K): boolean => cache.has(key),
       delete: (key: K): boolean => cache.delete(key)
     };

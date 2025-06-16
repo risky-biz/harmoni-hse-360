@@ -26,11 +26,6 @@ import {
   CButtonGroup,
   CProgress,
   CProgressBar,
-  CTabs,
-  CTabList,
-  CTab,
-  CTabContent,
-  CTabPanel
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -59,12 +54,11 @@ import {
   useGetMyTrainingStatsQuery,
   useGetMyUpcomingTrainingsQuery,
   useGetMyCertificatesQuery,
-  useDownloadCertificateMutation
+  useLazyDownloadCertificateQuery
 } from '../../features/trainings/trainingApi';
 import { useApplicationMode } from '../../hooks/useApplicationMode';
 import { useDebounce } from '../../hooks/useDebounce';
 import {
-  MyTrainingDto,
   TrainingEnrollmentStatus,
   TRAINING_TYPES,
   TRAINING_CATEGORIES
@@ -93,9 +87,9 @@ const ENROLLMENT_STATUSES = [
 const MyTrainings: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
-  const [activeTab, setActiveTab] = useState('all-trainings');
+  const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState<MyTrainingFilters>({
     search: searchParams.get('search') || '',
     status: (searchParams.get('status') as TrainingEnrollmentStatus) || '',
@@ -128,10 +122,10 @@ const MyTrainings: React.FC = () => {
   });
 
   const { data: trainingStats } = useGetMyTrainingStatsQuery();
-  const { data: upcomingTrainings } = useGetMyUpcomingTrainingsQuery();
-  const { data: myCertificates } = useGetMyCertificatesQuery();
+  const { data: upcomingTrainings } = useGetMyUpcomingTrainingsQuery({});
+  const { data: myCertificates } = useGetMyCertificatesQuery({});
 
-  const [downloadCertificate, { isLoading: isDownloading }] = useDownloadCertificateMutation();
+  const [downloadCertificate, { isLoading: isDownloading }] = useLazyDownloadCertificateQuery();
 
   // Update URL when filters change
   useEffect(() => {
@@ -192,7 +186,18 @@ const MyTrainings: React.FC = () => {
 
   const handleDownloadCertificate = async (certificateId: number) => {
     try {
-      await downloadCertificate(certificateId).unwrap();
+      const result = await downloadCertificate(certificateId).unwrap();
+      if (result) {
+        // Create download link for the blob
+        const url = window.URL.createObjectURL(result);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `certificate-${certificateId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error('Certificate download failed:', error);
     }
@@ -233,7 +238,7 @@ const MyTrainings: React.FC = () => {
               <CCard className="text-center">
                 <CCardBody>
                   <FontAwesomeIcon icon={faGraduationCap} size="2x" className="text-primary mb-2" />
-                  <h4 className="mb-1">{trainingStats.totalEnrolled}</h4>
+                  <h4 className="mb-1">{trainingStats?.totalTrainings ?? 0}</h4>
                   <small className="text-muted">Total Enrollments</small>
                 </CCardBody>
               </CCard>
@@ -242,7 +247,7 @@ const MyTrainings: React.FC = () => {
               <CCard className="text-center">
                 <CCardBody>
                   <FontAwesomeIcon icon={faCheck} size="2x" className="text-success mb-2" />
-                  <h4 className="mb-1">{trainingStats.totalCompleted}</h4>
+                  <h4 className="mb-1">{trainingStats?.completedTrainings ?? 0}</h4>
                   <small className="text-muted">Completed</small>
                 </CCardBody>
               </CCard>
@@ -251,7 +256,7 @@ const MyTrainings: React.FC = () => {
               <CCard className="text-center">
                 <CCardBody>
                   <FontAwesomeIcon icon={faPlay} size="2x" className="text-warning mb-2" />
-                  <h4 className="mb-1">{trainingStats.totalInProgress}</h4>
+                  <h4 className="mb-1">{trainingStats?.inProgressTrainings ?? 0}</h4>
                   <small className="text-muted">In Progress</small>
                 </CCardBody>
               </CCard>
@@ -260,7 +265,7 @@ const MyTrainings: React.FC = () => {
               <CCard className="text-center">
                 <CCardBody>
                   <FontAwesomeIcon icon={faCertificate} size="2x" className="text-info mb-2" />
-                  <h4 className="mb-1">{trainingStats.totalCertificates}</h4>
+                  <h4 className="mb-1">{trainingStats?.certificationsEarned ?? 0}</h4>
                   <small className="text-muted">Certificates</small>
                 </CCardBody>
               </CCard>
@@ -269,29 +274,43 @@ const MyTrainings: React.FC = () => {
         )}
 
         {/* Tabs */}
-        <CTabs activeItemKey={activeTab} onActiveTabChange={setActiveTab}>
-          <CTabList variant="tabs">
-            <CTab itemKey="all-trainings">
-              <FontAwesomeIcon icon={faGraduationCap} className="me-1" />
-              All Trainings
-            </CTab>
-            <CTab itemKey="upcoming">
-              <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
-              Upcoming ({upcomingTrainings?.length || 0})
-            </CTab>
-            <CTab itemKey="certificates">
-              <FontAwesomeIcon icon={faCertificate} className="me-1" />
-              Certificates
-            </CTab>
-            <CTab itemKey="progress">
-              <FontAwesomeIcon icon={faChartLine} className="me-1" />
-              Progress
-            </CTab>
-          </CTabList>
-
-          <CTabContent>
+        <CCard className="mb-4">
+          <CCardHeader>
+            <CButtonGroup>
+              <CButton
+                color={activeTab === 0 ? 'primary' : 'outline-secondary'}
+                onClick={() => setActiveTab(0)}
+              >
+                <FontAwesomeIcon icon={faGraduationCap} className="me-1" />
+                All Trainings
+              </CButton>
+              <CButton
+                color={activeTab === 1 ? 'primary' : 'outline-secondary'}
+                onClick={() => setActiveTab(1)}
+              >
+                <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
+                Upcoming ({upcomingTrainings?.length || 0})
+              </CButton>
+              <CButton
+                color={activeTab === 2 ? 'primary' : 'outline-secondary'}
+                onClick={() => setActiveTab(2)}
+              >
+                <FontAwesomeIcon icon={faCertificate} className="me-1" />
+                Certificates
+              </CButton>
+              <CButton
+                color={activeTab === 3 ? 'primary' : 'outline-secondary'}
+                onClick={() => setActiveTab(3)}
+              >
+                <FontAwesomeIcon icon={faChartLine} className="me-1" />
+                Progress
+              </CButton>
+            </CButtonGroup>
+          </CCardHeader>
+          <CCardBody>
             {/* All Trainings Tab */}
-            <CTabPanel className="py-3" itemKey="all-trainings">
+            {activeTab === 0 && (
+              <div>
               {/* Filters */}
               <CCard className="mb-4">
                 <CCardBody>
@@ -394,9 +413,9 @@ const MyTrainings: React.FC = () => {
                             <CTableRow key={training.id}>
                               <CTableDataCell>
                                 <div>
-                                  <div className="fw-semibold">{training.trainingTitle}</div>
+                                  <div className="fw-semibold">{training.title}</div>
                                   <small className="text-muted">
-                                    {training.trainingCode}
+                                    Training #{training.id}
                                     {training.isK3MandatoryTraining && (
                                       <CBadge color="warning" className="ms-1">K3</CBadge>
                                     )}
@@ -411,14 +430,14 @@ const MyTrainings: React.FC = () => {
                               </CTableDataCell>
                               <CTableDataCell>
                                 <div>
-                                  <div>{training.trainingType.replace(/([A-Z])/g, ' $1').trim()}</div>
-                                  <small className="text-muted">{training.trainingCategory.replace(/([A-Z])/g, ' $1').trim()}</small>
+                                  <div>{training.type.replace(/([A-Z])/g, ' $1').trim()}</div>
+                                  <small className="text-muted">{training.category.replace(/([A-Z])/g, ' $1').trim()}</small>
                                 </div>
                               </CTableDataCell>
                               <CTableDataCell>
                                 <div className="d-flex flex-column gap-1">
-                                  {getStatusBadge(training.enrollmentStatus)}
-                                  {isTrainingOverdue(training.scheduledEndDate, training.enrollmentStatus) && (
+                                  {getStatusBadge(training.status)}
+                                  {isTrainingOverdue(training.scheduledEndDate, training.status) && (
                                     <CBadge color="danger">
                                       <FontAwesomeIcon icon={faClock} className="me-1" />
                                       Overdue
@@ -435,12 +454,12 @@ const MyTrainings: React.FC = () => {
                               <CTableDataCell>
                                 <div>
                                   <div className="d-flex justify-content-between mb-1">
-                                    <small>{training.completionPercentage}%</small>
+                                    <small>{training.progressPercentage}%</small>
                                   </div>
                                   <CProgress height={8}>
                                     <CProgressBar 
-                                      value={training.completionPercentage}
-                                      color={getProgressColor(training.completionPercentage)}
+                                      value={training.progressPercentage}
+                                      color={getProgressColor(training.progressPercentage)}
                                     />
                                   </CProgress>
                                 </div>
@@ -457,14 +476,14 @@ const MyTrainings: React.FC = () => {
                                 </div>
                               </CTableDataCell>
                               <CTableDataCell>
-                                {training.finalScore !== null ? (
+                                {training.score !== null && training.score !== undefined ? (
                                   <div>
-                                    <span className={`fw-semibold ${training.finalScore >= (training.passingScore || 70) ? 'text-success' : 'text-danger'}`}>
-                                      {training.finalScore}%
+                                    <span className={`fw-semibold ${(training.score ?? 0) >= 70 ? 'text-success' : 'text-danger'}`}>
+                                      {training.score}%
                                     </span>
                                     <br />
                                     <small className="text-muted">
-                                      Pass: {training.passingScore || 70}%
+                                      Pass: 70%
                                     </small>
                                   </div>
                                 ) : (
@@ -476,17 +495,17 @@ const MyTrainings: React.FC = () => {
                                   <CButton
                                     color="primary"
                                     variant="outline"
-                                    onClick={() => navigate(`/trainings/${training.trainingId}`)}
+                                    onClick={() => navigate(`/trainings/${training.id}`)}
                                     title="View Training"
                                   >
                                     <FontAwesomeIcon icon={faEye} />
                                   </CButton>
 
-                                  {training.enrollmentStatus === 'InProgress' && (
+                                  {training.status === 'InProgress' && (
                                     <CButton
                                       color="success"
                                       variant="outline"
-                                      onClick={() => navigate(`/trainings/${training.trainingId}/learn`)}
+                                      onClick={() => navigate(`/trainings/${training.id}/learn`)}
                                       title="Continue Learning"
                                     >
                                       <FontAwesomeIcon icon={faPlay} />
@@ -571,10 +590,12 @@ const MyTrainings: React.FC = () => {
                   )}
                 </>
               )}
-            </CTabPanel>
+              </div>
+            )}
 
             {/* Upcoming Trainings Tab */}
-            <CTabPanel className="py-3" itemKey="upcoming">
+            {activeTab === 1 && (
+              <div>
               {upcomingTrainings && upcomingTrainings.length > 0 ? (
                 <CRow>
                   {upcomingTrainings.map((training) => (
@@ -583,8 +604,8 @@ const MyTrainings: React.FC = () => {
                         <CCardHeader className="pb-2">
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
-                              <h6 className="mb-1">{training.trainingTitle}</h6>
-                              <small className="text-muted">{training.trainingCode}</small>
+                              <h6 className="mb-1">{training.title}</h6>
+                              <small className="text-muted">Training #{training.id}</small>
                             </div>
                             {training.isK3MandatoryTraining && (
                               <CBadge color="warning">K3</CBadge>
@@ -598,8 +619,7 @@ const MyTrainings: React.FC = () => {
                           </div>
                           <div className="mb-2">
                             <FontAwesomeIcon icon={faClock} className="me-2 text-muted" />
-                            {format(new Date(training.scheduledStartDate), 'h:mm a')} - 
-                            {format(new Date(training.scheduledEndDate), 'h:mm a')}
+                            Duration: {training.durationHours}h
                           </div>
                           <div className="mb-3">
                             <small className="text-muted">
@@ -607,11 +627,11 @@ const MyTrainings: React.FC = () => {
                             </small>
                           </div>
                           <div className="d-flex justify-content-between align-items-center">
-                            {getStatusBadge(training.enrollmentStatus)}
+                            <CBadge color="info">Upcoming</CBadge>
                             <CButton
                               color="primary"
                               size="sm"
-                              onClick={() => navigate(`/trainings/${training.trainingId}`)}
+                              onClick={() => navigate(`/trainings/${training.id}`)}
                             >
                               View Details
                             </CButton>
@@ -628,10 +648,12 @@ const MyTrainings: React.FC = () => {
                   <p className="text-muted">You don't have any trainings scheduled for the future.</p>
                 </div>
               )}
-            </CTabPanel>
+              </div>
+            )}
 
             {/* Certificates Tab */}
-            <CTabPanel className="py-3" itemKey="certificates">
+            {activeTab === 2 && (
+              <div>
               {myCertificates && myCertificates.length > 0 ? (
                 <CRow>
                   {myCertificates.map((certificate) => (
@@ -644,21 +666,21 @@ const MyTrainings: React.FC = () => {
                         <CCardBody>
                           <div className="text-center mb-3">
                             <h6>{certificate.trainingTitle}</h6>
-                            <small className="text-muted">{certificate.trainingCode}</small>
+                            <small className="text-muted">{certificate.certificateNumber}</small>
                           </div>
                           <div className="mb-2">
-                            <strong>Issued:</strong> {format(new Date(certificate.issuedAt), 'MMM dd, yyyy')}
+                            <strong>Issued:</strong> {format(new Date(certificate.issuedDate), 'MMM dd, yyyy')}
                           </div>
-                          {certificate.expiresAt && (
+                          {certificate.expiryDate && (
                             <div className="mb-2">
-                              <strong>Expires:</strong> {format(new Date(certificate.expiresAt), 'MMM dd, yyyy')}
-                              {isBefore(new Date(certificate.expiresAt), new Date()) && (
+                              <strong>Expires:</strong> {format(new Date(certificate.expiryDate), 'MMM dd, yyyy')}
+                              {isBefore(new Date(certificate.expiryDate), new Date()) && (
                                 <CBadge color="danger" className="ms-2">Expired</CBadge>
                               )}
                             </div>
                           )}
                           <div className="mb-3">
-                            <strong>Score:</strong> {certificate.finalScore}%
+                            <strong>Status:</strong> {certificate.status}
                           </div>
                           <div className="text-center">
                             <CButton
@@ -683,10 +705,12 @@ const MyTrainings: React.FC = () => {
                   <p className="text-muted">Complete trainings to earn certificates.</p>
                 </div>
               )}
-            </CTabPanel>
+              </div>
+            )}
 
             {/* Progress Tab */}
-            <CTabPanel className="py-3" itemKey="progress">
+            {activeTab === 3 && (
+              <div>
               {trainingStats ? (
                 <CRow>
                   <CCol md={6}>
@@ -701,37 +725,37 @@ const MyTrainings: React.FC = () => {
                         <div className="mb-3">
                           <div className="d-flex justify-content-between mb-1">
                             <span>Overall Completion Rate</span>
-                            <span>{trainingStats.completionRate}%</span>
+                            <span>{trainingStats?.completionRate ?? 0}%</span>
                           </div>
                           <CProgress height={12}>
                             <CProgressBar 
-                              value={trainingStats.completionRate}
-                              color={getProgressColor(trainingStats.completionRate)}
+                              value={trainingStats?.completionRate ?? 0}
+                              color={getProgressColor(trainingStats?.completionRate ?? 0)}
                             />
                           </CProgress>
                         </div>
 
-                        <CTable size="sm">
+                        <CTable>
                           <tbody>
                             <tr>
                               <td>Total Enrolled:</td>
-                              <td className="text-end">{trainingStats.totalEnrolled}</td>
+                              <td className="text-end">{trainingStats?.totalTrainings}</td>
                             </tr>
                             <tr>
                               <td>Completed:</td>
-                              <td className="text-end text-success">{trainingStats.totalCompleted}</td>
+                              <td className="text-end text-success">{trainingStats?.completedTrainings ?? 0}</td>
                             </tr>
                             <tr>
                               <td>In Progress:</td>
-                              <td className="text-end text-warning">{trainingStats.totalInProgress}</td>
+                              <td className="text-end text-warning">{trainingStats?.inProgressTrainings ?? 0}</td>
                             </tr>
                             <tr>
                               <td>Failed:</td>
-                              <td className="text-end text-danger">{trainingStats.totalFailed}</td>
+                              <td className="text-end text-danger">{trainingStats?.overdue ?? 0}</td>
                             </tr>
                             <tr>
                               <td>Certificates Earned:</td>
-                              <td className="text-end text-info">{trainingStats.totalCertificates}</td>
+                              <td className="text-end text-info">{trainingStats?.certificationsEarned ?? 0}</td>
                             </tr>
                           </tbody>
                         </CTable>
@@ -748,29 +772,29 @@ const MyTrainings: React.FC = () => {
                         </h6>
                       </CCardHeader>
                       <CCardBody>
-                        {trainingStats.averageScore !== null ? (
+                        {trainingStats?.averageScore !== null ? (
                           <>
                             <div className="text-center mb-3">
-                              <h3 className="text-primary">{trainingStats.averageScore}%</h3>
+                              <h3 className="text-primary">{trainingStats?.averageScore}%</h3>
                               <small className="text-muted">Average Score</small>
                             </div>
-                            <CTable size="sm">
+                            <CTable>
                               <tbody>
                                 <tr>
                                   <td>Highest Score:</td>
-                                  <td className="text-end">{trainingStats.highestScore}%</td>
+                                  <td className="text-end">N/A</td>
                                 </tr>
                                 <tr>
                                   <td>K3 Trainings Completed:</td>
-                                  <td className="text-end">{trainingStats.k3TrainingsCompleted}</td>
+                                  <td className="text-end">N/A</td>
                                 </tr>
                                 <tr>
                                   <td>Total Training Hours:</td>
-                                  <td className="text-end">{trainingStats.totalTrainingHours}h</td>
+                                  <td className="text-end">{trainingStats?.hoursCompleted}h</td>
                                 </tr>
                                 <tr>
                                   <td>Compliance Rate:</td>
-                                  <td className="text-end">{trainingStats.complianceRate}%</td>
+                                  <td className="text-end">{trainingStats?.completionRate}%</td>
                                 </tr>
                               </tbody>
                             </CTable>
@@ -792,9 +816,10 @@ const MyTrainings: React.FC = () => {
                   <p className="text-muted">Start taking trainings to track your progress.</p>
                 </div>
               )}
-            </CTabPanel>
-          </CTabContent>
-        </CTabs>
+              </div>
+            )}
+          </CCardBody>
+        </CCard>
       </CCol>
     </CRow>
   );

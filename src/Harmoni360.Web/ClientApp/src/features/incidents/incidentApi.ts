@@ -314,6 +314,7 @@ export const incidentApi = createApi({
   tagTypes: [
     'Incident',
     'IncidentStatistics',
+    'IncidentDashboard',
     'IncidentAttachment',
     'CorrectiveAction',
     'IncidentAudit',

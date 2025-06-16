@@ -132,7 +132,7 @@ const CreateHazard: React.FC = () => {
 
   return (
     <PermissionGuard 
-      module={ModuleType.HazardManagement} 
+      module={ModuleType.RiskManagement} 
       permission={PermissionType.Create}
       fallback={
         <div className="text-center p-4">

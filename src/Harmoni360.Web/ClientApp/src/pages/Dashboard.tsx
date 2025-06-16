@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
   const [errorWidgets, setErrorWidgets] = useState<Map<string, string>>(new Map());
 
   // Get dashboard data from API
-  const { data: dashboardData, isLoading: statsLoading, error: statsError } = useGetIncidentDashboardQuery();
+  const { data: dashboardData, isLoading: statsLoading, error: statsError } = useGetIncidentDashboardQuery({});
 
   // Determine which dashboard layout to use based on user role
   const currentLayout = useMemo(() => {
@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
       'Contractor': 'basic-user',
     };
 
-    const layoutId = roleToLayout[user.role] || 'default';
+    const layoutId = roleToLayout[user.roles?.[0]] || 'default';
     return dashboardLayouts.find(layout => layout.id === layoutId) || 
            dashboardLayouts.find(layout => layout.id === 'default');
   }, [user]);
@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
   if (!user) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
-        <CSpinner size="lg" />
+        <CSpinner size="sm" />
       </div>
     );
   }

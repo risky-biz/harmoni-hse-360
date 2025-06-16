@@ -21,7 +21,6 @@ import {
   faCogs,
   faLowVision,
   faBalanceScale,
-  faSignalSlash,
   faCheckSquare,
   faExclamation,
   faLightbulb,
@@ -79,7 +78,7 @@ export const getAuditPriorityBadge = (priority: AuditPriority) => {
     'Low': { color: 'success', icon: faLowVision },
     'Medium': { color: 'warning', icon: faBalanceScale },
     'High': { color: 'danger', icon: faExclamationTriangle },
-    'Critical': { color: 'danger', icon: faSignalSlash },
+    'Critical': { color: 'danger', icon: faBan },
   }[priority] || { color: 'secondary', icon: faBalanceScale };
 
   return (
@@ -109,11 +108,9 @@ export const getAuditScoreBadge = (score: AuditScore) => {
 
 export const getFindingTypeBadge = (type: FindingType) => {
   const config = {
-    'NonConformance': { color: 'danger', icon: faTimesCircle, text: 'Non-Conformance' },
+    'NonCompliance': { color: 'danger', icon: faTimesCircle, text: 'Non-Compliance' },
     'Observation': { color: 'info', icon: faEye, text: 'Observation' },
-    'OpportunityForImprovement': { color: 'warning', icon: faLightbulb, text: 'Opportunity' },
-    'PositiveFinding': { color: 'success', icon: faThumbsUp, text: 'Positive Finding' },
-    'CriticalNonConformance': { color: 'danger', icon: faSignalSlash, text: 'Critical Non-Conformance' },
+    'Opportunity': { color: 'warning', icon: faLightbulb, text: 'Opportunity' },
   }[type] || { color: 'secondary', icon: faEye, text: type };
 
   return (
@@ -129,7 +126,7 @@ export const getFindingSeverityBadge = (severity: FindingSeverity) => {
     'Minor': { color: 'success', icon: faCheckCircle },
     'Moderate': { color: 'warning', icon: faExclamation },
     'Major': { color: 'danger', icon: faExclamationTriangle },
-    'Critical': { color: 'danger', icon: faSignalSlash },
+    'Critical': { color: 'danger', icon: faBan },
   }[severity] || { color: 'secondary', icon: faCheckCircle };
 
   return (

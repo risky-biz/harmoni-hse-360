@@ -42,6 +42,7 @@ import {
 import { useWorkPermitApi } from '../../features/work-permits/workPermitApi';
 import type { WorkPermitDto } from '../../types/workPermit';
 import { PermissionGuard } from '../../components/auth';
+import { PermissionType, ModuleType } from '../../types/permissions';
 
 type WorkPermitTab = 'all' | 'submitted' | 'assigned' | 'supervising';
 
@@ -77,8 +78,8 @@ const MyWorkPermits: React.FC = () => {
 
   // Calculate stats from data
   useEffect(() => {
-    if (workPermitsData?.workPermits) {
-      const permits = workPermitsData.workPermits;
+    if (workPermitsData?.items) {
+      const permits = workPermitsData.items;
       const newStats: TabStats = {
         all: permits.length,
         submitted: permits.filter(p => p.requestedById === 1).length, // Current user submitted
@@ -159,11 +160,11 @@ const MyWorkPermits: React.FC = () => {
   };
 
   const canEdit = (permit: WorkPermitDto): boolean => {
-    return permit.canEdit && (permit.requestedById === 1); // Current user is requester
+    return (permit.status === 'Draft' || permit.status === 'Submitted') && (permit.requestedById === 1); // Current user is requester
   };
 
   const canApprove = (permit: WorkPermitDto): boolean => {
-    return permit.canApprove && (permit.workSupervisor === 'Current User' || permit.safetyOfficer === 'Current User');
+    return permit.status === 'PendingApproval' && (permit.workSupervisor === 'Current User' || permit.safetyOfficer === 'Current User');
   };
 
   if (error) {
@@ -191,7 +192,7 @@ const MyWorkPermits: React.FC = () => {
                 Manage work permits you've submitted, are assigned to, or supervising
               </p>
             </div>
-            <PermissionGuard module="WorkPermitManagement" permission="Create">
+            <PermissionGuard module={ModuleType.WorkPermitManagement} permission={PermissionType.Create}>
               <CButton
                 color="primary"
                 href="#/work-permits/create"
@@ -300,7 +301,7 @@ const MyWorkPermits: React.FC = () => {
                       <CSpinner color="primary" />
                       <div className="mt-2 text-muted">Loading work permits...</div>
                     </div>
-                  ) : workPermitsData?.workPermits?.length === 0 ? (
+                  ) : workPermitsData?.items?.length === 0 ? (
                     <div className="text-center py-5">
                       <FontAwesomeIcon 
                         icon={faFileAlt} 
@@ -314,7 +315,7 @@ const MyWorkPermits: React.FC = () => {
                           : `No work permits found for '${activeTab}' filter.`
                         }
                       </p>
-                      <PermissionGuard module="WorkPermitManagement" permission="Create">
+                      <PermissionGuard module={ModuleType.WorkPermitManagement} permission={PermissionType.Create}>
                         <CButton
                           color="primary"
                           href="#/work-permits/create"
@@ -342,7 +343,7 @@ const MyWorkPermits: React.FC = () => {
                         </CTableRow>
                       </CTableHead>
                       <CTableBody>
-                        {workPermitsData?.workPermits?.map((permit) => (
+                        {workPermitsData?.items?.map((permit) => (
                           <CTableRow key={permit.id}>
                             <CTableDataCell>
                               <strong className="text-primary">{permit.permitNumber}</strong>
@@ -378,12 +379,6 @@ const MyWorkPermits: React.FC = () => {
                             <CTableDataCell>
                               <div>
                                 {formatDate(permit.plannedStartDate)}
-                                {permit.isExpired && (
-                                  <div className="text-danger small">
-                                    <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" />
-                                    Overdue
-                                  </div>
-                                )}
                               </div>
                             </CTableDataCell>
                             <CTableDataCell>
@@ -400,7 +395,7 @@ const MyWorkPermits: React.FC = () => {
                                   <FontAwesomeIcon icon={faEye} />
                                 </CButton>
                                 {canEdit(permit) && (
-                                  <PermissionGuard module="WorkPermitManagement" permission="Update">
+                                  <PermissionGuard module={ModuleType.WorkPermitManagement} permission={PermissionType.Update}>
                                     <CButton
                                       color="outline-secondary"
                                       size="sm"
@@ -412,7 +407,7 @@ const MyWorkPermits: React.FC = () => {
                                   </PermissionGuard>
                                 )}
                                 {canApprove(permit) && (
-                                  <PermissionGuard module="WorkPermitManagement" permission="Approve">
+                                  <PermissionGuard module={ModuleType.WorkPermitManagement} permission={PermissionType.Approve}>
                                     <CButton
                                       color="outline-success"
                                       size="sm"

@@ -33,68 +33,15 @@ import { faMapPin } from '@fortawesome/free-solid-svg-icons';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import {
   useCreateSecurityIncidentMutation,
-  CreateSecurityIncidentRequest,
 } from '../../features/security/securityApi';
 import {
+  CreateSecurityIncidentRequest,
   SecurityIncidentType,
   SecurityIncidentCategory,
   SecuritySeverity,
   SecurityImpact,
   ThreatActorType,
 } from '../../types/security';
-
-// Validation schema for Security Incident creation
-const schema = yup.object({
-  title: yup
-    .string()
-    .required('Security incident title is required')
-    .min(5, 'Title must be at least 5 characters')
-    .max(200, 'Title must not exceed 200 characters'),
-  description: yup
-    .string()
-    .required('Description is required')
-    .min(10, 'Description must be at least 10 characters')
-    .max(2000, 'Description must not exceed 2000 characters'),
-  incidentType: yup
-    .number()
-    .required('Incident type is required')
-    .oneOf([1, 2, 3, 4], 'Please select a valid incident type'),
-  category: yup
-    .number()
-    .required('Incident category is required'),
-  severity: yup
-    .number()
-    .required('Severity level is required')
-    .oneOf([1, 2, 3, 4], 'Please select a valid severity level'),
-  incidentDateTime: yup.string().required('Incident date and time is required'),
-  location: yup
-    .string()
-    .required('Location is required')
-    .min(3, 'Location must be at least 3 characters'),
-  impact: yup
-    .number()
-    .required('Impact level is required')
-    .oneOf([0, 1, 2, 3, 4], 'Please select a valid impact level'),
-  latitude: yup.number().optional().min(-90).max(90),
-  longitude: yup.number().optional().min(-180).max(180),
-  threatActorDescription: yup
-    .string()
-    .optional()
-    .max(500, 'Threat actor description must not exceed 500 characters'),
-  affectedPersonsCount: yup
-    .number()
-    .optional()
-    .min(0, 'Affected persons count cannot be negative'),
-  estimatedLoss: yup
-    .number()
-    .optional()
-    .min(0, 'Estimated loss cannot be negative'),
-  containmentActions: yup
-    .string()
-    .optional()
-    .max(1000, 'Containment actions must not exceed 1000 characters'),
-  detectionDateTime: yup.string().optional(),
-});
 
 interface SecurityIncidentFormData {
   title: string;
@@ -118,6 +65,64 @@ interface SecurityIncidentFormData {
   assignedToId?: number;
   investigatorId?: number;
 }
+
+// Validation schema for Security Incident creation
+const schema: yup.ObjectSchema<SecurityIncidentFormData> = yup.object({
+  title: yup
+    .string()
+    .required('Security incident title is required')
+    .min(5, 'Title must be at least 5 characters')
+    .max(200, 'Title must not exceed 200 characters'),
+  description: yup
+    .string()
+    .required('Description is required')
+    .min(10, 'Description must be at least 10 characters')
+    .max(2000, 'Description must not exceed 2000 characters'),
+  incidentType: yup
+    .number()
+    .required('Incident type is required')
+    .oneOf([1, 2, 3, 4], 'Please select a valid incident type') as yup.Schema<SecurityIncidentType>,
+  category: yup
+    .number()
+    .required('Incident category is required') as yup.Schema<SecurityIncidentCategory>,
+  severity: yup
+    .number()
+    .required('Severity level is required')
+    .oneOf([1, 2, 3, 4], 'Please select a valid severity level') as yup.Schema<SecuritySeverity>,
+  incidentDateTime: yup.string().required('Incident date and time is required'),
+  location: yup
+    .string()
+    .required('Location is required')
+    .min(3, 'Location must be at least 3 characters'),
+  impact: yup
+    .number()
+    .required('Impact level is required')
+    .oneOf([0, 1, 2, 3, 4], 'Please select a valid impact level') as yup.Schema<SecurityImpact>,
+  latitude: yup.number().optional().min(-90).max(90),
+  longitude: yup.number().optional().min(-180).max(180),
+  threatActorType: yup.number().optional() as yup.Schema<ThreatActorType | undefined>,
+  threatActorDescription: yup
+    .string()
+    .optional()
+    .max(500, 'Threat actor description must not exceed 500 characters'),
+  isInternalThreat: yup.boolean().required(),
+  dataBreachSuspected: yup.boolean().required(),
+  affectedPersonsCount: yup
+    .number()
+    .optional()
+    .min(0, 'Affected persons count cannot be negative'),
+  estimatedLoss: yup
+    .number()
+    .optional()
+    .min(0, 'Estimated loss cannot be negative'),
+  containmentActions: yup
+    .string()
+    .optional()
+    .max(1000, 'Containment actions must not exceed 1000 characters'),
+  detectionDateTime: yup.string().optional(),
+  assignedToId: yup.number().optional(),
+  investigatorId: yup.number().optional(),
+});
 
 const CreateSecurityIncident: React.FC = () => {
   const navigate = useNavigate();
@@ -559,7 +564,7 @@ const CreateSecurityIncident: React.FC = () => {
                 {/* Impact Assessment */}
                 <CAccordionItem itemKey="impact">
                   <CAccordionHeader>
-                    <FontAwesomeIcon icon={CONTEXT_ICONS.warning} className="me-2" />
+                    <FontAwesomeIcon icon={CONTEXT_ICONS.incident} className="me-2" />
                     Impact Assessment
                   </CAccordionHeader>
                   <CAccordionBody>
@@ -599,7 +604,7 @@ const CreateSecurityIncident: React.FC = () => {
                 {/* Initial Response */}
                 <CAccordionItem itemKey="response">
                   <CAccordionHeader>
-                    <FontAwesomeIcon icon={ACTION_ICONS.respond} className="me-2" />
+                    <FontAwesomeIcon icon={ACTION_ICONS.create} className="me-2" />
                     Initial Response
                   </CAccordionHeader>
                   <CAccordionBody>

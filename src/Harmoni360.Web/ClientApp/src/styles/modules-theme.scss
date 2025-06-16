@@ -1,0 +1,1034 @@
+// Module-specific theme styles for HarmoniHSE360
+// This file contains dark mode updates for all HSSE module components
+// Created: June 2025 - Phase 3 Implementation
+
+// ========================================
+// INCIDENT MANAGEMENT MODULE
+// ========================================
+
+// Incident dashboard cards
+.incident-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .incident-severity {
+    &.critical {
+      background-color: var(--theme-risk-critical-bg);
+      color: var(--theme-risk-critical);
+      border-left: 4px solid var(--theme-risk-critical);
+    }
+
+    &.high {
+      background-color: var(--theme-risk-high-bg);
+      color: var(--theme-risk-high);
+      border-left: 4px solid var(--theme-risk-high);
+    }
+
+    &.medium {
+      background-color: var(--theme-risk-medium-bg);
+      color: var(--theme-risk-medium);
+      border-left: 4px solid var(--theme-risk-medium);
+    }
+
+    &.low {
+      background-color: var(--theme-risk-low-bg);
+      color: var(--theme-risk-low);
+      border-left: 4px solid var(--theme-risk-low);
+    }
+  }
+
+  .incident-status {
+    &.reported {
+      background-color: var(--theme-status-draft-bg);
+      color: var(--theme-status-draft);
+    }
+
+    &.investigating {
+      background-color: var(--theme-status-progress-bg);
+      color: var(--theme-status-progress);
+    }
+
+    &.under-review {
+      background-color: var(--theme-status-review-bg);
+      color: var(--theme-status-review);
+    }
+
+    &.closed {
+      background-color: var(--theme-status-complete-bg);
+      color: var(--theme-status-complete);
+    }
+
+    &.overdue {
+      background-color: var(--theme-status-overdue-bg);
+      color: var(--theme-status-overdue);
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+// Emergency alert banner for critical incidents
+.emergency-incident-banner {
+  background-color: var(--theme-emergency-bg);
+  color: var(--theme-emergency-text);
+  border: 2px solid var(--theme-emergency-bg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  animation: emergency-pulse 1.5s infinite;
+
+  .emergency-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+}
+
+// Incident form styles
+.incident-form {
+  .form-section {
+    background-color: var(--theme-bg-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .section-header {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--theme-border);
+    }
+  }
+
+  .severity-selector {
+    .severity-option {
+      border: 2px solid var(--theme-border);
+      background-color: var(--theme-bg-primary);
+      color: var(--theme-text-primary);
+      transition: all 0.2s ease;
+
+      &.critical {
+        &:hover, &.selected {
+          border-color: var(--theme-risk-critical);
+          background-color: var(--theme-risk-critical-bg);
+          color: var(--theme-risk-critical);
+        }
+      }
+
+      &.high {
+        &:hover, &.selected {
+          border-color: var(--theme-risk-high);
+          background-color: var(--theme-risk-high-bg);
+          color: var(--theme-risk-high);
+        }
+      }
+
+      &.medium {
+        &:hover, &.selected {
+          border-color: var(--theme-risk-medium);
+          background-color: var(--theme-risk-medium-bg);
+          color: var(--theme-risk-medium);
+        }
+      }
+
+      &.low {
+        &:hover, &.selected {
+          border-color: var(--theme-risk-low);
+          background-color: var(--theme-risk-low-bg);
+          color: var(--theme-risk-low);
+        }
+      }
+    }
+  }
+}
+
+// ========================================
+// HAZARD REPORTING MODULE
+// ========================================
+
+// Hazard risk matrix
+.risk-matrix {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+
+  .matrix-cell {
+    border: 1px solid var(--theme-border);
+    text-align: center;
+    padding: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &.critical {
+      background-color: var(--theme-risk-critical);
+      color: white;
+    }
+
+    &.high {
+      background-color: var(--theme-risk-high);
+      color: white;
+    }
+
+    &.medium {
+      background-color: var(--theme-risk-medium);
+      color: var(--theme-warning-text);
+    }
+
+    &.low {
+      background-color: var(--theme-risk-low);
+      color: white;
+    }
+
+    &.negligible {
+      background-color: var(--theme-risk-none);
+      color: white;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      position: relative;
+    }
+  }
+
+  .matrix-labels {
+    .probability-label,
+    .consequence-label {
+      background-color: var(--theme-bg-secondary);
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      text-align: center;
+      padding: 0.5rem;
+    }
+  }
+}
+
+// Hazard assessment cards
+.hazard-assessment-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .hazard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .hazard-title {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+    }
+
+    .risk-score {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.875rem;
+
+      &.critical {
+        background-color: var(--theme-risk-critical);
+        color: white;
+      }
+
+      &.high {
+        background-color: var(--theme-risk-high);
+        color: white;
+      }
+
+      &.medium {
+        background-color: var(--theme-risk-medium);
+        color: var(--theme-warning-text);
+      }
+
+      &.low {
+        background-color: var(--theme-risk-low);
+        color: white;
+      }
+    }
+  }
+
+  .mitigation-actions {
+    .action-item {
+      background-color: var(--theme-bg-secondary);
+      border-left: 3px solid var(--theme-border);
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0 4px 4px 0;
+
+      &.completed {
+        border-left-color: var(--theme-risk-low);
+        background-color: var(--theme-risk-low-bg);
+      }
+
+      &.in-progress {
+        border-left-color: var(--theme-status-progress);
+        background-color: var(--theme-status-progress-bg);
+      }
+
+      &.overdue {
+        border-left-color: var(--theme-risk-critical);
+        background-color: var(--theme-risk-critical-bg);
+      }
+    }
+  }
+}
+
+// ========================================
+// AUDIT MANAGEMENT MODULE
+// ========================================
+
+// Audit dashboard
+.audit-dashboard {
+  .audit-summary-card {
+    background-color: var(--theme-bg-primary);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+
+    .summary-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--theme-text-primary);
+    }
+
+    .summary-label {
+      color: var(--theme-text-muted);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    &.scheduled {
+      border-left: 4px solid var(--theme-status-draft);
+    }
+
+    &.in-progress {
+      border-left: 4px solid var(--theme-status-progress);
+    }
+
+    &.completed {
+      border-left: 4px solid var(--theme-status-complete);
+    }
+
+    &.overdue {
+      border-left: 4px solid var(--theme-status-overdue);
+    }
+  }
+}
+
+// Audit findings
+.audit-finding {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+
+  .finding-header {
+    padding: 1rem;
+    background-color: var(--theme-bg-secondary);
+    border-bottom: 1px solid var(--theme-border);
+
+    .finding-title {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .finding-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  }
+
+  .finding-content {
+    padding: 1rem;
+    color: var(--theme-text-primary);
+  }
+
+  &.major-finding {
+    border-left: 4px solid var(--theme-risk-critical);
+
+    .finding-header {
+      background-color: var(--theme-risk-critical-bg);
+    }
+  }
+
+  &.minor-finding {
+    border-left: 4px solid var(--theme-risk-medium);
+
+    .finding-header {
+      background-color: var(--theme-risk-medium-bg);
+    }
+  }
+
+  &.observation {
+    border-left: 4px solid var(--theme-status-draft);
+
+    .finding-header {
+      background-color: var(--theme-status-draft-bg);
+    }
+  }
+
+  &.positive-finding {
+    border-left: 4px solid var(--theme-risk-low);
+
+    .finding-header {
+      background-color: var(--theme-risk-low-bg);
+    }
+  }
+}
+
+// Compliance status indicators
+.compliance-status {
+  .compliance-meter {
+    background-color: var(--theme-bg-tertiary);
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+
+    .compliance-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+
+      &.excellent {
+        background: linear-gradient(90deg, var(--theme-risk-low), #4ade80);
+      }
+
+      &.good {
+        background: linear-gradient(90deg, #84cc16, var(--theme-risk-low));
+      }
+
+      &.fair {
+        background: linear-gradient(90deg, var(--theme-risk-medium), #f59e0b);
+      }
+
+      &.poor {
+        background: linear-gradient(90deg, var(--theme-risk-high), var(--theme-risk-critical));
+      }
+    }
+
+    .compliance-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      font-size: 0.75rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// ========================================
+// TRAINING MODULE
+// ========================================
+
+// Training progress cards
+.training-progress-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .training-header {
+    display: flex;
+    justify-content: between;
+    align-items: start;
+    margin-bottom: 1rem;
+
+    .training-title {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .completion-badge {
+      &.completed {
+        background-color: var(--theme-status-complete);
+        color: white;
+      }
+
+      &.in-progress {
+        background-color: var(--theme-status-progress);
+        color: var(--theme-warning-text);
+      }
+
+      &.not-started {
+        background-color: var(--theme-status-draft);
+        color: white;
+      }
+
+      &.expired {
+        background-color: var(--theme-status-overdue);
+        color: white;
+        animation: pulse 2s infinite;
+      }
+    }
+  }
+
+  .training-progress {
+    .progress-bar {
+      background-color: var(--theme-bg-tertiary);
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        background-color: var(--harmoni-teal-500);
+        transition: width 0.5s ease;
+        border-radius: 10px;
+
+        &.completed {
+          background-color: var(--theme-status-complete);
+        }
+
+        &.overdue {
+          background-color: var(--theme-status-overdue);
+        }
+      }
+    }
+
+    .progress-text {
+      color: var(--theme-text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .expiry-warning {
+    background-color: var(--theme-risk-medium-bg);
+    color: var(--theme-risk-medium);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+
+    &.critical {
+      background-color: var(--theme-risk-critical-bg);
+      color: var(--theme-risk-critical);
+    }
+  }
+}
+
+// Training calendar
+.training-calendar {
+  .calendar-event {
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    &.scheduled {
+      background-color: var(--theme-status-draft-bg);
+      color: var(--theme-status-draft);
+      border-left: 3px solid var(--theme-status-draft);
+    }
+
+    &.in-progress {
+      background-color: var(--theme-status-progress-bg);
+      color: var(--theme-status-progress);
+      border-left: 3px solid var(--theme-status-progress);
+    }
+
+    &.completed {
+      background-color: var(--theme-status-complete-bg);
+      color: var(--theme-status-complete);
+      border-left: 3px solid var(--theme-status-complete);
+    }
+
+    &.mandatory {
+      border: 2px solid var(--theme-risk-high);
+      background-color: var(--theme-risk-high-bg);
+      color: var(--theme-risk-high);
+    }
+  }
+}
+
+// ========================================
+// PPE MANAGEMENT MODULE
+// ========================================
+
+// PPE status indicators
+.ppe-item-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .ppe-status {
+    &.available {
+      background-color: var(--theme-risk-low-bg);
+      color: var(--theme-risk-low);
+    }
+
+    &.in-use {
+      background-color: var(--theme-status-progress-bg);
+      color: var(--theme-status-progress);
+    }
+
+    &.maintenance {
+      background-color: var(--theme-risk-medium-bg);
+      color: var(--theme-risk-medium);
+    }
+
+    &.damaged {
+      background-color: var(--theme-risk-critical-bg);
+      color: var(--theme-risk-critical);
+    }
+
+    &.expired {
+      background-color: var(--theme-status-overdue-bg);
+      color: var(--theme-status-overdue);
+      animation: pulse 2s infinite;
+    }
+  }
+
+  .ppe-condition {
+    .condition-meter {
+      background-color: var(--theme-bg-tertiary);
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+
+      .condition-fill {
+        height: 100%;
+        transition: width 0.5s ease;
+
+        &.excellent {
+          background-color: var(--theme-risk-low);
+        }
+
+        &.good {
+          background-color: #84cc16;
+        }
+
+        &.fair {
+          background-color: var(--theme-risk-medium);
+        }
+
+        &.poor {
+          background-color: var(--theme-risk-high);
+        }
+
+        &.critical {
+          background-color: var(--theme-risk-critical);
+        }
+      }
+    }
+  }
+}
+
+// PPE inspection alerts
+.ppe-inspection-alert {
+  &.due-soon {
+    background-color: var(--theme-risk-medium-bg);
+    color: var(--theme-risk-medium);
+    border: 1px solid var(--theme-risk-medium);
+  }
+
+  &.overdue {
+    background-color: var(--theme-risk-critical-bg);
+    color: var(--theme-risk-critical);
+    border: 1px solid var(--theme-risk-critical);
+    animation: pulse 2s infinite;
+  }
+
+  &.completed {
+    background-color: var(--theme-risk-low-bg);
+    color: var(--theme-risk-low);
+    border: 1px solid var(--theme-risk-low);
+  }
+}
+
+// ========================================
+// WORK PERMIT MODULE
+// ========================================
+
+// Work permit status flow
+.work-permit-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .permit-status-flow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .status-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+
+      &.completed {
+        .status-circle {
+          background-color: var(--theme-status-complete);
+          color: white;
+        }
+        .status-label {
+          color: var(--theme-status-complete);
+          font-weight: 600;
+        }
+      }
+
+      &.current {
+        .status-circle {
+          background-color: var(--theme-status-progress);
+          color: var(--theme-warning-text);
+          animation: pulse 2s infinite;
+        }
+        .status-label {
+          color: var(--theme-status-progress);
+          font-weight: 600;
+        }
+      }
+
+      &.pending {
+        .status-circle {
+          background-color: var(--theme-bg-tertiary);
+          color: var(--theme-text-muted);
+          border: 2px solid var(--theme-border);
+        }
+        .status-label {
+          color: var(--theme-text-muted);
+        }
+      }
+
+      .status-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .status-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      &:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        right: -50%;
+        width: 100%;
+        height: 2px;
+        background-color: var(--theme-border);
+        z-index: -1;
+      }
+
+      &.completed:not(:last-child)::after {
+        background-color: var(--theme-status-complete);
+      }
+    }
+  }
+
+  .permit-urgency {
+    &.normal {
+      background-color: var(--theme-status-draft-bg);
+      color: var(--theme-status-draft);
+    }
+
+    &.urgent {
+      background-color: var(--theme-risk-high-bg);
+      color: var(--theme-risk-high);
+    }
+
+    &.emergency {
+      background-color: var(--theme-risk-critical-bg);
+      color: var(--theme-risk-critical);
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+// ========================================
+// GENERAL MODULE UTILITIES
+// ========================================
+
+// Status timeline component
+.status-timeline {
+  .timeline-item {
+    border-left: 2px solid var(--theme-border);
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0.5rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--theme-bg-primary);
+      border: 2px solid var(--theme-border);
+    }
+
+    &.completed {
+      border-left-color: var(--theme-status-complete);
+      
+      &::before {
+        background-color: var(--theme-status-complete);
+        border-color: var(--theme-status-complete);
+      }
+    }
+
+    &.current {
+      border-left-color: var(--theme-status-progress);
+      
+      &::before {
+        background-color: var(--theme-status-progress);
+        border-color: var(--theme-status-progress);
+        animation: pulse 2s infinite;
+      }
+    }
+
+    .timeline-content {
+      background-color: var(--theme-bg-secondary);
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid var(--theme-border);
+
+      .timeline-title {
+        color: var(--theme-text-primary);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .timeline-description {
+        color: var(--theme-text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .timeline-meta {
+        color: var(--theme-text-muted);
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}
+
+// Priority indicators
+.priority-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.low {
+    background-color: var(--theme-risk-low-bg);
+    color: var(--theme-risk-low);
+  }
+
+  &.medium {
+    background-color: var(--theme-risk-medium-bg);
+    color: var(--theme-risk-medium);
+  }
+
+  &.high {
+    background-color: var(--theme-risk-high-bg);
+    color: var(--theme-risk-high);
+  }
+
+  &.critical {
+    background-color: var(--theme-risk-critical-bg);
+    color: var(--theme-risk-critical);
+    animation: pulse 2s infinite;
+  }
+}
+
+// Module statistics cards
+.module-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .stat-card {
+    background-color: var(--theme-bg-primary);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--harmoni-teal-500);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-sublabel {
+      color: var(--theme-text-muted);
+      font-size: 0.875rem;
+    }
+
+    &.danger {
+      border-left: 4px solid var(--theme-risk-critical);
+      .stat-number { color: var(--theme-risk-critical); }
+    }
+
+    &.warning {
+      border-left: 4px solid var(--theme-risk-medium);
+      .stat-number { color: var(--theme-risk-medium); }
+    }
+
+    &.success {
+      border-left: 4px solid var(--theme-risk-low);
+      .stat-number { color: var(--theme-risk-low); }
+    }
+
+    &.info {
+      border-left: 4px solid var(--theme-status-draft);
+      .stat-number { color: var(--theme-status-draft); }
+    }
+  }
+}
+
+// Emergency procedures panel
+.emergency-procedures {
+  background-color: var(--theme-risk-critical-bg);
+  border: 2px solid var(--theme-risk-critical);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .emergency-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .emergency-icon {
+      color: var(--theme-risk-critical);
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .emergency-title {
+      color: var(--theme-risk-critical);
+      font-weight: bold;
+      font-size: 1.125rem;
+    }
+  }
+
+  .emergency-content {
+    color: var(--theme-risk-critical);
+
+    .emergency-step {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+
+      &::before {
+        content: counter(step);
+        counter-increment: step;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: var(--theme-risk-critical);
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+// Contact emergency services quick access
+.emergency-contacts {
+  background-color: var(--theme-emergency-bg);
+  color: var(--theme-emergency-text);
+  border-radius: 8px;
+  padding: 1rem;
+
+  .emergency-contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .contact-name {
+      font-weight: 600;
+    }
+
+    .contact-number {
+      font-family: monospace;
+      font-size: 1.125rem;
+      font-weight: bold;
+    }
+
+    .call-button {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+    }
+  }
+}

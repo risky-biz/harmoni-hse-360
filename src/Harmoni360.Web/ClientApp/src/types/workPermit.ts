@@ -1,7 +1,7 @@
 // Work Permit Types
 export type WorkPermitType = 'General' | 'HotWork' | 'ColdWork' | 'ConfinedSpace' | 'ElectricalWork' | 'Special';
 
-export type WorkPermitStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Rejected' | 'InProgress' | 'Completed' | 'Cancelled' | 'Expired';
+export type WorkPermitStatus = 'Draft' | 'Submitted' | 'PendingApproval' | 'Approved' | 'Rejected' | 'InProgress' | 'Completed' | 'Cancelled' | 'Expired';
 
 export type WorkPermitPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
@@ -84,12 +84,20 @@ export interface WorkPermitDto {
   plannedEndDate: string;
   actualStartDate?: string;
   actualEndDate?: string;
+  // Aliases for backward compatibility
+  startDate: string;
+  endDate: string;
+  validUntil: string;
   estimatedDuration: number;
   
   // Personnel Information
   requestedById: number;
   requestedByName: string;
   requestedByDepartment: string;
+  // Aliases for backward compatibility  
+  requestorName: string;
+  requestorEmail: string;
+  requestorDepartment: string;
   requestedByPosition: string;
   contactPhone: string;
   workSupervisor: string;
@@ -124,6 +132,7 @@ export interface WorkPermitDto {
   riskLevelDisplay: string;
   riskAssessmentSummary: string;
   emergencyProcedures: string;
+  specialInstructions: string;
   
   // Completion
   completionNotes: string;
@@ -133,6 +142,9 @@ export interface WorkPermitDto {
   // Audit
   createdAt: string;
   updatedAt?: string;
+  createdBy: string;
+  lastModifiedAt?: string;
+  lastModifiedBy?: string;
   
   // Related Data
   attachments: WorkPermitAttachmentDto[];
@@ -167,6 +179,10 @@ export interface WorkPermitApprovalDto {
   workPermitId: number;
   approvedById: number;
   approvedByName: string;
+  // Aliases for backward compatibility
+  approverName: string;
+  approverRole: string;
+  status: string;
   approvalLevel: string;
   approvedAt: string;
   isApproved: boolean;
@@ -379,21 +395,21 @@ export const WORK_PERMIT_TYPES: { value: WorkPermitType; label: string; descript
 ];
 
 export const WORK_PERMIT_STATUSES: { value: WorkPermitStatus; label: string; color: string }[] = [
-  { value: 'Draft', label: 'Draft', color: 'gray' },
-  { value: 'PendingApproval', label: 'Pending Approval', color: 'yellow' },
-  { value: 'Approved', label: 'Approved', color: 'green' },
-  { value: 'Rejected', label: 'Rejected', color: 'red' },
-  { value: 'InProgress', label: 'In Progress', color: 'blue' },
-  { value: 'Completed', label: 'Completed', color: 'green' },
-  { value: 'Cancelled', label: 'Cancelled', color: 'gray' },
-  { value: 'Expired', label: 'Expired', color: 'red' },
+  { value: 'Draft', label: 'Draft', color: 'secondary' },
+  { value: 'PendingApproval', label: 'Pending Approval', color: 'warning' },
+  { value: 'Approved', label: 'Approved', color: 'success' },
+  { value: 'Rejected', label: 'Rejected', color: 'danger' },
+  { value: 'InProgress', label: 'In Progress', color: 'info' },
+  { value: 'Completed', label: 'Completed', color: 'success' },
+  { value: 'Cancelled', label: 'Cancelled', color: 'secondary' },
+  { value: 'Expired', label: 'Expired', color: 'danger' },
 ];
 
 export const WORK_PERMIT_PRIORITIES: { value: WorkPermitPriority; label: string; color: string }[] = [
-  { value: 'Low', label: 'Low', color: 'green' },
-  { value: 'Medium', label: 'Medium', color: 'yellow' },
-  { value: 'High', label: 'High', color: 'orange' },
-  { value: 'Critical', label: 'Critical', color: 'red' },
+  { value: 'Low', label: 'Low', color: 'success' },
+  { value: 'Medium', label: 'Medium', color: 'warning' },
+  { value: 'High', label: 'High', color: 'danger' },
+  { value: 'Critical', label: 'Critical', color: 'danger' },
 ];
 
 export const RISK_LEVELS: { value: RiskLevel; label: string; color: string }[] = [

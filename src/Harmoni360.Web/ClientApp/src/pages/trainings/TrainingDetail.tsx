@@ -79,7 +79,7 @@ import { TrainingDto } from '../../types/training';
 const TrainingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -89,10 +89,10 @@ const TrainingDetail: React.FC = () => {
   const [newComment, setNewComment] = useState('');
 
   // API queries
-  const { data: training, isLoading, error, refetch } = useGetTrainingByIdQuery(id!);
-  const { data: participants } = useGetTrainingParticipantsQuery(id!);
-  const { data: progress } = useGetTrainingProgressQuery(id!);
-  const { data: comments } = useGetTrainingCommentsQuery(id!);
+  const { data: training, isLoading, error, refetch } = useGetTrainingByIdQuery(Number(id!));
+  const { data: participants } = useGetTrainingParticipantsQuery(Number(id!));
+  const { data: progress } = useGetTrainingProgressQuery(Number(id!));
+  const { data: comments } = useGetTrainingCommentsQuery(Number(id!));
 
   // Mutations
   const [deleteTraining, { isLoading: isDeleting }] = useDeleteTrainingMutation();
@@ -265,8 +265,8 @@ const TrainingDetail: React.FC = () => {
               </CButtonGroup>
 
               <PermissionGuard
-                moduleType={ModuleType.TrainingManagement}
-                permissionType={PermissionType.Update}
+                module={ModuleType.TrainingManagement}
+                permission={PermissionType.Update}
               >
                 {canEdit && (
                   <CButton
@@ -323,8 +323,8 @@ const TrainingDetail: React.FC = () => {
               </PermissionGuard>
 
               <PermissionGuard
-                moduleType={ModuleType.TrainingManagement}
-                permissionType={PermissionType.Delete}
+                module={ModuleType.TrainingManagement}
+                permission={PermissionType.Delete}
               >
                 {training.status === 'Draft' && (
                   <CButton
@@ -492,7 +492,7 @@ const TrainingDetail: React.FC = () => {
                           </tr>
                           <tr>
                             <td className="fw-semibold">Location:</td>
-                            <td>{training.location || 'TBD'}</td>
+                            <td>{training.venue || 'TBD'}</td>
                           </tr>
                           <tr>
                             <td className="fw-semibold">Schedule:</td>
@@ -544,25 +544,25 @@ const TrainingDetail: React.FC = () => {
                           </CBadge>
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
-                          Refresher Training
-                          <CBadge color={training.isRefresherTraining ? 'warning' : 'secondary'}>
-                            {training.isRefresherTraining ? 'Yes' : 'No'}
+                          K3 Mandatory Training
+                          <CBadge color={training.isK3MandatoryTraining ? 'warning' : 'secondary'}>
+                            {training.isK3MandatoryTraining ? 'Yes' : 'No'}
                           </CBadge>
                         </CListGroupItem>
-                        {training.refresherDurationMonths && (
+                        {training.certificateValidityPeriod && (
                           <CListGroupItem className="d-flex justify-content-between align-items-center">
-                            Refresher Period
+                            Certificate Validity
                             <CBadge color="info">
-                              {training.refresherDurationMonths} months
+                              {training.certificateValidityPeriod} months
                             </CBadge>
                           </CListGroupItem>
                         )}
                       </CListGroup>
 
-                      {training.complianceFramework && (
+                      {training.k3RegulationReference && (
                         <div className="mt-4">
-                          <h6>Compliance Framework</h6>
-                          <CBadge color="primary">{training.complianceFramework}</CBadge>
+                          <h6>K3 Regulation Reference</h6>
+                          <CBadge color="primary">{training.k3RegulationReference}</CBadge>
                         </div>
                       )}
                     </CCol>
@@ -602,8 +602,8 @@ const TrainingDetail: React.FC = () => {
                           <CTableRow key={participant.id}>
                             <CTableDataCell>
                               <div>
-                                <div className="fw-semibold">{participant.participantName}</div>
-                                <small className="text-muted">{participant.participantEmail}</small>
+                                <div className="fw-semibold">{participant.userName}</div>
+                                <small className="text-muted">{participant.userEmail}</small>
                               </div>
                             </CTableDataCell>
                             <CTableDataCell>{participant.department}</CTableDataCell>
@@ -620,14 +620,14 @@ const TrainingDetail: React.FC = () => {
                               </CBadge>
                             </CTableDataCell>
                             <CTableDataCell>
-                              {participant.completionPercentage}%
+                              {participant.finalScore || 0}%
                             </CTableDataCell>
                             <CTableDataCell>
                               <CButtonGroup size="sm">
                                 <CButton color="primary" variant="outline">
                                   View
                                 </CButton>
-                                {participant.certificateId && (
+                                {participant.certificateIssued && (
                                   <CButton color="success" variant="outline">
                                     <FontAwesomeIcon icon={faDownload} />
                                   </CButton>
@@ -667,7 +667,7 @@ const TrainingDetail: React.FC = () => {
                                 ></div>
                               </div>
                             </div>
-                            <CTable size="sm">
+                            <CTable>
                               <tbody>
                                 <tr>
                                   <td>Enrolled:</td>
@@ -700,7 +700,7 @@ const TrainingDetail: React.FC = () => {
                                   <h3 className="text-primary">{progress.averageScore}%</h3>
                                   <small className="text-muted">Average Score</small>
                                 </div>
-                                <CTable size="sm">
+                                <CTable>
                                   <tbody>
                                     <tr>
                                       <td>Pass Rate:</td>
@@ -738,7 +738,7 @@ const TrainingDetail: React.FC = () => {
                 <CTabPane visible={activeTab === 'materials'}>
                   <TrainingAttachmentManager
                     trainingId={training.id.toString()}
-                    attachments={training.attachments}
+                    attachments={[]}
                     allowUpload={canEdit}
                     allowDelete={canEdit}
                     readonly={!canEdit}
@@ -774,7 +774,7 @@ const TrainingDetail: React.FC = () => {
                                 </div>
                                 <CBadge color="primary">{comment.commentType}</CBadge>
                               </div>
-                              <p className="mb-0">{comment.comment}</p>
+                              <p className="mb-0">{comment.content}</p>
                             </CCardBody>
                           </CCard>
                         </div>

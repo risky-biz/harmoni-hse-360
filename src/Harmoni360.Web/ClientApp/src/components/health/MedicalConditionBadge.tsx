@@ -3,7 +3,8 @@ import {
   CBadge,
   CTooltip
 } from '@coreui/react';
-import { MedicalConditionDto, MedicalConditionSeverity } from '../../types/health';
+import { MedicalConditionDto as ApiMedicalConditionDto } from '../../features/health/healthApi';
+import { MedicalConditionSeverity } from '../../types/health';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamationTriangle,
@@ -11,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 interface MedicalConditionBadgeProps {
-  condition: MedicalConditionDto;
+  condition: ApiMedicalConditionDto;
   showTooltip?: boolean;
   size?: 'sm' | 'lg';
   variant?: 'normal' | 'minimal' | 'emergency';
@@ -23,20 +24,20 @@ const MedicalConditionBadge: React.FC<MedicalConditionBadgeProps> = ({
   size,
   variant = 'normal'
 }) => {
-  const getSeverityColor = (severity: MedicalConditionSeverity) => {
-    switch (severity) {
-      case MedicalConditionSeverity.Critical: return 'danger';
-      case MedicalConditionSeverity.High: return 'warning';
-      case MedicalConditionSeverity.Medium: return 'info';
-      case MedicalConditionSeverity.Low: return 'success';
+  const getSeverityColor = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'critical': return 'danger';
+      case 'high': return 'warning';
+      case 'medium': return 'info';
+      case 'low': return 'success';
       default: return 'secondary';
     }
   };
 
-  const getSeverityIcon = (severity: MedicalConditionSeverity) => {
-    switch (severity) {
-      case MedicalConditionSeverity.Critical:
-      case MedicalConditionSeverity.High:
+  const getSeverityIcon = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'critical':
+      case 'high':
         return faExclamationTriangle;
       default:
         return faHeartbeat;
@@ -96,14 +97,9 @@ const MedicalConditionBadge: React.FC<MedicalConditionBadgeProps> = ({
             Requires Emergency Action
           </div>
         )}
-        {condition.medicationRequired && (
+        {condition.emergencyInstructions && (
           <div className="small mt-1">
-            <strong>Medication:</strong> {condition.medicationRequired}
-          </div>
-        )}
-        {condition.emergencyProtocol && (
-          <div className="small mt-1">
-            <strong>Emergency Protocol:</strong> {condition.emergencyProtocol}
+            <strong>Emergency Instructions:</strong> {condition.emergencyInstructions}
           </div>
         )}
       </div>

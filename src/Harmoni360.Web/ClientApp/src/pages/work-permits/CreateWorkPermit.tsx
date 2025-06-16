@@ -376,7 +376,7 @@ const CreateWorkPermit: React.FC = () => {
     const riskScore = (currentHazard.likelihood || 1) * (currentHazard.severity || 1);
     const hazard: Partial<WorkPermitHazardDto> = {
       ...currentHazard,
-      id: Math.random().toString(36).substr(2, 9),
+      id: Date.now() + Math.floor(Math.random() * 1000),
       riskScore,
       riskLevel: riskScore <= 6 ? 'Low' : riskScore <= 12 ? 'Medium' : riskScore <= 20 ? 'High' : 'Critical',
       residualRiskLevel: 'Medium',
@@ -410,7 +410,7 @@ const CreateWorkPermit: React.FC = () => {
 
     const precaution: Partial<WorkPermitPrecautionDto> = {
       ...currentPrecaution,
-      id: Math.random().toString(36).substr(2, 9),
+      id: Date.now() + Math.floor(Math.random() * 1000),
       isCompleted: false,
       requiresVerification: true,
       isVerified: false

@@ -23,17 +23,14 @@ import {
   CTabPane
 } from '@coreui/react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetHealthRecordQuery } from '../../features/health/healthApi';
 import { 
-  PersonType, 
-  MedicalConditionSeverity, 
-  VaccinationStatus,
-  HealthIncidentSeverity,
+  useGetHealthRecordQuery,
+  HealthRecordDetailDto,
   MedicalConditionDto,
   VaccinationRecordDto,
   HealthIncidentDto,
   EmergencyContactDto
-} from '../../types/health';
+} from '../../features/health/healthApi';
 import { formatDate } from '../../utils/dateUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -63,7 +60,7 @@ const HealthDetail: React.FC = () => {
     isLoading,
     error,
     refetch
-  } = useGetHealthRecordQuery(id!);
+  } = useGetHealthRecordQuery({ id: parseInt(id!) });
 
   const handleEdit = () => {
     navigate(`/health/edit/${id}`);
@@ -73,41 +70,41 @@ const HealthDetail: React.FC = () => {
     navigate('/health');
   };
 
-  const getPersonTypeIcon = (personType: PersonType) => {
-    return personType === PersonType.Student ? faUser : faUsers;
+  const getPersonTypeIcon = (personType: string) => {
+    return personType === 'Student' ? faUser : faUsers;
   };
 
-  const getPersonTypeBadge = (personType: PersonType) => {
-    return personType === PersonType.Student ? 'info' : 'warning';
+  const getPersonTypeBadge = (personType: string) => {
+    return personType === 'Student' ? 'info' : 'warning';
   };
 
-  const getSeverityBadge = (severity: MedicalConditionSeverity) => {
+  const getSeverityBadge = (severity: string) => {
     switch (severity) {
-      case MedicalConditionSeverity.Critical: return 'danger';
-      case MedicalConditionSeverity.High: return 'warning';
-      case MedicalConditionSeverity.Medium: return 'info';
-      case MedicalConditionSeverity.Low: return 'success';
+      case 'Critical': return 'danger';
+      case 'High': return 'warning';
+      case 'Medium': return 'info';
+      case 'Low': return 'success';
       default: return 'secondary';
     }
   };
 
-  const getVaccinationStatusBadge = (status: VaccinationStatus) => {
+  const getVaccinationStatusBadge = (status: string) => {
     switch (status) {
-      case VaccinationStatus.Administered: return 'success';
-      case VaccinationStatus.Due: return 'warning';
-      case VaccinationStatus.Overdue: return 'danger';
-      case VaccinationStatus.Exempted: return 'secondary';
-      case VaccinationStatus.Scheduled: return 'info';
+      case 'Administered': return 'success';
+      case 'Due': return 'warning';
+      case 'Overdue': return 'danger';
+      case 'Exempted': return 'secondary';
+      case 'Scheduled': return 'info';
       default: return 'secondary';
     }
   };
 
-  const getIncidentSeverityBadge = (severity: HealthIncidentSeverity) => {
+  const getIncidentSeverityBadge = (severity: string) => {
     switch (severity) {
-      case HealthIncidentSeverity.Critical: return 'danger';
-      case HealthIncidentSeverity.Severe: return 'warning';
-      case HealthIncidentSeverity.Moderate: return 'info';
-      case HealthIncidentSeverity.Minor: return 'success';
+      case 'Critical': return 'danger';
+      case 'Severe': return 'warning';
+      case 'Moderate': return 'info';
+      case 'Minor': return 'success';
       default: return 'secondary';
     }
   };
@@ -120,7 +117,7 @@ const HealthDetail: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -272,23 +269,23 @@ const HealthDetail: React.FC = () => {
                 <CCardBody>
                   <div className="mb-3">
                     <strong>Primary Doctor:</strong><br />
-                    {healthRecord.primaryDoctorName || 'Not specified'}
-                    {healthRecord.primaryDoctorContact && (
-                      <div className="small text-muted">{healthRecord.primaryDoctorContact}</div>
+                    {(healthRecord as any).primaryDoctorName || 'Not specified'}
+                    {(healthRecord as any).primaryDoctorContact && (
+                      <div className="small text-muted">{(healthRecord as any).primaryDoctorContact}</div>
                     )}
                   </div>
                   <div className="mb-3">
                     <strong>Insurance:</strong><br />
-                    {healthRecord.insuranceProvider || 'Not specified'}
-                    {healthRecord.insurancePolicyNumber && (
-                      <div className="small text-muted">Policy: {healthRecord.insurancePolicyNumber}</div>
+                    {(healthRecord as any).insuranceProvider || 'Not specified'}
+                    {(healthRecord as any).insurancePolicyNumber && (
+                      <div className="small text-muted">Policy: {(healthRecord as any).insurancePolicyNumber}</div>
                     )}
                   </div>
                   <div className="mb-3">
                     <strong>Health Checks:</strong><br />
-                    Last: {healthRecord.lastHealthCheckDate ? formatDate(healthRecord.lastHealthCheckDate) : 'Not recorded'}
-                    {healthRecord.nextHealthCheckDate && (
-                      <div className="small text-muted">Next: {formatDate(healthRecord.nextHealthCheckDate)}</div>
+                    Last: {(healthRecord as any).lastHealthCheckDate ? formatDate((healthRecord as any).lastHealthCheckDate) : 'Not recorded'}
+                    {(healthRecord as any).nextHealthCheckDate && (
+                      <div className="small text-muted">Next: {formatDate((healthRecord as any).nextHealthCheckDate)}</div>
                     )}
                   </div>
                   {healthRecord.medicalNotes && (
@@ -313,17 +310,17 @@ const HealthDetail: React.FC = () => {
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span>Critical Conditions</span>
                     <CBadge color="danger">
-                      {healthRecord.medicalConditions.filter(mc => mc.requiresEmergencyAction).length}
+                      {healthRecord.medicalConditions?.filter(mc => mc.requiresEmergencyAction).length || 0}
                     </CBadge>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span>Vaccinations</span>
-                    <CBadge color="success">{healthRecord.vaccinations.length}</CBadge>
+                    <CBadge color="success">{healthRecord.vaccinations?.length || 0}</CBadge>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span>Overdue Vaccinations</span>
                     <CBadge color="warning">
-                      {healthRecord.vaccinations.filter(v => v.status === VaccinationStatus.Overdue).length}
+                      {healthRecord.vaccinations?.filter(v => v.status === 'Overdue').length || 0}
                     </CBadge>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
@@ -353,7 +350,7 @@ const HealthDetail: React.FC = () => {
               </CButton>
             </CCardHeader>
             <CCardBody className="p-0">
-              {healthRecord.medicalConditions.length > 0 ? (
+              {healthRecord.medicalConditions?.length > 0 ? (
                 <CListGroup flush>
                   {healthRecord.medicalConditions.map((condition) => (
                     <CListGroupItem 
@@ -381,7 +378,7 @@ const HealthDetail: React.FC = () => {
                           )}
                         </div>
                         <div className="text-muted small">
-                          {formatDate(condition.diagnosedDate)}
+                          {condition.diagnosedDate ? formatDate(condition.diagnosedDate) : 'Date not specified'}
                         </div>
                       </div>
                     </CListGroupItem>
@@ -409,7 +406,7 @@ const HealthDetail: React.FC = () => {
               </CButton>
             </CCardHeader>
             <CCardBody className="p-0">
-              {healthRecord.vaccinations.length > 0 ? (
+              {healthRecord.vaccinations?.length > 0 ? (
                 <CListGroup flush>
                   {healthRecord.vaccinations.map((vaccination) => (
                     <CListGroupItem key={vaccination.id}>
@@ -422,12 +419,12 @@ const HealthDetail: React.FC = () => {
                             </CBadge>
                           </div>
                           <div className="small text-muted">
-                            Administered: {formatDate(vaccination.dateAdministered)}
+                            Administered: {vaccination.dateAdministered ? formatDate(vaccination.dateAdministered) : 'Date not specified'}
                             {vaccination.administeredBy && ` by ${vaccination.administeredBy}`}
                           </div>
-                          {vaccination.nextDueDate && (
+                          {vaccination.expiryDate && (
                             <div className="small text-muted">
-                              Next due: {formatDate(vaccination.nextDueDate)}
+                              Expires: {formatDate(vaccination.expiryDate)}
                             </div>
                           )}
                           {vaccination.exemptionReason && (
@@ -437,8 +434,8 @@ const HealthDetail: React.FC = () => {
                           )}
                         </div>
                         <div className="text-muted small">
-                          {vaccination.doseNumber && vaccination.totalDosesRequired && (
-                            <div>Dose {vaccination.doseNumber}/{vaccination.totalDosesRequired}</div>
+                          {(vaccination as any).doseNumber && (vaccination as any).totalDosesRequired && (
+                            <div>Dose {(vaccination as any).doseNumber}/{(vaccination as any).totalDosesRequired}</div>
                           )}
                         </div>
                       </div>
@@ -463,7 +460,7 @@ const HealthDetail: React.FC = () => {
               <strong>Health Incidents</strong>
             </CCardHeader>
             <CCardBody className="p-0">
-              {healthRecord.healthIncidents.length > 0 ? (
+              {healthRecord.healthIncidents?.length > 0 ? (
                 <CListGroup flush>
                   {healthRecord.healthIncidents.map((incident) => (
                     <CListGroupItem key={incident.id}>
@@ -476,8 +473,8 @@ const HealthDetail: React.FC = () => {
                             </CBadge>
                           </div>
                           <div className="small text-muted mb-1">
-                            {formatDate(incident.dateOccurred)} at {incident.timeOccurred}
-                            {incident.location && ` - ${incident.location}`}
+                            {formatDate(incident.incidentDateTime)}
+                            {incident.treatmentLocation && ` - ${incident.treatmentLocation}`}
                           </div>
                           {incident.symptoms && (
                             <div className="small mb-1">
@@ -521,17 +518,17 @@ const HealthDetail: React.FC = () => {
               </CButton>
             </CCardHeader>
             <CCardBody className="p-0">
-              {healthRecord.emergencyContacts.length > 0 ? (
+              {healthRecord.emergencyContacts?.length > 0 ? (
                 <CListGroup flush>
                   {healthRecord.emergencyContacts
-                    .sort((a, b) => a.priority - b.priority)
+                    .sort((a, b) => a.contactOrder - b.contactOrder)
                     .map((contact) => (
                     <CListGroupItem key={contact.id}>
                       <div className="d-flex justify-content-between align-items-start">
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center mb-1">
                             <strong className="me-2">{contact.name}</strong>
-                            {contact.isPrimary && (
+                            {contact.isPrimaryContact && (
                               <CBadge color="primary">Primary</CBadge>
                             )}
                           </div>
@@ -542,16 +539,16 @@ const HealthDetail: React.FC = () => {
                             <div className="small text-muted mb-1">{contact.email}</div>
                           )}
                           <div className="small">
-                            {contact.isAuthorizedForPickup && (
+                            {contact.authorizedForPickup && (
                               <CBadge color="info" className="me-1">Pickup Authorized</CBadge>
                             )}
-                            {contact.isAuthorizedForMedicalDecisions && (
+                            {contact.authorizedForMedicalDecisions && (
                               <CBadge color="success">Medical Decisions</CBadge>
                             )}
                           </div>
                         </div>
                         <div className="text-muted small">
-                          Priority: {contact.priority}
+                          Order: {contact.contactOrder}
                         </div>
                       </div>
                     </CListGroupItem>
@@ -596,9 +593,9 @@ const HealthDetail: React.FC = () => {
                   <strong>Diagnosed:</strong> {formatDate(selectedMedicalCondition.diagnosedDate)}
                 </CCol>
               </CRow>
-              {selectedMedicalCondition.diagnosedBy && (
+              {(selectedMedicalCondition as any).diagnosedBy && (
                 <div className="mb-3">
-                  <strong>Diagnosed By:</strong> {selectedMedicalCondition.diagnosedBy}
+                  <strong>Diagnosed By:</strong> {(selectedMedicalCondition as any).diagnosedBy}
                 </div>
               )}
               {selectedMedicalCondition.description && (
@@ -613,16 +610,16 @@ const HealthDetail: React.FC = () => {
                   {selectedMedicalCondition.treatmentPlan}
                 </div>
               )}
-              {selectedMedicalCondition.medicationRequired && (
+              {(selectedMedicalCondition as any).medicationRequired && (
                 <div className="mb-3">
                   <strong>Medication Required:</strong><br />
-                  {selectedMedicalCondition.medicationRequired}
+                  {(selectedMedicalCondition as any).medicationRequired}
                 </div>
               )}
-              {selectedMedicalCondition.emergencyProtocol && (
+              {(selectedMedicalCondition as any).emergencyProtocol && (
                 <div className="mb-3">
                   <strong>Emergency Protocol:</strong><br />
-                  <div className="text-danger">{selectedMedicalCondition.emergencyProtocol}</div>
+                  <div className="text-danger">{(selectedMedicalCondition as any).emergencyProtocol}</div>
                 </div>
               )}
               {selectedMedicalCondition.requiresEmergencyAction && (

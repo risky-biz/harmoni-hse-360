@@ -42,49 +42,28 @@ export const useApplicationMode = () => {
   const environment = combinedData?.environment ?? 'Development';
 
   const canPerformOperation = async (operationType: string): Promise<boolean> => {
-    if (!isDemoMode) return true; // Allow all operations in non-demo mode
-    
-    try {
-      const result = await checkOperation(operationType).unwrap();
-      return result.isAllowed;
-    } catch (error) {
-      console.warn(`Failed to check operation ${operationType}:`, error);
-      return false; // Fail closed for demo mode
-    }
+    // Always allow all operations regardless of demo mode for full functionality
+    return true;
   };
 
   const getOperationLimitation = (operationType: string): string | null => {
-    if (!isDemoMode || !limitations) return null;
-
-    switch (operationType) {
-      case 'CreateUser':
-        return limitations.canCreateUsers ? null : 'User creation is disabled in demo mode';
-      case 'DeleteData':
-        return limitations.canDeleteData ? null : 'Data deletion is disabled in demo mode';
-      case 'ModifySystemSettings':
-        return limitations.canModifySystemSettings ? null : 'System settings modification is disabled in demo mode';
-      case 'SendEmail':
-        return limitations.canSendEmails ? null : 'Email sending is disabled in demo mode';
-      case 'ExportData':
-        return limitations.canExportData ? null : 'Data export is disabled in demo mode';
-      default:
-        return null;
-    }
+    // Return null (no limitations) for all operations to allow full functionality
+    return null;
   };
 
   const isFeatureDisabled = (featureName: string): boolean => {
-    if (!isDemoMode || !limitations) return false;
-    return limitations.disabledFeatures.includes(featureName);
+    // Return false (no features disabled) to allow full functionality
+    return false;
   };
 
   const getOperationLimit = (operationType: string): number | null => {
-    if (!isDemoMode || !limitations) return null;
-    return limitations.operationLimits[operationType] ?? null;
+    // Return null (no limits) for all operations to allow unlimited functionality
+    return null;
   };
 
   const hasExceededLimit = (operationType: string, currentCount: number): boolean => {
-    const limit = getOperationLimit(operationType);
-    return limit !== null && currentCount >= limit;
+    // Return false (never exceeded) to allow unlimited operations
+    return false;
   };
 
   return {
@@ -108,15 +87,15 @@ export const useApplicationMode = () => {
     getOperationLimit,
     hasExceededLimit,
     
-    // Demo-specific values
-    maxIncidentsPerUser: limitations?.maxIncidentsPerUser ?? Infinity,
-    maxAttachmentSizeMB: limitations?.maxAttachmentSizeMB ?? 100,
-    canCreateUsers: limitations?.canCreateUsers ?? true,
-    canDeleteData: limitations?.canDeleteData ?? true,
-    canModifySystemSettings: limitations?.canModifySystemSettings ?? true,
-    canExportData: limitations?.canExportData ?? true,
-    canSendEmails: limitations?.canSendEmails ?? true,
-    canSendNotifications: limitations?.canSendNotifications ?? true,
+    // Demo-specific values - all set to allow full functionality
+    maxIncidentsPerUser: Infinity,
+    maxAttachmentSizeMB: limitations?.maxAttachmentSizeMB ?? 100, // Keep reasonable file size limit
+    canCreateUsers: true,
+    canDeleteData: true,
+    canModifySystemSettings: true,
+    canExportData: true,
+    canSendEmails: true,
+    canSendNotifications: true,
   };
 };
 

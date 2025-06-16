@@ -16,7 +16,8 @@ import {
   CDropdown,
   CDropdownToggle,
   CDropdownMenu,
-  CDropdownItem
+  CDropdownItem,
+  CDropdownDivider
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -49,7 +50,7 @@ import { WORK_PERMIT_STATUSES, WORK_PERMIT_PRIORITIES, RISK_LEVELS } from '../..
 
 const WorkPermitDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
   const [timeRange, setTimeRange] = useState<string>('all');
 
   const {
@@ -147,7 +148,7 @@ const WorkPermitDashboard: React.FC = () => {
                 <CButton
                   color="primary"
                   onClick={handleCreatePermit}
-                  disabled={isDemo}
+                  disabled={false}
                 >
                   <FontAwesomeIcon icon={faPlus} className="me-2" />
                   New Work Permit
@@ -177,7 +178,7 @@ const WorkPermitDashboard: React.FC = () => {
                       Pending Approvals
                     </CDropdownItem>
                   </PermissionGuard>
-                  <CDropdownItem divider={true} />
+                  <CDropdownDivider />
                   <CDropdownItem onClick={() => refetch()}>
                     <FontAwesomeIcon icon={faArrowRotateRight} className="me-2" />
                     Refresh Data
@@ -197,7 +198,7 @@ const WorkPermitDashboard: React.FC = () => {
             value={dashboardData?.totalPermits || 0}
             icon={faFileContract}
             color="primary"
-            trend={{ value: 0, isPositive: true }}
+            trend={{ value: 0, isPositive: true, label: "this month" }}
             onClick={handleViewAllPermits}
           />
         </CCol>
@@ -207,7 +208,7 @@ const WorkPermitDashboard: React.FC = () => {
             value={dashboardData?.pendingApprovalPermits || 0}
             icon={faClock}
             color="warning"
-            trend={{ value: 0, isPositive: false }}
+            trend={{ value: 0, isPositive: false, label: "this month" }}
             onClick={handleViewPendingApprovals}
           />
         </CCol>
@@ -217,7 +218,7 @@ const WorkPermitDashboard: React.FC = () => {
             value={dashboardData?.inProgressPermits || 0}
             icon={faClipboardCheck}
             color="info"
-            trend={{ value: 0, isPositive: true }}
+            trend={{ value: 0, isPositive: true, label: "this month" }}
           />
         </CCol>
         <CCol md={3}>
@@ -226,7 +227,7 @@ const WorkPermitDashboard: React.FC = () => {
             value={dashboardData?.completedPermits || 0}
             icon={faCheckCircle}
             color="success"
-            trend={{ value: 0, isPositive: true }}
+            trend={{ value: 0, isPositive: true, label: "this month" }}
           />
         </CCol>
       </CRow>
@@ -279,6 +280,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="Draft"
                   value={dashboardData?.draftPermits || 0}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round(((dashboardData?.draftPermits || 0) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="secondary"
                 />
               </CCol>
@@ -287,6 +289,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="Pending Approval"
                   value={dashboardData?.pendingApprovalPermits || 0}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round(((dashboardData?.pendingApprovalPermits || 0) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="warning"
                 />
               </CCol>
@@ -295,6 +298,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="Approved"
                   value={dashboardData?.approvedPermits || 0}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round(((dashboardData?.approvedPermits || 0) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="success"
                 />
               </CCol>
@@ -303,6 +307,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="In Progress"
                   value={dashboardData?.inProgressPermits || 0}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round(((dashboardData?.inProgressPermits || 0) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="info"
                 />
               </CCol>
@@ -311,6 +316,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="Completed"
                   value={dashboardData?.completedPermits || 0}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round(((dashboardData?.completedPermits || 0) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="success"
                 />
               </CCol>
@@ -319,6 +325,7 @@ const WorkPermitDashboard: React.FC = () => {
                   title="Rejected/Cancelled"
                   value={(dashboardData?.rejectedPermits || 0) + (dashboardData?.cancelledPermits || 0)}
                   total={dashboardData?.totalPermits || 1}
+                  percentage={Math.round((((dashboardData?.rejectedPermits || 0) + (dashboardData?.cancelledPermits || 0)) / Math.max(dashboardData?.totalPermits || 1, 1)) * 100)}
                   color="danger"
                 />
               </CCol>
@@ -374,7 +381,7 @@ const WorkPermitDashboard: React.FC = () => {
               {dashboardData?.recentPermits && dashboardData.recentPermits.length > 0 ? (
                 <RecentItemsList
                   items={dashboardData.recentPermits.map(permit => ({
-                    id: permit.id,
+                    id: permit.id.toString(),
                     title: permit.title,
                     subtitle: `${permit.typeDisplay} - ${permit.workLocation}`,
                     timestamp: formatDistanceToNow(new Date(permit.createdAt), { addSuffix: true }),
@@ -414,7 +421,7 @@ const WorkPermitDashboard: React.FC = () => {
               {dashboardData?.highPriorityPermits && dashboardData.highPriorityPermits.length > 0 ? (
                 <RecentItemsList
                   items={dashboardData.highPriorityPermits.map(permit => ({
-                    id: permit.id,
+                    id: permit.id.toString(),
                     title: permit.title,
                     subtitle: `${permit.typeDisplay} - ${permit.workLocation}`,
                     timestamp: formatDistanceToNow(new Date(permit.plannedStartDate), { addSuffix: true }),

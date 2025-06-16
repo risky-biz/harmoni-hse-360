@@ -308,10 +308,10 @@ const MitigationActions: React.FC = () => {
                         <CTableDataCell>
                           <div>
                             <strong>{action.actionDescription}</strong>
-                            {action.estimatedCost > 0 && (
+                            {(action.estimatedCost ?? 0) > 0 && (
                               <div className="small text-muted">
                                 <FontAwesomeIcon icon={faDollarSign} className="me-1" />
-                                Est. Cost: ${action.estimatedCost.toLocaleString()}
+                                Est. Cost: ${(action.estimatedCost ?? 0).toLocaleString()}
                               </div>
                             )}
                           </div>

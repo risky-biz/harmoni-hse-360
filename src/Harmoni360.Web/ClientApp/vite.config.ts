@@ -19,7 +19,11 @@ export default defineConfig({
     exclude: ['@coreui/icons'] // Exclude problematic dependencies from optimization
   },
   esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+    logOverride: { 
+      'this-is-undefined-in-esm': 'silent',
+      'direct-eval': 'silent'
+    },
+    jsxDev: false
   },
   plugins: [
     react(),

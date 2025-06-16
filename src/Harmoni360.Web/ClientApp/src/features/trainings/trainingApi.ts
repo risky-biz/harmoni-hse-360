@@ -5,7 +5,8 @@ import type {
   TrainingParticipantDto,
   TrainingAttachmentDto,
   TrainingCommentDto,
-  TrainingCertificationDto
+  TrainingCertificationDto,
+  MyTrainingDto
 } from '../../types/training';
 
 export interface CreateTrainingRequest extends TrainingFormData {}
@@ -33,6 +34,16 @@ export interface GetTrainingsParams {
 
 export interface GetTrainingsResponse {
   items: TrainingDto[];
+  totalCount: number;
+  pageCount: number;
+  currentPage: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface GetMyTrainingsResponse {
+  items: MyTrainingDto[];
   totalCount: number;
   pageCount: number;
   currentPage: number;
@@ -105,6 +116,63 @@ export interface IssueCertificationRequest {
   certifyingBody?: string;
 }
 
+export interface TrainingProgressDto {
+  totalEnrolled: number;
+  totalCompleted: number;
+  totalInProgress: number;
+  totalFailed: number;
+  completionPercentage: number;
+  averageScore: number | null;
+  passRate: number;
+  highestScore: number;
+  lowestScore: number;
+}
+
+export interface AddTrainingCommentRequest {
+  trainingId: number;
+  comment: string;
+  commentType?: string;
+}
+
+export interface MyTrainingStatsDto {
+  totalTrainings: number;
+  completedTrainings: number;
+  inProgressTrainings: number;
+  upcomingTrainings: number;
+  overdue: number;
+  averageScore: number;
+  certificationsEarned: number;
+  hoursCompleted: number;
+  completionRate: number;
+}
+
+export interface MyUpcomingTrainingDto {
+  id: number;
+  title: string;
+  scheduledStartDate: string;
+  durationHours: number;
+  type: string;
+  category: string;
+  isK3MandatoryTraining: boolean;
+  requiresCertification: boolean;
+  priority: string;
+  location?: string;
+  instructorName?: string;
+  enrolledAt: string;
+}
+
+export interface MyCertificateDto {
+  id: number;
+  trainingTitle: string;
+  certificationType: string;
+  issuedDate: string;
+  expiryDate?: string;
+  certificateNumber: string;
+  issuingBody: string;
+  status: 'Valid' | 'Expired' | 'Expiring';
+  downloadUrl?: string;
+}
+
 export interface UploadAttachmentRequest {
   trainingId: number;
   file: File;
@@ -168,6 +236,27 @@ export const trainingApi = createApi({
     getTrainingById: builder.query<TrainingDto, number>({
       query: (id) => `/${id}`,
       providesTags: (result, error, id) => [{ type: 'TrainingDetail', id }],
+    }),
+
+    getTrainingParticipants: builder.query<TrainingParticipantDto[], number>({
+      query: (trainingId) => `/${trainingId}/participants`,
+      providesTags: (result, error, trainingId) => [
+        { type: 'TrainingParticipant', id: trainingId },
+      ],
+    }),
+
+    getTrainingProgress: builder.query<TrainingProgressDto, number>({
+      query: (trainingId) => `/${trainingId}/progress`,
+      providesTags: (result, error, trainingId) => [
+        { type: 'TrainingDetail', id: trainingId },
+      ],
+    }),
+
+    getTrainingComments: builder.query<TrainingCommentDto[], number>({
+      query: (trainingId) => `/${trainingId}/comments`,
+      providesTags: (result, error, trainingId) => [
+        { type: 'TrainingComment', id: trainingId },
+      ],
     }),
 
     updateTraining: builder.mutation<TrainingDto, UpdateTrainingRequest>({
@@ -331,15 +420,27 @@ export const trainingApi = createApi({
     }),
 
     // Comments
-    addComment: builder.mutation<TrainingCommentDto, { trainingId: number; content: string; commentType: string }>({
-      query: ({ trainingId, ...comment }) => ({
+    addComment: builder.mutation<TrainingCommentDto, AddTrainingCommentRequest>({
+      query: ({ trainingId, comment, commentType = 'General' }) => ({
         url: `/${trainingId}/comments`,
         method: 'POST',
-        body: comment,
+        body: { content: comment, commentType },
       }),
       invalidatesTags: (result, error, { trainingId }) => [
         { type: 'TrainingDetail', id: trainingId },
-        'TrainingComment',
+        { type: 'TrainingComment', id: trainingId },
+      ],
+    }),
+
+    addTrainingComment: builder.mutation<TrainingCommentDto, AddTrainingCommentRequest>({
+      query: ({ trainingId, comment, commentType = 'General' }) => ({
+        url: `/${trainingId}/comments`,
+        method: 'POST',
+        body: { content: comment, commentType },
+      }),
+      invalidatesTags: (result, error, { trainingId }) => [
+        { type: 'TrainingDetail', id: trainingId },
+        { type: 'TrainingComment', id: trainingId },
       ],
     }),
 
@@ -369,12 +470,40 @@ export const trainingApi = createApi({
       providesTags: ['TrainingStatistics'],
     }),
 
-    getMyTrainings: builder.query<GetTrainingsResponse, GetTrainingsParams>({
+    getMyTrainings: builder.query<GetMyTrainingsResponse, GetTrainingsParams>({
       query: (params) => ({
         url: '/my-trainings',
         params,
       }),
       providesTags: ['MyTrainings'],
+    }),
+
+    getMyTrainingStats: builder.query<MyTrainingStatsDto, void>({
+      query: () => '/my-trainings/stats',
+      providesTags: ['MyTrainings'],
+    }),
+
+    getMyUpcomingTrainings: builder.query<MyUpcomingTrainingDto[], { limit?: number }>({
+      query: (params) => ({
+        url: '/my-trainings/upcoming',
+        params,
+      }),
+      providesTags: ['MyTrainings'],
+    }),
+
+    getMyCertificates: builder.query<MyCertificateDto[], { status?: string }>({
+      query: (params) => ({
+        url: '/my-certificates',
+        params,
+      }),
+      providesTags: ['TrainingCertification'],
+    }),
+
+    downloadCertificate: builder.query<Blob, number>({
+      query: (certificateId) => ({
+        url: `/certificates/${certificateId}/download`,
+        responseHandler: (response) => response.blob(),
+      }),
     }),
 
     getUpcomingTrainings: builder.query<TrainingDto[], { limit?: number }>({
@@ -392,13 +521,6 @@ export const trainingApi = createApi({
       }),
       providesTags: ['TrainingCertification'],
     }),
-
-    downloadCertificate: builder.query<Blob, number>({
-      query: (certificationId) => ({
-        url: `/certifications/${certificationId}/download`,
-        responseHandler: (response) => response.blob(),
-      }),
-    }),
   }),
 });
 
@@ -409,6 +531,11 @@ export const {
   useGetTrainingByIdQuery,
   useUpdateTrainingMutation,
   useDeleteTrainingMutation,
+
+  // Training Details
+  useGetTrainingParticipantsQuery,
+  useGetTrainingProgressQuery,
+  useGetTrainingCommentsQuery,
 
   // State Transitions
   useStartTrainingMutation,
@@ -429,12 +556,17 @@ export const {
 
   // Comments and Requirements
   useAddCommentMutation,
+  useAddTrainingCommentMutation,
   useAddRequirementMutation,
 
   // Dashboard and Statistics
   useGetTrainingDashboardQuery,
   useGetTrainingStatisticsQuery,
   useGetMyTrainingsQuery,
+  useGetMyTrainingStatsQuery,
+  useGetMyUpcomingTrainingsQuery,
+  useGetMyCertificatesQuery,
+  useDownloadCertificateQuery,
   useGetUpcomingTrainingsQuery,
   useGetCertificationsQuery,
   useLazyDownloadCertificateQuery,

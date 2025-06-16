@@ -639,7 +639,7 @@ export const InspectionList: React.FC = () => {
                   <div className="d-flex justify-content-center mt-3">
                     <CPagination>
                       <CPaginationItem
-                        disabled={!data.hasPrevious}
+                        disabled={data.page <= 1}
                         onClick={() => setPage(page - 1)}
                       >
                         Previous
@@ -657,7 +657,7 @@ export const InspectionList: React.FC = () => {
                         );
                       })}
                       <CPaginationItem
-                        disabled={!data.hasNext}
+                        disabled={data.page >= data.totalPages}
                         onClick={() => setPage(page + 1)}
                       >
                         Next

@@ -53,51 +53,15 @@ const DemoModeWrapper: React.FC<DemoModeWrapperProps> = ({
     );
   }
 
-  // Check if feature is disabled
-  if (requiresFeature && isFeatureDisabled(requiresFeature)) {
-    if (fallbackContent) {
-      return <>{fallbackContent}</>;
-    }
-
-    if (!showLimitation) {
-      return null;
-    }
-
+  // Features and operations are now fully enabled in demo mode
+  // Only show informational messages if explicitly requested
+  if (isDemoMode && showLimitation && (requiresFeature || requiresOperation)) {
     return (
-      <CAlert color="info">
-        <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
-        <strong>Feature Disabled:</strong> The "{requiresFeature}" feature is not available in demo mode.
-        {alternativeAction && (
-          <div className="mt-2">
-            <CButton 
-              color={alternativeAction.color || 'primary'} 
-              size="sm"
-              onClick={alternativeAction.onClick}
-            >
-              {alternativeAction.label}
-            </CButton>
-          </div>
-        )}
-      </CAlert>
-    );
-  }
-
-  // Check operation limitation
-  if (requiresOperation) {
-    const limitation = getOperationLimitation(requiresOperation);
-    if (limitation) {
-      if (fallbackContent) {
-        return <>{fallbackContent}</>;
-      }
-
-      if (!showLimitation) {
-        return null;
-      }
-
-      return (
-        <CAlert color="warning">
-          <FontAwesomeIcon icon={faLock} className="me-2" />
-          <strong>Operation Restricted:</strong> {limitation}
+      <div>
+        {/* Show demo mode info but don't restrict functionality */}
+        <CAlert color="info" className="mb-2">
+          <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+          <strong>Demo Mode:</strong> Full functionality enabled for demonstration purposes.
           {alternativeAction && (
             <div className="mt-2">
               <CButton 
@@ -110,8 +74,10 @@ const DemoModeWrapper: React.FC<DemoModeWrapperProps> = ({
             </div>
           )}
         </CAlert>
-      );
-    }
+        {/* Render children with full functionality */}
+        {children}
+      </div>
+    );
   }
 
   // Render children if no restrictions

@@ -29,8 +29,8 @@ import {
   useGetHealthRiskAssessmentQuery,
   useGetEmergencyContactValidationQuery 
 } from '../../features/health/healthApi';
-import { PersonType } from '../../types/health';
-import { ChartCard } from '../../components/dashboard';
+// Remove PersonType import as we'll use string literals
+import { ChartCard, DonutChart, BarChart } from '../../components/dashboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faShieldAlt,
@@ -46,7 +46,7 @@ import {
 
 const HealthCompliance: React.FC = () => {
   const [activeTab, setActiveTab] = useState('vaccination');
-  const [populationType, setPopulationType] = useState<PersonType | ''>('');
+  const [populationType, setPopulationType] = useState<string>('');
   const [reportFormat, setReportFormat] = useState('summary');
 
   const {
@@ -55,8 +55,7 @@ const HealthCompliance: React.FC = () => {
     error: vaccinationError,
     refetch: refetchVaccination
   } = useGetVaccinationComplianceQuery({
-    populationType: populationType || undefined,
-    includeDetails: true
+    personType: populationType || undefined
   });
 
   const {
@@ -65,9 +64,7 @@ const HealthCompliance: React.FC = () => {
     error: riskError,
     refetch: refetchRisk
   } = useGetHealthRiskAssessmentQuery({
-    includeVaccinations: true,
-    includeMedicalConditions: true,
-    includeHealthIncidents: true
+    scope: 'Comprehensive'
   });
 
   const {
@@ -75,7 +72,7 @@ const HealthCompliance: React.FC = () => {
     isLoading: isLoadingContacts,
     error: contactError,
     refetch: refetchContacts
-  } = useGetEmergencyContactValidationQuery();
+  } = useGetEmergencyContactValidationQuery({});
 
   const vaccinationChartData = useMemo(() => {
     if (!vaccinationCompliance) return null;
@@ -84,9 +81,9 @@ const HealthCompliance: React.FC = () => {
       labels: ['Compliant', 'Overdue', 'Exempted'],
       datasets: [{
         data: [
-          vaccinationCompliance.totalCompliant,
-          vaccinationCompliance.totalOverdue,
-          vaccinationCompliance.totalExempted
+          vaccinationCompliance.compliantRecords,
+          vaccinationCompliance.nonCompliantRecords,
+          vaccinationCompliance.exemptRecords
         ],
         backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
         borderWidth: 0
@@ -95,11 +92,11 @@ const HealthCompliance: React.FC = () => {
   }, [vaccinationCompliance]);
 
   const populationBreakdownChart = useMemo(() => {
-    if (!vaccinationCompliance?.populationBreakdown) return null;
+    if (!vaccinationCompliance?.studentCompliance || !vaccinationCompliance?.staffCompliance) return null;
 
-    const data = vaccinationCompliance.populationBreakdown;
+    const data = [vaccinationCompliance.studentCompliance, vaccinationCompliance.staffCompliance];
     return {
-      labels: data.map(p => p.populationType),
+      labels: data.map(p => p.personType),
       datasets: [{
         label: 'Compliance Rate (%)',
         data: data.map(p => p.complianceRate),
@@ -145,12 +142,12 @@ const HealthCompliance: React.FC = () => {
         <div className="d-flex gap-2">
           <CFormSelect
             value={populationType}
-            onChange={(e) => setPopulationType(e.target.value as PersonType | '')}
+            onChange={(e) => setPopulationType(e.target.value)}
             style={{ width: '150px' }}
           >
             <option value="">All Population</option>
-            <option value={PersonType.Student}>Students</option>
-            <option value={PersonType.Staff}>Staff</option>
+            <option value="Student">Students</option>
+            <option value="Staff">Staff</option>
           </CFormSelect>
           <CButton color="info" onClick={handleRefreshData}>
             <FontAwesomeIcon icon={faRefresh} className="me-1" />
@@ -217,7 +214,7 @@ const HealthCompliance: React.FC = () => {
 
           {isLoadingVaccination ? (
             <div className="d-flex justify-content-center p-4">
-              <CSpinner color="primary" size="lg" />
+              <CSpinner color="primary" size="sm" />
             </div>
           ) : vaccinationError ? (
             <CAlert color="danger">
@@ -244,11 +241,11 @@ const HealthCompliance: React.FC = () => {
                   <CCard className="text-center">
                     <CCardBody>
                       <div className="fs-4 fw-semibold text-success">
-                        {vaccinationCompliance.totalCompliant}
+                        {vaccinationCompliance.compliantRecords}
                       </div>
                       <div className="text-muted">Compliant</div>
                       <div className="small text-muted">
-                        of {vaccinationCompliance.totalRequired} required
+                        of {vaccinationCompliance.totalRecords} total
                       </div>
                     </CCardBody>
                   </CCard>
@@ -257,7 +254,7 @@ const HealthCompliance: React.FC = () => {
                   <CCard className="text-center">
                     <CCardBody>
                       <div className="fs-4 fw-semibold text-danger">
-                        {vaccinationCompliance.totalOverdue}
+                        {vaccinationCompliance.nonCompliantRecords}
                       </div>
                       <div className="text-muted">Overdue</div>
                       <div className="small text-muted">Requiring attention</div>
@@ -268,7 +265,7 @@ const HealthCompliance: React.FC = () => {
                   <CCard className="text-center">
                     <CCardBody>
                       <div className="fs-4 fw-semibold text-secondary">
-                        {vaccinationCompliance.totalExempted}
+                        {vaccinationCompliance.exemptRecords}
                       </div>
                       <div className="text-muted">Exempted</div>
                       <div className="small text-muted">With documentation</div>
@@ -281,22 +278,29 @@ const HealthCompliance: React.FC = () => {
               <CRow className="mb-4">
                 <CCol lg={6}>
                   {vaccinationChartData && (
-                    <ChartCard
-                      title="Vaccination Status Distribution"
-                      type="doughnut"
-                      data={vaccinationChartData}
-                      height={300}
-                    />
+                    <ChartCard title="Vaccination Status Distribution">
+                      <DonutChart
+                        data={vaccinationChartData.datasets[0].data.map((value, index) => ({
+                          label: vaccinationChartData.labels[index],
+                          value: value,
+                          color: vaccinationChartData.datasets[0].backgroundColor[index]
+                        }))}
+                        size={280}
+                      />
+                    </ChartCard>
                   )}
                 </CCol>
                 <CCol lg={6}>
                   {populationBreakdownChart && (
-                    <ChartCard
-                      title="Compliance by Population Type"
-                      type="bar"
-                      data={populationBreakdownChart}
-                      height={300}
-                    />
+                    <ChartCard title="Compliance by Population Type">
+                      <BarChart
+                        data={populationBreakdownChart.labels.map((label, index) => ({
+                          label: label,
+                          value: populationBreakdownChart.datasets[0].data[index]
+                        }))}
+                        height={280}
+                      />
+                    </ChartCard>
                   )}
                 </CCol>
               </CRow>
@@ -309,7 +313,7 @@ const HealthCompliance: React.FC = () => {
                       <strong>Vaccine-Specific Compliance</strong>
                     </CCardHeader>
                     <CCardBody className="p-0">
-                      {vaccinationCompliance.vaccineBreakdown.length > 0 ? (
+                      {vaccinationCompliance.vaccinationsByType?.length > 0 ? (
                         <CTable hover responsive>
                           <CTableHead>
                             <CTableRow>
@@ -319,7 +323,7 @@ const HealthCompliance: React.FC = () => {
                             </CTableRow>
                           </CTableHead>
                           <CTableBody>
-                            {vaccinationCompliance.vaccineBreakdown.map((vaccine) => (
+                            {vaccinationCompliance.vaccinationsByType.map((vaccine) => (
                               <CTableRow key={vaccine.vaccineName}>
                                 <CTableDataCell>
                                   <strong>{vaccine.vaccineName}</strong>
@@ -334,7 +338,7 @@ const HealthCompliance: React.FC = () => {
                                     />
                                   </div>
                                   <div className="small text-muted">
-                                    {vaccine.compliant}/{vaccine.required} compliant, {vaccine.overdue} overdue
+                                    {vaccine.totalCompliant}/{vaccine.totalRequired} compliant, {vaccine.totalExpired} expired
                                   </div>
                                 </CTableDataCell>
                                 <CTableDataCell>
@@ -360,7 +364,7 @@ const HealthCompliance: React.FC = () => {
                       <strong>Population Breakdown</strong>
                     </CCardHeader>
                     <CCardBody className="p-0">
-                      {vaccinationCompliance.populationBreakdown.length > 0 ? (
+                      {[vaccinationCompliance.studentCompliance, vaccinationCompliance.staffCompliance].filter(Boolean).length > 0 ? (
                         <CTable hover responsive>
                           <CTableHead>
                             <CTableRow>
@@ -370,13 +374,15 @@ const HealthCompliance: React.FC = () => {
                             </CTableRow>
                           </CTableHead>
                           <CTableBody>
-                            {vaccinationCompliance.populationBreakdown.map((population) => (
-                              <CTableRow key={population.populationType}>
+                            {[vaccinationCompliance.studentCompliance, vaccinationCompliance.staffCompliance]
+                              .filter(Boolean)
+                              .map((population) => (
+                              <CTableRow key={population.personType}>
                                 <CTableDataCell>
                                   <FontAwesomeIcon icon={faUsers} className="me-1" />
-                                  <strong>{population.populationType}</strong>
+                                  <strong>{population.personType}</strong>
                                   <div className="small text-muted">
-                                    {population.compliant}/{population.totalRequired} people
+                                    {population.compliantRecords}/{population.totalRecords} people
                                   </div>
                                 </CTableDataCell>
                                 <CTableDataCell>
@@ -431,7 +437,7 @@ const HealthCompliance: React.FC = () => {
 
           {isLoadingRisk ? (
             <div className="d-flex justify-content-center p-4">
-              <CSpinner color="primary" size="lg" />
+              <CSpinner color="primary" size="sm" />
             </div>
           ) : riskError ? (
             <CAlert color="danger">
@@ -469,7 +475,7 @@ const HealthCompliance: React.FC = () => {
 
           {isLoadingContacts ? (
             <div className="d-flex justify-content-center p-4">
-              <CSpinner color="primary" size="lg" />
+              <CSpinner color="primary" size="sm" />
             </div>
           ) : contactError ? (
             <CAlert color="danger">

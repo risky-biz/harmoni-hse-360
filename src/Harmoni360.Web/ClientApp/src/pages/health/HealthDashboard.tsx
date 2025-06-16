@@ -25,10 +25,9 @@ import {
   faChartPie,
   faBell
 } from '@fortawesome/free-solid-svg-icons';
-import { useGetHealthDashboardQuery } from '../../features/health/healthApi';
-import { StatsCard, ProgressCard, ChartCard, RecentItemsList } from '../../components/dashboard';
+import { useGetHealthDashboardQuery, HealthDashboardDto, HealthIncidentDto } from '../../features/health/healthApi';
+import { StatsCard, ProgressCard, ChartCard, RecentItemsList, DonutChart, LineChart } from '../../components/dashboard';
 import { formatDate } from '../../utils/dateUtils';
-import { HealthDashboardDto, HealthIncidentDto, UpcomingVaccinationDto } from '../../types/health';
 
 const HealthDashboard: React.FC = () => {
   const {
@@ -36,16 +35,20 @@ const HealthDashboard: React.FC = () => {
     isLoading,
     error,
     refetch
-  } = useGetHealthDashboardQuery();
+  } = useGetHealthDashboardQuery({});
 
   const complianceChartData = useMemo(() => {
-    if (!dashboardData?.vaccinationCompliance) return null;
+    if (!dashboardData?.vaccinationsByStatus) return null;
 
-    const compliance = dashboardData.vaccinationCompliance;
+    const statusData = dashboardData.vaccinationsByStatus;
+    const compliantCount = statusData.find(s => s.status === 'Administered')?.count || 0;
+    const overdueCount = statusData.find(s => s.status === 'Overdue')?.count || 0;
+    const exemptedCount = statusData.find(s => s.status === 'Exempted')?.count || 0;
+    
     return {
       labels: ['Compliant', 'Overdue', 'Exempted'],
       datasets: [{
-        data: [compliance.totalCompliant, compliance.totalOverdue, compliance.totalExempted],
+        data: [compliantCount, overdueCount, exemptedCount],
         backgroundColor: ['#20c997', '#dc3545', '#ffc107'],
         borderWidth: 0
       }]
@@ -57,10 +60,10 @@ const HealthDashboard: React.FC = () => {
 
     const trends = dashboardData.healthIncidentTrends;
     return {
-      labels: trends.map(t => t.period),
+      labels: trends.map(t => t.date || ''),
       datasets: [{
         label: 'Health Incidents',
-        data: trends.map(t => t.totalIncidents),
+        data: trends.map(t => t.count || 0),
         borderColor: '#321fdb',
         backgroundColor: 'rgba(50, 31, 219, 0.1)',
         tension: 0.4,
@@ -69,30 +72,30 @@ const HealthDashboard: React.FC = () => {
     };
   }, [dashboardData]);
 
-  const formatUpcomingVaccination = (vaccination: UpcomingVaccinationDto) => ({
-    id: vaccination.healthRecordId,
+  const formatUpcomingVaccination = (vaccination: any) => ({
+    id: (vaccination.vaccinationId || vaccination.healthRecordId)?.toString(),
     title: `${vaccination.personName} - ${vaccination.vaccineName}`,
-    subtitle: `Due: ${formatDate(vaccination.dueDate)}`,
-    status: vaccination.isOverdue ? 'danger' : vaccination.daysUntilDue <= 7 ? 'warning' : 'success',
-    timestamp: vaccination.dueDate,
-    badge: vaccination.isOverdue ? 'Overdue' : `${vaccination.daysUntilDue} days`
+    subtitle: `Due: ${formatDate(vaccination.expiryDate)}`,
+    status: vaccination.isExpired ? 'danger' : vaccination.daysUntilExpiry <= 7 ? 'warning' : 'success',
+    timestamp: vaccination.expiryDate,
+    badge: vaccination.isExpired ? 'Expired' : `${vaccination.daysUntilExpiry} days`
   });
 
   const formatRecentIncident = (incident: HealthIncidentDto) => ({
-    id: incident.id,
-    title: `${incident.personName} - ${incident.type}`,
+    id: incident.id?.toString(),
+    title: `${(incident as any).personName || 'Unknown'} - ${incident.type}`,
     subtitle: incident.symptoms || 'No symptoms recorded',
     status: incident.severity === 'Critical' ? 'danger' : 
             incident.severity === 'Severe' ? 'warning' : 
             incident.severity === 'Moderate' ? 'info' : 'success',
-    timestamp: incident.dateOccurred,
+    timestamp: incident.incidentDateTime,
     badge: incident.severity
   });
 
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -124,7 +127,7 @@ const HealthDashboard: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Health Dashboard</h2>
         <div className="text-muted">
-          Last updated: {formatDate(dashboardData.lastUpdated)}
+          Last updated: {formatDate(dashboardData.toDate)}
         </div>
       </div>
 
@@ -142,7 +145,7 @@ const HealthDashboard: React.FC = () => {
         <CCol sm={6} lg={3}>
           <StatsCard
             title="Students"
-            value={dashboardData.studentHealthRecords}
+            value={dashboardData.totalStudentRecords}
             icon={faUser}
             color="info"
             subtitle="health records"
@@ -151,7 +154,7 @@ const HealthDashboard: React.FC = () => {
         <CCol sm={6} lg={3}>
           <StatsCard
             title="Staff"
-            value={dashboardData.staffHealthRecords}
+            value={dashboardData.totalStaffRecords}
             icon={faUser}
             color="warning"
             subtitle="health records"
@@ -174,9 +177,9 @@ const HealthDashboard: React.FC = () => {
           <CCard>
             <CCardHeader className="d-flex justify-content-between align-items-center">
               <strong>Vaccination Compliance</strong>
-              <CBadge color={dashboardData.vaccinationCompliance.complianceRate >= 95 ? 'success' : 
-                            dashboardData.vaccinationCompliance.complianceRate >= 85 ? 'warning' : 'danger'}>
-                {dashboardData.vaccinationCompliance.complianceRate.toFixed(1)}% Compliant
+              <CBadge color={dashboardData.vaccinationComplianceRate >= 95 ? 'success' : 
+                            dashboardData.vaccinationComplianceRate >= 85 ? 'warning' : 'danger'}>
+                {dashboardData.vaccinationComplianceRate.toFixed(1)}% Compliant
               </CBadge>
             </CCardHeader>
             <CCardBody>
@@ -186,11 +189,11 @@ const HealthDashboard: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center mb-1">
                       <span>Compliant</span>
                       <span className="text-success fw-bold">
-                        {dashboardData.vaccinationCompliance.totalCompliant}
+                        {dashboardData.vaccinationsByStatus?.find(s => s.status === 'Administered')?.count || 0}
                       </span>
                     </div>
                     <CProgress 
-                      value={(dashboardData.vaccinationCompliance.totalCompliant / dashboardData.vaccinationCompliance.totalRequired) * 100}
+                      value={dashboardData.vaccinationsByStatus?.find(s => s.status === 'Administered')?.percentage || 0}
                       color="success"
                       className="mb-2"
                     />
@@ -199,11 +202,11 @@ const HealthDashboard: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center mb-1">
                       <span>Overdue</span>
                       <span className="text-danger fw-bold">
-                        {dashboardData.vaccinationCompliance.totalOverdue}
+                        {dashboardData.overdueVaccinations}
                       </span>
                     </div>
                     <CProgress 
-                      value={(dashboardData.vaccinationCompliance.totalOverdue / dashboardData.vaccinationCompliance.totalRequired) * 100}
+                      value={dashboardData.vaccinationsByStatus?.find(s => s.status === 'Overdue')?.percentage || 0}
                       color="danger"
                       className="mb-2"
                     />
@@ -212,22 +215,24 @@ const HealthDashboard: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center mb-1">
                       <span>Exempted</span>
                       <span className="text-warning fw-bold">
-                        {dashboardData.vaccinationCompliance.totalExempted}
+                        {dashboardData.vaccinationsByStatus?.find(s => s.status === 'Exempted')?.count || 0}
                       </span>
                     </div>
                     <CProgress 
-                      value={(dashboardData.vaccinationCompliance.totalExempted / dashboardData.vaccinationCompliance.totalRequired) * 100}
+                      value={dashboardData.vaccinationsByStatus?.find(s => s.status === 'Exempted')?.percentage || 0}
                       color="warning"
                     />
                   </div>
                 </CCol>
                 <CCol md={6}>
                   {complianceChartData && (
-                    <ChartCard
-                      title=""
-                      type="doughnut"
-                      data={complianceChartData}
-                      height={200}
+                    <DonutChart
+                      data={complianceChartData.datasets[0].data.map((value, index) => ({
+                        label: complianceChartData.labels[index],
+                        value: value,
+                        color: complianceChartData.datasets[0].backgroundColor[index]
+                      }))}
+                      size={200}
                     />
                   )}
                 </CCol>
@@ -243,41 +248,32 @@ const HealthDashboard: React.FC = () => {
             <CCardBody>
               <div className="d-flex align-items-center mb-3">
                 <CBadge 
-                  color={dashboardData.healthRiskSummary.riskLevel === 'Low' ? 'success' :
-                         dashboardData.healthRiskSummary.riskLevel === 'Medium' ? 'warning' : 'danger'}
+                  color={dashboardData.criticalHealthIncidents > 0 ? 'danger' :
+                         dashboardData.unresolvedHealthIncidents > 5 ? 'warning' : 'success'}
                   className="me-2"
                 >
-                  {dashboardData.healthRiskSummary.riskLevel} Risk
+                  {dashboardData.criticalHealthIncidents > 0 ? 'High' :
+                   dashboardData.unresolvedHealthIncidents > 5 ? 'Medium' : 'Low'} Risk
                 </CBadge>
               </div>
               <div className="small text-muted mb-3">
                 <div className="mb-1">
                   <FontAwesomeIcon icon={faUsers} className="me-1" />
-                  {dashboardData.healthRiskSummary.highRiskIndividuals} high-risk individuals
+                  {dashboardData.lifeThreateningConditions} life-threatening conditions
                 </div>
                 <div className="mb-1">
                   <FontAwesomeIcon icon={faMedkit} className="me-1" />
-                  {dashboardData.healthRiskSummary.criticalConditions} critical conditions
+                  {dashboardData.criticalMedicalConditions} critical conditions
                 </div>
                 <div className="mb-1">
                   <FontAwesomeIcon icon={faShieldAlt} className="me-1" />
-                  {dashboardData.healthRiskSummary.overdueVaccinations} overdue vaccinations
+                  {dashboardData.overdueVaccinations} overdue vaccinations
                 </div>
                 <div>
                   <FontAwesomeIcon icon={faBell} className="me-1" />
-                  {dashboardData.healthRiskSummary.missingEmergencyContacts} missing contacts
+                  {dashboardData.primaryContactsMissing} missing primary contacts
                 </div>
               </div>
-              {dashboardData.healthRiskSummary.recommendations.length > 0 && (
-                <div>
-                  <strong className="small">Recommendations:</strong>
-                  <ul className="small text-muted mt-1 mb-0">
-                    {dashboardData.healthRiskSummary.recommendations.map((rec, index) => (
-                      <li key={index}>{rec}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </CCardBody>
           </CCard>
         </CCol>
@@ -286,14 +282,17 @@ const HealthDashboard: React.FC = () => {
       {/* Trends and Activities Row */}
       <CRow className="mb-4">
         <CCol lg={6}>
-          {incidentTrendsChartData && (
-            <ChartCard
-              title="Health Incident Trends"
-              type="line"
-              data={incidentTrendsChartData}
-              height={300}
-            />
-          )}
+          <ChartCard title="Health Incident Trends">
+            {incidentTrendsChartData && (
+              <LineChart
+                data={incidentTrendsChartData.labels.map((label, index) => ({
+                  label: label,
+                  value: incidentTrendsChartData.datasets[0].data[index]
+                }))}
+                height={280}
+              />
+            )}
+          </ChartCard>
         </CCol>
         <CCol lg={6}>
           <CCard className="h-100">
@@ -301,14 +300,14 @@ const HealthDashboard: React.FC = () => {
               <strong>Upcoming Vaccinations</strong>
             </CCardHeader>
             <CCardBody className="p-0">
-              {dashboardData.upcomingVaccinations.length > 0 ? (
+              {dashboardData.expiringVaccinationDetails?.length > 0 ? (
                 <RecentItemsList
-                  items={dashboardData.upcomingVaccinations.map(formatUpcomingVaccination)}
+                  items={dashboardData.expiringVaccinationDetails.map(formatUpcomingVaccination)}
                   maxItems={6}
                 />
               ) : (
                 <div className="p-3 text-muted text-center">
-                  No upcoming vaccinations
+                  No expiring vaccinations
                 </div>
               )}
             </CCardBody>
@@ -324,9 +323,9 @@ const HealthDashboard: React.FC = () => {
               <strong>Recent Health Incidents</strong>
             </CCardHeader>
             <CCardBody className="p-0">
-              {dashboardData.recentHealthIncidents.length > 0 ? (
+              {dashboardData.recentHealthIncidentDetails?.length > 0 ? (
                 <RecentItemsList
-                  items={dashboardData.recentHealthIncidents.map(formatRecentIncident)}
+                  items={dashboardData.recentHealthIncidentDetails.map(formatRecentIncident)}
                   maxItems={8}
                 />
               ) : (

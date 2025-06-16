@@ -73,7 +73,7 @@ const EditIncident: React.FC = () => {
         severity: incident.severity,
         status: incident.status,
         location: incident.location,
-        locationId: incident.locationId,
+        locationId: undefined, // locationId not available in IncidentDto
         latitude: incident.latitude,
         longitude: incident.longitude,
       });

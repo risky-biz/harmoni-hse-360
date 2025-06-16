@@ -129,6 +129,14 @@ export type ValidityPeriod =
   | 'FiveYears'
   | 'Indefinite';
 
+export type TrainingEnrollmentStatus = 
+  | 'Enrolled'
+  | 'InProgress' 
+  | 'Completed'
+  | 'Failed'
+  | 'Cancelled'
+  | 'Withdrawn';
+
 // DTOs matching backend models
 export interface TrainingDto {
   id: number;
@@ -442,3 +450,31 @@ export const ASSESSMENT_METHODS = [
   { value: 'Continuous', label: 'Continuous Assessment' },
   { value: 'Final', label: 'Final Examination' }
 ];
+
+// My Training specific types
+export interface MyTrainingDto {
+  id: number;
+  trainingId: number;
+  title: string;
+  type: TrainingType;
+  category: TrainingCategory;
+  status: TrainingEnrollmentStatus;
+  scheduledStartDate: string;
+  scheduledEndDate: string;
+  enrolledAt: string;
+  completedAt?: string;
+  durationHours: number;
+  isK3MandatoryTraining: boolean;
+  requiresCertification: boolean;
+  priority: TrainingPriority;
+  location?: string;
+  instructorName?: string;
+  score?: number;
+  passed?: boolean;
+  certificateIssued?: boolean;
+  certificateId?: number;
+  progressPercentage: number;
+  lastAccessedAt?: string;
+  daysUntilDue?: number;
+  isOverdue: boolean;
+}

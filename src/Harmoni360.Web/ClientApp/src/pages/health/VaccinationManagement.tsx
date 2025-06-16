@@ -41,11 +41,9 @@ import {
   useSetVaccinationExemptionMutation 
 } from '../../features/health/healthApi';
 import { 
-  VaccinationStatus, 
-  PersonType,
-  RecordVaccinationRequest,
-  SetVaccinationExemptionRequest 
-} from '../../types/health';
+  RecordVaccinationCommand,
+  SetVaccinationExemptionCommand 
+} from '../../features/health/healthApi';
 import { formatDate, isOverdue } from '../../utils/dateUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -63,8 +61,8 @@ import {
 
 interface VaccinationFilters {
   searchTerm: string;
-  personType: PersonType | '';
-  status: VaccinationStatus | '';
+  personType: string;
+  status: string;
   vaccineName: string;
 }
 
@@ -91,49 +89,42 @@ const VaccinationManagement: React.FC = () => {
     error,
     refetch
   } = useGetVaccinationComplianceQuery({
-    includeDetails: true,
-    page,
-    pageSize,
     ...filters
   });
 
-  const [recordForm, setRecordForm] = useState<RecordVaccinationRequest>({
+  const [recordForm, setRecordForm] = useState<Partial<RecordVaccinationCommand>>({
     vaccineName: '',
-    vaccineType: '',
     dateAdministered: new Date().toISOString().split('T')[0],
     administeredBy: '',
     batchNumber: '',
-    manufacturer: '',
-    doseNumber: 1,
-    totalDosesRequired: 1,
-    expiryDate: '',
-    nextDueDate: '',
-    sideEffects: ''
+    administrationLocation: '',
+    notes: '',
+    isRequired: true
   });
 
-  const [exemptionForm, setExemptionForm] = useState<SetVaccinationExemptionRequest>({
+  const [exemptionForm, setExemptionForm] = useState<Partial<SetVaccinationExemptionCommand>>({
     exemptionReason: '',
-    exemptionDocumentPath: ''
+    approvedBy: ''
   });
 
-  const getStatusBadge = (status: VaccinationStatus) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case VaccinationStatus.Administered: return 'success';
-      case VaccinationStatus.Due: return 'warning';
-      case VaccinationStatus.Overdue: return 'danger';
-      case VaccinationStatus.Exempted: return 'secondary';
-      case VaccinationStatus.Scheduled: return 'info';
+      case 'Administered': return 'success';
+      case 'Due': return 'warning';
+      case 'Overdue': return 'danger';
+      case 'Exempted': return 'secondary';
+      case 'Scheduled': return 'info';
       default: return 'secondary';
     }
   };
 
-  const getStatusIcon = (status: VaccinationStatus) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case VaccinationStatus.Administered: return faCheckCircle;
-      case VaccinationStatus.Due: return faClock;
-      case VaccinationStatus.Overdue: return faExclamationTriangle;
-      case VaccinationStatus.Exempted: return faTimes;
-      case VaccinationStatus.Scheduled: return faCalendarAlt;
+      case 'Administered': return faCheckCircle;
+      case 'Due': return faClock;
+      case 'Overdue': return faExclamationTriangle;
+      case 'Exempted': return faTimes;
+      case 'Scheduled': return faCalendarAlt;
       default: return faClock;
     }
   };
@@ -161,23 +152,19 @@ const VaccinationManagement: React.FC = () => {
 
     try {
       await recordVaccination({
-        healthRecordId: selectedVaccination,
-        vaccination: recordForm
-      }).unwrap();
+        healthRecordId: parseInt(selectedVaccination),
+        ...recordForm
+      } as RecordVaccinationCommand).unwrap();
       
       setShowRecordModal(false);
       setRecordForm({
         vaccineName: '',
-        vaccineType: '',
         dateAdministered: new Date().toISOString().split('T')[0],
         administeredBy: '',
         batchNumber: '',
-        manufacturer: '',
-        doseNumber: 1,
-        totalDosesRequired: 1,
-        expiryDate: '',
-        nextDueDate: '',
-        sideEffects: ''
+        administrationLocation: '',
+        notes: '',
+        isRequired: true
       });
       refetch();
     } catch (error) {
@@ -190,14 +177,14 @@ const VaccinationManagement: React.FC = () => {
 
     try {
       await setVaccinationExemption({
-        vaccinationId: selectedVaccination,
-        exemption: exemptionForm
-      }).unwrap();
+        id: parseInt(selectedVaccination),
+        ...exemptionForm
+      } as SetVaccinationExemptionCommand).unwrap();
       
       setShowExemptionModal(false);
       setExemptionForm({
         exemptionReason: '',
-        exemptionDocumentPath: ''
+        approvedBy: ''
       });
       refetch();
     } catch (error) {
@@ -210,17 +197,17 @@ const VaccinationManagement: React.FC = () => {
 
     return {
       overall: complianceData.complianceRate,
-      compliant: complianceData.totalCompliant,
-      overdue: complianceData.totalOverdue,
-      exempted: complianceData.totalExempted,
-      total: complianceData.totalRequired
+      compliant: complianceData.compliantRecords,
+      overdue: complianceData.nonCompliantRecords,
+      exempted: complianceData.exemptRecords,
+      total: complianceData.totalRecords
     };
   }, [complianceData]);
 
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -317,8 +304,8 @@ const VaccinationManagement: React.FC = () => {
                 onChange={(e) => handleFilterChange('personType', e.target.value)}
               >
                 <option value="">All Types</option>
-                <option value={PersonType.Student}>Students</option>
-                <option value={PersonType.Staff}>Staff</option>
+                <option value="Student">Students</option>
+                <option value="Staff">Staff</option>
               </CFormSelect>
             </CCol>
             <CCol md={3}>
@@ -327,11 +314,11 @@ const VaccinationManagement: React.FC = () => {
                 onChange={(e) => handleFilterChange('status', e.target.value)}
               >
                 <option value="">All Status</option>
-                <option value={VaccinationStatus.Administered}>Administered</option>
-                <option value={VaccinationStatus.Due}>Due</option>
-                <option value={VaccinationStatus.Overdue}>Overdue</option>
-                <option value={VaccinationStatus.Exempted}>Exempted</option>
-                <option value={VaccinationStatus.Scheduled}>Scheduled</option>
+                <option value="Administered">Administered</option>
+                <option value="Due">Due</option>
+                <option value="Overdue">Overdue</option>
+                <option value="Exempted">Exempted</option>
+                <option value="Scheduled">Scheduled</option>
               </CFormSelect>
             </CCol>
             <CCol md={3}>
@@ -343,7 +330,7 @@ const VaccinationManagement: React.FC = () => {
             </CCol>
           </CRow>
 
-          {complianceData?.vaccineBreakdown && complianceData.vaccineBreakdown.length > 0 ? (
+          {complianceData?.vaccinationsByType && complianceData.vaccinationsByType.length > 0 ? (
             <>
               <CTable hover responsive>
                 <CTableHead>
@@ -358,7 +345,7 @@ const VaccinationManagement: React.FC = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {complianceData.vaccineBreakdown.map((vaccine) => (
+                  {complianceData.vaccinationsByType.map((vaccine) => (
                     <CTableRow key={vaccine.vaccineName}>
                       <CTableDataCell>
                         <div className="d-flex align-items-center">
@@ -366,15 +353,15 @@ const VaccinationManagement: React.FC = () => {
                           <strong>{vaccine.vaccineName}</strong>
                         </div>
                       </CTableDataCell>
-                      <CTableDataCell>{vaccine.required}</CTableDataCell>
+                      <CTableDataCell>{vaccine.totalRequired}</CTableDataCell>
                       <CTableDataCell>
-                        <CBadge color="success">{vaccine.compliant}</CBadge>
+                        <CBadge color="success">{vaccine.totalCompliant}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge color="danger">{vaccine.overdue}</CBadge>
+                        <CBadge color="danger">{vaccine.totalExpired}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge color="secondary">{vaccine.exempted}</CBadge>
+                        <CBadge color="secondary">{vaccine.totalExempt}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
                         <div className="d-flex align-items-center">
@@ -459,11 +446,11 @@ const VaccinationManagement: React.FC = () => {
                 />
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Vaccine Type</CFormLabel>
+                <CFormLabel>Administration Location</CFormLabel>
                 <CFormInput
-                  value={recordForm.vaccineType || ''}
-                  onChange={(e) => setRecordForm(prev => ({ ...prev, vaccineType: e.target.value }))}
-                  placeholder="e.g., mRNA, Inactivated"
+                  value={recordForm.administrationLocation || ''}
+                  onChange={(e) => setRecordForm(prev => ({ ...prev, administrationLocation: e.target.value }))}
+                  placeholder="e.g., School clinic, Hospital"
                 />
               </CCol>
             </CRow>
@@ -494,32 +481,14 @@ const VaccinationManagement: React.FC = () => {
                 />
               </CCol>
               <CCol md={6}>
-                <CFormLabel>Manufacturer</CFormLabel>
-                <CFormInput
-                  value={recordForm.manufacturer || ''}
-                  onChange={(e) => setRecordForm(prev => ({ ...prev, manufacturer: e.target.value }))}
-                  placeholder="e.g., Pfizer, Moderna"
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
-                <CFormLabel>Dose Number</CFormLabel>
-                <CFormInput
-                  type="number"
-                  min="1"
-                  value={recordForm.doseNumber || 1}
-                  onChange={(e) => setRecordForm(prev => ({ ...prev, doseNumber: parseInt(e.target.value) || 1 }))}
-                />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel>Total Doses Required</CFormLabel>
-                <CFormInput
-                  type="number"
-                  min="1"
-                  value={recordForm.totalDosesRequired || 1}
-                  onChange={(e) => setRecordForm(prev => ({ ...prev, totalDosesRequired: parseInt(e.target.value) || 1 }))}
-                />
+                <CFormLabel>Required Vaccination</CFormLabel>
+                <CFormSelect
+                  value={recordForm.isRequired ? 'true' : 'false'}
+                  onChange={(e) => setRecordForm(prev => ({ ...prev, isRequired: e.target.value === 'true' }))}
+                >
+                  <option value="true">Required</option>
+                  <option value="false">Optional</option>
+                </CFormSelect>
               </CCol>
             </CRow>
             <CRow className="mb-3">
@@ -531,22 +500,14 @@ const VaccinationManagement: React.FC = () => {
                   onChange={(e) => setRecordForm(prev => ({ ...prev, expiryDate: e.target.value }))}
                 />
               </CCol>
-              <CCol md={6}>
-                <CFormLabel>Next Due Date</CFormLabel>
-                <CFormInput
-                  type="date"
-                  value={recordForm.nextDueDate || ''}
-                  onChange={(e) => setRecordForm(prev => ({ ...prev, nextDueDate: e.target.value }))}
-                />
-              </CCol>
             </CRow>
             <div className="mb-3">
-              <CFormLabel>Side Effects</CFormLabel>
+              <CFormLabel>Notes</CFormLabel>
               <CFormTextarea
                 rows={3}
-                value={recordForm.sideEffects || ''}
-                onChange={(e) => setRecordForm(prev => ({ ...prev, sideEffects: e.target.value }))}
-                placeholder="Any observed side effects..."
+                value={recordForm.notes || ''}
+                onChange={(e) => setRecordForm(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any additional notes..."
               />
             </div>
           </CForm>
@@ -583,11 +544,11 @@ const VaccinationManagement: React.FC = () => {
               />
             </div>
             <div className="mb-3">
-              <CFormLabel>Supporting Document Path</CFormLabel>
+              <CFormLabel>Approved By</CFormLabel>
               <CFormInput
-                value={exemptionForm.exemptionDocumentPath || ''}
-                onChange={(e) => setExemptionForm(prev => ({ ...prev, exemptionDocumentPath: e.target.value }))}
-                placeholder="Path to supporting documentation"
+                value={exemptionForm.approvedBy || ''}
+                onChange={(e) => setExemptionForm(prev => ({ ...prev, approvedBy: e.target.value }))}
+                placeholder="Name of approving authority"
               />
             </div>
           </CForm>

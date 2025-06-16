@@ -15,8 +15,7 @@ import {
   CSpinner
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateHealthRecordMutation } from '../../features/health/healthApi';
-import { PersonType, BloodType, CreateHealthRecordRequest } from '../../types/health';
+import { useCreateHealthRecordMutation, CreateHealthRecordCommand } from '../../features/health/healthApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faArrowLeft, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
@@ -24,21 +23,17 @@ const CreateHealthRecord: React.FC = () => {
   const navigate = useNavigate();
   const [createHealthRecord, { isLoading, error }] = useCreateHealthRecordMutation();
 
-  const [formData, setFormData] = useState<CreateHealthRecordRequest>({
-    personId: '',
-    personType: PersonType.Student,
+  const [formData, setFormData] = useState<Partial<CreateHealthRecordCommand>>({
+    personId: 0,
+    personType: 'Student',
     dateOfBirth: '',
     bloodType: undefined,
-    medicalNotes: '',
-    primaryDoctorName: '',
-    primaryDoctorContact: '',
-    insuranceProvider: '',
-    insurancePolicyNumber: ''
+    medicalNotes: ''
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<CreateHealthRecordRequest>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (field: keyof CreateHealthRecordRequest, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -46,17 +41,18 @@ const CreateHealthRecord: React.FC = () => {
 
     // Clear error when user starts typing
     if (formErrors[field]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [field]: undefined
-      }));
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
   const validateForm = (): boolean => {
-    const errors: Partial<CreateHealthRecordRequest> = {};
+    const errors: Record<string, string> = {};
 
-    if (!formData.personId.trim()) {
+    if (!formData.personId || formData.personId === 0) {
       errors.personId = 'Person ID is required';
     }
 
@@ -68,14 +64,6 @@ const CreateHealthRecord: React.FC = () => {
       if (birthDate > today) {
         errors.dateOfBirth = 'Date of birth cannot be in the future';
       }
-    }
-
-    if (formData.primaryDoctorContact && !formData.primaryDoctorName.trim()) {
-      errors.primaryDoctorName = 'Doctor name is required when contact is provided';
-    }
-
-    if (formData.insurancePolicyNumber && !formData.insuranceProvider.trim()) {
-      errors.insuranceProvider = 'Insurance provider is required when policy number is provided';
     }
 
     setFormErrors(errors);
@@ -90,14 +78,12 @@ const CreateHealthRecord: React.FC = () => {
     }
 
     try {
-      const sanitizedData: CreateHealthRecordRequest = {
-        ...formData,
+      const sanitizedData: CreateHealthRecordCommand = {
+        personId: formData.personId as number,
+        personType: formData.personType as string,
+        dateOfBirth: formData.dateOfBirth,
         bloodType: formData.bloodType || undefined,
-        medicalNotes: formData.medicalNotes?.trim() || undefined,
-        primaryDoctorName: formData.primaryDoctorName?.trim() || undefined,
-        primaryDoctorContact: formData.primaryDoctorContact?.trim() || undefined,
-        insuranceProvider: formData.insuranceProvider?.trim() || undefined,
-        insurancePolicyNumber: formData.insurancePolicyNumber?.trim() || undefined
+        medicalNotes: formData.medicalNotes?.trim() || undefined
       };
 
       const result = await createHealthRecord(sanitizedData).unwrap();
@@ -145,9 +131,10 @@ const CreateHealthRecord: React.FC = () => {
               <CCol md={6}>
                 <CFormLabel htmlFor="personId">Person ID *</CFormLabel>
                 <CFormInput
+                  type="number"
                   id="personId"
-                  value={formData.personId}
-                  onChange={(e) => handleInputChange('personId', e.target.value)}
+                  value={formData.personId || ''}
+                  onChange={(e) => handleInputChange('personId', parseInt(e.target.value) || 0)}
                   invalid={!!formErrors.personId}
                   feedback={formErrors.personId}
                   placeholder="Enter person ID (student/staff ID)"
@@ -160,8 +147,8 @@ const CreateHealthRecord: React.FC = () => {
                   value={formData.personType}
                   onChange={(e) => handleInputChange('personType', e.target.value)}
                 >
-                  <option value={PersonType.Student}>Student</option>
-                  <option value={PersonType.Staff}>Staff</option>
+                  <option value="Student">Student</option>
+                  <option value="Staff">Staff</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -186,14 +173,14 @@ const CreateHealthRecord: React.FC = () => {
                   onChange={(e) => handleInputChange('bloodType', e.target.value)}
                 >
                   <option value="">Select blood type</option>
-                  <option value={BloodType.APositive}>A+</option>
-                  <option value={BloodType.ANegative}>A-</option>
-                  <option value={BloodType.BPositive}>B+</option>
-                  <option value={BloodType.BNegative}>B-</option>
-                  <option value={BloodType.ABPositive}>AB+</option>
-                  <option value={BloodType.ABNegative}>AB-</option>
-                  <option value={BloodType.OPositive}>O+</option>
-                  <option value={BloodType.ONegative}>O-</option>
+                  <option value="APositive">A+</option>
+                  <option value="ANegative">A-</option>
+                  <option value="BPositive">B+</option>
+                  <option value="BNegative">B-</option>
+                  <option value="ABPositive">AB+</option>
+                  <option value="ABNegative">AB-</option>
+                  <option value="OPositive">O+</option>
+                  <option value="ONegative">O-</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -211,57 +198,7 @@ const CreateHealthRecord: React.FC = () => {
               </CCol>
             </CRow>
 
-            <hr className="my-4" />
-            <h5>Primary Doctor Information</h5>
-
-            <CRow className="mb-3">
-              <CCol md={6}>
-                <CFormLabel htmlFor="primaryDoctorName">Doctor Name</CFormLabel>
-                <CFormInput
-                  id="primaryDoctorName"
-                  value={formData.primaryDoctorName || ''}
-                  onChange={(e) => handleInputChange('primaryDoctorName', e.target.value)}
-                  invalid={!!formErrors.primaryDoctorName}
-                  feedback={formErrors.primaryDoctorName}
-                  placeholder="Dr. Smith"
-                />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="primaryDoctorContact">Doctor Contact</CFormLabel>
-                <CFormInput
-                  id="primaryDoctorContact"
-                  value={formData.primaryDoctorContact || ''}
-                  onChange={(e) => handleInputChange('primaryDoctorContact', e.target.value)}
-                  placeholder="Phone number or clinic name"
-                />
-              </CCol>
-            </CRow>
-
-            <hr className="my-4" />
-            <h5>Insurance Information</h5>
-
-            <CRow className="mb-3">
-              <CCol md={6}>
-                <CFormLabel htmlFor="insuranceProvider">Insurance Provider</CFormLabel>
-                <CFormInput
-                  id="insuranceProvider"
-                  value={formData.insuranceProvider || ''}
-                  onChange={(e) => handleInputChange('insuranceProvider', e.target.value)}
-                  invalid={!!formErrors.insuranceProvider}
-                  feedback={formErrors.insuranceProvider}
-                  placeholder="Insurance company name"
-                />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="insurancePolicyNumber">Policy Number</CFormLabel>
-                <CFormInput
-                  id="insurancePolicyNumber"
-                  value={formData.insurancePolicyNumber || ''}
-                  onChange={(e) => handleInputChange('insurancePolicyNumber', e.target.value)}
-                  placeholder="Policy or member ID"
-                />
-              </CCol>
-            </CRow>
+            {/* Additional fields can be added via health record editing after creation */}
 
             <hr className="my-4" />
 

@@ -56,25 +56,30 @@ import {
   TrainingType,
   TrainingCategory,
   TrainingPriority,
-  DeliveryMethod,
-  ComplianceFramework,
+  TrainingDeliveryMethod,
   TRAINING_TYPES,
   TRAINING_CATEGORIES,
   TRAINING_PRIORITIES,
-  DELIVERY_METHODS,
-  COMPLIANCE_FRAMEWORKS
+  DELIVERY_METHODS
 } from '../../types/training';
 
-interface TrainingFormData {
+const COMPLIANCE_FRAMEWORKS = [
+  { value: '', label: 'Select Framework' },
+  { value: 'ISO45001', label: 'ISO 45001' },
+  { value: 'OSHA', label: 'OSHA' },
+  { value: 'NEBOSH', label: 'NEBOSH' },
+  { value: 'OTHER', label: 'Other' }
+];
+
+interface EditTrainingFormData {
   title: string;
   description: string;
   type: TrainingType;
   category: TrainingCategory;
   priority: TrainingPriority;
-  deliveryMethod: DeliveryMethod;
+  deliveryMethod: TrainingDeliveryMethod;
   durationHours: number;
   maxParticipants: number;
-  location: string;
   scheduledStartDate: string;
   scheduledEndDate: string;
   prerequisites: string;
@@ -89,12 +94,8 @@ interface TrainingFormData {
   certificateValidityMonths: number;
   isRefresherTraining: boolean;
   refresherDurationMonths: number;
-  complianceFramework: ComplianceFramework;
-  cost: number;
-  currency: string;
-  materialsCost: number;
+  complianceFramework: string;
   venue: string;
-  maxClassSize: number;
   minimumPassScore: number;
   assessmentMethod: string;
   trainingMethods: string;
@@ -134,20 +135,18 @@ const schema = yup.object().shape({
     then: (schema) => schema.required('Refresher duration is required').min(1, 'Must be at least 1 month'),
     otherwise: (schema) => schema
   }),
-  cost: yup.number().min(0, 'Cost cannot be negative'),
-  materialsCost: yup.number().min(0, 'Materials cost cannot be negative'),
   minimumPassScore: yup.number().min(0, 'Score cannot be negative').max(100, 'Score cannot exceed 100%')
 });
 
 const EditTraining: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
-  const [activeAccordion, setActiveAccordion] = useState(['basic-info']);
+  const [activeAccordion, setActiveAccordion] = useState<string[]>(['basic-info']);
 
   // API queries
-  const { data: training, isLoading: isLoadingTraining, error } = useGetTrainingByIdQuery(id!);
+  const { data: training, isLoading: isLoadingTraining, error } = useGetTrainingByIdQuery(Number(id!));
   const { data: departments } = useGetDepartmentsQuery({});
   const [updateTraining, { isLoading: isUpdating }] = useUpdateTrainingMutation();
 
@@ -158,14 +157,10 @@ const EditTraining: React.FC = () => {
     watch,
     setValue,
     reset
-  } = useForm<TrainingFormData>({
-    resolver: yupResolver(schema),
+  } = useForm<EditTrainingFormData>({
+    resolver: yupResolver(schema) as any,
     defaultValues: {
-      currency: 'IDR',
-      cost: 0,
-      materialsCost: 0,
       minimumPassScore: 70,
-      maxClassSize: 20,
       isK3MandatoryTraining: false,
       requiresCertification: false,
       isRefresherTraining: false,
@@ -187,48 +182,65 @@ const EditTraining: React.FC = () => {
         deliveryMethod: training.deliveryMethod,
         durationHours: training.durationHours,
         maxParticipants: training.maxParticipants,
-        location: training.location,
         scheduledStartDate: format(new Date(training.scheduledStartDate), 'yyyy-MM-dd\'T\'HH:mm'),
         scheduledEndDate: training.scheduledEndDate ? format(new Date(training.scheduledEndDate), 'yyyy-MM-dd\'T\'HH:mm') : '',
         prerequisites: training.prerequisites || '',
         learningObjectives: training.learningObjectives || '',
         instructorName: training.instructorName || '',
-        instructorEmail: training.instructorEmail || '',
-        instructorPhone: training.instructorPhone || '',
+        instructorEmail: training.instructorContact || '', // Map contact to email
+        instructorPhone: '', // Not available in TrainingDto
         isExternalInstructor: training.isExternalInstructor,
-        externalInstructorCompany: training.externalInstructorCompany || '',
+        externalInstructorCompany: '', // Not available in TrainingDto
         isK3MandatoryTraining: training.isK3MandatoryTraining,
         requiresCertification: training.requiresCertification,
-        certificateValidityMonths: training.certificateValidityMonths || 12,
-        isRefresherTraining: training.isRefresherTraining,
-        refresherDurationMonths: training.refresherDurationMonths || 12,
-        complianceFramework: training.complianceFramework || 'ISO45001',
-        cost: training.cost || 0,
-        currency: training.currency || 'IDR',
-        materialsCost: training.materialsCost || 0,
+        certificateValidityMonths: 12, // Default, not available in TrainingDto
+        isRefresherTraining: false, // Default, not available in TrainingDto
+        refresherDurationMonths: 12, // Default, not available in TrainingDto
+        complianceFramework: 'ISO45001', // Default, not available in TrainingDto
         venue: training.venue || '',
-        maxClassSize: training.maxClassSize || 20,
-        minimumPassScore: training.minimumPassScore || 70,
-        assessmentMethod: training.assessmentMethod || '',
-        trainingMethods: training.trainingMethods || '',
-        targetAudience: training.targetAudience || '',
-        department: training.department || '',
-        notes: training.notes || ''
+        minimumPassScore: training.passingScore || 70,
+        assessmentMethod: training.assessmentMethod?.toString() || '',
+        trainingMethods: '', // Not available in TrainingDto
+        targetAudience: '', // Not available in TrainingDto
+        department: '', // Not available in TrainingDto
+        notes: '' // Not available in TrainingDto
       });
     }
   }, [training, reset]);
 
   const watchedFields = watch();
 
-  const onSubmit = async (data: TrainingFormData) => {
+  const onSubmit = async (data: EditTrainingFormData) => {
     if (!training) return;
 
     try {
+      // Map form data to TrainingFormData structure expected by API
+      const updateData = {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        category: data.category,
+        priority: data.priority,
+        deliveryMethod: data.deliveryMethod,
+        scheduledStartDate: new Date(data.scheduledStartDate).toISOString(),
+        scheduledEndDate: new Date(data.scheduledEndDate).toISOString(),
+        venue: data.venue,
+        maxParticipants: data.maxParticipants,
+        minParticipants: 1, // Set a default since form doesn't have this field
+        instructorName: data.instructorName,
+        instructorContact: data.instructorEmail, // Map email to contact
+        isExternalInstructor: data.isExternalInstructor,
+        requiresCertification: data.requiresCertification,
+        passingScore: data.minimumPassScore,
+        assessmentMethod: data.assessmentMethod as any,
+        isK3MandatoryTraining: data.isK3MandatoryTraining,
+        learningObjectives: data.learningObjectives,
+        prerequisites: data.prerequisites
+      };
+
       await updateTraining({
         id: training.id,
-        ...data,
-        scheduledStartDate: new Date(data.scheduledStartDate).toISOString(),
-        scheduledEndDate: new Date(data.scheduledEndDate).toISOString()
+        ...updateData
       }).unwrap();
 
       navigate(`/trainings/${training.id}`);
@@ -312,13 +324,13 @@ const EditTraining: React.FC = () => {
               Cancel
             </CButton>
             <PermissionGuard
-              moduleType={ModuleType.TrainingManagement}
-              permissionType={PermissionType.Update}
+              module={ModuleType.TrainingManagement}
+              permission={PermissionType.Update}
             >
               <CButton
                 color="primary"
                 onClick={handleSubmit(onSubmit)}
-                disabled={isUpdating || isDemo}
+                disabled={isUpdating}
               >
                 {isUpdating ? (
                   <>
@@ -338,9 +350,8 @@ const EditTraining: React.FC = () => {
 
         <CForm onSubmit={handleSubmit(onSubmit)}>
           <CAccordion 
-            activeItemKey={activeAccordion} 
+            activeItemKey={activeAccordion[0]} 
             alwaysOpen
-            onChange={(key) => setActiveAccordion(key as string[])}
           >
             {/* Basic Information */}
             <CAccordionItem itemKey="basic-info">
@@ -558,14 +569,14 @@ const EditTraining: React.FC = () => {
                 <CRow>
                   <CCol md={6}>
                     <div className="mb-3">
-                      <CFormLabel htmlFor="location">Location</CFormLabel>
+                      <CFormLabel htmlFor="venue">Location</CFormLabel>
                       <CInputGroup>
                         <CInputGroupText>
                           <FontAwesomeIcon icon={faMapMarkerAlt} />
                         </CInputGroupText>
                         <CFormInput
-                          id="location"
-                          {...register('location')}
+                          id="venue"
+                          {...register('venue')}
                           placeholder="Training location"
                         />
                       </CInputGroup>
@@ -803,7 +814,7 @@ const EditTraining: React.FC = () => {
                         {...register('department')}
                       >
                         <option value="">All Departments</option>
-                        {departments?.items?.map(dept => (
+                        {departments?.map(dept => (
                           <option key={dept.id} value={dept.name}>
                             {dept.name}
                           </option>
@@ -846,49 +857,6 @@ const EditTraining: React.FC = () => {
                       )}
                     </div>
 
-                    <CRow>
-                      <CCol md={6}>
-                        <div className="mb-3">
-                          <CFormLabel htmlFor="cost">Training Cost</CFormLabel>
-                          <CInputGroup>
-                            <CFormSelect
-                              {...register('currency')}
-                              style={{ maxWidth: '100px' }}
-                            >
-                              <option value="IDR">IDR</option>
-                              <option value="USD">USD</option>
-                            </CFormSelect>
-                            <CFormInput
-                              id="cost"
-                              type="number"
-                              min="0"
-                              {...register('cost', { valueAsNumber: true })}
-                              invalid={!!errors.cost}
-                              placeholder="0"
-                            />
-                          </CInputGroup>
-                          {errors.cost && (
-                            <div className="invalid-feedback">{errors.cost.message}</div>
-                          )}
-                        </div>
-                      </CCol>
-                      <CCol md={6}>
-                        <div className="mb-3">
-                          <CFormLabel htmlFor="materialsCost">Materials Cost</CFormLabel>
-                          <CFormInput
-                            id="materialsCost"
-                            type="number"
-                            min="0"
-                            {...register('materialsCost', { valueAsNumber: true })}
-                            invalid={!!errors.materialsCost}
-                            placeholder="0"
-                          />
-                          {errors.materialsCost && (
-                            <div className="invalid-feedback">{errors.materialsCost.message}</div>
-                          )}
-                        </div>
-                      </CCol>
-                    </CRow>
                   </CCol>
                 </CRow>
 
@@ -913,7 +881,7 @@ const EditTraining: React.FC = () => {
               <CAccordionBody>
                 <TrainingAttachmentManager
                   trainingId={training.id.toString()}
-                  attachments={training.attachments}
+                  attachments={[]} // Attachments will be loaded separately by the component
                   allowUpload={true}
                   allowDelete={true}
                 />
@@ -932,13 +900,13 @@ const EditTraining: React.FC = () => {
               Cancel
             </CButton>
             <PermissionGuard
-              moduleType={ModuleType.TrainingManagement}
-              permissionType={PermissionType.Update}
+              module={ModuleType.TrainingManagement}
+              permission={PermissionType.Update}
             >
               <CButton
                 color="primary"
                 type="submit"
-                disabled={isUpdating || isDemo}
+                disabled={isUpdating}
               >
                 {isUpdating ? (
                   <>

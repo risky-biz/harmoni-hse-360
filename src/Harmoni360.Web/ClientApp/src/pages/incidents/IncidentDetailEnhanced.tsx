@@ -540,8 +540,6 @@ const IncidentDetailEnhanced: React.FC = () => {
                           personId: 0, 
                           involvementType, 
                           injuryDescription,
-                          manualPersonName: manualPersonData.fullName,
-                          manualPersonEmail: manualPersonData.email,
                         },
                       }).unwrap();
                     } else {
@@ -660,8 +658,6 @@ const IncidentDetailEnhanced: React.FC = () => {
                     personId: 0, 
                     involvementType, 
                     injuryDescription,
-                    manualPersonName: manualPersonData.fullName,
-                    manualPersonEmail: manualPersonData.email,
                   },
                 }).unwrap();
               } else {

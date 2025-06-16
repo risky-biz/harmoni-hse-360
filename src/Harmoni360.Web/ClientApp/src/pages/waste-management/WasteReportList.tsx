@@ -25,8 +25,8 @@ import {
   CDropdownMenu,
   CDropdownItem,
 } from '@coreui/react';
-import { cilSearch, cilPlus, cilOptions } from '@coreui/icons';
-import CIcon from '@coreui/icons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faPlus, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { useGetWasteReportsQuery } from '../../api/wasteManagementApi';
 import { useNavigate } from 'react-router-dom';
 
@@ -93,7 +93,7 @@ const WasteReportList: React.FC = () => {
               color="primary"
               onClick={() => navigate('/waste-management/create')}
             >
-              <CIcon icon={cilPlus} className="me-2" />
+              <FontAwesomeIcon icon={faPlus} className="me-2" />
               New Report
             </CButton>
           </CCardHeader>
@@ -108,7 +108,7 @@ const WasteReportList: React.FC = () => {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                   <CButton variant="outline" color="secondary">
-                    <CIcon icon={cilSearch} />
+                    <FontAwesomeIcon icon={faSearch} />
                   </CButton>
                 </CInputGroup>
               </CCol>
@@ -156,7 +156,7 @@ const WasteReportList: React.FC = () => {
               <CCol md={2}>
                 <CDropdown>
                   <CDropdownToggle color="secondary" variant="outline">
-                    <CIcon icon={cilOptions} className="me-2" />
+                    <FontAwesomeIcon icon={faEllipsisV} className="me-2" />
                     Sort
                   </CDropdownToggle>
                   <CDropdownMenu>

@@ -122,7 +122,7 @@ const AuditDetail: React.FC = () => {
     data: audit,
     error,
     isLoading,
-  } = useGetAuditByIdQuery(id!);
+  } = useGetAuditByIdQuery(Number(id!));
   
   const [deleteAudit, { isLoading: isDeleting }] = useDeleteAuditMutation();
   const [startAudit] = useStartAuditMutation();
@@ -132,7 +132,7 @@ const AuditDetail: React.FC = () => {
   const handleStartAudit = async () => {
     if (window.confirm('Are you sure you want to start this audit?')) {
       try {
-        await startAudit(id!).unwrap();
+        await startAudit(Number(id!)).unwrap();
       } catch (error) {
         console.error('Failed to start audit:', error);
         alert('Failed to start audit. Please try again.');
@@ -143,7 +143,7 @@ const AuditDetail: React.FC = () => {
   const handleCompleteAudit = async () => {
     if (window.confirm('Are you sure you want to mark this audit as completed?')) {
       try {
-        await completeAudit(id!).unwrap();
+        await completeAudit({ id: Number(id!) }).unwrap();
       } catch (error) {
         console.error('Failed to complete audit:', error);
         alert('Failed to complete audit. Please try again.');
@@ -154,7 +154,7 @@ const AuditDetail: React.FC = () => {
   const handleCancelAudit = async () => {
     if (window.confirm('Are you sure you want to cancel this audit? This action cannot be undone.')) {
       try {
-        await cancelAudit(id!).unwrap();
+        await cancelAudit({ id: Number(id!) }).unwrap();
       } catch (error) {
         console.error('Failed to cancel audit:', error);
         alert('Failed to cancel audit. Please try again.');
@@ -165,7 +165,7 @@ const AuditDetail: React.FC = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this audit? This action cannot be undone.')) {
       try {
-        await deleteAudit(id!).unwrap();
+        await deleteAudit(Number(id!)).unwrap();
         navigate('/audits');
       } catch (error) {
         console.error('Failed to delete audit:', error);
@@ -265,10 +265,10 @@ const AuditDetail: React.FC = () => {
                   <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
                   Scheduled: {audit.scheduledDate ? formatDate(audit.scheduledDate) : 'Not scheduled'}
                 </span>
-                {audit.location && (
+                {audit.locationName && (
                   <span>
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="me-1" />
-                    {audit.location}
+                    {audit.locationName}
                   </span>
                 )}
                 <span>ID: #{audit.auditNumber}</span>
@@ -744,13 +744,13 @@ const AuditDetail: React.FC = () => {
                         <CTableDataCell>
                           <span className="fw-semibold">{item.itemNumber}</span>
                           {item.isRequired && (
-                            <CBadge color="danger" size="sm" className="ms-1">Required</CBadge>
+                            <CBadge color="danger" className="ms-1">Required</CBadge>
                           )}
                         </CTableDataCell>
                         <CTableDataCell>{item.description}</CTableDataCell>
                         <CTableDataCell>
                           {item.category && (
-                            <CBadge color="info" variant="outline">{item.category}</CBadge>
+                            <CBadge color="info">{item.category}</CBadge>
                           )}
                         </CTableDataCell>
                         <CTableDataCell>
@@ -785,8 +785,10 @@ const AuditDetail: React.FC = () => {
                             <div>
                               <span>{item.assessedBy}</span>
                               {item.assessedAt && (
-                                <br />
-                                <small className="text-muted">{formatRelativeTime(item.assessedAt)}</small>
+                                <>
+                                  <br />
+                                  <small className="text-muted">{formatRelativeTime(item.assessedAt)}</small>
+                                </>
                               )}
                             </div>
                           ) : (
@@ -910,7 +912,7 @@ const AuditDetail: React.FC = () => {
                           )}
 
                           {attachment.category && (
-                            <CBadge color="info" variant="outline" size="sm" className="mb-2">
+                            <CBadge color="info" className="mb-2">
                               {attachment.category}
                             </CBadge>
                           )}
@@ -952,7 +954,7 @@ const AuditDetail: React.FC = () => {
                       Created by {audit.createdBy} on {formatDateTime(audit.createdAt)}
                     </small>
                   </div>
-                  <CBadge color="primary" pill>
+                  <CBadge color="primary" shape="rounded-pill">
                     <FontAwesomeIcon icon={faFileAlt} />
                   </CBadge>
                 </CListGroupItem>
@@ -965,7 +967,7 @@ const AuditDetail: React.FC = () => {
                         Started on {formatDateTime(audit.startedDate)}
                       </small>
                     </div>
-                    <CBadge color="success" pill>
+                    <CBadge color="success" shape="rounded-pill">
                       <FontAwesomeIcon icon={faPlay} />
                     </CBadge>
                   </CListGroupItem>
@@ -979,7 +981,7 @@ const AuditDetail: React.FC = () => {
                         Completed on {formatDateTime(audit.completedDate)}
                       </small>
                     </div>
-                    <CBadge color="success" pill>
+                    <CBadge color="success" shape="rounded-pill">
                       <FontAwesomeIcon icon={faCheckCircle} />
                     </CBadge>
                   </CListGroupItem>
@@ -993,7 +995,7 @@ const AuditDetail: React.FC = () => {
                         Last modified by {audit.lastModifiedBy} on {formatDateTime(audit.lastModifiedAt)}
                       </small>
                     </div>
-                    <CBadge color="info" pill>
+                    <CBadge color="info" shape="rounded-pill">
                       <FontAwesomeIcon icon={faEdit} />
                     </CBadge>
                   </CListGroupItem>

@@ -253,7 +253,7 @@ const LicenseDashboard: React.FC = () => {
                   onChange={(e) => handleFilterChange('departmentId', e.target.value ? parseInt(e.target.value) : undefined)}
                 >
                   <option value="">All Departments</option>
-                  {departments?.items?.map(dept => (
+                  {departments?.map((dept: any) => (
                     <option key={dept.id} value={dept.id}>
                       {dept.name}
                     </option>
@@ -412,7 +412,7 @@ const LicenseDashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-end">
-                      <CBadge color="info" size="lg">
+                      <CBadge color="info">
                         {type.count}
                       </CBadge>
                       <div className="text-muted small">
@@ -460,7 +460,6 @@ const LicenseDashboard: React.FC = () => {
                       <CListGroupItem
                         key={license.id}
                         className="d-flex justify-content-between align-items-center"
-                        action
                         onClick={() => navigate(`/licenses/${license.id}`)}
                         style={{ cursor: 'pointer' }}
                       >
@@ -519,7 +518,6 @@ const LicenseDashboard: React.FC = () => {
                       <CListGroupItem
                         key={license.id}
                         className="d-flex justify-content-between align-items-center"
-                        action
                         onClick={() => navigate(`/licenses/${license.id}`)}
                         style={{ cursor: 'pointer' }}
                       >

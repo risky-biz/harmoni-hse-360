@@ -64,7 +64,7 @@ function VirtualizedList<T>({
     return (
       <div className={`virtualized-list-loading d-flex align-items-center justify-content-center ${className}`} 
            style={{ height: containerHeight }}>
-        <CSpinner size="lg" />
+        <CSpinner size="sm" />
       </div>
     );
   }
@@ -91,6 +91,7 @@ function VirtualizedList<T>({
       <List
         ref={setListRef}
         height={containerHeight}
+        width="100%"
         itemCount={items.length}
         itemSize={itemHeight}
         itemData={itemData}

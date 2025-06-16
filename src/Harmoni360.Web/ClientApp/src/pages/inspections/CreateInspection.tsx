@@ -39,7 +39,7 @@ import {
   faFileContract
 } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { useCreateInspectionMutation } from '../../features/inspections/inspectionApi';
+import { useCreateInspectionMutation, CreateInspectionCommand } from '../../features/inspections/inspectionApi';
 import InspectionAttachmentManager from '../../components/inspections/AttachmentManager';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
@@ -62,13 +62,14 @@ const inspectionSchema = yup.object().shape({
     yup.object().shape({
       question: yup.string().required('Question is required'),
       type: yup.string().required('Item type is required'),
-      isRequired: yup.boolean(),
-      description: yup.string(),
-      expectedValue: yup.string(),
-      unit: yup.string(),
-      minValue: yup.number().nullable(),
-      maxValue: yup.number().nullable(),
-      options: yup.string()
+      isRequired: yup.boolean().required(),
+      description: yup.string().optional(),
+      expectedValue: yup.string().optional(),
+      unit: yup.string().optional(),
+      minValue: yup.number().nullable().optional(),
+      maxValue: yup.number().nullable().optional(),
+      options: yup.string().optional(),
+      sortOrder: yup.number().required()
     })
   ).min(1, 'At least one checklist item is required')
 });
@@ -150,7 +151,8 @@ export const CreateInspection: React.FC = () => {
       unit: '',
       minValue: null as number | null,
       maxValue: null as number | null,
-      options: ''
+      options: '',
+      sortOrder: 1
     }
   ]);
 
@@ -161,7 +163,7 @@ export const CreateInspection: React.FC = () => {
     watch,
     setValue
   } = useForm<InspectionFormData>({
-    resolver: yupResolver(inspectionSchema),
+    resolver: yupResolver(inspectionSchema) as any,
     defaultValues: {
       priority: 'Medium',
       estimatedDurationMinutes: 60,
@@ -181,7 +183,8 @@ export const CreateInspection: React.FC = () => {
       unit: '',
       minValue: null as number | null,
       maxValue: null as number | null,
-      options: ''
+      options: '',
+      sortOrder: checklistItems.length + 1
     };
     const updatedItems = [...checklistItems, newItem];
     setChecklistItems(updatedItems);
@@ -189,7 +192,10 @@ export const CreateInspection: React.FC = () => {
   }, [checklistItems, setValue]);
 
   const removeChecklistItem = useCallback((index: number) => {
-    const updatedItems = checklistItems.filter((_, i) => i !== index);
+    const updatedItems = checklistItems.filter((_, i) => i !== index).map((item, idx) => ({
+      ...item,
+      sortOrder: idx + 1
+    }));
     setChecklistItems(updatedItems);
     setValue('checklistItems', updatedItems);
   }, [checklistItems, setValue]);
@@ -197,14 +203,28 @@ export const CreateInspection: React.FC = () => {
   const updateChecklistItem = useCallback((index: number, field: string, value: any) => {
     const updatedItems = [...checklistItems];
     updatedItems[index] = { ...updatedItems[index], [field]: value };
+    // Ensure sortOrder is maintained
+    if (field !== 'sortOrder') {
+      updatedItems[index].sortOrder = index + 1;
+    }
     setChecklistItems(updatedItems);
     setValue('checklistItems', updatedItems);
   }, [checklistItems, setValue]);
 
   const onSubmit = async (data: InspectionFormData) => {
     try {
-      const inspectionData = {
-        ...data,
+      const inspectionData: CreateInspectionCommand = {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        category: data.category,
+        priority: data.priority,
+        scheduledDate: data.scheduledDate.toISOString(),
+        inspectorId: data.inspectorId || 1,
+        locationId: data.locationId,
+        departmentId: data.departmentId,
+        facilityId: data.facilityId,
+        estimatedDurationMinutes: data.estimatedDurationMinutes,
         checklistItems: checklistItems.map((item, index) => ({
           ...item,
           sortOrder: index + 1

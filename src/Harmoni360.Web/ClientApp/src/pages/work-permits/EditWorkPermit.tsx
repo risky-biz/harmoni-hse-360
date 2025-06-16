@@ -210,7 +210,7 @@ const EditWorkPermit: React.FC = () => {
 
     const hazard: WorkPermitHazardDto = {
       ...currentHazard,
-      id: Math.random().toString(36).substr(2, 9),
+      id: Date.now() + Math.floor(Math.random() * 1000),
       riskLevel: calculateRiskLevel(currentHazard.likelihood || 3, currentHazard.severity || 3),
       riskScore: (currentHazard.likelihood || 3) * (currentHazard.severity || 3),
       isControlImplemented: false,
@@ -239,7 +239,7 @@ const EditWorkPermit: React.FC = () => {
 
     const precaution: WorkPermitPrecautionDto = {
       ...currentPrecaution,
-      id: Math.random().toString(36).substr(2, 9),
+      id: Date.now() + Math.floor(Math.random() * 1000),
       isCompleted: false,
       requiresVerification: true,
       isVerified: false
@@ -288,9 +288,15 @@ const EditWorkPermit: React.FC = () => {
     if (!workPermit?.id) return;
 
     try {
+      // Extract hazards and precautions from form data
+      const { hazards, precautions, ...workPermitData } = data;
+      
       await updateWorkPermit({
-        id: workPermit.id,
-        ...data,
+        id: workPermit.id.toString(),
+        workPermit: {
+          ...workPermitData,
+          id: workPermit.id
+        } as any // Type assertion for now since the API might accept additional fields
       }).unwrap();
       navigate(`/work-permits/${workPermit.id}`);
     } catch (error) {
@@ -767,8 +773,7 @@ const EditWorkPermit: React.FC = () => {
                         <CFormLabel>Current Risk Level</CFormLabel>
                         <div className="p-2">
                           <CBadge 
-                            color={getRiskLevelColor(watch('riskLevel') || 'Medium')} 
-                            size="lg"
+                            color={getRiskLevelColor(watch('riskLevel') || 'Medium')}
                           >
                             {watch('riskLevel') || 'Medium'}
                           </CBadge>
@@ -959,7 +964,7 @@ const EditWorkPermit: React.FC = () => {
                   </CAccordionHeader>
                   <CAccordionBody>
                     <WorkPermitAttachmentManager
-                      workPermitId={Number(id)}
+                      workPermitId={id!}
                       allowUpload={true}
                       allowDelete={true}
                     />

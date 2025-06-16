@@ -68,7 +68,7 @@ import {
   AuditType,
   AuditCategory,
   AuditPriority,
-  CreateAuditRequest,
+  UpdateAuditRequest,
   AuditItemDto,
 } from '../../types/audit';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -91,6 +91,16 @@ const AUDIT_ICONS = {
   back: faArrowLeft,
   check: faCheck,
 };
+
+// Form data interface for audit item creation
+interface AuditItemFormData {
+  description: string;
+  type: string;
+  isRequired: boolean;
+  category: string;
+  expectedResult: string;
+  maxPoints: number;
+}
 
 // Form data interface with all audit fields
 interface EditAuditFormData {
@@ -115,11 +125,11 @@ const EditAudit: React.FC = () => {
   const navigate = useNavigate();
   
   // State for managing audit items
-  const [currentItem, setCurrentItem] = useState<Partial<AuditItemDto>>({
+  const [currentItem, setCurrentItem] = useState<AuditItemFormData>({
     description: '',
     type: 'YesNo',
     isRequired: true,
-    category: '',
+    category: 'Routine',
     expectedResult: '',
     maxPoints: 10,
   });
@@ -129,7 +139,7 @@ const EditAudit: React.FC = () => {
     data: audit, 
     error: loadError, 
     isLoading 
-  } = useGetAuditByIdQuery(id!);
+  } = useGetAuditByIdQuery(parseInt(id!));
   
   const [updateAudit, { isLoading: isUpdating, error: updateError }] = useUpdateAuditMutation();
 
@@ -156,7 +166,7 @@ const EditAudit: React.FC = () => {
         priority: audit.priority,
         scheduledDate: audit.scheduledDate ? format(new Date(audit.scheduledDate), 'yyyy-MM-dd\'T\'HH:mm') : '',
         estimatedDurationMinutes: audit.estimatedDurationMinutes || 120,
-        location: audit.location || '',
+        location: audit.locationName || '',
         departmentId: audit.departmentId || null,
         facilityId: audit.facilityId || null,
         standardsApplied: audit.standardsApplied || '',
@@ -172,13 +182,16 @@ const EditAudit: React.FC = () => {
   // Handle form submission
   const onSubmit = async (data: EditAuditFormData) => {
     try {
-      const updateRequest: CreateAuditRequest = {
+      const updateRequest: UpdateAuditRequest = {
+        id: parseInt(id!),
         ...data,
-        auditorId: audit?.auditorId || 0, // Keep existing auditor
-        locationId: null, // Will be handled differently in backend
+        departmentId: data.departmentId || undefined,
+        facilityId: data.facilityId || undefined,
+        riskLevel: audit?.riskLevel || 'Medium', // Keep existing risk level
+        locationId: audit?.locationId || undefined, // Use existing locationId
       };
 
-      await updateAudit({ id: id!, audit: updateRequest }).unwrap();
+      await updateAudit({ id: parseInt(id!), audit: updateRequest }).unwrap();
       navigate(`/audits/${id}`, { state: { message: 'Audit updated successfully!' } });
     } catch (error) {
       console.error('Failed to update audit:', error);
@@ -195,31 +208,33 @@ const EditAudit: React.FC = () => {
     const newItem: AuditItemDto = {
       id: Date.now(), // Temporary ID for new items
       auditId: parseInt(id!),
-      itemNumber: `AI-${Date.now()}`,
-      description: currentItem.description,
-      type: currentItem.type || 'YesNo',
+      checklistItemNumber: `AI-${Date.now()}`,
+      checklistItemText: currentItem.description,
       status: 'NotStarted',
-      isRequired: currentItem.isRequired ?? true,
-      category: currentItem.category || null,
-      expectedResult: currentItem.expectedResult || null,
-      maxPoints: currentItem.maxPoints || null,
-      sortOrder: watchedItems.length + 1,
-      actualResult: null,
-      isCompliant: null,
-      actualPoints: null,
-      comments: null,
-      assessedBy: null,
-      assessedAt: null,
-      evidence: null,
-      correctiveAction: null,
-      dueDate: null,
-      responsiblePersonId: null,
-      validationCriteria: null,
-      acceptanceCriteria: null,
-      createdAt: new Date().toISOString(),
-      createdBy: 'Current User',
-      lastModifiedAt: null,
-      lastModifiedBy: null,
+      isMandatory: currentItem.isRequired,
+      category: (currentItem.category || 'Routine') as AuditCategory,
+      maxScore: currentItem.maxPoints,
+      weight: 1,
+      priority: 'Medium' as AuditPriority,
+      isApplicable: true,
+      requiresEvidence: false,
+      isCompliant: false,
+      isNonCompliant: false,
+      isNotApplicable: false,
+      needsAttention: false,
+      scorePercentage: 0,
+      requiredEvidence: currentItem.expectedResult || undefined,
+      section: undefined,
+      subsection: undefined,
+      result: undefined,
+      score: undefined,
+      assessedDate: undefined,
+      assessedBy: undefined,
+      assessedByName: undefined,
+      comments: undefined,
+      evidenceNotes: undefined,
+      complianceNotes: undefined,
+      correctiveActions: undefined,
     };
 
     const updatedItems = [...watchedItems, newItem];
@@ -230,7 +245,7 @@ const EditAudit: React.FC = () => {
       description: '',
       type: 'YesNo',
       isRequired: true,
-      category: '',
+      category: 'Routine',
       expectedResult: '',
       maxPoints: 10,
     });
@@ -575,7 +590,7 @@ const EditAudit: React.FC = () => {
                         id="itemDescription"
                         type="text"
                         placeholder="e.g., Verify all emergency exits are clearly marked and unobstructed"
-                        value={currentItem.description || ''}
+                        value={currentItem.description}
                         onChange={(e) => setCurrentItem(prev => ({ ...prev, description: e.target.value }))}
                       />
                     </CCol>
@@ -584,8 +599,8 @@ const EditAudit: React.FC = () => {
                       <CFormLabel htmlFor="itemType">Item Type</CFormLabel>
                       <CFormSelect
                         id="itemType"
-                        value={currentItem.type || 'YesNo'}
-                        onChange={(e) => setCurrentItem(prev => ({ ...prev, type: e.target.value as any }))}
+                        value={currentItem.type}
+                        onChange={(e) => setCurrentItem(prev => ({ ...prev, type: e.target.value }))}
                       >
                         <option value="YesNo">Yes/No</option>
                         <option value="Text">Text</option>
@@ -604,7 +619,7 @@ const EditAudit: React.FC = () => {
                         id="itemCategory"
                         type="text"
                         placeholder="e.g., Safety, Equipment, Procedures"
-                        value={currentItem.category || ''}
+                        value={currentItem.category}
                         onChange={(e) => setCurrentItem(prev => ({ ...prev, category: e.target.value }))}
                       />
                     </CCol>
@@ -615,7 +630,7 @@ const EditAudit: React.FC = () => {
                         id="expectedResult"
                         type="text"
                         placeholder="e.g., Compliant, 100%, Pass"
-                        value={currentItem.expectedResult || ''}
+                        value={currentItem.expectedResult}
                         onChange={(e) => setCurrentItem(prev => ({ ...prev, expectedResult: e.target.value }))}
                       />
                     </CCol>
@@ -627,8 +642,8 @@ const EditAudit: React.FC = () => {
                         type="number"
                         min="1"
                         max="100"
-                        value={currentItem.maxPoints || 10}
-                        onChange={(e) => setCurrentItem(prev => ({ ...prev, maxPoints: parseInt(e.target.value) }))}
+                        value={currentItem.maxPoints}
+                        onChange={(e) => setCurrentItem(prev => ({ ...prev, maxPoints: parseInt(e.target.value) || 10 }))}
                       />
                     </CCol>
 
@@ -637,7 +652,7 @@ const EditAudit: React.FC = () => {
                         <CFormCheck
                           id="isRequired"
                           label="Required"
-                          checked={currentItem.isRequired ?? true}
+                          checked={currentItem.isRequired}
                           onChange={(e) => setCurrentItem(prev => ({ ...prev, isRequired: e.target.checked }))}
                         />
                       </div>
@@ -675,21 +690,21 @@ const EditAudit: React.FC = () => {
                     {watchedItems.map((item, index) => (
                       <CTableRow key={item.id || index}>
                         <CTableDataCell>{index + 1}</CTableDataCell>
-                        <CTableDataCell>{item.description}</CTableDataCell>
+                        <CTableDataCell>{item.checklistItemText}</CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color="info">{item.type}</CBadge>
+                          <CBadge color="info">Checklist</CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
                           {item.category && (
-                            <CBadge color="secondary" variant="outline">{item.category}</CBadge>
+                            <CBadge color="secondary">{item.category}</CBadge>
                           )}
                         </CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color={item.isRequired ? 'danger' : 'secondary'}>
-                            {item.isRequired ? 'Required' : 'Optional'}
+                          <CBadge color={item.isMandatory ? 'danger' : 'secondary'}>
+                            {item.isMandatory ? 'Required' : 'Optional'}
                           </CBadge>
                         </CTableDataCell>
-                        <CTableDataCell>{item.maxPoints || '-'}</CTableDataCell>
+                        <CTableDataCell>{item.maxScore || '-'}</CTableDataCell>
                         <CTableDataCell>
                           <CButton
                             color="danger"

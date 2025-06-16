@@ -93,8 +93,8 @@ interface CreateAuditFormData {
   scheduledDate: string;
   estimatedDurationMinutes: number;
   location: string;
-  departmentId: number | null;
-  facilityId: number | null;
+  departmentId: number | undefined;
+  facilityId: number | undefined;
   standardsApplied: string;
   isRegulatory: boolean;
   regulatoryReference: string;
@@ -112,11 +112,20 @@ const CreateAudit: React.FC = () => {
   const navigate = useNavigate();
   
   // State for managing audit items and attachments
-  const [currentItem, setCurrentItem] = useState<Partial<AuditItemDto>>({
+  interface AuditItemFormData {
+    description: string;
+    type: string;
+    isRequired: boolean;
+    category: AuditCategory;
+    expectedResult: string;
+    maxPoints: number;
+  }
+  
+  const [currentItem, setCurrentItem] = useState<AuditItemFormData>({
     description: '',
     type: 'YesNo',
     isRequired: true,
-    category: '',
+    category: 'Routine' as AuditCategory,
     expectedResult: '',
     maxPoints: 10,
   });
@@ -145,8 +154,8 @@ const CreateAudit: React.FC = () => {
       scheduledDate: format(new Date(), 'yyyy-MM-dd\'T\'HH:mm'),
       estimatedDurationMinutes: 120,
       location: '',
-      departmentId: null,
-      facilityId: null,
+      departmentId: undefined,
+      facilityId: undefined,
       standardsApplied: '',
       isRegulatory: false,
       regulatoryReference: '',
@@ -161,10 +170,22 @@ const CreateAudit: React.FC = () => {
     try {
       setSubmitError(null);
       
+      // Create the request object, mapping form fields to API fields
       const createRequest: CreateAuditRequest = {
-        ...data,
-        auditorId: 1, // This should come from current user context
-        locationId: null, // Will be handled in backend
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        category: data.category,
+        priority: data.priority,
+        riskLevel: 'Medium', // Default risk level
+        scheduledDate: data.scheduledDate,
+        estimatedDurationMinutes: data.estimatedDurationMinutes,
+        departmentId: data.departmentId,
+        facilityId: data.facilityId,
+        isRegulatory: data.isRegulatory,
+        regulatoryReference: data.regulatoryReference,
+        standardsApplied: data.standardsApplied,
+        locationId: undefined, // Location string will be handled in backend if needed
       };
 
       console.log('🚀 Creating audit with data:', createRequest);
@@ -231,31 +252,33 @@ const CreateAudit: React.FC = () => {
     const newItem: AuditItemDto = {
       id: Date.now(), // Temporary ID for new items
       auditId: 0, // Will be set when audit is created
-      itemNumber: `AI-${Date.now()}`,
-      description: currentItem.description,
-      type: currentItem.type || 'YesNo',
+      checklistItemNumber: `AI-${Date.now()}`,
+      checklistItemText: currentItem.description || '',
       status: 'NotStarted',
-      isRequired: currentItem.isRequired ?? true,
-      category: currentItem.category || null,
-      expectedResult: currentItem.expectedResult || null,
-      maxPoints: currentItem.maxPoints || null,
-      sortOrder: watchedItems.length + 1,
-      actualResult: null,
-      isCompliant: null,
-      actualPoints: null,
-      comments: null,
-      assessedBy: null,
-      assessedAt: null,
-      evidence: null,
-      correctiveAction: null,
-      dueDate: null,
-      responsiblePersonId: null,
-      validationCriteria: null,
-      acceptanceCriteria: null,
-      createdAt: new Date().toISOString(),
-      createdBy: 'Current User',
-      lastModifiedAt: null,
-      lastModifiedBy: null,
+      isMandatory: currentItem.isRequired ?? true,
+      category: currentItem.category || 'Routine',
+      maxScore: currentItem.maxPoints || 10,
+      weight: 1,
+      priority: 'Medium' as AuditPriority,
+      isApplicable: true,
+      requiresEvidence: false,
+      isCompliant: false,
+      isNonCompliant: false,
+      isNotApplicable: false,
+      comments: undefined,
+      assessedBy: undefined,
+      assessedDate: undefined,
+      evidenceNotes: undefined,
+      correctiveActions: undefined,
+      assessedByName: undefined,
+      complianceNotes: undefined,
+      requiredEvidence: undefined,
+      section: undefined,
+      subsection: undefined,
+      result: undefined,
+      score: undefined,
+      needsAttention: false,
+      scorePercentage: 0,
     };
 
     const updatedItems = [...watchedItems, newItem];
@@ -266,7 +289,7 @@ const CreateAudit: React.FC = () => {
       description: '',
       type: 'YesNo',
       isRequired: true,
-      category: '',
+      category: 'Routine' as AuditCategory,
       expectedResult: '',
       maxPoints: 10,
     });
@@ -560,7 +583,7 @@ const CreateAudit: React.FC = () => {
                         type="text"
                         placeholder="e.g., Safety, Equipment, Procedures"
                         value={currentItem.category || ''}
-                        onChange={(e) => setCurrentItem(prev => ({ ...prev, category: e.target.value }))}
+                        onChange={(e) => setCurrentItem(prev => ({ ...prev, category: e.target.value as AuditCategory }))}
                       />
                     </CCol>
 
@@ -630,21 +653,21 @@ const CreateAudit: React.FC = () => {
                     {watchedItems.map((item, index) => (
                       <CTableRow key={item.id || index}>
                         <CTableDataCell>{index + 1}</CTableDataCell>
-                        <CTableDataCell>{item.description}</CTableDataCell>
+                        <CTableDataCell>{item.checklistItemText}</CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color="info">{item.type}</CBadge>
+                          <CBadge color="info">Checklist</CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
                           {item.category && (
-                            <CBadge color="secondary" variant="outline">{item.category}</CBadge>
+                            <CBadge color="secondary">{item.category}</CBadge>
                           )}
                         </CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color={item.isRequired ? 'danger' : 'secondary'}>
-                            {item.isRequired ? 'Required' : 'Optional'}
+                          <CBadge color={item.isMandatory ? 'danger' : 'secondary'}>
+                            {item.isMandatory ? 'Required' : 'Optional'}
                           </CBadge>
                         </CTableDataCell>
-                        <CTableDataCell>{item.maxPoints || '-'}</CTableDataCell>
+                        <CTableDataCell>{item.maxScore || '-'}</CTableDataCell>
                         <CTableDataCell>
                           <CButton
                             color="danger"

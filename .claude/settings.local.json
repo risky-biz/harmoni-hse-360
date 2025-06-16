@@ -123,7 +123,14 @@
       "Bash(export:*)",
       "Bash(ASPNETCORE_ENVIRONMENT=Production dotnet run --urls=\"http://localhost:5001\")",
       "Bash(/home/risky_biz/.dotnet/tools/dotnet-ef migrations add AddAuditEntities --project src/Harmoni360.Infrastructure --startup-project src/Harmoni360.Web --context ApplicationDbContext)",
-      "Bash(pgrep:*)"
+      "Bash(pgrep:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx vite:*)",
+      "Bash(tsc:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run:*)"
     ]
   },
   "enableAllProjectMcpServers": false

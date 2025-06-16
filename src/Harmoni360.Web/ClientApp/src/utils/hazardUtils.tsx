@@ -88,11 +88,6 @@ export const getSeverityBadge = (severity: string) => {
     <CBadge 
       color={config.color} 
       className="d-flex align-items-center gap-1 hazard-badge"
-      style={{
-        backgroundColor: config.color === 'light' ? '#f8f9fa !important' : undefined,
-        color: config.color === 'light' ? '#495057 !important' : undefined,
-        border: config.color === 'light' ? '1px solid #dee2e6' : undefined
-      }}
     >
       <FontAwesomeIcon icon={config.icon} size="xs" />
       {config.label}
@@ -118,11 +113,6 @@ export const getStatusBadge = (status: string) => {
     <CBadge 
       color={config.color} 
       className="d-flex align-items-center gap-1 hazard-badge"
-      style={{
-        backgroundColor: config.color === 'light' ? '#f8f9fa !important' : undefined,
-        color: config.color === 'light' ? '#495057 !important' : undefined,
-        border: config.color === 'light' ? '1px solid #dee2e6' : undefined
-      }}
     >
       <FontAwesomeIcon icon={config.icon} size="xs" />
       {config.label}

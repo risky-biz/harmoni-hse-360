@@ -31,8 +31,8 @@ import {
   CFormSelect,
   CFormFeedback,
 } from '@coreui/react';
-import { cilSearch, cilPlus, cilPencil, cilTrash, cilExclamationTriangle } from '@coreui/icons';
-import CIcon from '@coreui/icons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faPlus, faEdit, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { 
   useGetDisposalProvidersQuery,
   useSearchDisposalProvidersQuery,
@@ -238,7 +238,7 @@ const DisposalProviders: React.FC = () => {
                 color="primary" 
                 onClick={() => setShowCreateModal(true)}
               >
-                <CIcon icon={cilPlus} className="me-2" />
+                <FontAwesomeIcon icon={faPlus} className="me-2" />
                 Add Provider
               </CButton>
             </CCardHeader>
@@ -259,7 +259,7 @@ const DisposalProviders: React.FC = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <CButton variant="outline" color="secondary">
-                      <CIcon icon={cilSearch} />
+                      <FontAwesomeIcon icon={faSearch} />
                     </CButton>
                   </CInputGroup>
                 </CCol>
@@ -305,7 +305,7 @@ const DisposalProviders: React.FC = () => {
                           )}
                           {!isExpired(provider.licenseExpiryDate) && isExpiringSoon(provider.licenseExpiryDate) && (
                             <CBadge color="warning" className="ms-2">
-                              <CIcon icon={cilExclamationTriangle} size="sm" className="me-1" />
+                              <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" />
                               Expiring Soon
                             </CBadge>
                           )}
@@ -343,7 +343,7 @@ const DisposalProviders: React.FC = () => {
                           className="me-2"
                           onClick={() => openEditModal(provider)}
                         >
-                          <CIcon icon={cilPencil} />
+                          <FontAwesomeIcon icon={faEdit} />
                         </CButton>
                         <CButton
                           size="sm"
@@ -351,7 +351,7 @@ const DisposalProviders: React.FC = () => {
                           variant="ghost"
                           onClick={() => openDeleteModal(provider)}
                         >
-                          <CIcon icon={cilTrash} />
+                          <FontAwesomeIcon icon={faTrash} />
                         </CButton>
                       </CTableDataCell>
                     </CTableRow>

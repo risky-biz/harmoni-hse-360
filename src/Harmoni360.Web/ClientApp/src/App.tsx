@@ -14,9 +14,13 @@ import '@coreui/coreui/dist/css/coreui.min.css';
 
 // Custom styles with Harmoni branding
 import './styles/app.scss';
+import './styles/hsse-dashboard.css';
 
 // Store
 import { store } from './store';
+
+// Theme Provider
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Layouts
 import DefaultLayout from './layouts/DefaultLayout';
@@ -33,6 +37,9 @@ import { useSignalR } from './hooks/useSignalR';
 // Performance optimizations
 import { PerformanceMonitor } from './utils/performance';
 import { initializeOptimizations, addResourceHints, lazy } from './utils/optimization';
+
+// Demo reset service
+import { demoResetService } from './services/demoResetService';
 
 // Add UnauthorizedAccess component
 const UnauthorizedAccess = React.lazy(() =>
@@ -512,6 +519,15 @@ const SecurityDashboard = React.lazy(() =>
     };
   })
 );
+// HSSE Statistics Dashboard
+const HsseDashboard = React.lazy(() =>
+  import('./pages/hsse/HsseDashboard').catch((err) => {
+    console.error('Failed to load HsseDashboard:', err);
+    return {
+      default: () => <div>Error loading HSSE Dashboard. Please refresh.</div>,
+    };
+  })
+);
 const SecurityIncidentList = React.lazy(() =>
   import('./pages/security/SecurityIncidentList').catch((err) => {
     console.error('Failed to load SecurityIncidentList:', err);
@@ -824,6 +840,11 @@ function App() {
     initializeOptimizations();
     addResourceHints();
     
+    // Initialize demo reset service for automated 24-hour reset
+    if (demoResetService) {
+      console.log('Demo reset service initialized');
+    }
+    
     // Initialize service worker for offline support
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {
@@ -842,14 +863,15 @@ function App() {
   }, []);
 
   return (
-    <AuthErrorBoundary>
-      <ErrorBoundary>
-        <Provider store={store}>
-          <BrowserRouter>
-            <RouteChangeHandler />
-            <SignalRConnectionManager />
-            <Suspense fallback={<Loading />}>
-            <Routes>
+    <ThemeProvider>
+      <AuthErrorBoundary>
+        <ErrorBoundary>
+          <Provider store={store}>
+            <BrowserRouter>
+              <RouteChangeHandler />
+              <SignalRConnectionManager />
+              <Suspense fallback={<Loading />}>
+              <Routes>
               {/* Auth Routes */}
               <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
@@ -876,6 +898,7 @@ function App() {
                   element={<Navigate to="/dashboard" replace />}
                 />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/hsse/dashboard" element={<HsseDashboard />} />
 
                 {/* Incident Management */}
                 <Route path="/incidents" element={<IncidentList />} />
@@ -975,8 +998,7 @@ function App() {
                 <Route path="/trainings/:id" element={<TrainingDetail />} />
                 <Route path="/trainings/:id/edit" element={<EditTraining />} />
                 <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
-
-                {/* Waste Management */}
+		{/* Waste Management */}
                 <Route path="/waste-management" element={<WasteReportList />} />
                 <Route path="/waste-management/dashboard" element={<WasteDashboard />} />
                 <Route path="/waste-management/create" element={<CreateWasteReport />} />
@@ -1059,6 +1081,7 @@ function App() {
         </Provider>
       </ErrorBoundary>
     </AuthErrorBoundary>
+    </ThemeProvider>
   );
 }
 

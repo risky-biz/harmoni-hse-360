@@ -450,20 +450,20 @@ const IncidentDetail: React.FC = () => {
           onAdd={async (personId, involvementType, injuryDescription) => {
             await addInvolvedPerson({
               incidentId: incident.id,
-              data: { personId, involvementType, injuryDescription },
+              data: { personId: Number(personId), involvementType, injuryDescription },
             }).unwrap();
           }}
           onUpdate={async (personId, involvementType, injuryDescription) => {
             await updateInvolvedPerson({
               incidentId: incident.id,
-              personId,
+              personId: Number(personId),
               data: { involvementType, injuryDescription },
             }).unwrap();
           }}
           onRemove={async (personId) => {
             await removeInvolvedPerson({
               incidentId: incident.id,
-              personId,
+              personId: Number(personId),
             }).unwrap();
           }}
         />

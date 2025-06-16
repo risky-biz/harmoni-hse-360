@@ -17,9 +17,9 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   useGetHealthRecordQuery, 
-  useUpdateHealthRecordMutation 
+  useUpdateHealthRecordMutation,
+  UpdateHealthRecordCommand
 } from '../../features/health/healthApi';
-import { BloodType, UpdateHealthRecordRequest } from '../../types/health';
 import { formatDateForInput } from '../../utils/dateUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faArrowLeft, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -32,22 +32,17 @@ const EditHealthRecord: React.FC = () => {
     data: healthRecord,
     isLoading: isLoadingRecord,
     error: loadError
-  } = useGetHealthRecordQuery(id!);
+  } = useGetHealthRecordQuery({ id: parseInt(id!) });
   
   const [updateHealthRecord, { isLoading: isUpdating, error: updateError }] = useUpdateHealthRecordMutation();
 
-  const [formData, setFormData] = useState<UpdateHealthRecordRequest>({
+  const [formData, setFormData] = useState<Partial<UpdateHealthRecordCommand>>({
     bloodType: undefined,
     medicalNotes: '',
-    primaryDoctorName: '',
-    primaryDoctorContact: '',
-    insuranceProvider: '',
-    insurancePolicyNumber: '',
-    lastHealthCheckDate: '',
-    nextHealthCheckDate: ''
+    isActive: true
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<UpdateHealthRecordRequest>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Initialize form data when health record loads
   useEffect(() => {
@@ -55,19 +50,13 @@ const EditHealthRecord: React.FC = () => {
       setFormData({
         bloodType: healthRecord.bloodType || undefined,
         medicalNotes: healthRecord.medicalNotes || '',
-        primaryDoctorName: healthRecord.primaryDoctorName || '',
-        primaryDoctorContact: healthRecord.primaryDoctorContact || '',
-        insuranceProvider: healthRecord.insuranceProvider || '',
-        insurancePolicyNumber: healthRecord.insurancePolicyNumber || '',
-        lastHealthCheckDate: healthRecord.lastHealthCheckDate ? 
-          formatDateForInput(healthRecord.lastHealthCheckDate) : '',
-        nextHealthCheckDate: healthRecord.nextHealthCheckDate ? 
-          formatDateForInput(healthRecord.nextHealthCheckDate) : ''
+        dateOfBirth: healthRecord.dateOfBirth ? formatDateForInput(healthRecord.dateOfBirth) : '',
+        isActive: healthRecord.isActive
       });
     }
   }, [healthRecord]);
 
-  const handleInputChange = (field: keyof UpdateHealthRecordRequest, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -75,41 +64,24 @@ const EditHealthRecord: React.FC = () => {
 
     // Clear error when user starts typing
     if (formErrors[field]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [field]: undefined
-      }));
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
   const validateForm = (): boolean => {
-    const errors: Partial<UpdateHealthRecordRequest> = {};
+    const errors: Record<string, string> = {};
 
     // Validate date fields
-    if (formData.lastHealthCheckDate) {
-      const lastCheckDate = new Date(formData.lastHealthCheckDate);
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
       const today = new Date();
-      if (lastCheckDate > today) {
-        errors.lastHealthCheckDate = 'Last health check date cannot be in the future';
+      if (birthDate > today) {
+        errors.dateOfBirth = 'Date of birth cannot be in the future';
       }
-    }
-
-    if (formData.nextHealthCheckDate && formData.lastHealthCheckDate) {
-      const nextCheckDate = new Date(formData.nextHealthCheckDate);
-      const lastCheckDate = new Date(formData.lastHealthCheckDate);
-      if (nextCheckDate <= lastCheckDate) {
-        errors.nextHealthCheckDate = 'Next health check must be after last health check';
-      }
-    }
-
-    // Validate doctor information consistency
-    if (formData.primaryDoctorContact && !formData.primaryDoctorName?.trim()) {
-      errors.primaryDoctorName = 'Doctor name is required when contact is provided';
-    }
-
-    // Validate insurance information consistency
-    if (formData.insurancePolicyNumber && !formData.insuranceProvider?.trim()) {
-      errors.insuranceProvider = 'Insurance provider is required when policy number is provided';
     }
 
     setFormErrors(errors);
@@ -124,18 +96,15 @@ const EditHealthRecord: React.FC = () => {
     }
 
     try {
-      const sanitizedData: UpdateHealthRecordRequest = {
+      const sanitizedData: UpdateHealthRecordCommand = {
+        id: parseInt(id!),
         bloodType: formData.bloodType || undefined,
         medicalNotes: formData.medicalNotes?.trim() || undefined,
-        primaryDoctorName: formData.primaryDoctorName?.trim() || undefined,
-        primaryDoctorContact: formData.primaryDoctorContact?.trim() || undefined,
-        insuranceProvider: formData.insuranceProvider?.trim() || undefined,
-        insurancePolicyNumber: formData.insurancePolicyNumber?.trim() || undefined,
-        lastHealthCheckDate: formData.lastHealthCheckDate || undefined,
-        nextHealthCheckDate: formData.nextHealthCheckDate || undefined
+        dateOfBirth: formData.dateOfBirth || undefined,
+        isActive: formData.isActive
       };
 
-      await updateHealthRecord({ id: id!, updates: sanitizedData }).unwrap();
+      await updateHealthRecord(sanitizedData).unwrap();
       
       // Navigate back to detail page
       navigate(`/health/detail/${id}`);
@@ -151,7 +120,7 @@ const EditHealthRecord: React.FC = () => {
   if (isLoadingRecord) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -159,7 +128,7 @@ const EditHealthRecord: React.FC = () => {
   if (loadError) {
     return (
       <CAlert color="danger" className="d-flex align-items-center">
-        <FontAwesomeIcon icon={faExclamationTriangle} className="flex-shrink-0 me-2" size="lg" />
+        <FontAwesomeIcon icon={faExclamationTriangle} className="flex-shrink-0 me-2" size="sm" />
         <div>
           Failed to load health record for editing.
         </div>
@@ -188,7 +157,7 @@ const EditHealthRecord: React.FC = () => {
 
       {updateError && (
         <CAlert color="danger" className="d-flex align-items-center mb-4">
-          <FontAwesomeIcon icon={faExclamationTriangle} className="flex-shrink-0 me-2" size="lg" />
+          <FontAwesomeIcon icon={faExclamationTriangle} className="flex-shrink-0 me-2" size="sm" />
           <div>
             {'data' in updateError && updateError.data ? 
               (typeof updateError.data === 'string' ? updateError.data : 'Failed to update health record') :
@@ -204,7 +173,7 @@ const EditHealthRecord: React.FC = () => {
           <h5>{healthRecord.personName}</h5>
           <div className="text-muted">{healthRecord.personEmail} • {healthRecord.personType}</div>
           <div className="small text-muted">
-            Date of Birth: {new Date(healthRecord.dateOfBirth).toLocaleDateString()}
+            Date of Birth: {healthRecord.dateOfBirth ? new Date(healthRecord.dateOfBirth).toLocaleDateString() : 'Not specified'}
           </div>
         </CCardBody>
       </CCard>
@@ -224,14 +193,14 @@ const EditHealthRecord: React.FC = () => {
                   onChange={(e) => handleInputChange('bloodType', e.target.value)}
                 >
                   <option value="">Select blood type</option>
-                  <option value={BloodType.APositive}>A+</option>
-                  <option value={BloodType.ANegative}>A-</option>
-                  <option value={BloodType.BPositive}>B+</option>
-                  <option value={BloodType.BNegative}>B-</option>
-                  <option value={BloodType.ABPositive}>AB+</option>
-                  <option value={BloodType.ABNegative}>AB-</option>
-                  <option value={BloodType.OPositive}>O+</option>
-                  <option value={BloodType.ONegative}>O-</option>
+                  <option value="APositive">A+</option>
+                  <option value="ANegative">A-</option>
+                  <option value="BPositive">B+</option>
+                  <option value="BNegative">B-</option>
+                  <option value="ABPositive">AB+</option>
+                  <option value="ABNegative">AB-</option>
+                  <option value="OPositive">O+</option>
+                  <option value="ONegative">O-</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -249,83 +218,28 @@ const EditHealthRecord: React.FC = () => {
               </CCol>
             </CRow>
 
-            <hr className="my-4" />
-            <h5>Primary Doctor Information</h5>
-
             <CRow className="mb-3">
               <CCol md={6}>
-                <CFormLabel htmlFor="primaryDoctorName">Doctor Name</CFormLabel>
-                <CFormInput
-                  id="primaryDoctorName"
-                  value={formData.primaryDoctorName || ''}
-                  onChange={(e) => handleInputChange('primaryDoctorName', e.target.value)}
-                  invalid={!!formErrors.primaryDoctorName}
-                  feedback={formErrors.primaryDoctorName}
-                  placeholder="Dr. Smith"
-                />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="primaryDoctorContact">Doctor Contact</CFormLabel>
-                <CFormInput
-                  id="primaryDoctorContact"
-                  value={formData.primaryDoctorContact || ''}
-                  onChange={(e) => handleInputChange('primaryDoctorContact', e.target.value)}
-                  placeholder="Phone number or clinic name"
-                />
-              </CCol>
-            </CRow>
-
-            <hr className="my-4" />
-            <h5>Insurance Information</h5>
-
-            <CRow className="mb-3">
-              <CCol md={6}>
-                <CFormLabel htmlFor="insuranceProvider">Insurance Provider</CFormLabel>
-                <CFormInput
-                  id="insuranceProvider"
-                  value={formData.insuranceProvider || ''}
-                  onChange={(e) => handleInputChange('insuranceProvider', e.target.value)}
-                  invalid={!!formErrors.insuranceProvider}
-                  feedback={formErrors.insuranceProvider}
-                  placeholder="Insurance company name"
-                />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="insurancePolicyNumber">Policy Number</CFormLabel>
-                <CFormInput
-                  id="insurancePolicyNumber"
-                  value={formData.insurancePolicyNumber || ''}
-                  onChange={(e) => handleInputChange('insurancePolicyNumber', e.target.value)}
-                  placeholder="Policy or member ID"
-                />
-              </CCol>
-            </CRow>
-
-            <hr className="my-4" />
-            <h5>Health Check Schedule</h5>
-
-            <CRow className="mb-3">
-              <CCol md={6}>
-                <CFormLabel htmlFor="lastHealthCheckDate">Last Health Check</CFormLabel>
+                <CFormLabel htmlFor="dateOfBirth">Date of Birth</CFormLabel>
                 <CFormInput
                   type="date"
-                  id="lastHealthCheckDate"
-                  value={formData.lastHealthCheckDate || ''}
-                  onChange={(e) => handleInputChange('lastHealthCheckDate', e.target.value)}
-                  invalid={!!formErrors.lastHealthCheckDate}
-                  feedback={formErrors.lastHealthCheckDate}
+                  id="dateOfBirth"
+                  value={formData.dateOfBirth || ''}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  invalid={!!formErrors.dateOfBirth}
+                  feedback={formErrors.dateOfBirth}
                 />
               </CCol>
               <CCol md={6}>
-                <CFormLabel htmlFor="nextHealthCheckDate">Next Health Check</CFormLabel>
-                <CFormInput
-                  type="date"
-                  id="nextHealthCheckDate"
-                  value={formData.nextHealthCheckDate || ''}
-                  onChange={(e) => handleInputChange('nextHealthCheckDate', e.target.value)}
-                  invalid={!!formErrors.nextHealthCheckDate}
-                  feedback={formErrors.nextHealthCheckDate}
-                />
+                <CFormLabel htmlFor="isActive">Status</CFormLabel>
+                <CFormSelect
+                  id="isActive"
+                  value={formData.isActive ? 'true' : 'false'}
+                  onChange={(e) => handleInputChange('isActive', e.target.value === 'true')}
+                >
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </CFormSelect>
               </CCol>
             </CRow>
 

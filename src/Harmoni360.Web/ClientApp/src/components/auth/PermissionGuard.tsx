@@ -108,7 +108,7 @@ export const withPermissions = <P extends object>(
 ) => {
   return React.forwardRef<any, P>((props, ref) => (
     <PermissionGuard {...permissionProps}>
-      <Component {...props} ref={ref} />
+      <Component {...(props as any)} ref={ref} />
     </PermissionGuard>
   ));
 };

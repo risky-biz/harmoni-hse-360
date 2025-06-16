@@ -123,7 +123,7 @@ export const inspectionApi = createApi({
     getInspections: builder.query<PagedList<InspectionDto>, GetInspectionsQueryParams | void>({
       query: (params = {}) => ({
         url: '',
-        params,
+        params: params || {},
       }),
       providesTags: ['Inspection'],
     }),
@@ -268,7 +268,7 @@ export const inspectionApi = createApi({
     getMyInspections: builder.query<PagedList<InspectionDto>, GetInspectionsQueryParams | void>({
       query: (params = {}) => ({
         url: '/my-inspections',
-        params,
+        params: params || {},
       }),
       providesTags: ['Inspection'],
     }),
@@ -277,7 +277,7 @@ export const inspectionApi = createApi({
     getOverdueInspections: builder.query<PagedList<InspectionDto>, GetInspectionsQueryParams | void>({
       query: (params = {}) => ({
         url: '/overdue',
-        params,
+        params: params || {},
       }),
       providesTags: ['Inspection'],
     }),

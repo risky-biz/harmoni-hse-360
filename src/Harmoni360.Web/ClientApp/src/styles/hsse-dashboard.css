@@ -1,0 +1,246 @@
+/* HSSE Dashboard Responsive Styles */
+
+/* Gauge Chart Sizing */
+.gauge-sm {
+  min-height: 180px;
+}
+
+.gauge-md {
+  min-height: 220px;
+}
+
+.gauge-lg {
+  min-height: 280px;
+}
+
+/* Stats Card Sizing */
+.stats-card-sm {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card-sm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card-md {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card-md:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card-lg {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card-lg:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 576px) {
+  .hsse-dashboard-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .gauge-sm,
+  .gauge-md,
+  .gauge-lg {
+    min-height: 160px;
+  }
+  
+  .stats-card-sm,
+  .stats-card-md,
+  .stats-card-lg {
+    min-height: 120px;
+  }
+  
+  /* Stack tabs vertically on mobile */
+  .nav-tabs .nav-link {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Reduce card padding on mobile */
+  .card-body {
+    padding: 1rem;
+  }
+  
+  /* Adjust font sizes */
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .display-5 {
+    font-size: 1.75rem;
+  }
+  
+  .display-6 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 577px) and (max-width: 991px) {
+  .gauge-sm {
+    min-height: 180px;
+  }
+  
+  .gauge-md {
+    min-height: 200px;
+  }
+  
+  .gauge-lg {
+    min-height: 240px;
+  }
+  
+  .stats-card-sm {
+    min-height: 140px;
+  }
+  
+  .stats-card-md {
+    min-height: 160px;
+  }
+  
+  .stats-card-lg {
+    min-height: 180px;
+  }
+}
+
+/* Desktop Optimizations */
+@media (min-width: 992px) {
+  .gauge-chart-container {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  /* Grid layouts for better organization */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .hsse-dashboard-container {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .nav-tabs,
+  .btn,
+  .alert {
+    display: none;
+  }
+  
+  .card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  .chart-container {
+    break-inside: avoid;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .stats-card-sm,
+  .stats-card-md,
+  .stats-card-lg {
+    transition: none;
+  }
+  
+  .stats-card-sm:hover,
+  .stats-card-md:hover,
+  .stats-card-lg:hover {
+    transform: none;
+  }
+}
+
+/* Focus states for better keyboard navigation */
+.card:focus-within {
+  outline: 2px solid var(--cui-primary);
+  outline-offset: 2px;
+}
+
+.nav-tabs .nav-link:focus {
+  box-shadow: 0 0 0 0.2rem rgba(var(--cui-primary-rgb), 0.25);
+}
+
+/* Loading states */
+.loading-overlay {
+  position: relative;
+}
+
+.loading-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  border-radius: inherit;
+}
+
+/* Chart responsiveness */
+.chart-responsive {
+  position: relative;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.chart-responsive > canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* KPI Performance Colors */
+.performance-excellent {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.performance-good {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.performance-needs-improvement {
+  color: #fd7e14;
+  border-color: #fd7e14;
+}
+
+.performance-critical {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Smooth animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode support is now handled by the theme system in theme-variables.scss */

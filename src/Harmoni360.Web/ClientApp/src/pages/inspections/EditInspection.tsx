@@ -60,7 +60,7 @@ import {
   useUpdateInspectionMutation 
 } from '../../features/inspections/inspectionApi';
 import InspectionAttachmentManager from '../../components/inspections/AttachmentManager';
-import { InspectionDetailDto, InspectionStatus, InspectionItemDto } from '../../types/inspection';
+import { InspectionDetailDto, InspectionStatus, InspectionItemDto, InspectionAttachmentDto } from '../../types/inspection';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';
@@ -144,7 +144,7 @@ export const EditInspection: React.FC = () => {
     watch,
     reset
   } = useForm<EditInspectionFormData>({
-    resolver: yupResolver(editInspectionSchema)
+    resolver: yupResolver(editInspectionSchema) as any
   });
 
   const watchedStatus = inspection?.status;
