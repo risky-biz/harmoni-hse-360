@@ -124,10 +124,13 @@ export const workPermitApi = createApi({
     }),
 
     approveWorkPermit: builder.mutation<WorkPermitDto, { id: string; comments?: string; k3CertificateNumber?: string; authorityLevel?: string }>({
-      query: ({ id, ...body }) => ({
+      query: ({ id, ...rest }) => ({
         url: `/${id}/approve`,
         method: 'POST',
-        body,
+        body: {
+          Id: parseInt(id),
+          ...rest
+        },
       }),
       invalidatesTags: (result, error, { id }) => [
         'WorkPermit',
@@ -142,7 +145,10 @@ export const workPermitApi = createApi({
       query: ({ id, rejectionReason }) => ({
         url: `/${id}/reject`,
         method: 'POST',
-        body: { rejectionReason },
+        body: { 
+          Id: parseInt(id),
+          rejectionReason 
+        },
       }),
       invalidatesTags: (result, error, { id }) => [
         'WorkPermit',
@@ -169,7 +175,14 @@ export const workPermitApi = createApi({
     completeWork: builder.mutation<WorkPermitDto, string | { id: string; completionNotes?: string; isCompletedSafely?: boolean; lessonsLearned?: string }>({
       query: (arg) => {
         const id = typeof arg === 'string' ? arg : arg.id;
-        const body = typeof arg === 'string' ? {} : { completionNotes: arg.completionNotes, isCompletedSafely: arg.isCompletedSafely, lessonsLearned: arg.lessonsLearned };
+        const body = typeof arg === 'string' 
+          ? { Id: parseInt(id) } 
+          : { 
+              Id: parseInt(arg.id),
+              completionNotes: arg.completionNotes, 
+              isCompletedSafely: arg.isCompletedSafely, 
+              lessonsLearned: arg.lessonsLearned 
+            };
         
         return {
           url: `/${id}/complete`,
@@ -192,7 +205,12 @@ export const workPermitApi = createApi({
     cancelWorkPermit: builder.mutation<WorkPermitDto, string | { id: string; cancellationReason?: string }>({
       query: (arg) => {
         const id = typeof arg === 'string' ? arg : arg.id;
-        const body = typeof arg === 'string' ? {} : { cancellationReason: arg.cancellationReason };
+        const body = typeof arg === 'string' 
+          ? { Id: parseInt(id) } 
+          : { 
+              Id: parseInt(arg.id),
+              cancellationReason: arg.cancellationReason 
+            };
         
         return {
           url: `/${id}/cancel`,
