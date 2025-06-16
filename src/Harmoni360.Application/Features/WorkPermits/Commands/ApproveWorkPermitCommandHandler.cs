@@ -63,7 +63,8 @@ namespace Harmoni360.Application.Features.WorkPermits.Commands
                 approvedById: currentUser.Id,
                 approvedByName: currentUser.Name,
                 approvalLevel: request.AuthorityLevel,
-                comments: request.Comments
+                comments: request.Comments,
+                canBypassApprovals: request.CanBypassApprovals
             );
 
             _context.WorkPermitApprovals.Add(approval);
@@ -72,8 +73,8 @@ namespace Harmoni360.Application.Features.WorkPermits.Commands
 
             _logger.LogInformation("Work permit {Id} approved successfully", request.Id);
 
-            // Map to DTO
-            return new WorkPermitDto
+            // Map to DTO with approval progress information
+            var dto = new WorkPermitDto
             {
                 Id = workPermit.Id,
                 PermitNumber = workPermit.PermitNumber,
@@ -88,8 +89,18 @@ namespace Harmoni360.Application.Features.WorkPermits.Commands
                 RequestedById = workPermit.RequestedById,
                 RequestedByName = workPermit.RequestedByName,
                 CreatedAt = workPermit.CreatedAt,
-                UpdatedAt = workPermit.LastModifiedAt
+                UpdatedAt = workPermit.LastModifiedAt,
+                RequiredApprovalLevels = workPermit.GetRequiredApprovalLevels(),
+                ReceivedApprovalLevels = workPermit.GetReceivedApprovalLevels(),
+                MissingApprovalLevels = workPermit.GetMissingApprovalLevels()
             };
+            
+            // Calculate approval progress percentage
+            dto.ApprovalProgress = dto.RequiredApprovalLevels.Length > 0 
+                ? (int)Math.Round((double)dto.ReceivedApprovalLevels.Length / dto.RequiredApprovalLevels.Length * 100)
+                : 0;
+                
+            return dto;
         }
     }
 }

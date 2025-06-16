@@ -163,7 +163,7 @@ public class WorkPermit : BaseEntity, IAuditableEntity
         AddDomainEvent(new WorkPermitSubmittedEvent(Id, PermitNumber, submittedBy));
     }
 
-    public void Approve(int approvedById, string approvedByName, string approvalLevel, string comments = "")
+    public void Approve(int approvedById, string approvedByName, string approvalLevel, string comments = "", bool canBypassApprovals = false)
     {
         if (Status != WorkPermitStatus.PendingApproval)
             throw new InvalidOperationException("Only permits pending approval can be approved.");
@@ -181,8 +181,8 @@ public class WorkPermit : BaseEntity, IAuditableEntity
 
         _approvals.Add(approval);
         
-        // Check if all required approvals are obtained
-        if (HasAllRequiredApprovals())
+        // Check if all required approvals are obtained or if user can bypass
+        if (HasAllRequiredApprovals() || canBypassApprovals)
         {
             Status = WorkPermitStatus.Approved;
             AddDomainEvent(new WorkPermitApprovedEvent(Id, PermitNumber, approvedByName));
@@ -341,9 +341,9 @@ public class WorkPermit : BaseEntity, IAuditableEntity
         };
     }
 
-    private bool HasAllRequiredApprovals()
+    public string[] GetRequiredApprovalLevels()
     {
-        var requiredApprovals = Type switch
+        return Type switch
         {
             WorkPermitType.HotWork => new[] { "SafetyOfficer", "DepartmentHead", "HotWorkSpecialist" },
             WorkPermitType.ConfinedSpace => new[] { "SafetyOfficer", "DepartmentHead", "ConfinedSpaceSpecialist" },
@@ -351,6 +351,27 @@ public class WorkPermit : BaseEntity, IAuditableEntity
             WorkPermitType.Special => new[] { "SafetyOfficer", "DepartmentHead", "SpecialWorkSpecialist", "HSEManager" },
             _ => new[] { "SafetyOfficer", "DepartmentHead" }
         };
+    }
+
+    public string[] GetReceivedApprovalLevels()
+    {
+        return _approvals
+            .Where(a => a.IsApproved)
+            .Select(a => a.ApprovalLevel)
+            .Distinct()
+            .ToArray();
+    }
+
+    public string[] GetMissingApprovalLevels()
+    {
+        var required = GetRequiredApprovalLevels();
+        var received = GetReceivedApprovalLevels();
+        return required.Except(received).ToArray();
+    }
+
+    private bool HasAllRequiredApprovals()
+    {
+        var requiredApprovals = GetRequiredApprovalLevels();
 
         return requiredApprovals.All(level => 
             _approvals.Any(a => a.ApprovalLevel == level && a.IsApproved));

@@ -196,7 +196,7 @@ const DefaultLayout: React.FC = () => {
                       <NavLink
                         to={subItem.to || '#'}
                         className="nav-link"
-                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards' || subItem.to === '/work-permits' || subItem.to === '/trainings'}
+                        end={subItem.to === '/incidents' || subItem.to === '/ppe' || subItem.to === '/health' || subItem.to === '/hazards' || subItem.to === '/work-permits' || subItem.to === '/trainings' || subItem.to === '/inspections' || subItem.to === '/audits' || subItem.to === '/licenses' || subItem.to === '/waste-management'}
                       >
                         {subItem.name}
                       </NavLink>

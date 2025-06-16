@@ -208,6 +208,15 @@ public class AuthController : ControllerBase
             new { email = "security.officer@harmoni360.com", password = "SecurityOfc123!", role = "Security Officer", name = "Security Officer" },
             new { email = "compliance.officer@harmoni360.com", password = "ComplianceOfc123!", role = "Compliance Officer", name = "Compliance Officer" },
             
+            // Work Permit Approval Specialists - NEW for work permit workflow
+            new { email = "safety.officer@harmoni360.com", password = "SafetyOfc123!", role = "Safety Officer", name = "Safety Officer" },
+            new { email = "department.head@harmoni360.com", password = "DeptHead123!", role = "Department Head", name = "Department Head" },
+            new { email = "hotwork.specialist@harmoni360.com", password = "HotWork123!", role = "Hot Work Specialist", name = "Hot Work Specialist" },
+            new { email = "confinedspace.specialist@harmoni360.com", password = "ConfinedSpace123!", role = "Confined Space Specialist", name = "Confined Space Specialist" },
+            new { email = "electrical.supervisor@harmoni360.com", password = "ElecSup123!", role = "Electrical Supervisor", name = "Electrical Supervisor" },
+            new { email = "specialwork.specialist@harmoni360.com", password = "SpecialWork123!", role = "Special Work Specialist", name = "Special Work Specialist" },
+            new { email = "hse.manager@harmoni360.com", password = "HSEMgr123!", role = "HSE Manager", name = "HSE Manager" },
+            
             // General access roles
             new { email = "reporter@harmoni360.com", password = "Reporter123!", role = "Reporter", name = "Safety Reporter" },
             new { email = "viewer@harmoni360.com", password = "Viewer123!", role = "Viewer", name = "Safety Viewer" },

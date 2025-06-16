@@ -310,12 +310,9 @@ namespace Harmoni360.Web.Controllers
         {
             _logger.LogInformation("Retrieving inspection dashboard metrics");
             
-            // TODO: Implement GetInspectionDashboardQuery
-            // var query = new GetInspectionDashboardQuery();
-            // var result = await _mediator.Send(query);
-            // return Ok(result);
-            
-            return BadRequest("Dashboard functionality not yet implemented");
+            var query = new GetInspectionDashboardQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
         /// <summary>
@@ -323,26 +320,12 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("my-inspections")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetMyInspections([FromQuery] object query)
+        public async Task<IActionResult> GetMyInspections([FromQuery] GetMyInspectionsQuery query)
         {
             _logger.LogInformation("Retrieving user's inspections");
             
-            // TODO: Implement GetMyInspectionsQuery
-            // var myInspectionsQuery = new GetMyInspectionsQuery 
-            // {
-            //     Page = query.Page,
-            //     PageSize = query.PageSize,
-            //     Status = query.Status,
-            //     Type = query.Type,
-            //     StartDate = query.StartDate,
-            //     EndDate = query.EndDate,
-            //     SortBy = query.SortBy,
-            //     SortDescending = query.SortDescending
-            // };
-            // var result = await _mediator.Send(myInspectionsQuery);
-            // return Ok(result);
-            
-            return BadRequest("My inspections functionality not yet implemented");
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
         /// <summary>
@@ -350,24 +333,12 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("overdue")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetOverdueInspections([FromQuery] object query)
+        public async Task<IActionResult> GetOverdueInspections([FromQuery] GetOverdueInspectionsQuery query)
         {
             _logger.LogInformation("Retrieving overdue inspections");
             
-            // TODO: Implement GetOverdueInspectionsQuery
-            // var overdueQuery = new GetOverdueInspectionsQuery 
-            // {
-            //     Page = query.Page,
-            //     PageSize = query.PageSize,
-            //     DepartmentId = query.DepartmentId,
-            //     InspectorId = query.InspectorId,
-            //     SortBy = query.SortBy,
-            //     SortDescending = query.SortDescending
-            // };
-            // var result = await _mediator.Send(overdueQuery);
-            // return Ok(result);
-            
-            return BadRequest("Overdue inspections functionality not yet implemented");
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
         /// <summary>
@@ -375,24 +346,12 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("statistics")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetStatistics([FromQuery] object query)
+        public async Task<IActionResult> GetStatistics([FromQuery] GetInspectionStatisticsQuery query)
         {
             _logger.LogInformation("Retrieving inspection statistics");
             
-            // TODO: Implement GetInspectionStatisticsQuery
-            // var statsQuery = new GetInspectionStatisticsQuery 
-            // {
-            //     StartDate = query.StartDate,
-            //     EndDate = query.EndDate,
-            //     DepartmentId = query.DepartmentId,
-            //     InspectorId = query.InspectorId,
-            //     Type = query.Type,
-            //     Category = query.Category
-            // };
-            // var result = await _mediator.Send(statsQuery);
-            // return Ok(result);
-            
-            return BadRequest("Statistics functionality not yet implemented");
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
     }
 }

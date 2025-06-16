@@ -51,11 +51,27 @@ public class RoleDataSeeder : IDataSeeder
         var securityOfficerRole = Role.Create(RoleType.SecurityOfficer, "SecurityOfficer", "Officer with operational access to day-to-day Security operations and incident management", 9);
         var complianceOfficerRole = Role.Create(RoleType.ComplianceOfficer, "ComplianceOfficer", "Officer with enhanced access to HSSE compliance management across all domains", 10);
         
+        // Work Permit Approval Roles - NEW for work permit workflow
+        var safetyOfficerRole = Role.Create(RoleType.SafetyOfficer, "SafetyOfficer", "Officer with specialized access to safety operations and work permit approvals", 11);
+        var departmentHeadRole = Role.Create(RoleType.DepartmentHead, "DepartmentHead", "Department manager with approval authority for departmental work permits", 12);
+        var hotWorkSpecialistRole = Role.Create(RoleType.HotWorkSpecialist, "HotWorkSpecialist", "Specialist with authority to approve hot work permits and fire safety oversight", 13);
+        var confinedSpaceSpecialistRole = Role.Create(RoleType.ConfinedSpaceSpecialist, "ConfinedSpaceSpecialist", "Specialist with authority to approve confined space entry permits", 14);
+        var electricalSupervisorRole = Role.Create(RoleType.ElectricalSupervisor, "ElectricalSupervisor", "Supervisor with authority to approve electrical work permits and electrical safety", 15);
+        var specialWorkSpecialistRole = Role.Create(RoleType.SpecialWorkSpecialist, "SpecialWorkSpecialist", "Specialist with authority to approve special/high-risk work permits", 16);
+        var hseManagerRole = Role.Create(RoleType.HSEManager, "HSEManager", "Manager with comprehensive HSE authority and high-level approval permissions", 17);
+        
         // General Access Roles
-        var reporterRole = Role.Create(RoleType.Reporter, "Reporter", "User with read-only access to reporting across multiple modules", 11);
-        var viewerRole = Role.Create(RoleType.Viewer, "Viewer", "User with read-only access to basic dashboard information", 12);
+        var reporterRole = Role.Create(RoleType.Reporter, "Reporter", "User with read-only access to reporting across multiple modules", 18);
+        var viewerRole = Role.Create(RoleType.Viewer, "Viewer", "User with read-only access to basic dashboard information", 19);
 
-        await _context.Roles.AddRangeAsync(superAdminRole, developerRole, adminRole, incidentManagerRole, riskManagerRole, ppeManagerRole, healthMonitorRole, securityManagerRole, securityOfficerRole, complianceOfficerRole, reporterRole, viewerRole);
+        await _context.Roles.AddRangeAsync(
+            superAdminRole, developerRole, adminRole, 
+            incidentManagerRole, riskManagerRole, ppeManagerRole, healthMonitorRole, 
+            securityManagerRole, securityOfficerRole, complianceOfficerRole,
+            safetyOfficerRole, departmentHeadRole, hotWorkSpecialistRole, confinedSpaceSpecialistRole, 
+            electricalSupervisorRole, specialWorkSpecialistRole, hseManagerRole,
+            reporterRole, viewerRole
+        );
         
         _logger.LogInformation("Roles seeded successfully. Module permissions will be handled separately.");
     }

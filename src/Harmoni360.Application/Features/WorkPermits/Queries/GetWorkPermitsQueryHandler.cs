@@ -240,7 +240,7 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
 
     private WorkPermitDto MapToDto(WorkPermit workPermit)
     {
-        return new WorkPermitDto
+        var dto = new WorkPermitDto
         {
             Id = workPermit.Id,
             PermitNumber = workPermit.PermitNumber,
@@ -361,8 +361,18 @@ public class GetWorkPermitsQueryHandler : IRequestHandler<GetWorkPermitsQuery, G
                 IsK3Requirement = p.IsK3Requirement,
                 K3StandardReference = p.K3StandardReference,
                 IsMandatoryByLaw = p.IsMandatoryByLaw
-            }).ToList()
+            }).ToList(),
+            RequiredApprovalLevels = workPermit.GetRequiredApprovalLevels(),
+            ReceivedApprovalLevels = workPermit.GetReceivedApprovalLevels(),
+            MissingApprovalLevels = workPermit.GetMissingApprovalLevels()
         };
+        
+        // Calculate approval progress percentage
+        dto.ApprovalProgress = dto.RequiredApprovalLevels.Length > 0 
+            ? (int)Math.Round((double)dto.ReceivedApprovalLevels.Length / dto.RequiredApprovalLevels.Length * 100)
+            : 0;
+            
+        return dto;
     }
 
     private static string GetTypeDisplay(WorkPermitType type)

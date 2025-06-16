@@ -76,6 +76,12 @@ public class WorkPermitDto
     public List<WorkPermitHazardDto> Hazards { get; set; } = new();
     public List<WorkPermitPrecautionDto> Precautions { get; set; } = new();
     
+    // Approval Progress Information
+    public string[] RequiredApprovalLevels { get; set; } = Array.Empty<string>();
+    public string[] ReceivedApprovalLevels { get; set; } = Array.Empty<string>();
+    public string[] MissingApprovalLevels { get; set; } = Array.Empty<string>();
+    public int ApprovalProgress { get; set; } // Percentage: (received / required) * 100
+    
     // Audit Information
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; } = string.Empty;
