@@ -329,9 +329,9 @@ public class CreateTrainingCommandHandlerTests : BaseTest
         var result2 = await _handler.Handle(command2, CancellationToken.None);
 
         // Assert
-        result1.TrainingNumber.Should().NotBe(result2.TrainingNumber);
-        result1.TrainingNumber.Should().StartWith("TRN-");
-        result2.TrainingNumber.Should().StartWith("TRN-");
+        result1.TrainingCode.Should().NotBe(result2.TrainingCode);
+        result1.TrainingCode.Should().StartWith("TRN-");
+        result2.TrainingCode.Should().StartWith("TRN-");
     }
 
     private CreateTrainingCommand CreateValidCommand(string title)
@@ -341,16 +341,14 @@ public class CreateTrainingCommandHandlerTests : BaseTest
             Title = title,
             Description = "Test description",
             Type = TrainingType.SafetyOrientation,
-            Category = TrainingCategory.Mandatory,
-            Priority = TrainingPriority.Medium,
-            DeliveryMethod = TrainingDeliveryMethod.Classroom,
-            TrainerId = 2,
-            ScheduledDate = DateTime.UtcNow.AddDays(7),
-            EstimatedDurationMinutes = 120,
+            Category = TrainingCategory.MandatoryCompliance,
+            DeliveryMethod = TrainingDeliveryMethod.InPerson,
+            ScheduledStartDate = DateTime.UtcNow.AddDays(7),
+            ScheduledEndDate = DateTime.UtcNow.AddDays(7).AddHours(2),
+            DurationHours = 2,
             MaxParticipants = 20,
             MinParticipants = 5,
-            IsMandatory = true,
-            RequiresCertification = false,
+            IssuesCertificate = false,
             LearningObjectives = "Test objectives"
         };
     }

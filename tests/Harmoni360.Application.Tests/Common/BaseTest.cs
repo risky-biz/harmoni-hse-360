@@ -12,71 +12,57 @@ public abstract class BaseTest : IDisposable
 
     protected BaseTest()
     {
+        // Mock current user service
+        MockCurrentUserService = new Mock<ICurrentUserService>();
+        MockCurrentUserService.Setup(x => x.UserId).Returns(1);
+        MockCurrentUserService.Setup(x => x.Email).Returns("test.user@harmoni360.com");
+        MockCurrentUserService.Setup(x => x.Name).Returns("Test User");
+        MockCurrentUserService.Setup(x => x.IsAuthenticated).Returns(true);
+        MockCurrentUserService.Setup(x => x.Roles).Returns(new List<string> { "User" });
+
         // Create in-memory database for testing
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        Context = new ApplicationDbContext(options);
-
-        // Mock current user service
-        MockCurrentUserService = new Mock<ICurrentUserService>();
-        MockCurrentUserService.Setup(x => x.UserId).Returns(1);
-        MockCurrentUserService.Setup(x => x.UserName).Returns("test.user@harmoni360.com");
+        Context = new ApplicationDbContext(options, MockCurrentUserService.Object);
     }
 
     protected void SeedData()
     {
-        // Add test users
-        var testUser = new Harmoni360.Domain.Entities.User
-        {
-            Id = 1,
-            Name = "Test User",
-            Email = "test.user@harmoni360.com",
-            Position = "Safety Manager",
-            PasswordHash = "hashedpassword",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
+        // Add test users using factory methods
+        var testUser = Harmoni360.Domain.Entities.User.Create(
+            "test.user@harmoni360.com",
+            "hashedpassword",
+            "Test User",
+            "EMP001",
+            "Safety Department",
+            "Safety Manager");
 
-        var trainerUser = new Harmoni360.Domain.Entities.User
-        {
-            Id = 2,
-            Name = "John Trainer",
-            Email = "john.trainer@harmoni360.com",
-            Position = "Senior Safety Trainer",
-            PasswordHash = "hashedpassword",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
+        var trainerUser = Harmoni360.Domain.Entities.User.Create(
+            "john.trainer@harmoni360.com",
+            "hashedpassword",
+            "John Trainer",
+            "EMP002",
+            "Safety Department",
+            "Senior Safety Trainer");
 
-        var participantUser = new Harmoni360.Domain.Entities.User
-        {
-            Id = 3,
-            Name = "Jane Participant",
-            Email = "jane.participant@harmoni360.com",
-            Position = "Safety Officer",
-            PasswordHash = "hashedpassword",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
+        var participantUser = Harmoni360.Domain.Entities.User.Create(
+            "jane.participant@harmoni360.com",
+            "hashedpassword",
+            "Jane Participant",
+            "EMP003",
+            "Safety Department",
+            "Safety Officer");
 
         Context.Users.AddRange(testUser, trainerUser, participantUser);
 
-        // Add test department
-        var testDepartment = new Harmoni360.Domain.Entities.Department
-        {
-            Id = 1,
-            Name = "Safety Department",
-            Code = "SAFETY",
-            Description = "Responsible for workplace safety",
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
+        // Add test department using factory method
+        var testDepartment = Harmoni360.Domain.Entities.Department.Create(
+            "Safety Department",
+            "SAFETY",
+            "Responsible for workplace safety",
+            isActive: true);
 
         Context.Departments.Add(testDepartment);
         Context.SaveChanges();
