@@ -10,6 +10,8 @@ import { healthApi } from '../features/health/healthApi';
 import { riskAssessmentApi } from '../features/risk-assessments/riskAssessmentApi';
 import { workPermitApi } from '../features/work-permits/workPermitApi';
 import { auditApi } from '../features/audits/auditApi';
+import { inspectionApi } from '../features/inspections/inspectionApi';
+import { licenseApi } from '../features/licenses/licenseApi';
 import { securityApi } from '../features/security/securityApi';
 import { wasteApi } from '../features/waste-management/wasteApi';
 import { wasteManagementApi } from '../api/wasteManagementApi';
@@ -31,6 +33,8 @@ export const store = configureStore({
     [healthApi.reducerPath]: healthApi.reducer,
     [riskAssessmentApi.reducerPath]: riskAssessmentApi.reducer,
     [workPermitApi.reducerPath]: workPermitApi.reducer,
+    [inspectionApi.reducerPath]: inspectionApi.reducer,
+    [licenseApi.reducerPath]: licenseApi.reducer,
     [auditApi.reducerPath]: auditApi.reducer,
     [securityApi.reducerPath]: securityApi.reducer,
     [wasteApi.reducerPath]: wasteApi.reducer,
@@ -56,6 +60,8 @@ export const store = configureStore({
       healthApi.middleware,
       riskAssessmentApi.middleware,
       workPermitApi.middleware,
+      inspectionApi.middleware,
+      licenseApi.middleware,
       auditApi.middleware,
       securityApi.middleware,
       wasteApi.middleware,
