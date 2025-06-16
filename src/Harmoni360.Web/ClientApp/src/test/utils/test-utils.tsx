@@ -9,6 +9,8 @@ import { healthApi } from '../../features/health/healthApi';
 import { incidentApi } from '../../features/incidents/incidentApi';
 import { ppeApi } from '../../features/ppe/ppeApi';
 import { hazardApi } from '../../features/hazards/hazardApi';
+import { inspectionApi } from '../../features/inspections/inspectionApi';
+import { licenseApi } from '../../features/licenses/licenseApi';
 
 // Create a test store with all the APIs
 const createTestStore = (preloadedState = {}) =>
@@ -20,6 +22,8 @@ const createTestStore = (preloadedState = {}) =>
       [incidentApi.reducerPath]: incidentApi.reducer,
       [ppeApi.reducerPath]: ppeApi.reducer,
       [hazardApi.reducerPath]: hazardApi.reducer,
+      [inspectionApi.reducerPath]: inspectionApi.reducer,
+      [licenseApi.reducerPath]: licenseApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -31,7 +35,9 @@ const createTestStore = (preloadedState = {}) =>
         healthApi.middleware,
         incidentApi.middleware,
         ppeApi.middleware,
-        hazardApi.middleware
+        hazardApi.middleware,
+        inspectionApi.middleware,
+        licenseApi.middleware
       ),
     preloadedState,
   });
