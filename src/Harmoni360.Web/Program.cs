@@ -276,7 +276,19 @@ if (app.Environment.IsDevelopment())
 }
 
 // Serve static files for React app
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Set cache headers for static assets
+        if (ctx.File.Name.EndsWith(".png") || ctx.File.Name.EndsWith(".jpg") || 
+            ctx.File.Name.EndsWith(".jpeg") || ctx.File.Name.EndsWith(".ico") ||
+            ctx.File.Name.EndsWith(".svg"))
+        {
+            ctx.Context.Response.Headers["Cache-Control"] = "public, max-age=2592000"; // 30 days for images
+        }
+    }
+});
 
 // Create uploads directory if it doesn't exist (use the same path we set in configuration)
 if (!Directory.Exists(uploadsPath))
@@ -297,10 +309,8 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseSpaStaticFiles();
-}
+// Always serve SPA static files (including in production)
+app.UseSpaStaticFiles();
 
 app.UseRouting();
 
@@ -356,6 +366,14 @@ app.MapHealthChecks("/health");
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "ClientApp";
+    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+    {
+        OnPrepareResponse = ctx =>
+        {
+            // Don't cache the default page
+            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        }
+    };
 
     if (app.Environment.IsDevelopment())
     {
