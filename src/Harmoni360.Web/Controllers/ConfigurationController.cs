@@ -68,28 +68,27 @@ public class ConfigurationController : ControllerBase
     }
 
     // Company Configuration endpoints
-    // TODO: Uncomment when company configuration commands are implemented
-    // [HttpGet("company")]
-    // public async Task<IActionResult> GetCompanyConfiguration()
-    // {
-    //     var query = new GetActiveCompanyConfigurationQuery();
-    //     var result = await _mediator.Send(query);
-    //     return Ok(result);
-    // }
+    [HttpGet("company")]
+    public async Task<IActionResult> GetCompanyConfiguration()
+    {
+        var query = new GetActiveCompanyConfigurationQuery();
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
 
-    // [HttpPut("company")]
-    // [Authorize(Roles = "SuperAdmin,Developer")]
-    // public async Task<IActionResult> UpdateCompanyConfiguration([FromBody] UpdateCompanyConfigurationCommand command)
-    // {
-    //     var result = await _mediator.Send(command);
-    //     return Ok(result);
-    // }
+    [HttpPut("company")]
+    [Authorize(Roles = "SuperAdmin,Developer")]
+    public async Task<IActionResult> UpdateCompanyConfiguration([FromBody] UpdateCompanyConfigurationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
 
-    // [HttpPost("company")]
-    // [Authorize(Roles = "SuperAdmin,Developer")]
-    // public async Task<IActionResult> CreateCompanyConfiguration([FromBody] CreateCompanyConfigurationCommand command)
-    // {
-    //     var result = await _mediator.Send(command);
-    //     return Ok(result);
-    // }
+    [HttpPost("company")]
+    [Authorize(Roles = "SuperAdmin,Developer")]
+    public async Task<IActionResult> CreateCompanyConfiguration([FromBody] CreateCompanyConfigurationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
 }

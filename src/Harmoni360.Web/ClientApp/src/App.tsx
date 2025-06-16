@@ -22,6 +22,9 @@ import { store } from './store';
 // Theme Provider
 import { ThemeProvider } from './contexts/ThemeContext';
 
+// Company Configuration Provider
+import { CompanyConfigurationProvider } from './contexts/CompanyConfigurationContext';
+
 // Layouts
 import DefaultLayout from './layouts/DefaultLayout';
 import AuthLayout from './layouts/AuthLayout';
@@ -891,7 +894,8 @@ function App() {
       <AuthErrorBoundary>
         <ErrorBoundary>
           <Provider store={store}>
-            <BrowserRouter>
+            <CompanyConfigurationProvider>
+              <BrowserRouter>
               <RouteChangeHandler />
               <SignalRConnectionManager />
               <Suspense fallback={<Loading />}>
@@ -1104,8 +1108,9 @@ function App() {
               </Route>
             </Routes>
             </Suspense>
-          </BrowserRouter>
-        </Provider>
+              </BrowserRouter>
+            </CompanyConfigurationProvider>
+          </Provider>
       </ErrorBoundary>
     </AuthErrorBoundary>
     </ThemeProvider>

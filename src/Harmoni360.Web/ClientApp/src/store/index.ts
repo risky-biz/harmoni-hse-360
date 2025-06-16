@@ -19,6 +19,7 @@ import { disposalProvidersApi } from '../api/disposalProvidersApi';
 import { trainingApi } from '../features/trainings/trainingApi';
 import { statisticsApi } from '../features/statistics/statisticsApi';
 import { configurationApi } from '../api/configurationApi';
+import { companyConfigurationApi } from '../services/companyConfigurationService';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
 
@@ -43,6 +44,7 @@ export const store = configureStore({
     [trainingApi.reducerPath]: trainingApi.reducer,
     [statisticsApi.reducerPath]: statisticsApi.reducer,
     [configurationApi.reducerPath]: configurationApi.reducer,
+    [companyConfigurationApi.reducerPath]: companyConfigurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
   },
@@ -70,6 +72,7 @@ export const store = configureStore({
       trainingApi.middleware,
       statisticsApi.middleware,
       configurationApi.middleware,
+      companyConfigurationApi.middleware,
       hazardConfigurationApi.middleware,
       applicationModeApi.middleware
     ),
