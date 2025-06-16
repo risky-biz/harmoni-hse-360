@@ -205,11 +205,13 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("pending")]
         [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetPendingAudits([FromQuery] GetPendingAuditsQuery query)
+        public async Task<IActionResult> GetPendingAudits([FromQuery] GetAuditsQuery query)
         {
             _logger.LogInformation("Retrieving audits pending action");
             
-            var result = await _mediator.Send(query);
+            // Filter for pending status
+            var pendingQuery = query with { Status = AuditStatus.InProgress };
+            var result = await _mediator.Send(pendingQuery);
             return Ok(result);
         }
 
@@ -218,11 +220,18 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("overdue")]
         [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetOverdueAudits([FromQuery] GetOverdueAuditsQuery query)
+        public async Task<IActionResult> GetOverdueAudits([FromQuery] GetAuditsQuery query)
         {
             _logger.LogInformation("Retrieving overdue audits");
             
-            var result = await _mediator.Send(query);
+            // Filter for overdue audits (InProgress audits with EndDate in the past)
+            var overdueQuery = query with { 
+                Status = AuditStatus.InProgress,
+                EndDate = DateTime.UtcNow,
+                SortBy = "EndDate",
+                SortDescending = false
+            };
+            var result = await _mediator.Send(overdueQuery);
             return Ok(result);
         }
 
@@ -231,7 +240,7 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpGet("statistics")]
         [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetStatistics([FromQuery] GetAuditStatisticsQuery query)
+        public async Task<IActionResult> GetStatistics([FromQuery] GetAuditDashboardQuery query)
         {
             _logger.LogInformation("Retrieving audit statistics");
             
