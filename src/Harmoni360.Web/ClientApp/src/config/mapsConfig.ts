@@ -31,8 +31,10 @@ export const getGeocodingConfig = () => {
     : mapsKey;
 };
 
+// Note: This default center will be overridden by company configuration
+// These are fallback coordinates for Jakarta, Indonesia
 export const MAPS_DEFAULT_CENTER = {
-  lat: -6.1751, // Jakarta, Indonesia (British School Jakarta area)
+  lat: -6.1751,
   lng: 106.8650
 };
 
