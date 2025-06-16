@@ -36,21 +36,33 @@ import { useAddFindingMutation, useUpdateFindingMutation } from '../../features/
 import { InspectionFindingDto, FindingType, FindingSeverity } from '../../types/inspection';
 
 // Form validation schema
-const findingSchema = yup.object().shape({
+const findingSchema: yup.ObjectSchema<FindingFormData> = yup.object().shape({
   description: yup.string().required('Description is required'),
   type: yup.string().required('Finding type is required'),
   severity: yup.string().required('Severity is required'),
-  location: yup.string(),
-  equipment: yup.string(),
-  rootCause: yup.string(),
-  immediateAction: yup.string(),
-  correctiveAction: yup.string(),
-  dueDate: yup.date().nullable(),
-  responsiblePersonId: yup.number().nullable(),
-  regulation: yup.string()
+  location: yup.string().optional(),
+  equipment: yup.string().optional(),
+  rootCause: yup.string().optional(),
+  immediateAction: yup.string().optional(),
+  correctiveAction: yup.string().optional(),
+  dueDate: yup.date().nullable().optional(),
+  responsiblePersonId: yup.number().nullable().optional(),
+  regulation: yup.string().optional()
 });
 
-type FindingFormData = yup.InferType<typeof findingSchema>;
+interface FindingFormData {
+  description: string;
+  type: string;
+  severity: string;
+  location?: string;
+  equipment?: string;
+  rootCause?: string;
+  immediateAction?: string;
+  correctiveAction?: string;
+  dueDate?: Date | null;
+  responsiblePersonId?: number | null;
+  regulation?: string;
+}
 
 interface FindingManagerProps {
   inspectionId: number;
@@ -116,8 +128,17 @@ export const FindingManager: React.FC<FindingManagerProps> = ({
       responsiblePersonId: finding.responsiblePersonId || null,
       regulation: finding.regulation || ''
     } : {
+      description: '',
       type: 'Observation',
-      severity: 'Minor'
+      severity: 'Minor',
+      location: '',
+      equipment: '',
+      rootCause: '',
+      immediateAction: '',
+      correctiveAction: '',
+      dueDate: null,
+      responsiblePersonId: null,
+      regulation: ''
     }
   });
 
@@ -126,17 +147,34 @@ export const FindingManager: React.FC<FindingManagerProps> = ({
 
   const onSubmit = async (data: FindingFormData) => {
     try {
+      // Clean up the data to match the API contract
+      const submitData: any = {
+        description: data.description!,
+        type: data.type!,
+        severity: data.severity!,
+      };
+      
+      // Only include optional fields if they have values
+      if (data.location && data.location.trim()) submitData.location = data.location;
+      if (data.equipment && data.equipment.trim()) submitData.equipment = data.equipment;
+      if (data.rootCause && data.rootCause.trim()) submitData.rootCause = data.rootCause;
+      if (data.immediateAction && data.immediateAction.trim()) submitData.immediateAction = data.immediateAction;
+      if (data.correctiveAction && data.correctiveAction.trim()) submitData.correctiveAction = data.correctiveAction;
+      if (data.regulation && data.regulation.trim()) submitData.regulation = data.regulation;
+      if (data.dueDate) submitData.dueDate = data.dueDate.toISOString();
+      if (data.responsiblePersonId) submitData.responsiblePersonId = data.responsiblePersonId;
+      
       if (isEditing && finding) {
         await updateFinding({
           inspectionId,
           findingId: finding.id,
-          ...data
+          ...submitData
         }).unwrap();
         toast.success('Finding updated successfully');
       } else {
         await addFinding({
           inspectionId,
-          ...data
+          ...submitData
         }).unwrap();
         toast.success('Finding added successfully');
       }

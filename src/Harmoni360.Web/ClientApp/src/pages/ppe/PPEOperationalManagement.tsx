@@ -112,7 +112,7 @@ const PPEOperationalManagement: React.FC = () => {
         </CCol>
       </CRow>
 
-      <CTable hover responsive size="sm">
+      <CTable hover responsive>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell>Item Code</CTableHeaderCell>
@@ -134,7 +134,7 @@ const PPEOperationalManagement: React.FC = () => {
                 {item.assignedToName || <span className="text-muted">Unassigned</span>}
               </CTableDataCell>
               <CTableDataCell>
-                {item.assignedDate ? formatDate(item.assignedDate) : '-'}
+                {'-'}
               </CTableDataCell>
               <CTableDataCell>
                 {getPPEStatusBadge(item.status)}
@@ -204,7 +204,7 @@ const PPEOperationalManagement: React.FC = () => {
         </CCol>
       </CRow>
 
-      <CTable hover responsive size="sm">
+      <CTable hover responsive>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell>Item Code</CTableHeaderCell>
@@ -224,10 +224,10 @@ const PPEOperationalManagement: React.FC = () => {
               </CTableDataCell>
               <CTableDataCell>{item.name}</CTableDataCell>
               <CTableDataCell>
-                {item.lastMaintenanceDate ? formatDate(item.lastMaintenanceDate) : 'Never'}
+                {'Never'}
               </CTableDataCell>
               <CTableDataCell>
-                {item.nextMaintenanceDate ? formatDate(item.nextMaintenanceDate) : '-'}
+                {'-'}
               </CTableDataCell>
               <CTableDataCell>
                 {getPPEStatusBadge(item.status)}
@@ -302,7 +302,7 @@ const PPEOperationalManagement: React.FC = () => {
         </CCol>
       </CRow>
 
-      <CTable hover responsive size="sm">
+      <CTable hover responsive>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell>Item Code</CTableHeaderCell>
@@ -394,7 +394,7 @@ const PPEOperationalManagement: React.FC = () => {
         </CCol>
       </CRow>
 
-      <CTable hover responsive size="sm">
+      <CTable hover responsive>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell>Item Code</CTableHeaderCell>

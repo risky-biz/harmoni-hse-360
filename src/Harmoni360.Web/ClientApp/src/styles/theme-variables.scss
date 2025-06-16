@@ -1,0 +1,394 @@
+// Theme-aware CSS custom properties
+// Maps design tokens to theme-aware variables for light/dark mode switching
+// Created: June 2025
+
+// Default to light mode
+:root {
+  // Background colors
+  --theme-bg-primary: var(--bg-primary-light);
+  --theme-bg-secondary: var(--bg-secondary-light);
+  --theme-bg-tertiary: var(--bg-tertiary-light);
+  --theme-bg-overlay: var(--bg-overlay-light);
+  
+  // Text colors
+  --theme-text-primary: var(--text-primary-light);
+  --theme-text-secondary: var(--text-secondary-light);
+  --theme-text-muted: var(--text-muted-light);
+  --theme-text-disabled: var(--text-disabled-light);
+  
+  // Border colors
+  --theme-border: var(--border-light);
+  --theme-border-muted: var(--border-muted-light);
+  --theme-border-strong: var(--border-strong-light);
+  
+  // Semantic colors - Risk levels
+  --theme-risk-critical: var(--risk-critical-light);
+  --theme-risk-critical-bg: var(--risk-critical-bg-light);
+  --theme-risk-high: var(--risk-high-light);
+  --theme-risk-high-bg: var(--risk-high-bg-light);
+  --theme-risk-medium: var(--risk-medium-light);
+  --theme-risk-medium-bg: var(--risk-medium-bg-light);
+  --theme-risk-low: var(--risk-low-light);
+  --theme-risk-low-bg: var(--risk-low-bg-light);
+  --theme-risk-none: var(--risk-none-light);
+  --theme-risk-none-bg: var(--risk-none-bg-light);
+  
+  // Semantic colors - Status workflow
+  --theme-status-draft: var(--status-draft-light);
+  --theme-status-draft-bg: var(--status-draft-bg-light);
+  --theme-status-progress: var(--status-progress-light);
+  --theme-status-progress-bg: var(--status-progress-bg-light);
+  --theme-status-review: var(--status-review-light);
+  --theme-status-review-bg: var(--status-review-bg-light);
+  --theme-status-complete: var(--status-complete-light);
+  --theme-status-complete-bg: var(--status-complete-bg-light);
+  --theme-status-overdue: var(--status-overdue-light);
+  --theme-status-overdue-bg: var(--status-overdue-bg-light);
+  --theme-status-cancelled: var(--status-cancelled-light);
+  --theme-status-cancelled-bg: var(--status-cancelled-bg-light);
+  
+  // Alert colors
+  --theme-emergency-bg: var(--emergency-bg-light);
+  --theme-emergency-text: var(--emergency-text-light);
+  --theme-success-bg: var(--success-bg-light);
+  --theme-success-text: var(--success-text-light);
+  --theme-info-bg: var(--info-bg-light);
+  --theme-info-text: var(--info-text-light);
+  --theme-warning-bg: var(--warning-bg-light);
+  --theme-warning-text: var(--warning-text-light);
+  
+  // UI component filters
+  --theme-close-button-filter: none;
+  
+  // Additional theme variables for menus and overlays
+  --theme-bg-hover: rgba(0, 0, 0, 0.05);
+  --theme-bg-active: rgba(0, 0, 0, 0.1);
+}
+
+// Dark mode overrides
+[data-theme="dark"] {
+  // Background colors
+  --theme-bg-primary: var(--bg-primary-dark);
+  --theme-bg-secondary: var(--bg-secondary-dark);
+  --theme-bg-tertiary: var(--bg-tertiary-dark);
+  --theme-bg-overlay: var(--bg-overlay-dark);
+  
+  // Text colors
+  --theme-text-primary: var(--text-primary-dark);
+  --theme-text-secondary: var(--text-secondary-dark);
+  --theme-text-muted: var(--text-muted-dark);
+  --theme-text-disabled: var(--text-disabled-dark);
+  
+  // Border colors
+  --theme-border: var(--border-dark);
+  --theme-border-muted: var(--border-muted-dark);
+  --theme-border-strong: var(--border-strong-dark);
+  
+  // Semantic colors - Risk levels
+  --theme-risk-critical: var(--risk-critical-dark);
+  --theme-risk-critical-bg: var(--risk-critical-bg-dark);
+  --theme-risk-high: var(--risk-high-dark);
+  --theme-risk-high-bg: var(--risk-high-bg-dark);
+  --theme-risk-medium: var(--risk-medium-dark);
+  --theme-risk-medium-bg: var(--risk-medium-bg-dark);
+  --theme-risk-low: var(--risk-low-dark);
+  --theme-risk-low-bg: var(--risk-low-bg-dark);
+  --theme-risk-none: var(--risk-none-dark);
+  --theme-risk-none-bg: var(--risk-none-bg-dark);
+  
+  // Semantic colors - Status workflow
+  --theme-status-draft: var(--status-draft-dark);
+  --theme-status-draft-bg: var(--status-draft-bg-dark);
+  --theme-status-progress: var(--status-progress-dark);
+  --theme-status-progress-bg: var(--status-progress-bg-dark);
+  --theme-status-review: var(--status-review-dark);
+  --theme-status-review-bg: var(--status-review-bg-dark);
+  --theme-status-complete: var(--status-complete-dark);
+  --theme-status-complete-bg: var(--status-complete-bg-dark);
+  --theme-status-overdue: var(--status-overdue-dark);
+  --theme-status-overdue-bg: var(--status-overdue-bg-dark);
+  --theme-status-cancelled: var(--status-cancelled-dark);
+  --theme-status-cancelled-bg: var(--status-cancelled-bg-dark);
+  
+  // Alert colors
+  --theme-emergency-bg: var(--emergency-bg-dark);
+  --theme-emergency-text: var(--emergency-text-dark);
+  --theme-success-bg: var(--success-bg-dark);
+  --theme-success-text: var(--success-text-dark);
+  --theme-info-bg: var(--info-bg-dark);
+  --theme-info-text: var(--info-text-dark);
+  --theme-warning-bg: var(--warning-bg-dark);
+  --theme-warning-text: var(--warning-text-dark);
+  
+  // UI component filters
+  --theme-close-button-filter: invert(1);
+  
+  // Additional theme variables for menus and overlays
+  --theme-bg-hover: rgba(255, 255, 255, 0.1);
+  --theme-bg-active: rgba(255, 255, 255, 0.15);
+}
+
+// System preference fallback (when no explicit theme is set)
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    // Background colors
+    --theme-bg-primary: var(--bg-primary-dark);
+    --theme-bg-secondary: var(--bg-secondary-dark);
+    --theme-bg-tertiary: var(--bg-tertiary-dark);
+    --theme-bg-overlay: var(--bg-overlay-dark);
+    
+    // Text colors
+    --theme-text-primary: var(--text-primary-dark);
+    --theme-text-secondary: var(--text-secondary-dark);
+    --theme-text-muted: var(--text-muted-dark);
+    --theme-text-disabled: var(--text-disabled-dark);
+    
+    // Border colors
+    --theme-border: var(--border-dark);
+    --theme-border-muted: var(--border-muted-dark);
+    --theme-border-strong: var(--border-strong-dark);
+    
+    // Semantic colors - Risk levels
+    --theme-risk-critical: var(--risk-critical-dark);
+    --theme-risk-critical-bg: var(--risk-critical-bg-dark);
+    --theme-risk-high: var(--risk-high-dark);
+    --theme-risk-high-bg: var(--risk-high-bg-dark);
+    --theme-risk-medium: var(--risk-medium-dark);
+    --theme-risk-medium-bg: var(--risk-medium-bg-dark);
+    --theme-risk-low: var(--risk-low-dark);
+    --theme-risk-low-bg: var(--risk-low-bg-dark);
+    --theme-risk-none: var(--risk-none-dark);
+    --theme-risk-none-bg: var(--risk-none-bg-dark);
+    
+    // Semantic colors - Status workflow
+    --theme-status-draft: var(--status-draft-dark);
+    --theme-status-draft-bg: var(--status-draft-bg-dark);
+    --theme-status-progress: var(--status-progress-dark);
+    --theme-status-progress-bg: var(--status-progress-bg-dark);
+    --theme-status-review: var(--status-review-dark);
+    --theme-status-review-bg: var(--status-review-bg-dark);
+    --theme-status-complete: var(--status-complete-dark);
+    --theme-status-complete-bg: var(--status-complete-bg-dark);
+    --theme-status-overdue: var(--status-overdue-dark);
+    --theme-status-overdue-bg: var(--status-overdue-bg-dark);
+    --theme-status-cancelled: var(--status-cancelled-dark);
+    --theme-status-cancelled-bg: var(--status-cancelled-bg-dark);
+    
+    // Alert colors
+    --theme-emergency-bg: var(--emergency-bg-dark);
+    --theme-emergency-text: var(--emergency-text-dark);
+    --theme-success-bg: var(--success-bg-dark);
+    --theme-success-text: var(--success-text-dark);
+    --theme-info-bg: var(--info-bg-dark);
+    --theme-info-text: var(--info-text-dark);
+    --theme-warning-bg: var(--warning-bg-dark);
+    --theme-warning-text: var(--warning-text-dark);
+  }
+}
+
+// Smooth transitions for theme switching
+* {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+// Disable transitions during theme switch to prevent flash
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *:before,
+html.theme-transition *:after {
+  transition: none !important;
+}
+
+// Base element updates using theme variables
+body {
+  background-color: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+}
+
+// Card components
+.card {
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border);
+  color: var(--theme-text-primary);
+
+  .card-header {
+    background-color: var(--theme-bg-secondary);
+    border-bottom-color: var(--theme-border);
+    color: var(--theme-text-primary);
+  }
+
+  .card-body {
+    color: var(--theme-text-primary);
+  }
+
+  .card-footer {
+    background-color: var(--theme-bg-secondary);
+    border-top-color: var(--theme-border);
+  }
+}
+
+// Table components
+.table {
+  color: var(--theme-text-primary);
+  border-color: var(--theme-border);
+
+  th {
+    background-color: var(--theme-bg-secondary);
+    border-color: var(--theme-border);
+    color: var(--theme-text-primary);
+  }
+
+  td {
+    border-color: var(--theme-border);
+  }
+
+  &-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--theme-bg-tertiary);
+  }
+
+  &-hover tbody tr:hover {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-primary);
+  }
+}
+
+// Form components
+.form-control {
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border);
+  color: var(--theme-text-primary);
+
+  &:focus {
+    background-color: var(--theme-bg-primary);
+    border-color: var(--harmoni-teal-500);
+    color: var(--theme-text-primary);
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-disabled);
+  }
+
+  &::placeholder {
+    color: var(--theme-text-muted);
+  }
+}
+
+// Select elements
+.form-select {
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border);
+  color: var(--theme-text-primary);
+
+  &:focus {
+    border-color: var(--harmoni-teal-500);
+  }
+}
+
+// Modal components
+.modal-content {
+  background-color: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+
+  .modal-header {
+    background-color: var(--theme-bg-secondary);
+    border-bottom-color: var(--theme-border);
+  }
+
+  .modal-footer {
+    background-color: var(--theme-bg-secondary);
+    border-top-color: var(--theme-border);
+  }
+}
+
+// Dropdown components
+.dropdown-menu {
+  background-color: var(--theme-bg-primary);
+  border-color: var(--theme-border);
+
+  .dropdown-item {
+    color: var(--theme-text-primary);
+
+    &:hover,
+    &:focus {
+      background-color: var(--theme-bg-tertiary);
+      color: var(--theme-text-primary);
+    }
+
+    &.active,
+    &:active {
+      background-color: var(--harmoni-teal-500);
+      color: white;
+    }
+  }
+
+  .dropdown-divider {
+    border-top-color: var(--theme-border);
+  }
+}
+
+// Alert components
+.alert {
+  &-danger {
+    background-color: var(--theme-risk-critical-bg);
+    color: var(--theme-risk-critical);
+    border-color: var(--theme-risk-critical);
+  }
+
+  &-warning {
+    background-color: var(--theme-risk-medium-bg);
+    color: var(--theme-risk-medium);
+    border-color: var(--theme-risk-medium);
+  }
+
+  &-success {
+    background-color: var(--theme-risk-low-bg);
+    color: var(--theme-risk-low);
+    border-color: var(--theme-risk-low);
+  }
+
+  &-info {
+    background-color: var(--theme-status-draft-bg);
+    color: var(--theme-status-draft);
+    border-color: var(--theme-status-draft);
+  }
+}
+
+// Badge components (fixing the critical issue)
+.badge {
+  &.badge-danger {
+    background-color: var(--theme-risk-critical);
+    color: white;
+  }
+
+  &.badge-warning {
+    background-color: var(--theme-risk-medium);
+    color: var(--theme-warning-text);
+  }
+
+  &.badge-success {
+    background-color: var(--theme-risk-low);
+    color: white;
+  }
+
+  &.badge-info {
+    background-color: var(--theme-info-bg);
+    color: var(--theme-info-text);
+  }
+
+  &.badge-primary {
+    background-color: var(--harmoni-teal-500);
+    color: white;
+  }
+
+  &.badge-secondary {
+    background-color: var(--theme-risk-none);
+    color: white;
+  }
+}

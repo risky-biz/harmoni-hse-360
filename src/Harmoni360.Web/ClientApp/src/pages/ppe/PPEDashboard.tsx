@@ -92,7 +92,7 @@ const PPEDashboard: React.FC = () => {
     }
   };
 
-  const { data: dashboard, error, isLoading, refetch, dataUpdatedAt } = useGetPPEDashboardQuery({
+  const { data: dashboard, error, isLoading, refetch } = useGetPPEDashboardQuery({
     ...getDateRange(),
     category: category || undefined
   }, {
@@ -104,10 +104,8 @@ const PPEDashboard: React.FC = () => {
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (dataUpdatedAt) {
-      setLastRefreshTime(new Date(dataUpdatedAt));
-    }
-  }, [dataUpdatedAt]);
+    setLastRefreshTime(new Date());
+  }, [dashboard]);
 
   // Handle auto-refresh
   useEffect(() => {
@@ -145,12 +143,12 @@ const PPEDashboard: React.FC = () => {
   }
 
   const getUtilizationPercentage = () => {
-    if (dashboard.totalItems === 0) return 0;
+    if (!dashboard || dashboard.totalItems === 0) return 0;
     return Math.round((dashboard.assignedItems / dashboard.totalItems) * 100);
   };
 
   const getAvailabilityPercentage = () => {
-    if (dashboard.totalItems === 0) return 0;
+    if (!dashboard || dashboard.totalItems === 0) return 0;
     return Math.round((dashboard.availableItems / dashboard.totalItems) * 100);
   };
 
@@ -521,35 +519,33 @@ const PPEDashboard: React.FC = () => {
         <CCol lg={8}>
           {dashboard?.expiryWarnings && (
             <RecentItemsList
-              title="Items Requiring Attention"
               items={[
                 ...dashboard.expiryWarnings.slice(0, 5).map(warning => ({
-                  id: warning.itemId,
+                  id: warning.itemId.toString(),
                   title: warning.itemCode,
                   subtitle: `${warning.itemName} • Expires: ${formatDate(warning.expiryDate)}`,
-                  status: warning.isExpired ? 'Expired' : 'Expiring',
-                  statusColor: warning.isExpired ? 'danger' : 'warning',
-                  timestamp: warning.expiryDate,
-                  isOverdue: warning.isExpired,
-                  onClick: () => navigate(`/ppe/${warning.itemId}`)
+                  metadata: {
+                    status: warning.isExpired ? 'Expired' : 'Expiring',
+                    statusColor: warning.isExpired ? 'danger' : 'warning',
+                    timestamp: warning.expiryDate,
+                    isOverdue: warning.isExpired
+                  },
+                  clickAction: () => navigate(`/ppe/${warning.itemId}`)
                 })),
                 ...dashboard.maintenanceWarnings.slice(0, 3).map(warning => ({
-                  id: warning.itemId,
+                  id: warning.itemId.toString(),
                   title: warning.itemCode,
                   subtitle: `${warning.itemName} • Maintenance due: ${formatDate(warning.dueDate)}`,
-                  status: warning.isOverdue ? 'Overdue' : 'Due',
-                  statusColor: warning.isOverdue ? 'danger' : 'info',
-                  timestamp: warning.dueDate,
-                  isOverdue: warning.isOverdue,
-                  onClick: () => navigate(`/ppe/${warning.itemId}`)
+                  metadata: {
+                    status: warning.isOverdue ? 'Overdue' : 'Due',
+                    statusColor: warning.isOverdue ? 'danger' : 'info',
+                    timestamp: warning.dueDate,
+                    isOverdue: warning.isOverdue
+                  },
+                  clickAction: () => navigate(`/ppe/${warning.itemId}`)
                 }))
               ]}
-              isLoading={isLoading}
               maxItems={8}
-              showAllLink={{
-                text: 'View All PPE Items',
-                onClick: () => navigate('/ppe')
-              }}
             />
           )}
         </CCol>

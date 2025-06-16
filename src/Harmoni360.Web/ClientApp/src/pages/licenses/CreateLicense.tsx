@@ -462,7 +462,7 @@ const CreateLicense: React.FC = () => {
                             invalid={!!errors.department}
                           >
                             <option value="">Select Department</option>
-                            {departments?.items?.map((dept) => (
+                            {departments?.map((dept: any) => (
                               <option key={dept.id} value={dept.name}>
                                 {dept.name}
                               </option>

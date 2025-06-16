@@ -1,7 +1,7 @@
-// Use Sass modules and imports must come first
+// All @use rules must come first before any other rules
 @use 'sass:color';
 
-// Harmoni HSE 360 Branding Colors
+// Harmoni HSE 360 Branding Colors (must be defined before @use with configuration)
 $teal-primary: #0097A7;
 $deep-blue: #004D6E;
 $leaf-green: #66BB6A;
@@ -18,6 +18,12 @@ $charcoal: #212121;
   $body-bg: $soft-grey,
   $body-color: $charcoal
 );
+
+// Import design tokens and theme variables after @use rules
+@import './design-tokens.scss';
+@import './theme-variables.scss';
+@import './components-theme.scss';
+@import './modules-theme.scss';
 
 // Import dashboard styles after variables and CoreUI
 @import './dashboard.scss';
@@ -343,6 +349,8 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease-in-out;
   width: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   // Always show full brand, remove minimized version
   .sidebar-brand-full {
@@ -383,7 +391,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .nav-link {
-    color: #e3e3e3;
+    color: #b3b3b3; // Consistent secondary text color
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -394,16 +402,16 @@ h1, h2, h3, h4, h5, h6 {
     border-left: 3px solid transparent;
     font-size: 14px;
     font-weight: 400;
-    margin: 2px 0;
+    margin: 1px 0;
 
     &:hover {
-      color: #ffffff;
+      color: #ffffff; // Pure white on hover
       background-color: #3a3a3c;
       text-decoration: none;
     }
 
     &.active {
-      color: #ffffff;
+      color: #ffffff; // Pure white for active
       background-color: #3a3a3c;
       border-left-color: var(--harmoni-teal);
       font-weight: 500;
@@ -411,7 +419,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .nav-icon {
-    color: #e3e3e3;
+    color: #b3b3b3; // Match text color for consistency
     margin-right: 12px;
     flex-shrink: 0;
     width: 20px;
@@ -420,23 +428,28 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    transition: color 0.2s ease-in-out;
     
-    .active & {
-      color: var(--harmoni-teal);
+    .nav-link:hover & {
+      color: #ffffff; // White on hover
+    }
+    
+    .nav-link.active & {
+      color: var(--harmoni-teal); // Teal for active state
     }
   }
 
   // CoreUI nav item styling overrides
   .nav-item {
     .nav-link {
-      color: #e3e3e3 !important;
+      color: #b3b3b3 !important; // Consistent secondary color
       
       &:hover {
-        color: #ffffff !important;
+        color: #ffffff !important; // Pure white on hover
       }
       
       &.active {
-        color: #ffffff !important;
+        color: #ffffff !important; // Pure white for active
       }
     }
   }
@@ -444,7 +457,7 @@ h1, h2, h3, h4, h5, h6 {
   // Navigation groups (dropdown sections)
   .nav-group {
     .nav-group-toggler {
-      color: #e3e3e3;
+      color: #b3b3b3; // Consistent secondary color
       background-color: transparent;
       border: none;
       padding: 12px 16px;
@@ -454,27 +467,30 @@ h1, h2, h3, h4, h5, h6 {
       align-items: center;
       transition: all 0.2s ease-in-out;
       border-left: 3px solid transparent;
-      margin: 2px 0;
+      margin: 1px 0;
+      font-size: 14px;
+      font-weight: 400;
 
       &:hover {
-        color: #ffffff;
+        color: #ffffff; // Pure white on hover
         background-color: #3a3a3c;
       }
 
       &[aria-expanded="true"] {
-        color: #ffffff;
+        color: #ffffff; // Pure white when expanded
         background-color: #3a3a3c;
-        // Remove automatic border highlight when expanded
-        // Only show border when no child is active
       }
 
       // Only highlight parent when it's specifically selected (not when child is active)
       &.active:not([aria-expanded="true"]) {
         border-left-color: var(--harmoni-teal);
+        color: #ffffff;
       }
 
       .nav-icon {
+        color: inherit; // Inherit color from parent
         margin-right: 12px;
+        transition: color 0.2s ease-in-out;
       }
     }
 
@@ -487,18 +503,19 @@ h1, h2, h3, h4, h5, h6 {
         .nav-link {
           padding-left: 44px;
           font-size: 13px;
-          color: #cccccc !important;
+          color: #999999 !important; // Slightly dimmed for sub-items
           border-left: 3px solid transparent;
           margin: 1px 0;
           transition: all 0.2s ease-in-out;
+          font-weight: 400;
 
           &:hover {
-            color: #ffffff !important;
+            color: #ffffff !important; // Pure white on hover
             background-color: #3a3a3c;
           }
 
           &.active {
-            color: #ffffff !important;
+            color: #ffffff !important; // Pure white for active
             background-color: #3a3a3c;
             border-left-color: var(--harmoni-teal);
             font-weight: 500;
@@ -508,22 +525,23 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
 
-  // Section titles (remove or minimize)
+  // Section titles (category headers)
   .nav-title {
-    color: #8a8a8a;
+    color: #808080; // Consistent muted color for headers
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     padding: 16px 16px 8px 16px;
     margin: 0;
+    opacity: 0.9;
   }
 
   // Toggler button styling
   .sidebar-toggler {
     background-color: #3a3a3c;
     border: none;
-    color: #e3e3e3;
+    color: #b3b3b3; // Consistent with other elements
     padding: 12px;
     transition: all 0.2s ease-in-out;
 
@@ -534,8 +552,41 @@ h1, h2, h3, h4, h5, h6 {
 
     &:focus {
       box-shadow: 0 0 0 2px var(--harmoni-teal);
+      outline: none;
     }
   }
+
+  // Custom scrollbar styling for sidebar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #4a4a4c;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #5a5a5c;
+    }
+
+    &:active {
+      background: #6a6a6c;
+    }
+  }
+
+  // Firefox scrollbar styling
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4c transparent;
+
+  // Smooth scrolling
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 // Wrapper layout adjustments for sidebar visibility
@@ -622,10 +673,10 @@ h1, h2, h3, h4, h5, h6 {
         border: 1px solid #dee2e6 !important;
       }
       
-      // Ensure info badges remain visible on teal hover background
+      // FIXED: WCAG 2.1 AA compliant info badge colors
       &.badge-info {
-        background-color: #0dcaf0 !important;
-        color: #000 !important;
+        background-color: var(--theme-info-bg);
+        color: var(--theme-info-text);
       }
       
       // Maintain icon visibility
@@ -812,6 +863,58 @@ h1, h2, h3, h4, h5, h6 {
   outline-offset: 2px;
 }
 
+// Global scrollbar styling standards for the application
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #a8a8a8;
+  }
+
+  &:active {
+    background: #999999;
+  }
+}
+
+// Firefox scrollbar styling
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+// Dark containers get darker scrollbars
+.card, .modal, .dropdown-menu, [class*="bg-dark"] {
+  &::-webkit-scrollbar-track {
+    background: #2d2d30;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #4a4a4c;
+
+    &:hover {
+      background: #5a5a5c;
+    }
+
+    &:active {
+      background: #6a6a6c;
+    }
+  }
+
+  scrollbar-color: #4a4a4c #2d2d30;
+}
+
 // Clickable elements styling
 .cursor-pointer {
   cursor: pointer !important;
@@ -868,29 +971,25 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-// Application Settings component styling
+// Application Settings component styling - Original Design
 .application-settings {
   position: sticky;
   bottom: 0;
-  background-color: #2d2d30;
+  background-color: #2d2d30; // Sidebar dark background
   border-top: 1px solid #3a3a3c;
   padding: 8px;
-  z-index: 1000; // Ensure proper layering
-  
-  // Ensure container stability during interactions
-  contain: layout style; // CSS containment for performance
-  transform: translateZ(0); // Force hardware acceleration
+  z-index: 1000;
   
   .application-settings-toggle {
     border: none !important;
     background-color: transparent !important;
-    color: #e3e3e3 !important;
+    color: #b3b3b3 !important; // Consistent with sidebar navigation
     padding: 12px 16px;
     border-radius: 0 !important;
     font-size: 14px;
     width: 100%;
     text-align: left;
-    transition: all 0.15s ease-in-out !important; // Faster, smoother transition
+    transition: all 0.15s ease-in-out !important;
     
     // Remove CoreUI's default dropdown arrow
     &::after {
@@ -908,12 +1007,12 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     &:active {
-      transform: none !important; // Prevent jump on click
+      transform: none !important;
     }
     
     .transition-transform {
-      transition: transform 0.15s ease-in-out !important; // Faster transition
-      will-change: transform; // Optimize for animation
+      transition: transform 0.15s ease-in-out !important;
+      will-change: transform;
     }
     
     .rotate-180 {
@@ -922,29 +1021,29 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   .application-settings-menu {
+    // Original dark background matching sidebar
     background-color: #2d2d30;
     border: 1px solid #3a3a3c;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    min-width: 280px;
-    max-height: 400px; // Prevent menu from being too tall
-    overflow-y: auto; // Enable scrolling if needed
-    border-radius: 4px; // Slight rounding for better appearance
-    animation: fadeInUp 0.15s ease-out; // Smooth entrance animation
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     
-    // Enhanced smooth scrolling properties
-    scroll-behavior: smooth;
-    overflow-anchor: none; // Prevent scroll anchoring issues
-    overscroll-behavior: contain; // Keep scroll within menu
-    -webkit-overflow-scrolling: touch; // iOS smooth scrolling
-    scrollbar-width: thin; // Firefox thin scrollbar
-    scrollbar-color: #3a3a3c #2d2d30; // Firefox scrollbar colors
+    // Original width extending beyond sidebar
+    min-width: 320px !important;
+    width: 320px !important;
+    max-width: 320px !important;
+    max-height: 400px;
     
-    // Position stability during scroll
-    position: relative;
-    will-change: scroll-position; // Optimize for scroll performance
-    transform: translateZ(0); // Create new stacking context for stability
+    overflow-y: auto;
+    border-radius: 4px; // Smaller radius like original
+    animation: slideInFromLeft 0.2s ease-out;
+    z-index: 2000;
     
-    // Custom scrollbar for webkit browsers
+    // Fix positioning to appear above the Application Settings button
+    position: fixed !important;
+    bottom: 60px !important; // Position above the button
+    right: auto !important;
+    transform: none !important;
+    
+    // Custom scrollbar styling for dark theme
     &::-webkit-scrollbar {
       width: 6px;
     }
@@ -955,35 +1054,24 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     &::-webkit-scrollbar-thumb {
-      background: #3a3a3c;
+      background: #4a4a4c;
       border-radius: 3px;
       
       &:hover {
-        background: #484848;
-      }
-    }
-    
-    // Special state for smooth scrolling
-    &.is-scrolling {
-      // Disable pointer events during scroll to prevent conflicts
-      pointer-events: none;
-      
-      .application-settings-item {
-        // Temporarily disable hover effects during scroll
-        transform: none !important;
-        transition: none !important;
+        background: #5a5a5c;
       }
     }
     
     .dropdown-header {
-      background-color: #252526;
-      color: #ffffff;
+      background-color: #252526; // Darker header background
+      color: #ffffff; // White text like original
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       padding: 8px 16px;
-      border-radius: 4px 4px 0 0; // Round top corners
+      border-radius: 4px 4px 0 0;
+      border-bottom: 1px solid #3a3a3c;
     }
     
     .dropdown-divider {
@@ -992,47 +1080,26 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     .application-settings-item {
-      color: #e3e3e3;
+      color: #ffffff; // White text on dark background - original design
       padding: 12px 16px;
       border: none;
       background-color: transparent;
       cursor: pointer;
       position: relative;
+      transition: all 0.15s ease-in-out;
+      border-radius: 0;
       
-      // Smooth transitions that won't conflict with scrolling
-      transition: 
-        background-color 0.15s ease-out,
-        color 0.15s ease-out,
-        box-shadow 0.15s ease-out;
-      
-      // Use pseudo-element for smooth slide effect instead of transform
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0;
-        background: linear-gradient(90deg, var(--harmoni-teal), transparent);
-        transition: width 0.2s ease-out;
-        z-index: -1;
-      }
-      
-      // Standard hover state (will be overridden during scroll)
-      &:hover:not(.is-scrolling *) {
-        background-color: #3a3a3c;
+      &:hover {
+        background-color: #3a3a3c; // Subtle dark hover
         color: #ffffff;
         
-        &::before {
-          width: 3px; // Subtle left border effect
+        .fw-semibold {
+          color: #ffffff;
         }
-      }
-      
-      // Enhanced hover state using JavaScript class
-      &.item-hover {
-        background-color: #3a3a3c;
-        color: #ffffff;
-        box-shadow: inset 3px 0 0 var(--harmoni-teal);
+        
+        small {
+          color: #cccccc !important;
+        }
       }
       
       &:focus {
@@ -1040,54 +1107,56 @@ h1, h2, h3, h4, h5, h6 {
         color: #ffffff;
         outline: 2px solid var(--harmoni-teal);
         outline-offset: -2px;
-        
-        &::before {
-          width: 3px;
-        }
       }
       
       &:active {
-        background-color: #404042; // Slightly different color for press
-        
-        &::before {
-          width: 0; // Reset on press
-        }
+        background-color: #404042;
       }
       
       .fw-semibold {
-        font-weight: 500;
+        font-weight: 500; // Original weight
         margin-bottom: 2px;
-        transition: inherit; // Inherit smooth transitions
+        color: #ffffff;
+        font-size: 14px; // Original size
+        transition: color 0.15s ease-in-out;
       }
       
       small {
+        color: #b3b3b3; // Original muted text color
         font-size: 12px;
         line-height: 1.3;
-        opacity: 0.8;
-        transition: inherit; // Inherit smooth transitions
+        transition: color 0.15s ease-in-out;
       }
+    }
+    
+    // Special styling for the bottom info item - original design
+    .text-muted.small {
+      background-color: transparent !important;
+      color: #808080 !important; // Original muted color
+      font-size: 11px !important;
+      padding: 8px 16px !important;
+      border-radius: 0 !important;
+      border-top: 1px solid #3a3a3c !important;
+      margin: 0 !important;
       
-      // Ensure text remains accessible during all states
-      &:hover,
-      &.item-hover,
-      &:focus {
-        small {
-          opacity: 1;
-        }
+      &:hover {
+        background-color: transparent !important;
+        transform: none !important;
+        color: #808080 !important;
       }
     }
   }
 }
 
-// Animation for smooth dropdown entrance
-@keyframes fadeInUp {
+// Animation for Application Settings menu slide-in
+@keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateX(-10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
@@ -1096,14 +1165,14 @@ h1, h2, h3, h4, h5, h6 {
   .application-settings-menu {
     // On touch devices, prioritize scroll performance
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: auto; // Disable smooth scroll on mobile for better performance
+    scroll-behavior: auto;
+    
+    // Adjust width for mobile
+    min-width: 280px !important;
+    width: 280px !important;
+    max-width: 280px !important;
     
     .application-settings-item {
-      // Simplify hover effects on touch devices
-      &:hover {
-        transform: none !important;
-      }
-      
       // Use active state instead of hover on touch
       &:active {
         background-color: #3a3a3c;
@@ -1116,15 +1185,11 @@ h1, h2, h3, h4, h5, h6 {
 // Reduce motion for users who prefer it
 @media (prefers-reduced-motion: reduce) {
   .application-settings-menu {
-    scroll-behavior: auto; // Disable smooth scroll for accessibility
+    scroll-behavior: auto;
     animation: none; // Disable entrance animation
     
     .application-settings-item {
-      transition: none !important; // Disable all transitions
-      
-      &::before {
-        transition: none !important;
-      }
+      transition: none !important;
     }
   }
   
@@ -1132,6 +1197,18 @@ h1, h2, h3, h4, h5, h6 {
     .transition-transform {
       transition: none !important;
     }
+  }
+}
+
+// Mobile responsiveness for Application Settings
+@media (max-width: 991.98px) {
+  .application-settings-menu {
+    // On mobile, position from the right edge
+    left: auto !important;
+    right: 8px !important;
+    min-width: 260px !important;
+    width: 260px !important;
+    max-width: 260px !important;
   }
 }
 

@@ -49,10 +49,8 @@ import {
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
 import { Icon } from '../../components/common/Icon';
 import ApiUnavailableMessage from '../../components/common/ApiUnavailableMessage';
-import {
-  useGetMyHazardsQuery,
-  HazardDto,
-} from '../../features/hazards/hazardApi';
+import { useGetMyHazardsQuery } from '../../features/hazards/hazardApi';
+import { HazardDto } from '../../types/hazard';
 import {
   getSeverityBadge,
   getStatusBadge,

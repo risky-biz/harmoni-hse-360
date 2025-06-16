@@ -579,16 +579,16 @@ export const createNavigationConfig = (): NavigationItem[] => [
     ],
   },
 
-  // 10. HSE Statistics/Dashboard (Placeholder)
+  // 10. HSSE Statistics/Dashboard 
   {
     component: 'CNavTitle',
-    name: 'HSE Statistics',
-    adminOnly: true, // Temporary until module is implemented
+    name: 'HSSE Statistics',
+    adminOnly: true,
   },
   {
     component: 'CNavItem',
-    name: 'HSE Dashboard (Coming Soon)',
-    to: '#',
+    name: 'HSSE Dashboard',
+    to: '/hsse/dashboard',
     icon: null,
     adminOnly: true,
   },

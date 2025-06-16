@@ -245,12 +245,12 @@ export interface AuditDashboardDto {
   scheduledAudits: number;
   inProgressAudits: number;
   completedAudits: number;
-  overdueAudits: number;
+  overdueAuditsCount: number;
   
   // Finding Statistics
   totalFindings: number;
   openFindings: number;
-  criticalFindings: number;
+  criticalFindingsCount: number;
   averageCompletionTime: number;
   
   // Trend Data

@@ -215,7 +215,7 @@ const QrScanner: React.FC = () => {
             <div className="text-center mb-4">
               {!isScanning ? (
                 <div className="py-5">
-                  <Icon icon={faQrcode} size="4x" className="text-muted mb-3" />
+                  <Icon icon={faQrcode} size="lg" className="text-muted mb-3" />
                   <h5>Ready to Scan</h5>
                   <p className="text-muted">
                     Position your camera over a QR code to automatically start
@@ -247,7 +247,7 @@ const QrScanner: React.FC = () => {
                       <div className="d-flex align-items-center justify-content-center h-100">
                         <Icon
                           icon={faQrcode}
-                          size="2x"
+                          size="lg"
                           className="text-primary"
                         />
                       </div>

@@ -168,7 +168,7 @@ export const PPEAssignmentModal: React.FC<PPEAssignmentModalProps> = ({
                 <option value="">Select a user...</option>
                 {filteredUsers.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.fullName} ({user.email}) - {user.department}
+                    {user.fullName} ({user.email})
                   </option>
                 ))}
               </CFormSelect>
@@ -183,7 +183,7 @@ export const PPEAssignmentModal: React.FC<PPEAssignmentModalProps> = ({
                       <br />
                       <small className="text-muted">
                         <FontAwesomeIcon icon={faEnvelope} className="me-1" />
-                        {selectedUser.email} • {selectedUser.department}
+                        {selectedUser.email}
                       </small>
                     </div>
                   </div>

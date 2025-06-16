@@ -50,7 +50,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 const IncidentDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
   const [timeRange, setTimeRange] = useState<string>('all');
   const [department, setDepartment] = useState<string>('');
   const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(0); // 0 = disabled
@@ -61,7 +61,7 @@ const IncidentDashboard: React.FC = () => {
   const { connectionState } = useSignalR();
   
   // Get departments from database
-  const { data: departments } = useGetDepartmentsQuery();
+  const { data: departments } = useGetDepartmentsQuery({ isActive: true });
 
   // Calculate date range based on selection
   const getDateRange = () => {
@@ -89,7 +89,7 @@ const IncidentDashboard: React.FC = () => {
 
   // Generate demo data if in demo mode and no real data available
   const generateDemoData = () => {
-    if (!isDemo) return null;
+    if (!isDemoMode) return null;
     
     const now = new Date();
     const months = [];
@@ -193,20 +193,20 @@ const IncidentDashboard: React.FC = () => {
     };
   };
 
-  const { data: apiData, isLoading, error, refetch, dataUpdatedAt } = useGetIncidentDashboardQuery({
+  const { data: apiData, isLoading, error, refetch, fulfilledTimeStamp } = useGetIncidentDashboardQuery({
     ...getDateRange(),
     department: department || undefined,
     includeResolved: true
   });
   // Use demo data if in demo mode and no API data, otherwise use API data
-  const dashboardData = apiData || (isDemo ? generateDemoData() : null);
+  const dashboardData = apiData || (isDemoMode ? generateDemoData() : null);
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (dataUpdatedAt) {
-      setLastRefreshTime(new Date(dataUpdatedAt));
+    if (fulfilledTimeStamp) {
+      setLastRefreshTime(new Date(fulfilledTimeStamp));
     }
-  }, [dataUpdatedAt]);
+  }, [fulfilledTimeStamp]);
 
   // Handle auto-refresh
   useEffect(() => {
@@ -675,25 +675,28 @@ const IncidentDashboard: React.FC = () => {
       {/* Recent Incidents and Response Times */}
       <CRow className="mb-4">
         <CCol lg={8}>
-          <RecentItemsList
-            title="Recent Incidents"
+          <CCard>
+            <CCardHeader>
+              <h5 className="mb-0">Recent Incidents</h5>
+            </CCardHeader>
+            <CCardBody className="p-0">
+              <RecentItemsList
             items={dashboardData?.recentIncidents.map(incident => ({
-              id: incident.id,
+              id: incident.id.toString(),
               title: incident.title,
               subtitle: `${incident.location} • Reported by ${incident.reporterName}`,
-              status: incident.severity,
-              statusColor: getSeverityColor(incident.severity),
-              timestamp: incident.createdAt,
-              isOverdue: incident.isOverdue,
-              onClick: () => navigate(`/incidents/${incident.id}`)
+              metadata: {
+                status: incident.severity,
+                statusColor: getSeverityColor(incident.severity),
+                timestamp: incident.createdAt,
+                isOverdue: incident.isOverdue
+              },
+              clickAction: () => navigate(`/incidents/${incident.id}`)
             })) || []}
-            isLoading={isLoading}
             maxItems={8}
-            showAllLink={{
-              text: 'View All Incidents',
-              onClick: () => navigate('/incidents')
-            }}
           />
+            </CCardBody>
+          </CCard>
         </CCol>
         <CCol lg={4} className="mb-4">
           <CCard className="h-100 response-time-card">

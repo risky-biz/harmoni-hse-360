@@ -107,7 +107,7 @@ const TRAINING_STATUSES = [
 const TrainingList: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
   // State
   const [filters, setFilters] = useState<TrainingFilters>({
@@ -310,8 +310,8 @@ const TrainingList: React.FC = () => {
                 </div>
                 <div>
                   <PermissionGuard
-                    moduleType={ModuleType.TrainingManagement}
-                    permissionType={PermissionType.Create}
+                    module={ModuleType.TrainingManagement}
+                    permission={PermissionType.Create}
                   >
                     <CButton
                       color="primary"
@@ -506,7 +506,7 @@ const TrainingList: React.FC = () => {
                         </CTableHeaderCell>
                         <CTableHeaderCell>Participants</CTableHeaderCell>
                         <CTableHeaderCell>Instructor</CTableHeaderCell>
-                        <CTableHeaderCell width="120">Actions</CTableHeaderCell>
+                        <CTableHeaderCell>Actions</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
@@ -580,8 +580,8 @@ const TrainingList: React.FC = () => {
                               </CButton>
 
                               <PermissionGuard
-                                moduleType={ModuleType.TrainingManagement}
-                                permissionType={PermissionType.Update}
+                                module={ModuleType.TrainingManagement}
+                                permission={PermissionType.Update}
                               >
                                 {training.canEdit && (
                                   <CButton
@@ -631,8 +631,8 @@ const TrainingList: React.FC = () => {
                               </PermissionGuard>
 
                               <PermissionGuard
-                                moduleType={ModuleType.TrainingManagement}
-                                permissionType={PermissionType.Delete}
+                                module={ModuleType.TrainingManagement}
+                                permission={PermissionType.Delete}
                               >
                                 {training.status === 'Draft' && (
                                   <CButton
@@ -662,8 +662,8 @@ const TrainingList: React.FC = () => {
                           : 'Create your first training to get started.'}
                       </p>
                       <PermissionGuard
-                        moduleType={ModuleType.TrainingManagement}
-                        permissionType={PermissionType.Create}
+                        module={ModuleType.TrainingManagement}
+                        permission={PermissionType.Create}
                       >
                         <CButton color="primary" onClick={() => navigate('/trainings/create')}>
                           <FontAwesomeIcon icon={faPlus} className="me-1" />

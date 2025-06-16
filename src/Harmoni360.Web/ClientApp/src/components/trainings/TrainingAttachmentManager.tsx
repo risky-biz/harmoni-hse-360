@@ -323,7 +323,11 @@ const TrainingAttachmentManager: React.FC<TrainingAttachmentManagerProps> = ({
   };
 
   const allAttachments = [
-    ...attachments,
+    ...attachments.map(attachment => ({
+      ...attachment,
+      isPending: false,
+      pendingId: undefined
+    })),
     ...pendingAttachments.map(pending => ({
       id: 0,
       trainingId: 0,

@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef } from 'react';
 
 // Memoization helper for complex calculations
 export const useMemoizedCalculation = <T>(
@@ -13,9 +13,13 @@ export const useDebouncedCallback = <T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ): T => {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+  
   return useCallback((...args: Parameters<T>) => {
-    const timeoutId = setTimeout(() => callback(...args), delay);
-    return () => clearTimeout(timeoutId);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => callback(...args), delay);
   }, [callback, delay]) as T;
 };
 

@@ -38,8 +38,7 @@ import {
   faEllipsisV
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import { useGetHealthRecordsQuery } from '../../features/health/healthApi';
-import { PersonType, VaccinationStatus, HealthRecordDto } from '../../types/health';
+import { useGetHealthRecordsQuery, HealthRecordDto } from '../../features/health/healthApi';
 import { formatDate } from '../../utils/dateUtils';
 
 const HealthList: React.FC = () => {
@@ -47,22 +46,21 @@ const HealthList: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  const [personType, setPersonType] = useState<PersonType | ''>('');
+  const [personType, setPersonType] = useState<string>('');
   const [isActive, setIsActive] = useState<boolean | ''>('');
-  const [vaccinationStatus, setVaccinationStatus] = useState<VaccinationStatus | ''>('');
+  const [vaccinationStatus, setVaccinationStatus] = useState<string>('');
   const [sortBy, setSortBy] = useState('lastModifiedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const queryParams = useMemo(() => ({
-    page,
+    pageNumber: page,
     pageSize,
     searchTerm: searchTerm || undefined,
     personType: personType || undefined,
-    isActive: isActive !== '' ? isActive : undefined,
-    vaccinationStatus: vaccinationStatus || undefined,
+    includeInactive: isActive === '' ? undefined : !isActive,
     sortBy,
-    sortOrder
-  }), [page, pageSize, searchTerm, personType, isActive, vaccinationStatus, sortBy, sortOrder]);
+    sortDescending: sortOrder === 'desc'
+  }), [page, pageSize, searchTerm, personType, isActive, sortBy, sortOrder]);
 
   const {
     data: healthRecordsData,
@@ -92,34 +90,28 @@ const HealthList: React.FC = () => {
     }
   };
 
-  const getPersonTypeIcon = (personType: PersonType) => {
+  const getPersonTypeIcon = (personType: string) => {
     return faUser; // Using faUser for both student and staff for consistency
   };
 
-  const getPersonTypeBadge = (personType: PersonType) => {
-    return personType === PersonType.Student ? 'info' : 'warning';
+  const getPersonTypeBadge = (personType: string) => {
+    return personType === 'Student' ? 'info' : 'warning';
   };
 
   const getVaccinationStatusBadge = (record: HealthRecordDto) => {
-    const overdueVaccinations = record.vaccinations.filter(v => v.status === VaccinationStatus.Overdue).length;
-    const dueVaccinations = record.vaccinations.filter(v => v.status === VaccinationStatus.Due).length;
-    
-    if (overdueVaccinations > 0) return 'danger';
-    if (dueVaccinations > 0) return 'warning';
+    if (record.expiringVaccinationsCount > 0) return 'danger';
+    if (record.criticalAllergyAlerts?.length > 0) return 'warning';
     return 'success';
   };
 
   const getVaccinationStatusText = (record: HealthRecordDto) => {
-    const overdueVaccinations = record.vaccinations.filter(v => v.status === VaccinationStatus.Overdue).length;
-    const dueVaccinations = record.vaccinations.filter(v => v.status === VaccinationStatus.Due).length;
-    
-    if (overdueVaccinations > 0) return `${overdueVaccinations} Overdue`;
-    if (dueVaccinations > 0) return `${dueVaccinations} Due`;
+    if (record.expiringVaccinationsCount > 0) return `${record.expiringVaccinationsCount} Expiring`;
+    if (record.criticalAllergyAlerts?.length > 0) return 'Allergies';
     return 'Compliant';
   };
 
   const getCriticalConditionsCount = (record: HealthRecordDto) => {
-    return record.medicalConditions.filter(mc => mc.requiresEmergencyAction).length;
+    return record.hasCriticalConditions ? 1 : 0;
   };
 
   const totalPages = healthRecordsData ? Math.ceil(healthRecordsData.totalCount / pageSize) : 0;
@@ -127,7 +119,7 @@ const HealthList: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -176,11 +168,11 @@ const HealthList: React.FC = () => {
                 <CCol md={4}>
                   <CFormSelect
                     value={personType}
-                    onChange={(e) => setPersonType(e.target.value as PersonType | '')}
+                    onChange={(e) => setPersonType(e.target.value)}
                   >
                     <option value="">All Types</option>
-                    <option value={PersonType.Student}>Students</option>
-                    <option value={PersonType.Staff}>Staff</option>
+                    <option value="Student">Students</option>
+                    <option value="Staff">Staff</option>
                   </CFormSelect>
                 </CCol>
                 <CCol md={4}>
@@ -196,13 +188,13 @@ const HealthList: React.FC = () => {
                 <CCol md={4}>
                   <CFormSelect
                     value={vaccinationStatus}
-                    onChange={(e) => setVaccinationStatus(e.target.value as VaccinationStatus | '')}
+                    onChange={(e) => setVaccinationStatus(e.target.value)}
                   >
                     <option value="">All Vaccinations</option>
-                    <option value={VaccinationStatus.Administered}>Compliant</option>
-                    <option value={VaccinationStatus.Due}>Due</option>
-                    <option value={VaccinationStatus.Overdue}>Overdue</option>
-                    <option value={VaccinationStatus.Exempted}>Exempted</option>
+                    <option value="Administered">Compliant</option>
+                    <option value="Due">Due</option>
+                    <option value="Overdue">Overdue</option>
+                    <option value="Exempted">Exempted</option>
                   </CFormSelect>
                 </CCol>
               </CRow>
@@ -210,7 +202,7 @@ const HealthList: React.FC = () => {
           </CRow>
         </CCardHeader>
         <CCardBody className="p-0">
-          {healthRecordsData?.items && healthRecordsData.items.length > 0 ? (
+          {healthRecordsData?.healthRecords && healthRecordsData.healthRecords.length > 0 ? (
             <>
               <CTable hover responsive>
                 <CTableHead>
@@ -239,9 +231,9 @@ const HealthList: React.FC = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {healthRecordsData.items.map((record) => (
+                  {healthRecordsData.healthRecords.map((record) => (
                     <CTableRow key={record.id} className="cursor-pointer">
-                      <CTableDataCell onClick={() => handleViewRecord(record.id)}>
+                      <CTableDataCell onClick={() => handleViewRecord(record.id.toString())}>
                         <div className="d-flex align-items-center">
                           <FontAwesomeIcon 
                             icon={getPersonTypeIcon(record.personType)} 
@@ -268,19 +260,19 @@ const HealthList: React.FC = () => {
                       </CTableDataCell>
                       <CTableDataCell>
                         <div className="d-flex align-items-center">
-                          <span className="me-2">{record.medicalConditions.length}</span>
-                          {getCriticalConditionsCount(record) > 0 && (
+                          <span className="me-2">{record.medicalConditionsCount}</span>
+                          {record.hasCriticalConditions && (
                             <CBadge color="danger" className="ms-1">
                               <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" size="xs" />
-                              {getCriticalConditionsCount(record)} Critical
+                              Critical
                             </CBadge>
                           )}
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
                         <div className="d-flex align-items-center">
-                          <span className="me-2">{record.emergencyContacts.length}</span>
-                          {record.emergencyContacts.length === 0 && (
+                          <span className="me-2">{record.emergencyContactsCount}</span>
+                          {record.emergencyContactsCount === 0 && (
                             <CBadge color="warning">
                               <FontAwesomeIcon icon={faExclamationTriangle} size="xs" />
                             </CBadge>
@@ -303,14 +295,14 @@ const HealthList: React.FC = () => {
                             <FontAwesomeIcon icon={faEllipsisV} />
                           </CDropdownToggle>
                           <CDropdownMenu>
-                            <CDropdownItem onClick={() => handleViewRecord(record.id)}>
+                            <CDropdownItem onClick={() => handleViewRecord(record.id.toString())}>
                               View Details
                             </CDropdownItem>
-                            <CDropdownItem onClick={() => handleEditRecord(record.id)}>
+                            <CDropdownItem onClick={() => handleEditRecord(record.id.toString())}>
                               <FontAwesomeIcon icon={faEdit} className="me-1" />
                               Edit
                             </CDropdownItem>
-                            <CDropdownItem divider />
+                            <hr className="dropdown-divider" />
                             <CDropdownItem className="text-danger">
                               <FontAwesomeIcon icon={faTrash} className="me-1" />
                               Deactivate

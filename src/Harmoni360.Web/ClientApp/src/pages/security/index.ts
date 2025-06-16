@@ -7,9 +7,9 @@ export { default as CreateSecurityIncident } from './CreateSecurityIncident';
 // Re-export types for convenience
 export type {
   SecurityIncident,
-  SecurityIncidentList,
-  SecurityIncidentDetail,
-  SecurityDashboard as SecurityDashboardData,
+  SecurityIncidentList as SecurityIncidentListType,
+  SecurityIncidentDetail as SecurityIncidentDetailType,
+  SecurityDashboard as SecurityDashboardType,
   CreateSecurityIncidentRequest,
   UpdateSecurityIncidentRequest,
   ThreatAssessment,

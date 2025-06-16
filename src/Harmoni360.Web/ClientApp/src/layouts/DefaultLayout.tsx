@@ -29,6 +29,7 @@ import {
   faTachometerAlt,
   faExclamationTriangle,
   faFileAlt,
+  faFileContract,
   faShieldAlt,
   faChartLine,
   faCog,
@@ -47,6 +48,7 @@ import { logout } from '../features/auth/authSlice';
 import ApplicationSettings from '../components/common/ApplicationSettings';
 import NotificationBell from '../components/notifications/NotificationBell';
 import DemoModeBanner from '../components/common/DemoModeBanner';
+// import ThemeToggle from '../components/common/ThemeToggle'; // Temporarily hidden until theme system improvements
 
 // Icon mapping for navigation items
 const getNavigationIcon = (name: string) => {
@@ -78,14 +80,20 @@ const getNavigationIcon = (name: string) => {
     'View Trainings': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
     'My Trainings': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
     'Training (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.training} className="nav-icon" />,
-    'Licenses (Coming Soon)': <FontAwesomeIcon icon={CONTEXT_ICONS.license} className="nav-icon" />,
+    'Licenses': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'Licenses (Coming Soon)': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'License Dashboard': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'Create License': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'View Licenses': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'My Licenses': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
+    'Expiring Licenses': <FontAwesomeIcon icon={faFileContract} className="nav-icon" />,
     'Waste Management': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
     'Waste Dashboard': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
     'Waste Reports': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
     'Create Report': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
     'My Reports': <FontAwesomeIcon icon={CONTEXT_ICONS.waste} className="nav-icon" />,
     'Disposal Providers': <FontAwesomeIcon icon={CONTEXT_ICONS.disposal} className="nav-icon" />,
-    'HSE Dashboard (Coming Soon)': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
+    'HSSE Dashboard': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
     'Security': <FontAwesomeIcon icon={faLock} className="nav-icon" />,
     'Health Records': <FontAwesomeIcon icon={CONTEXT_ICONS.health} className="nav-icon" />,
     'User Management': <FontAwesomeIcon icon={faUser} className="nav-icon" />,
@@ -229,6 +237,7 @@ const DefaultLayout: React.FC = () => {
             </CHeaderBrand>
 
             <CHeaderNav className="ms-auto">
+              {/* <ThemeToggle /> Temporarily hidden until theme system improvements */}
               <NotificationBell className="me-3" />
 
               <CDropdown variant="nav-item" placement="bottom-end">

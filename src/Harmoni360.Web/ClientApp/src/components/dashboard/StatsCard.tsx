@@ -73,7 +73,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             <div className="text-medium-emphasis small mt-1">
               <span className={`fw-semibold ${finalTrend.isPositive ? 'text-success' : 'text-danger'}`}>
                 <FontAwesomeIcon 
-                  icon={trend.isPositive ? faArrowUp : faArrowDown} 
+                  icon={finalTrend.isPositive ? faArrowUp : faArrowDown} 
                   size="sm" 
                   className="me-1" 
                 />

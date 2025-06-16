@@ -30,6 +30,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CDropdownDivider,
   CModal,
   CModalHeader,
   CModalTitle,
@@ -362,7 +363,7 @@ const LicenseDetail: React.FC = () => {
               <FontAwesomeIcon icon={LICENSE_ICONS.download} className="me-2" />
               Download PDF
             </CDropdownItem>
-            <CDropdownItem divider />
+            <CDropdownDivider />
             <CDropdownItem 
               className="text-danger"
               onClick={() => setShowActionModal('reject')}
@@ -435,7 +436,7 @@ const LicenseDetail: React.FC = () => {
                 </div>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <CBadge color={getStatusColor(license.status)} size="lg">
+                <CBadge color={getStatusColor(license.status)}>
                   {license.statusDisplay}
                 </CBadge>
                 <CBadge color={getPriorityColor(license.priority)}>
@@ -1025,7 +1026,7 @@ const LicenseDetail: React.FC = () => {
 
                           <div className="mb-3">
                             <strong>Risk Assessment:</strong><br />
-                            <CBadge color={getRiskLevelColor(license.riskLevel)} size="lg">
+                            <CBadge color={getRiskLevelColor(license.riskLevel)}>
                               <FontAwesomeIcon icon={LICENSE_ICONS.shield} className="me-1" />
                               {license.riskLevelDisplay} Risk
                             </CBadge>

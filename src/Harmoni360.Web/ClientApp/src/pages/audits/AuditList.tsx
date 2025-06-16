@@ -27,6 +27,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CDropdownDivider,
   CButtonGroup,
   CModal,
   CModalHeader,
@@ -151,7 +152,7 @@ const RISK_LEVELS: { value: RiskLevel | ''; label: string; color: string }[] = [
 const AuditList: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
   // State
   const [filters, setFilters] = useState<AuditFilters>({
@@ -179,7 +180,7 @@ const AuditList: React.FC = () => {
   const debouncedSearch = useDebounce(filters.search, 500);
 
   // API calls
-  const { data: departments } = useGetDepartmentsQuery();
+  const { data: departments } = useGetDepartmentsQuery({});
   
   const queryParams: GetAuditsParams = {
     page: currentPage,
@@ -394,7 +395,7 @@ const AuditList: React.FC = () => {
               <CButton
                 color="primary"
                 onClick={handleCreateAudit}
-                disabled={isDemo}
+                disabled={isDemoMode}
               >
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 New Audit
@@ -672,7 +673,7 @@ const AuditList: React.FC = () => {
                         {canStartAudit(audit) && (
                           <CDropdownItem 
                             onClick={() => handleStartAudit(audit)}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faPlay} className="me-2" />
                             Start Audit
@@ -685,14 +686,14 @@ const AuditList: React.FC = () => {
                               setSelectedAudit(audit);
                               setShowCompleteModal(true);
                             }}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faCheck} className="me-2" />
                             Complete
                           </CDropdownItem>
                         )}
 
-                        <CDropdownItem divider />
+                        <CDropdownDivider />
 
                         {audit.status === 'Completed' && (
                           <CDropdownItem 
@@ -700,7 +701,7 @@ const AuditList: React.FC = () => {
                               setSelectedAudit(audit);
                               setShowArchiveModal(true);
                             }}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faArchive} className="me-2" />
                             Archive
@@ -717,7 +718,7 @@ const AuditList: React.FC = () => {
                               setShowDeleteModal(true);
                             }}
                             className="text-danger"
-                            disabled={isDemo || audit.status === 'InProgress'}
+                            disabled={isDemoMode || audit.status === 'InProgress'}
                           >
                             <FontAwesomeIcon icon={faTrash} className="me-2" />
                             Delete

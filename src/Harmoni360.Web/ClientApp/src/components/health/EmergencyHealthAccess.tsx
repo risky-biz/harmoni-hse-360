@@ -14,8 +14,8 @@ import {
   CFormInput,
   CInputGroup
 } from '@coreui/react';
-import { useGetHealthRecordQuery } from '../../features/health/healthApi';
-import { HealthRecordDto, MedicalConditionSeverity } from '../../types/health';
+import { useGetHealthRecordQuery, HealthRecordDetailDto, MedicalConditionDto } from '../../features/health/healthApi';
+import { MedicalConditionSeverity } from '../../types/health';
 import { formatDate } from '../../utils/dateUtils';
 import HealthAlert from './HealthAlert';
 import EmergencyContactQuickAccess from './EmergencyContactQuickAccess';
@@ -88,16 +88,16 @@ const EmergencyHealthAccess: React.FC<EmergencyHealthAccessProps> = ({
     }
   };
 
-  const getCriticalConditions = (record: HealthRecordDto) => {
+  const getCriticalConditions = (record: HealthRecordDetailDto) => {
     return record.medicalConditions.filter(
       condition => condition.requiresEmergencyAction ||
-      condition.severity === MedicalConditionSeverity.Critical
+      condition.severity.toLowerCase() === 'critical'
     );
   };
 
-  const getRecentVaccinations = (record: HealthRecordDto) => {
+  const getRecentVaccinations = (record: HealthRecordDetailDto) => {
     return record.vaccinations
-      .sort((a, b) => new Date(b.dateAdministered).getTime() - new Date(a.dateAdministered).getTime())
+      .sort((a, b) => new Date(b.dateAdministered || '').getTime() - new Date(a.dateAdministered || '').getTime())
       .slice(0, 3);
   };
 
@@ -177,7 +177,7 @@ const EmergencyHealthAccess: React.FC<EmergencyHealthAccessProps> = ({
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-        <CSpinner color="primary" size="lg" />
+        <CSpinner color="primary" size="sm" />
       </div>
     );
   }
@@ -226,7 +226,7 @@ const EmergencyHealthAccess: React.FC<EmergencyHealthAccessProps> = ({
                 <CBadge color="success" className="ms-2">ID: {activePersonId}</CBadge>
               </div>
               <div className="mb-2">
-                <strong>Date of Birth:</strong> {formatDate(healthRecord.dateOfBirth, false)}
+                <strong>Date of Birth:</strong> {healthRecord.dateOfBirth ? formatDate(healthRecord.dateOfBirth, false) : 'Not specified'}
               </div>
               <div className="mb-2">
                 <strong>Blood Type:</strong> {healthRecord.bloodType || 'Not specified'}
@@ -239,7 +239,7 @@ const EmergencyHealthAccess: React.FC<EmergencyHealthAccessProps> = ({
             </CCol>
             <CCol md={4} className="text-md-end">
               <div className="small text-muted">
-                Last Updated: {formatDate(healthRecord.lastModifiedAt || healthRecord.createdAt || '')}
+                Last Updated: {healthRecord.lastModifiedAt ? formatDate(healthRecord.lastModifiedAt) : (healthRecord.createdAt ? formatDate(healthRecord.createdAt) : 'Unknown')}
               </div>
               {emergencyMode && (
                 <CBadge color="danger" className="mt-2">

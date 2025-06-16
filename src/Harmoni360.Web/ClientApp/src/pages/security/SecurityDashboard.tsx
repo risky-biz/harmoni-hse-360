@@ -98,8 +98,7 @@ const SecurityDashboard: React.FC = () => {
     data: dashboardData, 
     isLoading, 
     error, 
-    refetch, 
-    dataUpdatedAt 
+    refetch
   } = useGetSecurityDashboardQuery({
     ...getDateRange(),
     includeThreatIntel: true,
@@ -109,10 +108,8 @@ const SecurityDashboard: React.FC = () => {
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (dataUpdatedAt) {
-      setLastRefreshTime(new Date(dataUpdatedAt));
-    }
-  }, [dataUpdatedAt]);
+    setLastRefreshTime(new Date());
+  }, [dashboardData]);
 
   // Handle auto-refresh
   useEffect(() => {
@@ -249,7 +246,7 @@ const SecurityDashboard: React.FC = () => {
                   <FontAwesomeIcon icon={faCog} />
                 </CDropdownToggle>
                 <CDropdownMenu>
-                  <CDropdownItem header>Auto Refresh</CDropdownItem>
+                  <CDropdownItem className="dropdown-header">Auto Refresh</CDropdownItem>
                   <CDropdownItem onClick={() => setAutoRefreshInterval(0)}>
                     {autoRefreshInterval === 0 && '✓ '}Disabled
                   </CDropdownItem>
@@ -289,7 +286,11 @@ const SecurityDashboard: React.FC = () => {
             value={metrics?.totalIncidents || 0}
             icon={faExclamationTriangle}
             color="primary"
-            trend={metrics?.incidentTrend || 0}
+            trend={metrics?.incidentTrend ? {
+              value: Math.abs(metrics.incidentTrend),
+              isPositive: metrics.incidentTrend >= 0,
+              label: 'vs last period'
+            } : undefined}
             subtitle={`${metrics?.openIncidents || 0} open`}
           />
         </CCol>

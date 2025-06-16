@@ -419,7 +419,7 @@ const HazardTypeManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <CModal visible={showModal} onClose={handleCloseModal} size="lg">
-        <CModalHeader onClose={handleCloseModal}>
+        <CModalHeader>
           <CModalTitle>
             <FontAwesomeIcon icon={editingType ? faEdit : faPlus} className="me-2" />
             {editingType ? 'Edit Hazard Type' : 'Add New Hazard Type'}

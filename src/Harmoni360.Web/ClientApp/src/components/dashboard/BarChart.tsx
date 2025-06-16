@@ -66,7 +66,7 @@ const BarChart: React.FC<BarChartProps> = ({
   }
 
   const barWidth = 100 / data.length;
-  const chartPadding = 40;
+  const chartPadding = Math.min(40, (100 / data.length) * 0.4); // Adaptive padding
   const labelHeight = 30;
 
   return (
@@ -75,10 +75,12 @@ const BarChart: React.FC<BarChartProps> = ({
         {/* Chart area */}
         <g transform={`translate(${chartPadding}, 10)`}>
           {data.map((item, index) => {
-            const barHeight = ((item.value / chartMaxValue) * (height - chartPadding - labelHeight));
-            const x = (index * barWidth * (100 - 2 * chartPadding)) / 100;
+            const barHeight = Math.max(0, ((item.value / chartMaxValue) * (height - chartPadding - labelHeight)));
+            const availableWidth = Math.max(10, (100 - 2 * chartPadding));
+            const x = (index * barWidth * availableWidth) / 100;
             const y = height - chartPadding - labelHeight - barHeight;
             const color = item.color || barColors[index % barColors.length];
+            const rectWidth = Math.max(2, (barWidth * availableWidth) / 100 - 4);
             
             return (
               <g key={index}>
@@ -86,7 +88,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 <rect
                   x={x}
                   y={y}
-                  width={(barWidth * (100 - 2 * chartPadding)) / 100 - 4}
+                  width={rectWidth}
                   height={barHeight}
                   fill={color}
                   rx="2"
@@ -95,7 +97,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 {/* Value label */}
                 {showValues && (
                   <text
-                    x={x + ((barWidth * (100 - 2 * chartPadding)) / 100 - 4) / 2}
+                    x={x + rectWidth / 2}
                     y={y - 5}
                     textAnchor="middle"
                     fontSize="12"
@@ -108,7 +110,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 
                 {/* X-axis label */}
                 <text
-                  x={x + ((barWidth * (100 - 2 * chartPadding)) / 100 - 4) / 2}
+                  x={x + rectWidth / 2}
                   y={height - chartPadding + 15}
                   textAnchor="middle"
                   fontSize="11"

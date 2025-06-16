@@ -81,10 +81,7 @@ const DemoModeBanner: React.FC<DemoModeBannerProps> = ({ sidebarShow = true }) =
           </CCol>
           <CCol className="text-end">
             <small>
-              {modeInfo.limitations.canCreateUsers ? '' : 'User creation disabled • '}
-              {modeInfo.limitations.canDeleteData ? '' : 'Data deletion disabled • '}
-              {modeInfo.limitations.canSendEmails ? '' : 'Email sending disabled • '}
-              Sample data environment
+              Full functionality enabled • Automatic 24-hour reset • Sample data environment
             </small>
           </CCol>
         </CRow>

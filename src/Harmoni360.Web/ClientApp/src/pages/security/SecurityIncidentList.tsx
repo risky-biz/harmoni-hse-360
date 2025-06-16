@@ -32,7 +32,7 @@ import {
   useGetSecurityIncidentsQuery,
   useDeleteSecurityIncidentMutation,
 } from '../../features/security/securityApi';
-import type { SecurityIncidentList } from '../../types/security';
+import type { SecurityIncidentList as SecurityIncidentListType } from '../../types/security';
 import { SecurityIncidentType, SecuritySeverity, SecurityIncidentStatus, ThreatLevel } from '../../types/security';
 import { formatDate } from '../../utils/dateUtils';
 
@@ -360,7 +360,7 @@ const SecurityIncidentList: React.FC = () => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {incidents.map((incident: SecurityIncidentList) => (
+                    {incidents.map((incident: SecurityIncidentListType) => (
                       <CTableRow key={incident.id} className={incident.isOverdue ? 'table-warning' : ''}>
                         <CTableDataCell>
                           <strong>{incident.incidentNumber}</strong>

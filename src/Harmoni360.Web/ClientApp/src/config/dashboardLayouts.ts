@@ -34,7 +34,7 @@ export const getQuickActions = (navigate: (path: string) => void): QuickAction[]
     action: () => navigate('/hazards/create'),
     color: 'warning',
     variant: 'outline',
-    permissions: ['HazardManagement.Create'],
+    permissions: ['RiskManagement.Create'],
   },
   {
     id: 'health-records',
@@ -43,7 +43,7 @@ export const getQuickActions = (navigate: (path: string) => void): QuickAction[]
     action: () => navigate('/health'),
     color: 'success',
     variant: 'outline',
-    permissions: ['HealthManagement.Read'],
+    permissions: ['HealthMonitoring.Read'],
   },
   {
     id: 'ppe-management',
@@ -292,7 +292,7 @@ export const dashboardLayouts: DashboardLayout[] = [
             component: 'HazardMap',
           },
         },
-        permissions: ['HazardManagement.Read'],
+        permissions: ['RiskManagement.Read'],
       },
     ],
   },

@@ -43,7 +43,7 @@ import {
   SecurityIncidentStatus,
   ThreatLevel,
   SecurityImpact,
-  SecurityIncidentDetail,
+  SecurityIncidentDetail as SecurityIncidentDetailType,
 } from '../../types/security';
 import { formatDate } from '../../utils/dateUtils';
 
@@ -261,7 +261,7 @@ const SecurityIncidentDetail: React.FC = () => {
                           onClick={() => setShowEscalateModal(true)}
                           disabled={isEscalating}
                         >
-                          <FontAwesomeIcon icon={ACTION_ICONS.escalate} className="me-1" />
+                          <FontAwesomeIcon icon={ACTION_ICONS.warning} className="me-1" />
                           Escalate
                         </CButton>
                         <CButton
@@ -270,7 +270,7 @@ const SecurityIncidentDetail: React.FC = () => {
                           onClick={() => setShowAssignModal(true)}
                           disabled={isAssigning}
                         >
-                          <FontAwesomeIcon icon={ACTION_ICONS.assign} className="me-1" />
+                          <FontAwesomeIcon icon={ACTION_ICONS.edit} className="me-1" />
                           Assign
                         </CButton>
                         <CButton
@@ -279,7 +279,7 @@ const SecurityIncidentDetail: React.FC = () => {
                           onClick={() => setShowCloseModal(true)}
                           disabled={isClosing}
                         >
-                          <FontAwesomeIcon icon={ACTION_ICONS.close} className="me-1" />
+                          <FontAwesomeIcon icon={ACTION_ICONS.approve} className="me-1" />
                           Close
                         </CButton>
                       </>
@@ -681,7 +681,7 @@ const SecurityIncidentDetail: React.FC = () => {
                           ) : (
                             <div className="text-center py-4">
                               <FontAwesomeIcon
-                                icon={ACTION_ICONS.respond}
+                                icon={ACTION_ICONS.create}
                                 className="text-muted mb-3"
                                 style={{ fontSize: '2rem' }}
                               />
@@ -788,7 +788,7 @@ const SecurityIncidentDetail: React.FC = () => {
                           ) : (
                             <div className="text-center py-4">
                               <FontAwesomeIcon
-                                icon={CONTEXT_ICONS.shield}
+                                icon={CONTEXT_ICONS.security}
                                 className="text-muted mb-3"
                                 style={{ fontSize: '2rem' }}
                               />

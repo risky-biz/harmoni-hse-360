@@ -400,7 +400,7 @@ const AuditAttachmentManager: React.FC<AuditAttachmentManagerProps> = ({
 
       {/* Upload Modal */}
       <CModal visible={showUploadModal} onClose={() => setShowUploadModal(false)} size="lg">
-        <CModalHeader onClose={() => setShowUploadModal(false)}>
+        <CModalHeader closeButton>
           <CModalTitle>
             <FontAwesomeIcon icon={faUpload} className="me-2" />
             Upload Audit Attachments

@@ -451,7 +451,7 @@ const HazardCategoryManagement: React.FC = () => {
 
       {/* Add/Edit Modal */}
       <CModal visible={showModal} onClose={handleCloseModal} size="lg">
-        <CModalHeader onClose={handleCloseModal}>
+        <CModalHeader>
           <CModalTitle>
             <FontAwesomeIcon icon={editingCategory ? faEdit : faPlus} className="me-2" />
             {editingCategory ? 'Edit Hazard Category' : 'Add New Hazard Category'}

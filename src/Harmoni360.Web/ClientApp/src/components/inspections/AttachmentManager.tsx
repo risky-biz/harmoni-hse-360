@@ -26,6 +26,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CDropdownDivider,
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -57,19 +58,7 @@ import {
 } from '../../features/inspections/inspectionApi';
 import { toast } from 'react-toastify';
 
-interface InspectionAttachmentDto {
-  id: number;
-  fileName: string;
-  originalFileName: string;
-  filePath: string;
-  fileSize: number;
-  contentType: string;
-  description?: string;
-  category?: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  uploadedByName: string;
-}
+import { InspectionAttachmentDto } from '../../types/inspection';
 
 interface AttachmentManagerProps {
   inspectionId?: number;
@@ -315,7 +304,7 @@ const InspectionAttachmentManager: React.FC<AttachmentManagerProps> = ({
 
         {/* Upload Modal */}
         <CModal visible={showUploadModal} onClose={() => setShowUploadModal(false)}>
-          <CModalHeader onClose={() => setShowUploadModal(false)}>
+          <CModalHeader closeButton>
             <CModalTitle>Upload Files</CModalTitle>
           </CModalHeader>
           <CModalBody>
@@ -451,7 +440,7 @@ const InspectionAttachmentManager: React.FC<AttachmentManagerProps> = ({
                     <div className="fw-semibold">{attachment.originalFileName}</div>
                     <div className="text-muted small">
                       {formatFileSize(attachment.fileSize)} • 
-                      Uploaded {formatDistanceToNow(new Date(attachment.uploadedAt), { addSuffix: true })} by {attachment.uploadedByName}
+                      Uploaded {formatDistanceToNow(new Date(attachment.createdAt), { addSuffix: true })} by {attachment.createdBy}
                     </div>
                     {attachment.description && (
                       <div className="text-muted small mt-1">{attachment.description}</div>
@@ -481,7 +470,7 @@ const InspectionAttachmentManager: React.FC<AttachmentManagerProps> = ({
                       </CDropdownItem>
                       {allowDelete && (
                         <>
-                          <CDropdownItem divider />
+                          <CDropdownDivider />
                           <CDropdownItem
                             onClick={() => handleDelete(attachment.id, attachment.originalFileName)}
                             className="text-danger"
@@ -503,7 +492,7 @@ const InspectionAttachmentManager: React.FC<AttachmentManagerProps> = ({
 
       {/* Upload Modal */}
       <CModal visible={showUploadModal} onClose={() => setShowUploadModal(false)}>
-        <CModalHeader onClose={() => setShowUploadModal(false)}>
+        <CModalHeader closeButton>
           <CModalTitle>Upload Files</CModalTitle>
         </CModalHeader>
         <CModalBody>

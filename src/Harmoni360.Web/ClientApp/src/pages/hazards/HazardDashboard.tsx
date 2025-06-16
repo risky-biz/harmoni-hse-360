@@ -46,7 +46,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 const HazardDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
   const [timeRange, setTimeRange] = useState<string>('all');
   const [department, setDepartment] = useState<string>('');
   const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(0); // 0 = disabled
@@ -57,7 +57,7 @@ const HazardDashboard: React.FC = () => {
   const { connectionState } = useSignalR();
   
   // Get departments from database
-  const { data: departments } = useGetDepartmentsQuery();
+  const { data: departments } = useGetDepartmentsQuery({ isActive: true });
 
   // Calculate date range based on selection
   const getDateRange = () => {
@@ -104,8 +104,7 @@ const HazardDashboard: React.FC = () => {
     data, 
     isLoading, 
     error,
-    refetch,
-    dataUpdatedAt
+    refetch
   } = useGetHazardDashboardQuery({
     ...getDateRange(),
     department: department || undefined,
@@ -117,10 +116,8 @@ const HazardDashboard: React.FC = () => {
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (dataUpdatedAt) {
-      setLastRefreshTime(new Date(dataUpdatedAt));
-    }
-  }, [dataUpdatedAt]);
+    setLastRefreshTime(new Date());
+  }, [data]);
 
   // Handle auto-refresh
   useEffect(() => {
@@ -177,7 +174,7 @@ const HazardDashboard: React.FC = () => {
             </p>
           </div>
           <PermissionGuard 
-            module={ModuleType.HazardManagement} 
+            module={ModuleType.RiskManagement} 
             permission={PermissionType.Create}
           >
             <CButton 
@@ -433,15 +430,16 @@ const HazardDashboard: React.FC = () => {
             </CCardHeader>
             <CCardBody>
               <RecentItemsList
-                title="Recent Activities"
                 items={(data.recentActivities || []).map((activity, index) => ({
-                  id: activity?.id || index,
+                  id: (activity?.id || index).toString(),
                   title: activity?.title || 'Unknown Activity',
                   subtitle: activity?.description,
-                  status: activity?.severity || 'info',
-                  statusColor: getStatusColor(activity?.severity || 'info'),
-                  timestamp: activity?.timestamp || new Date().toISOString(),
-                  onClick: () => window.location.href = `/hazards/${activity?.relatedEntityId || ''}`
+                  metadata: {
+                    status: activity?.severity || 'info',
+                    statusColor: getStatusColor(activity?.severity || 'info'),
+                    timestamp: activity?.timestamp || new Date().toISOString()
+                  },
+                  clickAction: () => window.location.href = `/hazards/${activity?.relatedEntityId || ''}`
                 }))}
               />
             </CCardBody>
@@ -454,15 +452,16 @@ const HazardDashboard: React.FC = () => {
             </CCardHeader>
             <CCardBody>
               <RecentItemsList
-                title="Active Alerts"
                 items={(data.alerts || []).map((alert, index) => ({
-                  id: alert?.id || index + 1000,
+                  id: (alert?.id || index + 1000).toString(),
                   title: alert?.title || 'Unknown Alert',
                   subtitle: alert?.message,
-                  status: alert?.severity || 'warning',
-                  statusColor: getStatusColor(alert?.severity || 'warning'),
-                  timestamp: alert?.createdAt || new Date().toISOString(),
-                  onClick: () => window.location.href = `/hazards/${alert?.hazardId || ''}`
+                  metadata: {
+                    status: alert?.severity || 'warning',
+                    statusColor: getStatusColor(alert?.severity || 'warning'),
+                    timestamp: alert?.createdAt || new Date().toISOString()
+                  },
+                  clickAction: () => window.location.href = `/hazards/${alert?.hazardId || ''}`
                 }))}
               />
             </CCardBody>

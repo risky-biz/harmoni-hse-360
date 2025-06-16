@@ -23,6 +23,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CDropdownDivider,
   CSpinner,
   CAlert,
   CFormCheck,
@@ -170,8 +171,8 @@ const LicenseList: React.FC = () => {
   } = useGetLicensesQuery({
     page,
     pageSize,
-    searchTerm: debouncedSearchTerm,
     ...filters,
+    searchTerm: debouncedSearchTerm,
     ...sort
   });
 
@@ -379,7 +380,7 @@ const LicenseList: React.FC = () => {
               <FontAwesomeIcon icon={LICENSE_ICONS.download} className="me-2" />
               Download
             </CDropdownItem>
-            <CDropdownItem divider />
+            <CDropdownDivider />
             <CDropdownItem 
               className="text-danger"
               onClick={() => handleLicenseAction('revoke', license.id, license)}
@@ -587,7 +588,7 @@ const LicenseList: React.FC = () => {
                             onChange={(e) => handleFilterChange('department', e.target.value)}
                           >
                             <option value="">All Departments</option>
-                            {departments?.items?.map(dept => (
+                            {departments?.map((dept: any) => (
                               <option key={dept.id} value={dept.name}>
                                 {dept.name}
                               </option>

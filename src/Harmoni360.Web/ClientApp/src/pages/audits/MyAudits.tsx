@@ -10,6 +10,7 @@ import {
   CForm,
   CFormInput,
   CFormSelect,
+  CFormLabel,
   CInputGroup,
   CInputGroupText,
   CTable,
@@ -122,7 +123,7 @@ const AUDIT_PRIORITIES: { value: AuditPriority | ''; label: string; color: strin
 const MyAudits: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
   // State
   const [filters, setFilters] = useState<MyAuditFilters>({
@@ -336,7 +337,7 @@ const MyAudits: React.FC = () => {
               <CButton
                 color="primary"
                 onClick={handleCreateAudit}
-                disabled={isDemo}
+                disabled={false}
               >
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 New Audit
@@ -606,7 +607,7 @@ const MyAudits: React.FC = () => {
                         {canStartAudit(audit) && (
                           <CDropdownItem 
                             onClick={() => handleStartAudit(audit)}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faPlay} className="me-2" />
                             Start Audit
@@ -619,7 +620,7 @@ const MyAudits: React.FC = () => {
                               setSelectedAudit(audit);
                               setShowCompleteModal(true);
                             }}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faCheck} className="me-2" />
                             Complete
@@ -630,7 +631,7 @@ const MyAudits: React.FC = () => {
                           <CDropdownItem 
                             onClick={() => handleCancelAudit(audit)}
                             className="text-warning"
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faTimes} className="me-2" />
                             Cancel

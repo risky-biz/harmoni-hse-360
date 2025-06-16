@@ -109,8 +109,7 @@ const PPEDetail: React.FC = () => {
       () => assignPPE({ 
         ppeItemId: Number(id), 
         assignedToId: userId,
-        purpose: purpose,
-        notes: notes
+        purpose: purpose
       }).unwrap(),
       'assigned'
     );

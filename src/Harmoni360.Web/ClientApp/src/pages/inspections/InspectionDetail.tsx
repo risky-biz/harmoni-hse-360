@@ -98,7 +98,7 @@ import {
   useUpdateFindingMutation,
   useCloseFindingMutation
 } from '../../features/inspections/inspectionApi';
-import { InspectionDetailDto, InspectionStatus, InspectionPriority, InspectionType, FindingStatus, FindingSeverity } from '../../types/inspection';
+import { InspectionDetailDto, InspectionStatus, InspectionPriority, InspectionType, FindingStatus, FindingSeverity, InspectionAttachmentDto } from '../../types/inspection';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';

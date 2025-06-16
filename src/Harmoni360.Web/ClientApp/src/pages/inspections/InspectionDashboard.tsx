@@ -16,6 +16,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CDropdownDivider,
   CTable,
   CTableHead,
   CTableBody,
@@ -45,8 +46,8 @@ import {
   faFlag,
   faSearchPlus,
   faCalendarAlt,
-  faTrendUp,
-  faTrendDown
+  faArrowTrendUp,
+  faArrowTrendDown
 } from '@fortawesome/free-solid-svg-icons';
 import { useGetDashboardQuery, useGetStatisticsQuery } from '../../features/inspections/inspectionApi';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
@@ -138,35 +139,35 @@ export const InspectionDashboard: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: InspectionStatus) => {
-    const statusConfig = {
-      [InspectionStatus.Draft]: 'secondary',
-      [InspectionStatus.Scheduled]: 'info',
-      [InspectionStatus.InProgress]: 'warning',
-      [InspectionStatus.Completed]: 'success',
-      [InspectionStatus.Cancelled]: 'danger'
+  const getStatusColor = (status: string) => {
+    const statusConfig: Record<string, string> = {
+      'Draft': 'secondary',
+      'Scheduled': 'info',
+      'InProgress': 'warning',
+      'Completed': 'success',
+      'Cancelled': 'danger'
     };
     return statusConfig[status] || 'secondary';
   };
 
-  const getPriorityColor = (priority: InspectionPriority) => {
-    const priorityConfig = {
-      [InspectionPriority.Low]: 'success',
-      [InspectionPriority.Medium]: 'warning',
-      [InspectionPriority.High]: 'danger',
-      [InspectionPriority.Critical]: 'dark'
+  const getPriorityColor = (priority: string) => {
+    const priorityConfig: Record<string, string> = {
+      'Low': 'success',
+      'Medium': 'warning',
+      'High': 'danger',
+      'Critical': 'dark'
     };
     return priorityConfig[priority] || 'secondary';
   };
 
-  const getTypeColor = (type: InspectionType) => {
-    const typeConfig = {
-      [InspectionType.Safety]: 'danger',
-      [InspectionType.Environmental]: 'success',
-      [InspectionType.Quality]: 'primary',
-      [InspectionType.Security]: 'warning',
-      [InspectionType.Maintenance]: 'info',
-      [InspectionType.Compliance]: 'dark'
+  const getTypeColor = (type: string) => {
+    const typeConfig: Record<string, string> = {
+      'Safety': 'danger',
+      'Environmental': 'success',
+      'Quality': 'primary',
+      'Security': 'warning',
+      'Maintenance': 'info',
+      'Compliance': 'dark'
     };
     return typeConfig[type] || 'secondary';
   };
@@ -255,7 +256,7 @@ export const InspectionDashboard: React.FC = () => {
                       <FontAwesomeIcon icon={faUsers} className="me-2" />
                       My Inspections
                     </CDropdownItem>
-                    <CDropdownItem divider />
+                    <CDropdownDivider />
                     <CDropdownItem onClick={handleExportDashboard}>
                       <FontAwesomeIcon icon={faDownload} className="me-2" />
                       Export Dashboard (PDF)
@@ -400,7 +401,7 @@ export const InspectionDashboard: React.FC = () => {
                           labels: dashboardData.inspectionsByStatus.map(item => item.statusName),
                           values: dashboardData.inspectionsByStatus.map(item => item.count),
                           colors: dashboardData.inspectionsByStatus.map(item => {
-                            const statusColors = {
+                            const statusColors: Record<string, string> = {
                               'Draft': '#6c757d',
                               'Scheduled': '#0dcaf0',
                               'InProgress': '#fd7e14',

@@ -17,8 +17,8 @@ import {
   CProgress,
 } from '@coreui/react';
 import { useGetWasteDashboardQuery } from '../../api/wasteManagementApi';
-import { DonutChart } from '../../components/dashboard/DonutChart';
-import { StatsCard } from '../../components/dashboard/StatsCard';
+import DonutChart from '../../components/dashboard/DonutChart';
+import StatsCard from '../../components/dashboard/StatsCard';
 
 const WasteDashboard: React.FC = () => {
   const { data: dashboard, isLoading, error } = useGetWasteDashboardQuery();

@@ -15,6 +15,7 @@ import {
   faFilePdf,
   faFileWord,
   faFileVideo,
+  faFileContract,
   faMapMarkerAlt,
   faCalendarAlt,
   faClock,
@@ -207,6 +208,10 @@ export const CONTEXT_ICONS = {
   audit: faTasks,
   quality: faClipboardCheck,
   compliance: faClipboardCheck,
+
+  // Training Management
+  training: faClipboardCheck,
+  license: faFileContract,
 
   // Waste Management
   waste: faRecycle,

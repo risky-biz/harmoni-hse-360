@@ -26,9 +26,10 @@ import {
   CModalBody,
   CModalFooter
 } from '@coreui/react';
-import { useGetHealthRecordsQuery } from '../../features/health/healthApi';
+import { useGetHealthRecordsQuery, HealthRecordDto } from '../../features/health/healthApi';
 import { HealthAlert, MedicalConditionBadge, EmergencyContactQuickAccess } from '../health';
-import { HealthRecordDto, PersonType } from '../../types/health';
+import { HealthRecordDetailDto } from '../../features/health/healthApi';
+import { PersonType } from '../../types/health';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faSearch
@@ -43,7 +44,7 @@ interface HealthAwareIncidentFormProps {
 interface HealthIncidentContext {
   isHealthRelated: boolean;
   selectedPersonId?: string;
-  healthRecord?: HealthRecordDto;
+  healthRecord?: HealthRecordDetailDto;
   injuryType?: string;
   bodyPartAffected?: string;
   symptomsObserved?: string;
@@ -152,10 +153,19 @@ const HealthAwareIncidentForm: React.FC<HealthAwareIncidentFormProps> = ({
   };
 
   const selectHealthRecord = (record: HealthRecordDto) => {
+    // Convert the summary record to the detailed format expected by components
+    const detailedRecord: HealthRecordDetailDto = {
+      ...record,
+      medicalConditions: [], // Will be loaded separately if needed
+      vaccinations: [],
+      healthIncidents: [],
+      emergencyContacts: []
+    };
+    
     setHealthContext(prev => ({
       ...prev,
-      selectedPersonId: record.personId,
-      healthRecord: record,
+      selectedPersonId: record.personId.toString(),
+      healthRecord: detailedRecord,
       parentNotificationRequired: record.personType === PersonType.Student
     }));
     setShowPersonSearch(false);
@@ -370,9 +380,9 @@ const HealthAwareIncidentForm: React.FC<HealthAwareIncidentFormProps> = ({
               <div className="text-center p-3">
                 <CSpinner color="primary" />
               </div>
-            ) : healthRecords && healthRecords.length > 0 ? (
+            ) : healthRecords && healthRecords.healthRecords.length > 0 ? (
               <CListGroup>
-                {healthRecords.map((record) => (
+                {healthRecords.healthRecords.map((record) => (
                   <CListGroupItem
                     key={record.id}
                     className="cursor-pointer"
@@ -384,19 +394,15 @@ const HealthAwareIncidentForm: React.FC<HealthAwareIncidentFormProps> = ({
                         <div className="small text-muted">
                           {record.personType} • {record.personEmail}
                         </div>
-                        {record.medicalConditions.length > 0 && (
+                        {record.medicalConditionsCount > 0 && (
                           <div className="mt-1">
-                            {record.medicalConditions.slice(0, 2).map((condition) => (
-                              <MedicalConditionBadge
-                                key={condition.id}
-                                condition={condition}
-                                variant="minimal"
-                                size="sm"
-                                showTooltip={false}
-                              />
-                            ))}
-                            {record.medicalConditions.length > 2 && (
-                              <CBadge color="info">+{record.medicalConditions.length - 2} more</CBadge>
+                            <span className="small text-info">
+                              {record.medicalConditionsCount} medical condition{record.medicalConditionsCount > 1 ? 's' : ''}
+                            </span>
+                            {record.hasCriticalConditions && (
+                              <span className="small text-danger ms-2">
+                                ⚠️ Critical conditions
+                              </span>
                             )}
                           </div>
                         )}

@@ -275,7 +275,7 @@ const RiskAssessmentDetail: React.FC = () => {
                   {/* Risk Matrix Visualization */}
                   <div className="mb-4">
                     <h6 className="text-muted mb-3">Risk Matrix (5×5)</h6>
-                    <CTable bordered className="risk-matrix-table" size="sm">
+                    <CTable bordered className="risk-matrix-table">
                       <CTableHead>
                         <CTableRow>
                           <CTableHeaderCell className="text-center bg-light" style={{ width: '120px' }}>

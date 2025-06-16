@@ -14,9 +14,13 @@ import '@coreui/coreui/dist/css/coreui.min.css';
 
 // Custom styles with Harmoni branding
 import './styles/app.scss';
+import './styles/hsse-dashboard.css';
 
 // Store
 import { store } from './store';
+
+// Theme Provider
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Layouts
 import DefaultLayout from './layouts/DefaultLayout';
@@ -33,6 +37,9 @@ import { useSignalR } from './hooks/useSignalR';
 // Performance optimizations
 import { PerformanceMonitor } from './utils/performance';
 import { initializeOptimizations, addResourceHints, lazy } from './utils/optimization';
+
+// Demo reset service
+import { demoResetService } from './services/demoResetService';
 
 // Add UnauthorizedAccess component
 const UnauthorizedAccess = React.lazy(() =>
@@ -833,6 +840,11 @@ function App() {
     initializeOptimizations();
     addResourceHints();
     
+    // Initialize demo reset service for automated 24-hour reset
+    if (demoResetService) {
+      console.log('Demo reset service initialized');
+    }
+    
     // Initialize service worker for offline support
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {
@@ -851,14 +863,15 @@ function App() {
   }, []);
 
   return (
-    <AuthErrorBoundary>
-      <ErrorBoundary>
-        <Provider store={store}>
-          <BrowserRouter>
-            <RouteChangeHandler />
-            <SignalRConnectionManager />
-            <Suspense fallback={<Loading />}>
-            <Routes>
+    <ThemeProvider>
+      <AuthErrorBoundary>
+        <ErrorBoundary>
+          <Provider store={store}>
+            <BrowserRouter>
+              <RouteChangeHandler />
+              <SignalRConnectionManager />
+              <Suspense fallback={<Loading />}>
+              <Routes>
               {/* Auth Routes */}
               <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
@@ -1068,6 +1081,7 @@ function App() {
         </Provider>
       </ErrorBoundary>
     </AuthErrorBoundary>
+    </ThemeProvider>
   );
 }
 

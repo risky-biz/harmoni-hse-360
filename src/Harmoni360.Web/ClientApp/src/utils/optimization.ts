@@ -245,7 +245,7 @@ export const memoryOptimization = {
     
     return {
       get: (key: K): V | undefined => cache.get(key),
-      set: (key: K, value: V): void => cache.set(key, value),
+      set: (key: K, value: V): void => { cache.set(key, value); },
       has: (key: K): boolean => cache.has(key),
       delete: (key: K): boolean => cache.delete(key)
     };

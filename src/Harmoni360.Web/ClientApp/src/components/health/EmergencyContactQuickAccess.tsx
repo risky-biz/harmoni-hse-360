@@ -15,8 +15,7 @@ import {
   CSpinner,
   CAlert
 } from '@coreui/react';
-import { EmergencyContactDto } from '../../types/health';
-import { useTriggerEmergencyNotificationMutation } from '../../features/health/healthApi';
+import { EmergencyContactDto, useTriggerEmergencyNotificationMutation } from '../../features/health/healthApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, 
@@ -47,10 +46,10 @@ const EmergencyContactQuickAccess: React.FC<EmergencyContactQuickAccessProps> = 
     useTriggerEmergencyNotificationMutation();
 
   const sortedContacts = emergencyContacts
-    .filter(contact => contact.isAuthorizedForMedicalDecisions || contact.isPrimary)
+    .filter(contact => contact.authorizedForMedicalDecisions || contact.isPrimaryContact)
     .sort((a, b) => {
-      if (a.isPrimary && !b.isPrimary) return -1;
-      if (!a.isPrimary && b.isPrimary) return 1;
+      if (a.isPrimaryContact && !b.isPrimaryContact) return -1;
+      if (!a.isPrimaryContact && b.isPrimaryContact) return 1;
       return 0; // No contactOrder property available
     });
 
@@ -153,13 +152,13 @@ const EmergencyContactQuickAccess: React.FC<EmergencyContactQuickAccessProps> = 
                     <div className="d-flex align-items-center mb-1">
                       <FontAwesomeIcon icon={faUser} className="me-1" size="sm" />
                       <strong className="me-2">{contact.name}</strong>
-                      {contact.isPrimary && (
+                      {contact.isPrimaryContact && (
                         <CBadge color="primary" className="me-1">Primary</CBadge>
                       )}
-                      {contact.isAuthorizedForMedicalDecisions && (
+                      {contact.authorizedForMedicalDecisions && (
                         <CBadge color="success" className="me-1">Medical Auth</CBadge>
                       )}
-                      {contact.isAuthorizedForPickup && (
+                      {contact.authorizedForPickup && (
                         <CBadge color="info">Pickup Auth</CBadge>
                       )}
                     </div>

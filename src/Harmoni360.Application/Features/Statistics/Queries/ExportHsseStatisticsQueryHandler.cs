@@ -36,10 +36,10 @@ public class ExportHsseStatisticsQueryHandler : IRequestHandler<ExportHsseStatis
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(2, Unit.Centimetre);
-                page.Content().Stack(stack =>
+                page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
+                page.Content().Column(stack =>
                 {
-                    stack.Item().Text("HSSE Statistics Report").FontSize(20).Bold().AlignCenter();
+                    stack.Item().AlignCenter().Text("HSSE Statistics Report").FontSize(20).Bold();
                     stack.Item().Text($"Generated: {DateTime.UtcNow:yyyy-MM-dd}");
                     stack.Item().Text($"Module: {request.Module?.ToString() ?? "All"}");
                     if (request.StartDate.HasValue || request.EndDate.HasValue)

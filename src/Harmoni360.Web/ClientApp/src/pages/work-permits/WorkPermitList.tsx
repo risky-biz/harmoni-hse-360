@@ -80,7 +80,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 const WorkPermitList: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isDemo } = useApplicationMode();
+  const { isDemoMode } = useApplicationMode();
 
   // State
   const [filters, setFilters] = useState<WorkPermitFilters>({
@@ -302,7 +302,7 @@ const WorkPermitList: React.FC = () => {
                 <CButton
                   color="primary"
                   onClick={() => navigate('/work-permits/create')}
-                  disabled={isDemo}
+                  disabled={false}
                 >
                   <FontAwesomeIcon icon={faPlus} className="me-2" />
                   New Work Permit
@@ -405,7 +405,7 @@ const WorkPermitList: React.FC = () => {
                     onChange={(e) => handleFilterChange('department', e.target.value)}
                   >
                     <option value="">All Departments</option>
-                    {departments?.items?.map(dept => (
+                    {departments?.map(dept => (
                       <option key={dept.id} value={dept.name}>
                         {dept.name}
                       </option>
@@ -592,7 +592,7 @@ const WorkPermitList: React.FC = () => {
                             color="primary"
                             variant="outline"
                             onClick={() => navigate(`/work-permits/${permit.id}/edit`)}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faEdit} />
                           </CButton>
@@ -608,8 +608,8 @@ const WorkPermitList: React.FC = () => {
                           <CButton
                             color={action.color}
                             variant="outline"
-                            onClick={() => handleAction(action.key, permit.id)}
-                            disabled={isDemo}
+                            onClick={() => handleAction(action.key, permit.id.toString())}
+                            disabled={false}
                             title={action.label}
                           >
                             <FontAwesomeIcon icon={action.icon} />
@@ -627,10 +627,10 @@ const WorkPermitList: React.FC = () => {
                             variant="outline"
                             onClick={() => setDeleteModal({
                               show: true,
-                              permitId: permit.id,
+                              permitId: permit.id.toString(),
                               permitTitle: permit.title
                             })}
-                            disabled={isDemo}
+                            disabled={false}
                           >
                             <FontAwesomeIcon icon={faTrash} />
                           </CButton>
