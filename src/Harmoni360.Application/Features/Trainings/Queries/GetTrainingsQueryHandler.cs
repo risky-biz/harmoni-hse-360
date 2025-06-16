@@ -102,11 +102,11 @@ public class GetTrainingsQueryHandler : IRequestHandler<GetTrainingsQuery, GetTr
 
             return new GetTrainingsResponse
             {
-                Trainings = trainings,
+                Items = trainings,
                 TotalCount = totalCount,
-                PageNumber = request.PageNumber,
+                CurrentPage = request.PageNumber,
                 PageSize = request.PageSize,
-                TotalPages = totalPages,
+                PageCount = totalPages,
                 HasPreviousPage = request.PageNumber > 1,
                 HasNextPage = request.PageNumber < totalPages,
                 Statistics = statistics

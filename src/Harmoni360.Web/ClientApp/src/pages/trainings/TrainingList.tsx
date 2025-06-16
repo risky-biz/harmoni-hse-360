@@ -121,7 +121,7 @@ const TrainingList: React.FC = () => {
     dateFrom: searchParams.get('dateFrom') || '',
     dateTo: searchParams.get('dateTo') || '',
     isK3Training: searchParams.get('isK3Training') === 'true' || undefined,
-    sortBy: searchParams.get('sortBy') || 'CreatedAt',
+    sortBy: searchParams.get('sortBy') || 'ScheduledStartDate',
     sortDescending: searchParams.get('sortDescending') === 'true'
   });
 
@@ -277,8 +277,8 @@ const TrainingList: React.FC = () => {
       dateFrom: '',
       dateTo: '',
       isK3Training: undefined,
-      sortBy: 'CreatedAt',
-      sortDescending: true
+      sortBy: 'ScheduledStartDate',
+      sortDescending: false
     });
     setCurrentPage(1);
   };

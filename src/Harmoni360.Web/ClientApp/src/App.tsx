@@ -552,6 +552,30 @@ const SecurityIncidentDetail = React.lazy(() =>
     };
   })
 );
+const ThreatAssessment = React.lazy(() =>
+  import('./pages/security/ThreatAssessment').catch((err) => {
+    console.error('Failed to load ThreatAssessment:', err);
+    return {
+      default: () => <div>Error loading Threat Assessment. Please refresh.</div>,
+    };
+  })
+);
+const SecurityControls = React.lazy(() =>
+  import('./pages/security/SecurityControls').catch((err) => {
+    console.error('Failed to load SecurityControls:', err);
+    return {
+      default: () => <div>Error loading Security Controls. Please refresh.</div>,
+    };
+  })
+);
+const SecurityAnalytics = React.lazy(() =>
+  import('./pages/security/SecurityAnalytics').catch((err) => {
+    console.error('Failed to load SecurityAnalytics:', err);
+    return {
+      default: () => <div>Error loading Security Analytics. Please refresh.</div>,
+    };
+  })
+);
 
 // Training Management Pages
 const TrainingDashboard = React.lazy(() =>
@@ -989,6 +1013,9 @@ function App() {
                 <Route path="/security/incidents/create" element={<CreateSecurityIncident />} />
                 <Route path="/security/incidents/:id" element={<SecurityIncidentDetail />} />
                 <Route path="/security/incidents/:id/edit" element={<CreateSecurityIncident />} />
+                <Route path="/security/threat-assessment" element={<ThreatAssessment />} />
+                <Route path="/security/controls" element={<SecurityControls />} />
+                <Route path="/security/analytics" element={<SecurityAnalytics />} />
 
                 {/* Training Management */}
                 <Route path="/trainings" element={<TrainingList />} />

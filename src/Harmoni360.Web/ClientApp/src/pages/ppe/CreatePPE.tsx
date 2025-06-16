@@ -319,6 +319,7 @@ const CreatePPE: React.FC = () => {
               >
                 <FontAwesomeIcon
                   icon={faShieldAlt}
+                  size="lg"
                   className="me-2 text-primary"
                 />
                 Add New PPE Item

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Harmoni360.Application.Features.Statistics.DTOs;
 using Harmoni360.Application.Features.Statistics.Queries;
 using Harmoni360.Application.Tests.Common;
+using Moq;
 using Xunit;
 
 namespace Harmoni360.Application.Tests.Features.Statistics;
@@ -13,7 +14,8 @@ public class ExportHsseStatisticsQueryHandlerTests : BaseTest
     public ExportHsseStatisticsQueryHandlerTests()
     {
         SeedData();
-        var mediator = new MediatR.Mediator(_ => Task.FromResult<object?>(new HsseStatisticsDto()));
+        var serviceProvider = new Mock<IServiceProvider>();
+        var mediator = new MediatR.Mediator(serviceProvider.Object);
         _handler = new ExportHsseStatisticsQueryHandler(mediator);
     }
 
