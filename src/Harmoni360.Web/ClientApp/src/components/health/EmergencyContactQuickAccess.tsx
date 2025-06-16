@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEmergencyContact } from '../../contexts/CompanyConfigurationContext';
 import {
   CCard,
   CCardBody,
@@ -41,6 +42,7 @@ const EmergencyContactQuickAccess: React.FC<EmergencyContactQuickAccessProps> = 
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState<EmergencyContactDto | null>(null);
   const [notificationMessage, setNotificationMessage] = useState('');
+  const emergencyContactMessage = useEmergencyContact();
 
   const [triggerEmergencyNotification, { isLoading: isSendingNotification }] = 
     useTriggerEmergencyNotificationMutation();
@@ -74,7 +76,7 @@ const EmergencyContactQuickAccess: React.FC<EmergencyContactQuickAccessProps> = 
       `Emergency notification for ${personName}.\n\n` +
       `Emergency Type: ${emergencyType}\n` +
       `Time: ${new Date().toLocaleString()}\n\n` +
-      `Please contact British School Jakarta immediately.`
+      emergencyContactMessage
     );
     setShowNotificationModal(true);
   };

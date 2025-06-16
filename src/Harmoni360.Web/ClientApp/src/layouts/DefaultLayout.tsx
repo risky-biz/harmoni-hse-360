@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
+import { useCompanyName, useWebsiteUrl } from '../contexts/CompanyConfigurationContext';
 import {
   CContainer,
   CSidebar,
@@ -110,6 +111,10 @@ const DefaultLayout: React.FC = () => {
   const permissions = usePermissions();
   const [logoutApi] = useLogoutMutation();
   const [sidebarShow, setSidebarShow] = useState(true);
+  
+  // Get dynamic company configuration
+  const companyName = useCompanyName();
+  const websiteUrl = useWebsiteUrl();
 
 
   // Generate filtered navigation based on user permissions
@@ -287,11 +292,11 @@ const DefaultLayout: React.FC = () => {
         <CFooter>
           <div>
             <a
-              href="https://bsj.sch.id"
+              href={websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              British School Jakarta
+              {companyName}
             </a>
             <span className="ms-1">&copy; 2025 Harmoni360</span>
           </div>

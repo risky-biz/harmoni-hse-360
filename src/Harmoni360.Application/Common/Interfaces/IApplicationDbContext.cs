@@ -22,6 +22,7 @@ public interface IApplicationDbContext
     DbSet<IncidentAuditLog> IncidentAuditLogs { get; }
     
     // Configuration Management
+    DbSet<CompanyConfiguration> CompanyConfigurations { get; }
     DbSet<Department> Departments { get; }
     DbSet<IncidentCategory> IncidentCategories { get; }
     DbSet<IncidentLocation> IncidentLocations { get; }

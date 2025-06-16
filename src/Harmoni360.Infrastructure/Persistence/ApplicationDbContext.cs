@@ -38,6 +38,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<NotificationHistory> NotificationHistories => Set<NotificationHistory>();
     
     // Configuration Management
+    public DbSet<CompanyConfiguration> CompanyConfigurations => Set<CompanyConfiguration>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<IncidentCategory> IncidentCategories => Set<IncidentCategory>();
     public DbSet<IncidentLocation> IncidentLocations => Set<IncidentLocation>();

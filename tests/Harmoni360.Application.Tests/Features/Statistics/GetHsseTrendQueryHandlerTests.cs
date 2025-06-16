@@ -4,6 +4,7 @@ using Harmoni360.Application.Features.Statistics.Queries;
 using Harmoni360.Application.Tests.Common;
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Entities.Security;
+using Harmoni360.Domain.Enums;
 using static Harmoni360.Domain.Entities.Incident;
 using static Harmoni360.Domain.Entities.Hazard;
 using static Harmoni360.Domain.Entities.Security.SecurityIncident;

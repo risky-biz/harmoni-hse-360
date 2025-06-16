@@ -17,8 +17,10 @@ import {
   faShieldAlt,
   faDatabase,
   faClock,
+  faBuilding,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import CompanyConfiguration from '../../components/settings/CompanyConfiguration';
 
 const SystemSettings: React.FC = () => {
   const navigate = useNavigate();
@@ -84,6 +86,11 @@ const SystemSettings: React.FC = () => {
         <strong>Note:</strong> For incident-specific configuration such as departments, categories, and locations, 
         please visit the <a href="#" onClick={(e) => { e.preventDefault(); navigate('/settings/incidents'); }}>Incident Management Settings</a>.
       </CAlert>
+
+      {/* Company Configuration Section */}
+      <div className="mb-4">
+        <CompanyConfiguration />
+      </div>
 
       <CRow>
         {systemSettingsSections.map((section, index) => (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCompanyName } from '../contexts/CompanyConfigurationContext';
 import {
   CCard,
   CCardBody,
@@ -24,6 +25,7 @@ import { dashboardService } from '../services/dashboardService';
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const companyName = useCompanyName();
   const [widgetData, setWidgetData] = useState<Map<string, WidgetData>>(new Map());
   const [loadingWidgets, setLoadingWidgets] = useState<Set<string>>(new Set());
   const [errorWidgets, setErrorWidgets] = useState<Map<string, string>>(new Map());
@@ -125,7 +127,7 @@ const Dashboard: React.FC = () => {
         <FontAwesomeIcon icon={CONTEXT_ICONS.vaccination} className="flex-shrink-0 me-2" />
         <div>
           <strong>Welcome to Harmoni360!</strong> This system manages health,
-          safety, security and environmental data for British School Jakarta.
+          safety, security and environmental data for {companyName}.
           <CButton
             color="primary"
             size="sm"
