@@ -302,43 +302,31 @@ const CreateAudit: React.FC = () => {
   }, [watchedItems, setValue]);
 
   return (
-    <div className="container-fluid">
-      {/* Breadcrumb */}
-      <CBreadcrumb className="mb-4">
-        <CBreadcrumbItem>
-          <FontAwesomeIcon icon={faHome} className="me-1" />
-          Dashboard
-        </CBreadcrumbItem>
-        <CBreadcrumbItem href="/audits">Audits</CBreadcrumbItem>
-        <CBreadcrumbItem active>Create New Audit</CBreadcrumbItem>
-      </CBreadcrumb>
-
-      {/* Header */}
-      <CRow className="mb-4">
-        <CCol>
-          <div className="d-flex justify-content-between align-items-center">
+    <CRow>
+      <CCol>
+        <CCard>
+          <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
-              <h1 className="h3 mb-2">
-                <FontAwesomeIcon icon={AUDIT_ICONS.audit} className="me-2" />
+              <h4 className="mb-0">
+                <FontAwesomeIcon icon={AUDIT_ICONS.audit} size="lg" className="me-2 text-primary" />
                 Create New Audit
-              </h1>
-              <p className="text-muted mb-0">
+              </h4>
+              <small className="text-muted">
                 Create a comprehensive audit with checklist items, documentation, and evidence management
-              </p>
+              </small>
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex align-items-center gap-2">
               <CButton
                 color="secondary"
                 variant="outline"
                 onClick={() => navigate('/audits')}
               >
                 <FontAwesomeIcon icon={AUDIT_ICONS.back} className="me-2" />
-                Cancel
+                Back to List
               </CButton>
             </div>
-          </div>
-        </CCol>
-      </CRow>
+          </CCardHeader>
+          <CCardBody>
 
       {/* Form Errors */}
       {(submitError || createError) && (
@@ -760,7 +748,10 @@ const CreateAudit: React.FC = () => {
           </CCol>
         </CRow>
       </CForm>
-    </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
   );
 };
 

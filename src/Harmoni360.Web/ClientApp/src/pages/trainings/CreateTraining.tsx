@@ -242,7 +242,7 @@ const CreateTraining: React.FC = () => {
           <CCardHeader>
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <FontAwesomeIcon icon={TRAINING_ICONS.training} className="me-2 text-primary" />
+                <FontAwesomeIcon icon={TRAINING_ICONS.training} size="lg" className="me-2 text-primary" />
                 <h5 className="mb-0">Create New Training</h5>
               </div>
               <div>

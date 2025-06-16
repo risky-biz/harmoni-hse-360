@@ -203,10 +203,15 @@ const SecurityIncidentList: React.FC = () => {
                 color="secondary"
                 variant="outline"
                 onClick={() => refetch()}
+                disabled={isLoading}
                 title="Refresh security incident list"
               >
-                <FontAwesomeIcon icon={ACTION_ICONS.refresh} className="me-2" />
-                Refresh
+                <FontAwesomeIcon 
+                  icon={ACTION_ICONS.refresh} 
+                  className="me-2" 
+                  spin={isLoading}
+                />
+                {isLoading ? 'Refreshing...' : 'Refresh'}
               </CButton>
               <CButton
                 color="primary"
@@ -316,7 +321,15 @@ const SecurityIncidentList: React.FC = () => {
             </CRow>
 
             {/* Security Incidents Table */}
-            {incidents.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-5">
+                <CSpinner color="primary" className="mb-3" />
+                <h5 className="text-muted">Loading security incidents...</h5>
+                <p className="text-muted">
+                  Please wait while we retrieve the latest security incident data.
+                </p>
+              </div>
+            ) : incidents.length === 0 ? (
               <div className="text-center py-5">
                 <FontAwesomeIcon
                   icon={CONTEXT_ICONS.incident}

@@ -246,7 +246,10 @@ builder.Services.AddRateLimiter(options =>
 var app = builder.Build();
 
 // Set uploads path for file storage service
-var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? app.Environment.ContentRootPath, "uploads");
+// Use /app/uploads in production (mounted volume) or local uploads in development
+var uploadsPath = app.Environment.IsProduction() 
+    ? "/app/uploads" 
+    : Path.Combine(app.Environment.WebRootPath ?? app.Environment.ContentRootPath, "uploads");
 app.Configuration["FileStorage:UploadsPath"] = uploadsPath;
 
 // Configure pipeline
@@ -290,24 +293,32 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
-// Create uploads directory if it doesn't exist (use the same path we set in configuration)
-if (!Directory.Exists(uploadsPath))
+// Create uploads directory if it doesn't exist and we have permission
+try
 {
-    Directory.CreateDirectory(uploadsPath);
-    app.Logger.LogInformation("Created uploads directory at: {UploadsPath}", uploadsPath);
-}
-
-// Serve uploaded files (with authentication requirement)
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads",
-    OnPrepareResponse = ctx =>
+    if (!Directory.Exists(uploadsPath))
     {
-        // Add cache control for uploaded files
-        ctx.Context.Response.Headers["Cache-Control"] = "private, max-age=3600";
+        Directory.CreateDirectory(uploadsPath);
+        app.Logger.LogInformation("Created uploads directory at: {UploadsPath}", uploadsPath);
     }
-});
+    
+    // Serve uploaded files (with authentication requirement)
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uploadsPath),
+        RequestPath = "/uploads",
+        OnPrepareResponse = ctx =>
+        {
+            // Add cache control for uploaded files
+            ctx.Context.Response.Headers["Cache-Control"] = "private, max-age=3600";
+        }
+    });
+}
+catch (Exception ex)
+{
+    app.Logger.LogWarning("Could not create uploads directory at {UploadsPath}: {Error}", uploadsPath, ex.Message);
+    app.Logger.LogInformation("File uploads will be disabled");
+}
 
 // Always serve SPA static files (including in production)
 app.UseSpaStaticFiles();

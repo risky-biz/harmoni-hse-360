@@ -174,6 +174,71 @@ namespace Harmoni360.Web.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets audit dashboard metrics
+        /// </summary>
+        [HttpGet("dashboard")]
+        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetDashboard([FromQuery] GetAuditDashboardQuery query)
+        {
+            _logger.LogInformation("Retrieving audit dashboard metrics");
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets user's audits
+        /// </summary>
+        [HttpGet("my-audits")]
+        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetMyAudits([FromQuery] GetMyAuditsQuery query)
+        {
+            _logger.LogInformation("Retrieving user's audits");
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets audits pending action
+        /// </summary>
+        [HttpGet("pending")]
+        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetPendingAudits([FromQuery] GetPendingAuditsQuery query)
+        {
+            _logger.LogInformation("Retrieving audits pending action");
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets overdue audits
+        /// </summary>
+        [HttpGet("overdue")]
+        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetOverdueAudits([FromQuery] GetOverdueAuditsQuery query)
+        {
+            _logger.LogInformation("Retrieving overdue audits");
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets audit statistics
+        /// </summary>
+        [HttpGet("statistics")]
+        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetStatistics([FromQuery] GetAuditStatisticsQuery query)
+        {
+            _logger.LogInformation("Retrieving audit statistics");
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
         // TODO: Implement audit item management commands
         /*
         /// <summary>
@@ -440,104 +505,6 @@ namespace Harmoni360.Web.Controllers
             _logger.LogInformation("Adding comment to audit {Id}", id);
             
             var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets audit dashboard metrics
-        /// </summary>
-        [HttpGet("dashboard")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetDashboard([FromQuery] GetAuditDashboardQuery query)
-        {
-            _logger.LogInformation("Retrieving audit dashboard metrics");
-            
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets user's audits
-        /// </summary>
-        [HttpGet("my-audits")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetMyAudits([FromQuery] GetMyAuditsQuery query)
-        {
-            _logger.LogInformation("Retrieving user's audits");
-            
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets audits pending action
-        /// </summary>
-        [HttpGet("pending")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetPendingAudits([FromQuery] GetPendingAuditsQuery query)
-        {
-            _logger.LogInformation("Retrieving audits pending action");
-            
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets overdue audits
-        /// </summary>
-        [HttpGet("overdue")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetOverdueAudits([FromQuery] GetOverdueAuditsQuery query)
-        {
-            _logger.LogInformation("Retrieving overdue audits");
-            
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets audit statistics
-        /// </summary>
-        [HttpGet("statistics")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetStatistics([FromQuery] GetAuditStatisticsQuery query)
-        {
-            _logger.LogInformation("Retrieving audit statistics");
-            
-            var result = await _mediator.Send(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets audit trail for an audit
-        /// </summary>
-        [HttpGet("{id}/audit-trail")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetAuditTrail(int id)
-        {
-            _logger.LogInformation("Retrieving audit trail for audit {Id}", id);
-            
-            var query = new GetAuditTrailQuery { AuditId = id };
-            var result = await _mediator.Send(query);
-            
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Gets findings for an audit
-        /// </summary>
-        [HttpGet("{id}/findings")]
-        [RequireModulePermission(ModuleType.AuditManagement, PermissionType.Read)]
-        public async Task<IActionResult> GetAuditFindings(int id, [FromQuery] GetAuditFindingsQuery query)
-        {
-            if (id != query.AuditId)
-            {
-                query = query with { AuditId = id };
-            }
-
-            _logger.LogInformation("Retrieving findings for audit {Id}", id);
-            
-            var result = await _mediator.Send(query);
             return Ok(result);
         }
         */

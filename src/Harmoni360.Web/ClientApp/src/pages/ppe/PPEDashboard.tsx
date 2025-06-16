@@ -183,70 +183,78 @@ const PPEDashboard: React.FC = () => {
       {/* Filters */}
       <CCard className="mb-4 dashboard-filters">
         <CCardBody className="py-3">
-          <CRow className="align-items-center filter-controls">
-            <CCol lg={5} className="mb-3 mb-lg-0">
+          <CRow className="align-items-center filter-controls g-3">
+            <CCol md={12} lg={5} className="order-1 order-lg-1">
               <div className="d-flex align-items-center flex-column flex-sm-row gap-2">
-                <label className="form-label mb-0 fw-semibold text-nowrap d-none d-sm-block">Time Range:</label>
-                <CButtonGroup size="sm" className="w-100 w-sm-auto">
+                <label className="form-label mb-0 fw-semibold text-nowrap d-block">Time Range:</label>
+                <CButtonGroup size="sm" className="w-100 w-sm-auto" style={{minWidth: '280px'}}>
                   <CButton
                     color={timeRange === 'all' ? 'primary' : 'outline-primary'}
                     onClick={() => setTimeRange('all')}
+                    className="flex-fill"
                   >
                     All
                   </CButton>
                   <CButton
                     color={timeRange === '7d' ? 'primary' : 'outline-primary'}
                     onClick={() => setTimeRange('7d')}
+                    className="flex-fill"
                   >
                     7D
                   </CButton>
                   <CButton
                     color={timeRange === '30d' ? 'primary' : 'outline-primary'}
                     onClick={() => setTimeRange('30d')}
+                    className="flex-fill"
                   >
                     30D
                   </CButton>
                   <CButton
                     color={timeRange === '90d' ? 'primary' : 'outline-primary'}
                     onClick={() => setTimeRange('90d')}
+                    className="flex-fill"
                   >
                     90D
                   </CButton>
                 </CButtonGroup>
               </div>
             </CCol>
-            <CCol lg={3} className="mb-3 mb-lg-0">
-              <CFormSelect
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                size="sm"
-              >
-                <option value="">All Categories</option>
-                {categories?.map((cat) => (
-                  <option key={cat.id} value={cat.id.toString()}>
-                    {cat.name}
-                  </option>
-                ))}
-              </CFormSelect>
+            <CCol md={6} lg={3} className="order-2 order-lg-2">
+              <div>
+                <label className="form-label mb-1 fw-semibold d-block d-lg-none small">Category:</label>
+                <CFormSelect
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  size="sm"
+                >
+                  <option value="">All Categories</option>
+                  {categories?.map((cat) => (
+                    <option key={cat.id} value={cat.id.toString()}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </div>
             </CCol>
-            <CCol lg={4} className="text-end refresh-controls">
-              <div className="d-flex align-items-center justify-content-end gap-2 flex-wrap">
-                <CButtonToolbar className="gap-2">
+            <CCol md={6} lg={4} className="order-3 order-lg-3">
+              <div className="d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
+                <CButtonToolbar className="gap-2 flex-grow-1 flex-md-grow-0">
                   <CButton
                     color="primary"
                     variant="outline"
                     size="sm"
                     onClick={() => refetch()}
                     disabled={isLoading}
+                    className="flex-fill flex-md-grow-0"
                   >
                     <FontAwesomeIcon icon={faRedo} className="me-1" />
                     <span className="d-none d-sm-inline">{isLoading ? 'Refreshing...' : 'Refresh'}</span>
-                    <span className="d-sm-none">{isLoading ? '...' : 'Refresh'}</span>
+                    <span className="d-sm-none">{isLoading ? '...' : ''}</span>
                   </CButton>
                   <CDropdown variant="btn-group">
-                    <CDropdownToggle color="secondary" variant="outline">
+                    <CDropdownToggle color="secondary" variant="outline" size="sm" className="flex-fill flex-md-grow-0">
                       <FontAwesomeIcon icon={faCog} className="me-1 d-none d-sm-inline" />
-                      <span className="d-none d-md-inline">Auto-refresh: </span>
+                      <span className="d-none d-lg-inline">Auto: </span>
                       {autoRefreshInterval === 0 ? 'Off' : `${autoRefreshInterval}s`}
                     </CDropdownToggle>
                     <CDropdownMenu>
@@ -265,11 +273,11 @@ const PPEDashboard: React.FC = () => {
                     </CDropdownMenu>
                   </CDropdown>
                 </CButtonToolbar>
-                <div className="text-medium-emphasis small text-end flex-shrink-0">
-                  <div className="text-truncate-mobile">Last: {formatDistanceToNow(lastRefreshTime, { addSuffix: true })}</div>
+                <div className="text-medium-emphasis small text-end flex-shrink-0 d-none d-lg-block">
+                  <div style={{fontSize: '0.75rem'}}>Last: {formatDistanceToNow(lastRefreshTime, { addSuffix: true })}</div>
                   {connectionState === HubConnectionState.Connected && (
-                    <div className="text-success d-none d-sm-block">
-                      <small>● Live updates</small>
+                    <div className="text-success">
+                      <small style={{fontSize: '0.65rem'}}>● Live updates</small>
                     </div>
                   )}
                 </div>
@@ -324,8 +332,8 @@ const PPEDashboard: React.FC = () => {
       </CRow>
 
       {/* Charts Row 1 */}
-      <CRow className="mb-4">
-        <CCol lg={4}>
+      <CRow className="mb-4 g-3">
+        <CCol xl={4} lg={6} md={12}>
           <ChartCard
             title="Status Distribution"
             subtitle="Current PPE status breakdown"
@@ -347,7 +355,7 @@ const PPEDashboard: React.FC = () => {
             )}
           </ChartCard>
         </CCol>
-        <CCol lg={4}>
+        <CCol xl={4} lg={6} md={12}>
           <ChartCard
             title="Category Analysis"
             subtitle="PPE distribution by category"
@@ -367,7 +375,7 @@ const PPEDashboard: React.FC = () => {
             )}
           </ChartCard>
         </CCol>
-        <CCol lg={4}>
+        <CCol xl={4} lg={12} md={12}>
           <ChartCard
             title="Utilization Metrics"
             subtitle="PPE assignment and availability"
@@ -403,8 +411,8 @@ const PPEDashboard: React.FC = () => {
       </CRow>
 
       {/* Category Breakdown and Alerts */}
-      <CRow className="mb-4">
-        <CCol lg={8}>
+      <CRow className="mb-4 g-3">
+        <CCol lg={8} md={12}>
           <ChartCard
             title="Category Breakdown"
             subtitle="PPE inventory by category type"
@@ -412,8 +420,8 @@ const PPEDashboard: React.FC = () => {
             height="400px"
           >
             {dashboard && (
-              <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '350px' }}>
-                <CTable responsive>
+              <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '350px' }} className="position-relative">
+                <CTable responsive className="mb-0 table-sm">
                   <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell>Category</CTableHeaderCell>
@@ -442,9 +450,9 @@ const PPEDashboard: React.FC = () => {
                           <CBadge color="primary">{category.assignedItems}</CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <div style={{ width: '100px' }}>
-                            <CProgress value={utilization} />
-                            <small className="text-muted">{utilization.toFixed(1)}%</small>
+                          <div style={{ minWidth: '80px', width: '100px' }}>
+                            <CProgress value={utilization} className="mb-1" style={{height: '6px'}} />
+                            <small className="text-muted d-block text-center">{utilization.toFixed(1)}%</small>
                           </div>
                         </CTableDataCell>
                       </CTableRow>
@@ -456,7 +464,7 @@ const PPEDashboard: React.FC = () => {
             )}
           </ChartCard>
         </CCol>
-        <CCol lg={4}>
+        <CCol lg={4} md={12}>
           <ChartCard
             title="Critical Alerts"
             subtitle="Items requiring immediate attention"

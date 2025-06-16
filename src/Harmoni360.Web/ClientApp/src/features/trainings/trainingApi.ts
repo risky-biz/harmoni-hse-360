@@ -228,7 +228,22 @@ export const trainingApi = createApi({
     getTrainings: builder.query<GetTrainingsResponse, GetTrainingsParams>({
       query: (params) => ({
         url: '',
-        params,
+        params: {
+          pageNumber: params.page || 1,
+          pageSize: params.pageSize || 10,
+          searchTerm: params.search,
+          type: params.type,
+          category: params.category,
+          status: params.status,
+          priority: params.priority,
+          deliveryMethod: params.deliveryMethod,
+          instructorName: params.instructorName,
+          scheduledFromDate: params.dateFrom,
+          scheduledToDate: params.dateTo,
+          isK3Training: params.isK3Training,
+          sortBy: params.sortBy || 'ScheduledStartDate',
+          sortDescending: params.sortDirection === 'desc'
+        },
       }),
       providesTags: ['Training'],
     }),
