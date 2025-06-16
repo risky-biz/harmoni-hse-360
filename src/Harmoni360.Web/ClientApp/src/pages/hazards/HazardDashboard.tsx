@@ -22,7 +22,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
   faArrowRotateRight,
-  faCog
+  faCog,
+  faExclamationTriangle,
+  faExclamationCircle,
+  faQuestionCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { HubConnectionState } from '@microsoft/signalr';
 
@@ -310,7 +313,7 @@ const HazardDashboard: React.FC = () => {
             value={data.overview?.totalHazards || 0}
             change={data.overview?.totalHazardsChange}
             color="primary"
-            icon="exclamation-triangle"
+            icon={faExclamationTriangle}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -318,7 +321,7 @@ const HazardDashboard: React.FC = () => {
             title="Open Hazards"
             value={data.overview?.openHazards || 0}
             color="warning"
-            icon="exclamation-circle"
+            icon={faExclamationCircle}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -327,7 +330,7 @@ const HazardDashboard: React.FC = () => {
             value={data.overview?.highRiskHazards || 0}
             change={data.overview?.highRiskChange}
             color="danger"
-            icon="exclamation-triangle"
+            icon={faExclamationTriangle}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -335,7 +338,7 @@ const HazardDashboard: React.FC = () => {
             title="Unassessed"
             value={data.overview?.unassessedHazards || 0}
             color="info"
-            icon="question-circle"
+            icon={faQuestionCircle}
           />
         </CCol>
       </CRow>
