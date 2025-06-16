@@ -242,33 +242,31 @@ export interface AuditSummaryDto {
 export interface AuditDashboardDto {
   // Summary Statistics
   totalAudits: number;
+  draftAudits: number;
   scheduledAudits: number;
   inProgressAudits: number;
   completedAudits: number;
-  overdueAuditsCount: number;
+  overdueAudits: number;
+  cancelledAudits: number;
   
-  // Finding Statistics
+  // Risk Statistics
+  highRiskAudits: number;
+  criticalRiskAudits: number;
+  auditsDueToday: number;
+  auditsDueThisWeek: number;
+  
+  // Performance Metrics
+  averageScore: number;
+  completionRate: number;
   totalFindings: number;
   openFindings: number;
-  criticalFindingsCount: number;
-  averageCompletionTime: number;
-  
-  // Trend Data
-  auditsTrend: AuditTrendDto[];
-  findingsTrend: FindingTrendDto[];
-  complianceScore: number;
-  
-  // Recent Activity
-  recentAudits: AuditSummaryDto[];
-  upcomingAudits: AuditSummaryDto[];
-  overdueAudits: AuditSummaryDto[];
-  criticalFindings: AuditFindingDto[];
+  criticalFindings: number;
   
   // Charts Data
-  auditsByType: AuditsByTypeDto[];
-  auditsByStatus: AuditsByStatusDto[];
-  auditsByDepartment: AuditsByDepartmentDto[];
-  findingsBySeverity: FindingsBySeverityDto[];
+  auditsByType: AuditTypeStatDto[];
+  monthlyTrends: AuditMonthlyTrendDto[];
+  recentAudits: AuditSummaryDto[];
+  highPriorityAudits: AuditSummaryDto[];
 }
 
 export interface AuditTrendDto {
@@ -304,6 +302,21 @@ export interface AuditsByDepartmentDto {
   departmentName: string;
   count: number;
   percentage: number;
+}
+
+export interface AuditTypeStatDto {
+  type: string;
+  count: number;
+  percentage: number;
+  averageScore: number;
+}
+
+export interface AuditMonthlyTrendDto {
+  month: string;
+  totalAudits: number;
+  completedAudits: number;
+  averageScore: number;
+  totalFindings: number;
 }
 
 export interface FindingsBySeverityDto {

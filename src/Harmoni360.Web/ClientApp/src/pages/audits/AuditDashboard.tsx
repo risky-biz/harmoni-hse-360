@@ -147,25 +147,14 @@ const AuditDashboard: React.FC = () => {
   }
 
   const auditsByTypeData = dashboardData?.auditsByType?.map(item => ({
-    label: item.typeDisplay,
+    label: item.type,
     value: item.count,
     color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
   })) || [];
 
-  const auditsByStatusData = dashboardData?.auditsByStatus?.map(item => ({
-    label: item.statusDisplay,
-    value: item.count,
-    color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
-  })) || [];
-
-  const auditsTrendData = dashboardData?.auditsTrend?.map(trend => ({
-    label: trend.date,
-    value: trend.completed
-  })) || [];
-
-  const findingsTrendData = dashboardData?.findingsTrend?.map(trend => ({
-    label: trend.date,
-    value: trend.total
+  const monthlyTrendData = dashboardData?.monthlyTrends?.map(trend => ({
+    label: trend.month,
+    value: trend.completedAudits
   })) || [];
 
   return (
@@ -292,7 +281,7 @@ const AuditDashboard: React.FC = () => {
         <CCol md={3}>
           <StatsCard
             title="Overdue Audits"
-            value={Array.isArray(dashboardData?.overdueAudits) ? dashboardData.overdueAudits.length : (dashboardData?.overdueAudits || 0)}
+            value={dashboardData?.overdueAudits || 0}
             icon={faExclamationTriangle}
             color="danger"
             onClick={handleViewOverdueAudits}
@@ -319,7 +308,7 @@ const AuditDashboard: React.FC = () => {
         <CCol md={3}>
           <StatsCard
             title="Critical Findings"
-            value={Array.isArray(dashboardData?.criticalFindings) ? dashboardData.criticalFindings.length : (dashboardData?.criticalFindings || 0)}
+            value={dashboardData?.criticalFindings || 0}
             icon={faTimesCircle}
             color="danger"
             onClick={() => navigate('/audits/findings?severity=Critical')}
@@ -335,8 +324,8 @@ const AuditDashboard: React.FC = () => {
               <h5 className="mb-0">Compliance Score</h5>
             </CCardHeader>
             <CCardBody className="text-center">
-              <div className="display-4 mb-2" style={{ color: (dashboardData?.complianceScore ?? 0) >= 80 ? '#28a745' : (dashboardData?.complianceScore ?? 0) >= 60 ? '#ffc107' : '#dc3545' }}>
-                {dashboardData?.complianceScore ?? 0}%
+              <div className="display-4 mb-2" style={{ color: (dashboardData?.completionRate ?? 0) >= 80 ? '#28a745' : (dashboardData?.completionRate ?? 0) >= 60 ? '#ffc107' : '#dc3545' }}>
+                {dashboardData?.completionRate ?? 0}%
               </div>
               <p className="text-muted mb-0">Overall Compliance</p>
             </CCardBody>
@@ -349,16 +338,16 @@ const AuditDashboard: React.FC = () => {
             </CCardHeader>
             <CCardBody className="text-center">
               <div className="display-4 mb-2 text-info">
-                {dashboardData?.averageCompletionTime || 0}
+                {dashboardData?.averageScore || 0}
               </div>
               <p className="text-muted mb-0">Days</p>
             </CCardBody>
           </CCard>
         </CCol>
         <CCol md={4}>
-          <ChartCard title="Audits by Status">
-            {auditsByStatusData.length > 0 ? (
-              <DonutChart data={auditsByStatusData} />
+          <ChartCard title="Audits by Type">
+            {auditsByTypeData.length > 0 ? (
+              <DonutChart data={auditsByTypeData} />
             ) : (
               <div className="text-center text-muted py-4">
                 No audit data available
@@ -370,24 +359,13 @@ const AuditDashboard: React.FC = () => {
 
       {/* Charts */}
       <CRow className="mb-4">
-        <CCol md={8}>
-          <ChartCard title="Audit Completion Trends">
-            {auditsTrendData.length > 0 ? (
-              <LineChart data={auditsTrendData} height={300} />
+        <CCol md={12}>
+          <ChartCard title="Monthly Audit Trends">
+            {monthlyTrendData.length > 0 ? (
+              <LineChart data={monthlyTrendData} height={300} />
             ) : (
               <div className="text-center text-muted py-4">
                 No trend data available
-              </div>
-            )}
-          </ChartCard>
-        </CCol>
-        <CCol md={4}>
-          <ChartCard title="Audits by Type">
-            {auditsByTypeData.length > 0 ? (
-              <DonutChart data={auditsByTypeData} />
-            ) : (
-              <div className="text-center text-muted py-4">
-                No audit type data available
               </div>
             )}
           </ChartCard>
@@ -417,11 +395,11 @@ const AuditDashboard: React.FC = () => {
                   items={dashboardData.recentAudits.map(audit => ({
                     id: audit.id.toString(),
                     title: audit.title,
-                    subtitle: `${audit.typeDisplay} - ${audit.auditorName}`,
+                    subtitle: `${audit.type} - ${audit.auditorName}`,
                     timestamp: formatDistanceToNow(new Date(audit.scheduledDate), { addSuffix: true }),
                     status: audit.status,
                     badge: {
-                      text: audit.statusDisplay,
+                      text: audit.status,
                       color: getStatusColor(audit.status)
                     },
                     onClick: () => navigate(`/audits/${audit.id}`)
@@ -440,40 +418,40 @@ const AuditDashboard: React.FC = () => {
           <CCard>
             <CCardHeader>
               <div className="d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">Upcoming Audits</h5>
+                <h5 className="mb-0">High Priority Audits</h5>
                 <CButton
-                  color="info"
+                  color="danger"
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/audits?status=Scheduled')}
+                  onClick={() => navigate('/audits?priority=High')}
                 >
                   View All
                 </CButton>
               </div>
             </CCardHeader>
             <CCardBody>
-              {dashboardData?.upcomingAudits && dashboardData.upcomingAudits.length > 0 ? (
+              {dashboardData?.highPriorityAudits && dashboardData.highPriorityAudits.length > 0 ? (
                 <RecentItemsList
-                  items={dashboardData.upcomingAudits.map(audit => ({
+                  items={dashboardData.highPriorityAudits.map(audit => ({
                     id: audit.id.toString(),
                     title: audit.title,
-                    subtitle: `${audit.typeDisplay} - ${audit.auditorName}`,
+                    subtitle: `${audit.type} - ${audit.auditorName}`,
                     timestamp: formatDistanceToNow(new Date(audit.scheduledDate), { addSuffix: true }),
                     status: audit.status,
                     badge: {
-                      text: audit.priorityDisplay,
-                      color: getPriorityColor(audit.priority)
+                      text: audit.priority,
+                      color: getPriorityColor(audit.priority as AuditPriority)
                     },
                     secondaryBadge: {
-                      text: audit.riskLevelDisplay,
-                      color: getRiskLevelColor(audit.riskLevel)
+                      text: audit.riskLevel,
+                      color: getRiskLevelColor(audit.riskLevel as RiskLevel)
                     },
                     onClick: () => navigate(`/audits/${audit.id}`)
                   }))}
                 />
               ) : (
                 <div className="text-center text-muted py-4">
-                  No upcoming audits found
+                  No high priority audits found
                 </div>
               )}
             </CCardBody>
@@ -481,53 +459,6 @@ const AuditDashboard: React.FC = () => {
         </CCol>
       </CRow>
 
-      {/* Critical Findings Section */}
-      {dashboardData?.criticalFindings && Array.isArray(dashboardData.criticalFindings) && dashboardData.criticalFindings.length > 0 && (
-        <CRow className="mt-4">
-          <CCol>
-            <CCard>
-              <CCardHeader>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">
-                    <FontAwesomeIcon icon={faExclamationTriangle} className="me-2 text-danger" />
-                    Critical Findings Requiring Attention
-                  </h5>
-                  <CButton
-                    color="danger"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/audits/findings?severity=Critical')}
-                  >
-                    View All Critical
-                  </CButton>
-                </div>
-              </CCardHeader>
-              <CCardBody>
-                <RecentItemsList
-                  items={dashboardData.criticalFindings.map(finding => ({
-                    id: finding.id.toString(),
-                    title: finding.title,
-                    subtitle: `${finding.type} - ${finding.location || 'No location specified'}`,
-                    timestamp: finding.targetCloseDate ? 
-                      `Due: ${formatDistanceToNow(new Date(finding.targetCloseDate), { addSuffix: true })}` : 
-                      'No due date',
-                    status: finding.status,
-                    badge: {
-                      text: finding.severity,
-                      color: 'danger'
-                    },
-                    secondaryBadge: {
-                      text: finding.status,
-                      color: finding.isOpen ? 'warning' : 'success'
-                    },
-                    onClick: () => navigate(`/audits/findings/${finding.id}`)
-                  }))}
-                />
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
-      )}
     </div>
   );
 };

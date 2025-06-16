@@ -61,7 +61,9 @@ public class GetAuditDashboardQueryHandler : IRequestHandler<GetAuditDashboardQu
                 Type = g.Key.ToString(),
                 Count = g.Count(),
                 Percentage = totalAudits > 0 ? (int)((decimal)g.Count() / totalAudits * 100) : 0,
-                AverageScore = g.Where(a => a.ScorePercentage.HasValue).Average(a => a.ScorePercentage) ?? 0
+                AverageScore = g.Where(a => a.ScorePercentage.HasValue).Any() 
+                    ? g.Where(a => a.ScorePercentage.HasValue).Average(a => a.ScorePercentage) ?? 0 
+                    : 0
             })
             .ToListAsync(cancellationToken);
 
@@ -124,9 +126,11 @@ public class GetAuditDashboardQueryHandler : IRequestHandler<GetAuditDashboardQu
 
         // Calculate rates and averages
         var completionRate = totalAudits > 0 ? (decimal)completedAudits / totalAudits * 100 : 0;
-        var averageScore = await auditQuery
-            .Where(a => a.ScorePercentage.HasValue)
-            .AverageAsync(a => a.ScorePercentage!.Value, cancellationToken);
+        
+        var auditsWithScores = auditQuery.Where(a => a.ScorePercentage.HasValue);
+        var averageScore = await auditsWithScores.AnyAsync(cancellationToken) 
+            ? await auditsWithScores.AverageAsync(a => a.ScorePercentage!.Value, cancellationToken)
+            : 0;
 
         // Get findings counts
         var totalFindings = await _context.AuditFindings
