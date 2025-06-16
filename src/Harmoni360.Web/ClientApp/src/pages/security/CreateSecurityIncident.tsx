@@ -265,7 +265,10 @@ const CreateSecurityIncident: React.FC = () => {
         <CCard className="shadow-sm">
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div>
-              <h4 className="mb-0">Report Security Incident</h4>
+              <h4 className="mb-0">
+                <FontAwesomeIcon icon={CONTEXT_ICONS.security} size="lg" className="me-2 text-danger" />
+                Report Security Incident
+              </h4>
               <small className="text-muted">
                 Create a new security incident report
               </small>

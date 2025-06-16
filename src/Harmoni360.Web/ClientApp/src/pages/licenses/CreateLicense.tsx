@@ -267,7 +267,7 @@ const CreateLicense: React.FC = () => {
         <CCard>
           <CCardHeader className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
-              <FontAwesomeIcon icon={LICENSE_ICONS.license} className="me-2" />
+              <FontAwesomeIcon icon={LICENSE_ICONS.license} size="lg" className="me-2 text-primary" />
               <h4 className="mb-0">Create New License</h4>
             </div>
             <CButton

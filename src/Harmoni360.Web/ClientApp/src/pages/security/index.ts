@@ -3,6 +3,9 @@ export { default as SecurityDashboard } from './SecurityDashboard';
 export { default as SecurityIncidentList } from './SecurityIncidentList';
 export { default as SecurityIncidentDetail } from './SecurityIncidentDetail';
 export { default as CreateSecurityIncident } from './CreateSecurityIncident';
+export { default as ThreatAssessment } from './ThreatAssessment';
+export { default as SecurityControls } from './SecurityControls';
+export { default as SecurityAnalytics } from './SecurityAnalytics';
 
 // Re-export types for convenience
 export type {
@@ -12,7 +15,7 @@ export type {
   SecurityDashboard as SecurityDashboardType,
   CreateSecurityIncidentRequest,
   UpdateSecurityIncidentRequest,
-  ThreatAssessment,
+  ThreatAssessment as ThreatAssessmentType,
   SecurityControl,
   SecurityIncidentType,
   SecuritySeverity,

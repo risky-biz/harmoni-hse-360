@@ -253,7 +253,7 @@ export const CreateInspection: React.FC = () => {
               <CCardHeader className="d-flex justify-content-between align-items-center">
                 <div>
                   <h4 className="mb-0">
-                    <FontAwesomeIcon icon={faClipboardCheck} className="me-2 text-primary" />
+                    <FontAwesomeIcon icon={faClipboardCheck} size="lg" className="me-2 text-primary" />
                     Create New Inspection
                   </h4>
                   <small className="text-medium-emphasis">

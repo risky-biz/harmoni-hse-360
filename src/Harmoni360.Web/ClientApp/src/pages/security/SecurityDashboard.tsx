@@ -267,13 +267,28 @@ const SecurityDashboard: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => refetch()}
+                disabled={isLoading}
               >
-                <FontAwesomeIcon icon={faRedo} />
+                <FontAwesomeIcon 
+                  icon={faRedo} 
+                  spin={isLoading}
+                  className={isLoading ? 'text-muted' : ''}
+                />
+                <span className="d-none d-md-inline ms-1">
+                  {isLoading ? 'Refreshing...' : 'Refresh'}
+                </span>
               </CButton>
             </CButtonToolbar>
           </div>
           <small className="text-muted">
-            Last updated: {formatDistanceToNow(lastRefreshTime)} ago
+            {isLoading ? (
+              <span className="text-primary">
+                <CSpinner size="sm" className="me-1" />
+                Updating dashboard data...
+              </span>
+            ) : (
+              `Last updated: ${formatDistanceToNow(lastRefreshTime)} ago`
+            )}
           </small>
         </CCol>
       </CRow>
@@ -292,6 +307,7 @@ const SecurityDashboard: React.FC = () => {
               label: 'vs last period'
             } : undefined}
             subtitle={`${metrics?.openIncidents || 0} open`}
+            isLoading={isLoading}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -301,6 +317,7 @@ const SecurityDashboard: React.FC = () => {
             icon={faShieldAlt}
             color="danger"
             subtitle={`${metrics?.highSeverityIncidents || 0} high severity`}
+            isLoading={isLoading}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -310,6 +327,7 @@ const SecurityDashboard: React.FC = () => {
             icon={faLock}
             color="warning"
             subtitle="Incidents involving data"
+            isLoading={isLoading}
           />
         </CCol>
         <CCol sm={6} lg={3}>
@@ -319,6 +337,7 @@ const SecurityDashboard: React.FC = () => {
             icon={faClock}
             color="info"
             subtitle="Time to resolution"
+            isLoading={isLoading}
           />
         </CCol>
       </CRow>
