@@ -27,6 +27,7 @@ $charcoal: #212121;
 
 // Import dashboard styles after variables and CoreUI
 @import './dashboard.scss';
+@import './dashboard-responsive.scss';
 
 // Custom styles following Harmoni branding
 :root {

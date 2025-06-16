@@ -130,7 +130,14 @@
       "Bash(npx vite:*)",
       "Bash(tsc:*)",
       "Bash(npm run typecheck:*)",
+<<<<<<< Updated upstream
       "Bash(npm run:*)"
+=======
+      "Bash(npm run:*)",
+      "Bash(git checkout:*)",
+      "Bash(git reset:*)",
+      "Bash(git stash:*)"
+>>>>>>> Stashed changes
     ]
   },
   "enableAllProjectMcpServers": false

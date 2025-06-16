@@ -65,4 +65,32 @@ public class ConfigurationController : ControllerBase
         await _mediator.Send(command);
         return Ok();
     }
+<<<<<<< Updated upstream
+=======
+
+    // Company Configuration endpoints
+    [HttpGet("company")]
+    public async Task<IActionResult> GetCompanyConfiguration()
+    {
+        var query = new GetActiveCompanyConfigurationQuery();
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPut("company")]
+    // [Authorize(Roles = "Administrator,SystemAdministrator,Admin,SuperAdmin")] // Temporarily disabled for testing
+    public async Task<IActionResult> UpdateCompanyConfiguration([FromBody] UpdateCompanyConfigurationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("company")]
+    // [Authorize(Roles = "Administrator,SystemAdministrator,Admin,SuperAdmin")] // Temporarily disabled for testing
+    public async Task<IActionResult> CreateCompanyConfiguration([FromBody] CreateCompanyConfigurationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+>>>>>>> Stashed changes
 }

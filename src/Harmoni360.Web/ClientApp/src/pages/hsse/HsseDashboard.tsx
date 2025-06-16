@@ -38,7 +38,9 @@ import {
   ResponsiveStatsCard,
 } from '../../components/hsse';
 import { useSignalR } from '../../hooks/useSignalR';
+import { useResponsive, useResponsiveValue, useChartDimensions } from '../../hooks/useResponsive';
 import { KpiInputs as KpiInputsType, KpiMetric } from '../../types/hsse';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 const modules = [
   { label: 'All Modules', value: 'All' },
@@ -59,6 +61,18 @@ const HsseDashboard: React.FC = () => {
     daysLost: 0,
     compliantRecords: 0,
     totalRecords: 0,
+  });
+
+  // Responsive hooks
+  const { isMobile, isTablet, isDesktop } = useResponsive();
+  const chartHeight = useChartDimensions(400).height;
+  
+  // Responsive grid columns
+  const kpiColumns = useResponsiveValue({
+    mobile: 1,
+    tablet: 2,
+    desktop: 4,
+    default: 4,
   });
   
   const { data, isLoading, error, refetch } = useGetStatisticsQuery({
@@ -312,43 +326,70 @@ const HsseDashboard: React.FC = () => {
               <CTabContent>
                 {/* KPI Dashboard Tab */}
                 <CTabPane visible={activeTab === 'kpi-dashboard'}>
-                <CRow>
-                  {kpiMetrics.map((metric, index) => (
-                    <CCol xl={3} lg={6} md={6} sm={12} key={index} className="mb-4">
-                      <KpiGaugeChart metric={metric} />
-                    </CCol>
-                  ))}
-                </CRow>
-                
-                <CRow className="mt-4">
-                  {kpiMetrics.map((metric, index) => (
-                    <CCol xl={3} lg={6} md={6} sm={6} key={`card-${index}`} className="mb-3">
-                      <ResponsiveStatsCard
-                        title={metric.title}
-                        value={metric.value.toFixed(2)}
-                        isKpi={true}
-                        target={metric.target}
-                        benchmark={metric.benchmark}
-                        subtitle={metric.description}
-                        size="sm"
-                      />
-                    </CCol>
-                  ))}
-                </CRow>
+                {isLoading ? (
+                  <CRow>
+                    {[1, 2, 3, 4].map((i) => (
+                      <CCol xl={3} lg={6} md={6} sm={12} key={i} className="mb-4">
+                        <SkeletonLoader type="gauge" showHeader={true} />
+                      </CCol>
+                    ))}
+                  </CRow>
+                ) : (
+                  <>
+                    {/* KPI Gauges Grid */}
+                    <div 
+                      className="dashboard-grid mb-4"
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${kpiColumns}, 1fr)`,
+                        gap: isMobile ? '1rem' : isTablet ? '1.25rem' : '1.5rem'
+                      }}
+                    >
+                      {kpiMetrics.map((metric, index) => (
+                        <KpiGaugeChart 
+                          key={index} 
+                          metric={metric} 
+                          size={isMobile ? 'sm' : isTablet ? 'md' : 'md'}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* KPI Stats Cards */}
+                    <div 
+                      className="dashboard-grid"
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${kpiColumns}, 1fr)`,
+                        gap: isMobile ? '0.75rem' : isTablet ? '1rem' : '1.25rem'
+                      }}
+                    >
+                      {kpiMetrics.map((metric, index) => (
+                        <ResponsiveStatsCard
+                          key={`card-${index}`}
+                          title={metric.title}
+                          value={metric.value.toFixed(2)}
+                          isKpi={true}
+                          target={metric.target}
+                          benchmark={metric.benchmark}
+                          subtitle={metric.description}
+                          size={isMobile ? 'sm' : 'sm'}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </CTabPane>
 
                 {/* Trend Analysis Tab */}
                 <CTabPane visible={activeTab === 'trend-analysis'}>
                 {trendsLoading ? (
-                  <div className="d-flex justify-content-center p-5">
-                    <CSpinner color="primary" />
-                    <span className="ms-3">Loading trend data...</span>
-                  </div>
+                  <SkeletonLoader type="chart" size="lg" showHeader={true} />
                 ) : (
                   <MultiLineTrendChart
                     data={trendData || []}
                     title="HSSE Trends Over Time"
-                    height={400}
+                    height={chartHeight}
+                    showLegend={!isMobile}
                   />
                 )}
               </CTabPane>

@@ -41,11 +41,33 @@ const ResponsiveStatsCard: React.FC<ResponsiveStatsCardProps> = ({
     lg: 'stats-card-lg',
   };
 
-  const cardStyle = {
-    sm: { minHeight: '120px' },
-    md: { minHeight: '160px' },
-    lg: { minHeight: '200px' },
+  // Responsive sizing based on screen size
+  const getResponsiveStyle = () => {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
+    if (isMobile) {
+      return {
+        sm: { minHeight: '100px' },
+        md: { minHeight: '120px' },
+        lg: { minHeight: '140px' },
+      };
+    } else if (isTablet) {
+      return {
+        sm: { minHeight: '120px' },
+        md: { minHeight: '140px' },
+        lg: { minHeight: '180px' },
+      };
+    } else {
+      return {
+        sm: { minHeight: '120px' },
+        md: { minHeight: '160px' },
+        lg: { minHeight: '200px' },
+      };
+    }
   };
+  
+  const responsiveStyle = getResponsiveStyle();
 
   const getTrendColor = (direction: 'up' | 'down') => {
     if (isKpi) {
@@ -67,19 +89,56 @@ const ResponsiveStatsCard: React.FC<ResponsiveStatsCardProps> = ({
 
   const performanceColor = isKpi ? getPerformanceColor() : color;
 
+  // Responsive font sizing
+  const getFontSizes = () => {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
+    if (isMobile) {
+      return {
+        title: size === 'lg' ? '0.9rem' : size === 'md' ? '0.85rem' : '0.8rem',
+        value: size === 'lg' ? '1.75rem' : size === 'md' ? '1.5rem' : '1.25rem',
+        subtitle: '0.75rem',
+        badge: '0.7rem'
+      };
+    } else if (isTablet) {
+      return {
+        title: size === 'lg' ? '1rem' : size === 'md' ? '0.9rem' : '0.85rem',
+        value: size === 'lg' ? '2rem' : size === 'md' ? '1.75rem' : '1.5rem',
+        subtitle: '0.8rem',
+        badge: '0.75rem'
+      };
+    } else {
+      return {
+        title: size === 'lg' ? '1.1rem' : size === 'md' ? '1rem' : '0.9rem',
+        value: size === 'lg' ? '2.5rem' : size === 'md' ? '2rem' : '1.75rem',
+        subtitle: '0.875rem',
+        badge: '0.8rem'
+      };
+    }
+  };
+  
+  const fontSizes = getFontSizes();
+
   return (
     <CCard 
       className={`${className} ${sizeClasses[size]} h-100 shadow-sm border-0`}
-      style={cardStyle[size]}
+      style={responsiveStyle[size]}
     >
       <CCardHeader className={`bg-${performanceColor} text-white border-0 p-3`}>
         <div className="d-flex align-items-center justify-content-between">
           <div className="flex-grow-1">
-            <h6 className="mb-0 text-white fw-bold">
-              {title}
+            <h6 
+              className="mb-0 text-white fw-bold"
+              style={{ fontSize: fontSizes.title, lineHeight: '1.3' }}
+            >
+              {window.innerWidth < 576 && title.length > 20 ? `${title.substring(0, 20)}...` : title}
             </h6>
             {subtitle && (
-              <small className="text-white-50 d-block mt-1">
+              <small 
+                className="text-white-50 d-block mt-1 d-none d-sm-block"
+                style={{ fontSize: fontSizes.subtitle }}
+              >
                 {subtitle}
               </small>
             )}
@@ -96,9 +155,16 @@ const ResponsiveStatsCard: React.FC<ResponsiveStatsCardProps> = ({
         </div>
       </CCardHeader>
       
-      <CCardBody className="p-3 d-flex flex-column justify-content-between">
-        <div className="text-center mb-3">
-          <div className={`display-${size === 'lg' ? '4' : size === 'md' ? '5' : '6'} fw-bold text-${performanceColor} mb-2`}>
+      <CCardBody className="p-2 p-md-3 d-flex flex-column justify-content-between">
+        <div className="text-center mb-2 mb-md-3">
+          <div 
+            className="fw-bold mb-2" 
+            style={{ 
+              fontSize: fontSizes.value,
+              color: `var(--cui-${performanceColor})`,
+              lineHeight: '1.1'
+            }}
+          >
             {typeof value === 'number' ? value.toLocaleString() : value}
           </div>
           
@@ -107,14 +173,21 @@ const ResponsiveStatsCard: React.FC<ResponsiveStatsCardProps> = ({
               <CBadge 
                 color={getTrendColor(trend.direction)} 
                 className="px-2 py-1"
+                style={{ fontSize: fontSizes.badge }}
               >
                 <FontAwesomeIcon 
                   icon={trend.direction === 'up' ? faArrowUp : faArrowDown} 
                   className="me-1" 
+                  size={window.innerWidth < 768 ? 'xs' : 'sm'}
                 />
                 {Math.abs(trend.value)}%
               </CBadge>
-              <small className="text-muted ms-2">vs {trend.period}</small>
+              <small 
+                className="text-muted ms-2 d-none d-sm-inline"
+                style={{ fontSize: fontSizes.subtitle }}
+              >
+                vs {trend.period}
+              </small>
             </div>
           )}
         </div>

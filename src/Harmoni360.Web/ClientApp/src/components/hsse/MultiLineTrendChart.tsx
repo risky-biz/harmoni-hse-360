@@ -92,9 +92,14 @@ const MultiLineTrendChart: React.FC<MultiLineTrendChartProps> = ({
       ],
     };
 
+    // Responsive chart configuration
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
     const chartOptions: ChartOptions<'line'> = {
       responsive: true,
       maintainAspectRatio: false,
+      devicePixelRatio: window.devicePixelRatio || 1,
       interaction: {
         mode: 'index' as const,
         intersect: false,
@@ -104,24 +109,38 @@ const MultiLineTrendChart: React.FC<MultiLineTrendChartProps> = ({
           display: false,
         },
         legend: {
-          display: showLegend,
-          position: 'top' as const,
+          display: showLegend && !isMobile, // Hide legend on mobile to save space
+          position: isMobile ? 'bottom' as const : 'top' as const,
           labels: {
-            padding: 20,
+            padding: isMobile ? 10 : 20,
             usePointStyle: true,
             font: {
-              size: 12,
+              size: isMobile ? 10 : isTablet ? 11 : 12,
             },
+            boxWidth: isMobile ? 8 : 12,
+            boxHeight: isMobile ? 8 : 12,
           },
         },
         tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          titleColor: '#333',
-          bodyColor: '#666',
-          borderColor: '#ddd',
+          enabled: true,
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: '#666',
           borderWidth: 1,
           cornerRadius: 8,
           displayColors: true,
+          padding: isMobile ? 8 : 12,
+          titleFont: {
+            size: isMobile ? 11 : 13,
+            weight: 'bold',
+          },
+          bodyFont: {
+            size: isMobile ? 10 : 12,
+          },
+          // Touch-friendly tooltip
+          intersect: false,
+          mode: 'nearest' as const,
           callbacks: {
             title: (context) => {
               return `Period: ${context[0].label}`;
@@ -136,24 +155,32 @@ const MultiLineTrendChart: React.FC<MultiLineTrendChartProps> = ({
         x: {
           display: true,
           title: {
-            display: true,
+            display: !isMobile, // Hide axis titles on mobile
             text: 'Time Period',
             font: {
-              size: 12,
+              size: isMobile ? 10 : isTablet ? 11 : 12,
               weight: 'bold',
             },
           },
           grid: {
             display: false,
           },
+          ticks: {
+            font: {
+              size: isMobile ? 9 : isTablet ? 10 : 11,
+            },
+            maxRotation: isMobile ? 45 : 0, // Rotate labels on mobile
+            minRotation: isMobile ? 45 : 0,
+            maxTicksLimit: isMobile ? 6 : isTablet ? 8 : 12, // Limit ticks on smaller screens
+          },
         },
         y: {
           display: true,
           title: {
-            display: true,
+            display: !isMobile, // Hide axis titles on mobile
             text: 'Number of Incidents',
             font: {
-              size: 12,
+              size: isMobile ? 10 : isTablet ? 11 : 12,
               weight: 'bold',
             },
           },
@@ -163,30 +190,60 @@ const MultiLineTrendChart: React.FC<MultiLineTrendChartProps> = ({
           },
           ticks: {
             stepSize: 1,
+            font: {
+              size: isMobile ? 9 : isTablet ? 10 : 11,
+            },
+            maxTicksLimit: isMobile ? 5 : 8, // Limit y-axis ticks on mobile
           },
         },
       },
       elements: {
         point: {
+          radius: isMobile ? 3 : 4,
+          hoverRadius: isMobile ? 5 : 6,
           hoverBackgroundColor: '#fff',
-          hoverBorderWidth: 2,
+          hoverBorderWidth: isMobile ? 1 : 2,
+          borderWidth: isMobile ? 1 : 2,
         },
+        line: {
+          borderWidth: isMobile ? 2 : 3,
+        },
+      },
+      // Animation configuration
+      animation: {
+        duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1000,
+        easing: 'easeOutQuart' as const,
       },
     };
 
     return { chartData, chartOptions };
   }, [data, showLegend]);
 
+  // Responsive height calculation
+  const getResponsiveHeight = () => {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
+    if (isMobile) {
+      return Math.min(height * 0.7, 250); // Reduce height on mobile
+    } else if (isTablet) {
+      return Math.min(height * 0.85, 350); // Slightly reduce on tablet
+    } else {
+      return height;
+    }
+  };
+
   if (!data || data.length === 0) {
     return (
-      <CCard className={className}>
-        <CCardHeader>
-          <h5 className="mb-0">{title}</h5>
+      <CCard className={`${className} h-100`}>
+        <CCardHeader className="pb-2">
+          <h5 className="mb-0 d-none d-sm-block">{title}</h5>
+          <h6 className="mb-0 d-sm-none">{title.length > 25 ? `${title.substring(0, 25)}...` : title}</h6>
         </CCardHeader>
-        <CCardBody className="d-flex align-items-center justify-content-center" style={{ height: `${height}px` }}>
+        <CCardBody className="d-flex align-items-center justify-content-center p-2 p-md-3" style={{ height: `${getResponsiveHeight()}px` }}>
           <div className="text-muted text-center">
-            <p className="mb-0">No trend data available</p>
-            <small>Data will appear here once incidents are recorded</small>
+            <p className="mb-1 fs-6">No trend data available</p>
+            <small className="d-none d-sm-block">Data will appear here once incidents are recorded</small>
           </div>
         </CCardBody>
       </CCard>
@@ -194,17 +251,37 @@ const MultiLineTrendChart: React.FC<MultiLineTrendChartProps> = ({
   }
 
   return (
-    <CCard className={className}>
-      <CCardHeader>
-        <h5 className="mb-0">{title}</h5>
-        <small className="text-muted">
+    <CCard className={`${className} h-100`}>
+      <CCardHeader className="pb-2">
+        <h5 className="mb-0 d-none d-sm-block">{title}</h5>
+        <h6 className="mb-0 d-sm-none">{title.length > 25 ? `${title.substring(0, 25)}...` : title}</h6>
+        <small className="text-muted d-none d-md-block">
           Showing trends across all HSSE modules over time
         </small>
       </CCardHeader>
-      <CCardBody>
-        <div style={{ height: `${height}px` }}>
+      <CCardBody className="p-2 p-md-3">
+        <div style={{ height: `${getResponsiveHeight()}px`, position: 'relative' }}>
           <Line data={chartData} options={chartOptions} />
         </div>
+        {/* Mobile legend when chart legend is hidden */}
+        {window.innerWidth < 768 && showLegend && (
+          <div className="mt-2 d-flex flex-wrap justify-content-center gap-2">
+            {chartData.datasets.map((dataset, index) => (
+              <small key={index} className="d-flex align-items-center">
+                <span 
+                  className="me-1 rounded" 
+                  style={{ 
+                    width: '10px', 
+                    height: '10px', 
+                    backgroundColor: dataset.borderColor,
+                    display: 'inline-block'
+                  }}
+                ></span>
+                {dataset.label}
+              </small>
+            ))}
+          </div>
+        )}
       </CCardBody>
     </CCard>
   );
