@@ -81,7 +81,10 @@ const CompanyConfiguration: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+<<<<<<< HEAD
   const [activeTab, setActiveTab] = useState(1);
+=======
+>>>>>>> origin/main
 
   // Initialize form data when companyConfig is loaded
   useEffect(() => {
@@ -252,6 +255,7 @@ const CompanyConfiguration: React.FC = () => {
         )}
 
         <CForm onSubmit={handleSubmit}>
+<<<<<<< HEAD
           <CTabs activeItemKey={activeTab}>
             <CTabList variant="pills" className="mb-3">
               <CTab itemKey={1} onClick={() => setActiveTab(1)}>
@@ -267,6 +271,23 @@ const CompanyConfiguration: React.FC = () => {
                 Branding & Theme
               </CTab>
               <CTab itemKey={4} onClick={() => setActiveTab(4)}>
+=======
+          <CTabs activeItemKey="basic">
+            <CTabList variant="pills" className="mb-3">
+              <CTab itemKey="basic">
+                <FontAwesomeIcon icon={faBuilding} className="me-1" />
+                Basic Information
+              </CTab>
+              <CTab itemKey="contact">
+                <FontAwesomeIcon icon={faPhone} className="me-1" />
+                Contact & Address
+              </CTab>
+              <CTab itemKey="branding">
+                <FontAwesomeIcon icon={faPalette} className="me-1" />
+                Branding & Theme
+              </CTab>
+              <CTab itemKey="compliance">
+>>>>>>> origin/main
                 <FontAwesomeIcon icon={faIndustry} className="me-1" />
                 Compliance & Settings
               </CTab>
@@ -274,7 +295,11 @@ const CompanyConfiguration: React.FC = () => {
 
             <CTabContent>
               {/* Basic Information Tab */}
+<<<<<<< HEAD
               <CTabPanel itemKey={1}>
+=======
+              <CTabPanel itemKey="basic">
+>>>>>>> origin/main
                 <CRow>
                   <CCol md={6}>
                     <div className="mb-3">
@@ -353,7 +378,11 @@ const CompanyConfiguration: React.FC = () => {
               </CTabPanel>
 
               {/* Contact & Address Tab */}
+<<<<<<< HEAD
               <CTabPanel itemKey={2}>
+=======
+              <CTabPanel itemKey="contact">
+>>>>>>> origin/main
                 <CRow>
                   <CCol md={6}>
                     <div className="mb-3">
@@ -491,7 +520,11 @@ const CompanyConfiguration: React.FC = () => {
               </CTabPanel>
 
               {/* Branding & Theme Tab */}
+<<<<<<< HEAD
               <CTabPanel itemKey={3}>
+=======
+              <CTabPanel itemKey="branding">
+>>>>>>> origin/main
                 <CRow>
                   <CCol md={4}>
                     <div className="mb-3">
@@ -544,7 +577,11 @@ const CompanyConfiguration: React.FC = () => {
               </CTabPanel>
 
               {/* Compliance & Settings Tab */}
+<<<<<<< HEAD
               <CTabPanel itemKey={4}>
+=======
+              <CTabPanel itemKey="compliance">
+>>>>>>> origin/main
                 <CRow>
                   <CCol md={6}>
                     <div className="mb-3">

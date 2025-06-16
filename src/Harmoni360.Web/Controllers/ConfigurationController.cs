@@ -77,7 +77,7 @@ public class ConfigurationController : ControllerBase
     }
 
     [HttpPut("company")]
-    [Authorize(Roles = "Administrator,SystemAdministrator")]
+    [Authorize(Roles = "SuperAdmin,Developer")]
     public async Task<IActionResult> UpdateCompanyConfiguration([FromBody] UpdateCompanyConfigurationCommand command)
     {
         var result = await _mediator.Send(command);
@@ -85,7 +85,7 @@ public class ConfigurationController : ControllerBase
     }
 
     [HttpPost("company")]
-    [Authorize(Roles = "Administrator,SystemAdministrator")]
+    [Authorize(Roles = "SuperAdmin,Developer")]
     public async Task<IActionResult> CreateCompanyConfiguration([FromBody] CreateCompanyConfigurationCommand command)
     {
         var result = await _mediator.Send(command);

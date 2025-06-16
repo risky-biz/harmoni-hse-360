@@ -82,16 +82,60 @@ const KpiGaugeChart: React.FC<KpiGaugeChartProps> = ({
     const chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      devicePixelRatio: window.devicePixelRatio || 1,
       plugins: {
         legend: {
           display: false,
         },
         tooltip: {
-          enabled: false,
+          enabled: true,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: color,
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          titleFont: {
+            size: window.innerWidth < 768 ? 12 : 14,
+            weight: 'bold' as const,
+          },
+          bodyFont: {
+            size: window.innerWidth < 768 ? 11 : 13,
+          },
+          displayColors: false,
+          callbacks: {
+            title: () => metric.title,
+            label: () => [
+              `Current: ${value.toFixed(2)}`,
+              `Target: ${target.toFixed(2)}`,
+              `Performance: ${level}`,
+            ],
+          },
+          // Touch-friendly tooltip
+          intersect: false,
+          mode: 'nearest' as const,
         },
       },
       rotation: -90,
       circumference: 180,
+      // Enhanced interaction for touch devices
+      interaction: {
+        intersect: false,
+        mode: 'nearest' as const,
+      },
+      // Animation configuration
+      animation: {
+        duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1000,
+        easing: 'easeOutQuart' as const,
+      },
+      // Responsive font scaling
+      elements: {
+        arc: {
+          borderWidth: window.innerWidth < 768 ? 0 : 2,
+          hoverBorderWidth: window.innerWidth < 768 ? 1 : 3,
+        },
+      },
     };
 
     return { chartData, chartOptions, performanceLevel: level, performanceColor: color };
@@ -103,37 +147,70 @@ const KpiGaugeChart: React.FC<KpiGaugeChartProps> = ({
     lg: 'gauge-lg',
   };
 
-  const heightStyle = {
-    sm: { height: '120px' },
-    md: { height: '160px' },
-    lg: { height: '200px' },
+  // Responsive height calculation
+  const getResponsiveHeight = () => {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
+    if (isMobile) {
+      return { height: size === 'lg' ? '140px' : size === 'md' ? '120px' : '100px' };
+    } else if (isTablet) {
+      return { height: size === 'lg' ? '180px' : size === 'md' ? '150px' : '120px' };
+    } else {
+      return { height: size === 'lg' ? '200px' : size === 'md' ? '160px' : '120px' };
+    }
   };
 
   return (
-    <CCard className={`${className} ${sizeClasses[size]}`}>
+    <CCard className={`${className} ${sizeClasses[size]} h-100`}>
       {showTitle && (
         <CCardHeader className="pb-2">
-          <h6 className="mb-1">{metric.title}</h6>
-          <small className="text-muted">{metric.description}</small>
+          <h6 className="mb-1 d-none d-sm-block">{metric.title}</h6>
+          <h6 className="mb-1 d-sm-none" style={{ fontSize: '0.9rem' }}>
+            {metric.title.length > 20 ? `${metric.title.substring(0, 20)}...` : metric.title}
+          </h6>
+          <small className="text-muted d-none d-md-block">{metric.description}</small>
         </CCardHeader>
       )}
-      <CCardBody className="d-flex flex-column align-items-center justify-content-center">
-        <div className="position-relative" style={heightStyle[size]}>
-          <Doughnut data={chartData} options={chartOptions} />
+      <CCardBody className="d-flex flex-column align-items-center justify-content-center p-2 p-md-3">
+        <div 
+          className="position-relative w-100 d-flex justify-content-center" 
+          style={getResponsiveHeight()}
+        >
+          <div style={{ width: '100%', maxWidth: '200px' }}>
+            <Doughnut data={chartData} options={chartOptions} />
+          </div>
           <div className="position-absolute top-50 start-50 translate-middle text-center">
-            <div className="h4 mb-0 fw-bold" style={{ color: performanceColor }}>
+            <div 
+              className="fw-bold mb-0" 
+              style={{ 
+                color: performanceColor,
+                fontSize: window.innerWidth < 768 ? '1.2rem' : window.innerWidth < 1024 ? '1.5rem' : '1.75rem'
+              }}
+            >
               {metric.value.toFixed(2)}
             </div>
-            <small className="text-muted">Target: {metric.target.toFixed(2)}</small>
+            <small 
+              className="text-muted d-none d-sm-block"
+              style={{ fontSize: window.innerWidth < 768 ? '0.7rem' : '0.8rem' }}
+            >
+              Target: {metric.target.toFixed(2)}
+            </small>
           </div>
         </div>
         
-        <div className="mt-3 text-center w-100">
-          <CBadge color={performanceColor} className="px-3 py-2">
-            {performanceLevel}
+        <div className="mt-2 mt-md-3 text-center w-100">
+          <CBadge 
+            color={performanceColor} 
+            className="px-2 px-md-3 py-1 py-md-2"
+            style={{ fontSize: window.innerWidth < 768 ? '0.7rem' : '0.8rem' }}
+          >
+            {window.innerWidth < 576 && performanceLevel.length > 8 
+              ? performanceLevel.substring(0, 8) + '...' 
+              : performanceLevel}
           </CBadge>
           {metric.benchmark && (
-            <div className="mt-2">
+            <div className="mt-1 mt-md-2 d-none d-md-block">
               <small className="text-muted">{metric.benchmark}</small>
             </div>
           )}
