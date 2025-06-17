@@ -311,7 +311,7 @@ const Login: React.FC = () => {
                       {
                         title: 'System Administration',
                         users: demoUsers.users.filter((user: any) => 
-                          ['Super Admin', 'Developer', 'Admin'].includes(user.role)
+                          ['Admin'].includes(user.role)
                         )
                       },
                       {
