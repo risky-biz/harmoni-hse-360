@@ -347,26 +347,36 @@ const Login: React.FC = () => {
                           {category.users.map((user: any, index: number) => (
                             <CListGroupItem
                               key={`${categoryIndex}-${index}`}
-                              component="button"
-                              onClick={() => fillDemoCredentials(user.email, user.password)}
-                              className="harmoni-demo-user"
+                              className="harmoni-demo-user p-0"
                             >
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="user-info text-start">
-                                  <div className="user-name">
-                                    {user.name}
+                              <button
+                                type="button"
+                                onClick={() => fillDemoCredentials(user.email, user.password)}
+                                className="btn btn-link w-100 h-100 text-start p-3 text-decoration-none"
+                                style={{
+                                  backgroundColor: 'transparent',
+                                  border: 'none',
+                                  borderRadius: '0',
+                                  color: 'inherit',
+                                }}
+                              >
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div className="user-info text-start">
+                                    <div className="user-name">
+                                      {user.name}
+                                    </div>
+                                    <div className="user-email">
+                                      {user.email}
+                                    </div>
                                   </div>
-                                  <div className="user-email">
-                                    {user.email}
-                                  </div>
+                                  <CBadge
+                                    color={getRoleBadgeColor(user.role)}
+                                    className="user-badge"
+                                  >
+                                    {user.role}
+                                  </CBadge>
                                 </div>
-                                <CBadge
-                                  color={getRoleBadgeColor(user.role)}
-                                  className="user-badge"
-                                >
-                                  {user.role}
-                                </CBadge>
-                              </div>
+                              </button>
                             </CListGroupItem>
                           ))}
                         </div>
