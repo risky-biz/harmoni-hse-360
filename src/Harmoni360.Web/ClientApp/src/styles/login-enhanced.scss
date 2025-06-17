@@ -470,14 +470,9 @@
   border: 1px solid var(--theme-border);
   color: var(--theme-text-primary);
   transition: all 0.2s ease;
-  padding: 1rem;
   margin-bottom: 0.5rem;
   border-radius: 8px;
-  cursor: pointer;
-
-  @media (max-width: 575px) {
-    padding: 0.875rem;
-  }
+  overflow: hidden;
 
   &:hover {
     background-color: var(--theme-bg-secondary);
@@ -488,6 +483,22 @@
 
   &:active {
     transform: translateY(0);
+  }
+
+  // Button styling within list item
+  .btn {
+    &:hover {
+      background-color: transparent !important;
+    }
+
+    &:focus {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    &:active {
+      background-color: transparent !important;
+    }
   }
 
   .user-info {
