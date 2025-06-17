@@ -67,6 +67,14 @@ public class LicenseDto
     public bool IsExpired { get; set; }
     public bool IsExpiringSoon { get; set; }
     public bool RequiresRenewal { get; set; }
+    
+    // Action Permissions
+    public bool CanEdit { get; set; }
+    public bool CanSubmit { get; set; }
+    public bool CanApprove { get; set; }
+    public bool CanActivate { get; set; }
+    public bool CanSuspend { get; set; }
+    public bool CanRenew { get; set; }
 
     // Collections
     public List<LicenseAttachmentDto> Attachments { get; set; } = new();

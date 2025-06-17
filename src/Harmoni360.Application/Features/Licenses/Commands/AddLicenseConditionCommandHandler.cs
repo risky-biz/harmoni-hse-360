@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Licenses.DTOs;
 using Harmoni360.Domain.Entities;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Licenses.Commands;
 
@@ -36,8 +37,9 @@ public class AddLicenseConditionCommandHandler : IRequestHandler<AddLicenseCondi
                 throw new UnauthorizedAccessException("User not found.");
             }
 
-            // Verify license exists
+            // Verify license exists and load it with conditions for domain operations
             var license = await _context.Licenses
+                .Include(l => l.LicenseConditions)
                 .FirstOrDefaultAsync(l => l.Id == request.LicenseId, cancellationToken);
 
             if (license == null)
@@ -57,7 +59,20 @@ public class AddLicenseConditionCommandHandler : IRequestHandler<AddLicenseCondi
 
             condition.CreatedBy = currentUser.Name;
 
+            // Add condition to context first to get ID
             _context.LicenseConditions.Add(condition);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // Now add to license domain for audit trail
+            license.AddCondition(condition);
+
+            // Add audit log
+            var conditionDetails = $"Type: {condition.ConditionType}, Description: {condition.Description}";
+            license.LogAuditAction(
+                LicenseAuditAction.ConditionAdded,
+                $"Added condition: {conditionDetails}",
+                currentUser.Name);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("License condition added successfully. LicenseId: {LicenseId}, ConditionId: {ConditionId}, Type: {ConditionType}", 

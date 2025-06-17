@@ -88,9 +88,15 @@ public class UpdateLicenseCommandHandler : IRequestHandler<UpdateLicenseCommand,
                 request.RenewalProcedure ?? license.RenewalProcedure);
         }
 
+        // Add audit log for license update
+        var updatedBy = _currentUserService.Email ?? "System";
+        license.LogAuditAction(
+            LicenseAuditAction.Updated,
+            "License details updated",
+            updatedBy);
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        var updatedBy = _currentUserService.Email ?? "System";
         _logger.LogInformation(
             "License {LicenseNumber} updated by {UpdatedBy} at {UpdatedAt}",
             license.LicenseNumber,

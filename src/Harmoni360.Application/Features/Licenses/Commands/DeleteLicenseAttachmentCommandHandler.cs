@@ -2,19 +2,23 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Licenses.Commands;
 
 public class DeleteLicenseAttachmentCommandHandler : IRequestHandler<DeleteLicenseAttachmentCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<DeleteLicenseAttachmentCommandHandler> _logger;
 
     public DeleteLicenseAttachmentCommandHandler(
         IApplicationDbContext context,
+        ICurrentUserService currentUserService,
         ILogger<DeleteLicenseAttachmentCommandHandler> logger)
     {
         _context = context;
+        _currentUserService = currentUserService;
         _logger = logger;
     }
 
@@ -22,6 +26,15 @@ public class DeleteLicenseAttachmentCommandHandler : IRequestHandler<DeleteLicen
     {
         try
         {
+            // Get the license for audit logging
+            var license = await _context.Licenses
+                .FirstOrDefaultAsync(l => l.Id == request.LicenseId, cancellationToken);
+
+            if (license == null)
+            {
+                throw new KeyNotFoundException($"License with ID {request.LicenseId} not found.");
+            }
+
             // Get the attachment
             var attachment = await _context.LicenseAttachments
                 .FirstOrDefaultAsync(a => a.Id == request.AttachmentId && a.LicenseId == request.LicenseId, cancellationToken);
@@ -30,6 +43,9 @@ public class DeleteLicenseAttachmentCommandHandler : IRequestHandler<DeleteLicen
             {
                 throw new KeyNotFoundException($"License attachment with ID {request.AttachmentId} not found for license {request.LicenseId}.");
             }
+
+            // Store attachment details for audit before deletion
+            var attachmentDetails = $"File: {attachment.OriginalFileName}, Type: {attachment.AttachmentType}, Size: {attachment.FileSize} bytes";
 
             // Delete physical file
             var fullFilePath = Path.Combine(Directory.GetCurrentDirectory(), attachment.FilePath);
@@ -41,6 +57,14 @@ public class DeleteLicenseAttachmentCommandHandler : IRequestHandler<DeleteLicen
 
             // Remove attachment from database
             _context.LicenseAttachments.Remove(attachment);
+
+            // Add audit log for attachment deletion
+            var currentUser = _currentUserService.Email ?? "System";
+            license.LogAuditAction(
+                LicenseAuditAction.AttachmentRemoved,
+                $"Deleted attachment: {attachmentDetails}",
+                currentUser);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("License attachment deleted successfully. LicenseId: {LicenseId}, AttachmentId: {AttachmentId}", 

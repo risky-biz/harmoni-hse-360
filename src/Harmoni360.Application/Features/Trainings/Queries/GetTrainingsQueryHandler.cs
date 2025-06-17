@@ -77,7 +77,7 @@ public class GetTrainingsQueryHandler : IRequestHandler<GetTrainingsQuery, GetTr
                     IsK3MandatoryTraining = t.IsK3MandatoryTraining,
                     RequiresGovernmentCertification = t.RequiresGovernmentCertification,
                     AverageRating = t.AverageRating,
-                    IsOverdue = t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.Now,
+                    IsOverdue = t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.UtcNow,
                     CanEdit = t.Status == TrainingStatus.Draft || t.Status == TrainingStatus.Scheduled,
                     CanStart = t.Status == TrainingStatus.Scheduled && t.Participants.Count >= t.MinParticipants,
                     CanEnroll = t.Status == TrainingStatus.Scheduled && t.Participants.Count < t.MaxParticipants,
@@ -192,7 +192,7 @@ public class GetTrainingsQueryHandler : IRequestHandler<GetTrainingsQuery, GetTr
 
         if (request.IsOverdue.HasValue && request.IsOverdue.Value)
         {
-            query = query.Where(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.Now);
+            query = query.Where(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.UtcNow);
         }
 
         if (request.HasAvailableSpots.HasValue && request.HasAvailableSpots.Value)
@@ -244,7 +244,7 @@ public class GetTrainingsQueryHandler : IRequestHandler<GetTrainingsQuery, GetTr
 
         // Calculate overdue trainings count using database query
         var overdueCount = await _context.Trainings
-            .CountAsync(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.Now, cancellationToken);
+            .CountAsync(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.UtcNow, cancellationToken);
 
         // Get type statistics with optimized query
         var typeStatistics = await _context.Trainings

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -49,11 +49,14 @@ import {
   faBuilding,
   faGavel,
   faClipboardCheck,
-  faRedo
+  faRedo,
+  faPaperclip,
+  faUpload,
+  faDownload,
+  faFileAlt
 } from '@fortawesome/free-solid-svg-icons';
 
-import { useCreateLicenseMutation } from '../../features/licenses/licenseApi';
-import { useGetDepartmentsQuery } from '../../api/configurationApi';
+import { useCreateLicenseMutation, useUploadAttachmentMutation } from '../../features/licenses/licenseApi';
 import {
   LicenseFormData,
   LicenseConditionFormData,
@@ -64,6 +67,30 @@ import {
   CURRENCIES
 } from '../../types/license';
 import { format, addDays } from 'date-fns';
+
+// Hardcoded departments list - TODO: Replace with API call from Configuration table
+const DEPARTMENTS = [
+  { id: 1, name: 'Health and Safety' },
+  { id: 2, name: 'Environmental' },
+  { id: 3, name: 'Operations' },
+  { id: 4, name: 'Engineering' },
+  { id: 5, name: 'Maintenance' },
+  { id: 6, name: 'Quality Assurance' },
+  { id: 7, name: 'Security' },
+  { id: 8, name: 'Human Resources' },
+  { id: 9, name: 'Finance' },
+  { id: 10, name: 'Procurement' },
+  { id: 11, name: 'Legal' },
+  { id: 12, name: 'IT' },
+  { id: 13, name: 'Construction' },
+  { id: 14, name: 'Production' },
+  { id: 15, name: 'Transportation' },
+  { id: 16, name: 'Logistics' },
+  { id: 17, name: 'Research & Development' },
+  { id: 18, name: 'Food Services' },
+  { id: 19, name: 'Administration' },
+  { id: 20, name: 'Customer Service' }
+];
 
 // Validation schema
 const schema = yup.object({
@@ -123,6 +150,7 @@ const LICENSE_ICONS = {
   riskCompliance: faShieldAlt,
   renewalInfo: faRedo,
   conditions: faClipboardCheck,
+  attachments: faPaperclip,
   reviewSubmit: faCheck,
   
   // Action icons
@@ -131,21 +159,24 @@ const LICENSE_ICONS = {
   back: faArrowLeft,
   settings: faCog,
   building: faBuilding,
-  calendar: faCalendarAlt
+  calendar: faCalendarAlt,
+  upload: faUpload,
+  download: faDownload,
+  file: faFileAlt
 };
 
 const CreateLicense: React.FC = () => {
   const navigate = useNavigate();
 
   // API calls
-  const { data: departments } = useGetDepartmentsQuery({});
   const [createLicense, { isLoading }] = useCreateLicenseMutation();
+  const [uploadAttachment] = useUploadAttachmentMutation();
 
   // Form state
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
     setValue,
     control,
@@ -202,13 +233,221 @@ const CreateLicense: React.FC = () => {
   // State for form sections
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  
+  // Auto-save state
+  const [autoSaveStatus, setAutoSaveStatus] = useState<
+    'saved' | 'saving' | 'error' | null
+  >(null);
+
+  // File handling functions
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const validFiles = files.filter(file => {
+      // Check file size (max 10MB per file)
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMessage(`File ${file.name} is too large. Maximum size is 10MB.`);
+        return false;
+      }
+      // Check file type (allow common document types)
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'text/plain'
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        setErrorMessage(`File ${file.name} is not a supported type.`);
+        return false;
+      }
+      return true;
+    });
+    
+    setAttachments(prev => [...prev, ...validFiles]);
+    // Clear the input value to allow selecting the same file again
+    event.target.value = '';
+  }, []);
+
+  const removeAttachment = useCallback((index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const formatFileSize = useCallback((bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }, []);
+
+  // Load draft from localStorage on component mount
+  useEffect(() => {
+    const draft = localStorage.getItem('license_draft');
+    if (draft) {
+      try {
+        const parsedDraft = JSON.parse(draft);
+        Object.keys(parsedDraft).forEach((key) => {
+          setValue(key as keyof LicenseFormData, parsedDraft[key]);
+        });
+      } catch (error) {
+        console.warn('Failed to load license draft:', error);
+      }
+    }
+  }, [setValue]);
+
+  // Auto-save functionality (every 30 seconds)
+  useEffect(() => {
+    if (!isDirty) return;
+
+    const autoSaveTimer = setInterval(() => {
+      const formData = getValues();
+      setAutoSaveStatus('saving');
+
+      setTimeout(() => {
+        try {
+          localStorage.setItem('license_draft', JSON.stringify(formData));
+          setAutoSaveStatus('saved');
+          setTimeout(() => setAutoSaveStatus(null), 2000);
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+          setAutoSaveStatus('error');
+          setTimeout(() => setAutoSaveStatus(null), 3000);
+        }
+      }, 500);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(autoSaveTimer);
+  }, [isDirty, getValues]);
+
+  // Map form data to API command
+  const mapFormDataToCommand = useCallback((data: LicenseFormData) => {
+    // Map string enums to integer values
+    const getLicenseTypeValue = (type: string): number => {
+      const typeMap: { [key: string]: number } = {
+        'Environmental': 1,
+        'Safety': 2,
+        'Health': 3,
+        'Construction': 4,
+        'Operating': 5,
+        'Transport': 6,
+        'Waste': 7,
+        'Chemical': 8,
+        'Radiation': 9,
+        'Fire': 10,
+        'Electrical': 11,
+        'Mechanical': 12,
+        'Professional': 13,
+        'Business': 14,
+        'Import': 15,
+        'Export': 16,
+        'Other': 17
+      };
+      return typeMap[type] || 1;
+    };
+
+    const getPriorityValue = (priority: string): number => {
+      const priorityMap: { [key: string]: number } = {
+        'Low': 1,
+        'Medium': 2,
+        'High': 3,
+        'Critical': 4
+      };
+      return priorityMap[priority] || 2;
+    };
+
+    const getRiskLevelValue = (riskLevel: string): number => {
+      const riskMap: { [key: string]: number } = {
+        'Low': 0,
+        'Medium': 1,
+        'High': 2,
+        'Critical': 3
+      };
+      return riskMap[riskLevel] || 1;
+    };
+
+    // Convert form data to API command format
+    return {
+      title: data.title,
+      description: data.description,
+      type: getLicenseTypeValue(data.type),
+      priority: getPriorityValue(data.priority),
+      licenseNumber: data.licenseNumber || '', // Let backend generate if empty
+      issuingAuthority: data.issuingAuthority,
+      holderName: data.holderName,
+      department: data.department || '',
+      issuedDate: data.issuedDate + 'T00:00:00Z', // Convert to ISO format
+      expiryDate: data.expiryDate + 'T00:00:00Z', // Convert to ISO format
+      scope: data.scope || '',
+      restrictions: data.restrictions || '',
+      conditions: data.conditions || '',
+      riskLevel: getRiskLevelValue(data.riskLevel),
+      licenseFee: data.licenseFee || 0,
+      currency: data.currency,
+      isCriticalLicense: data.isCriticalLicense,
+      requiresInsurance: data.requiresInsurance,
+      requiredInsuranceAmount: data.requiresInsurance ? (data.requiredInsuranceAmount || 0) : null,
+      regulatoryFramework: data.regulatoryFramework || '',
+      applicableRegulations: data.applicableRegulations || '',
+      complianceStandards: data.complianceStandards || '',
+      renewalRequired: data.renewalRequired,
+      renewalPeriodDays: data.renewalPeriodDays || 90,
+      autoRenewal: data.autoRenewal,
+      renewalProcedure: data.renewalProcedure || '',
+      licenseConditions: data.licenseConditions.map(condition => ({
+        conditionType: condition.conditionType || '',
+        description: condition.description || '',
+        isMandatory: condition.isMandatory,
+        dueDate: condition.dueDate ? condition.dueDate + 'T00:00:00Z' : null,
+        responsiblePerson: condition.responsiblePerson || '',
+        notes: condition.notes || ''
+      }))
+    };
+  }, []);
 
   // Form submission
   const onSubmit = useCallback(async (data: LicenseFormData) => {
     try {
       setErrorMessage('');
+      setUploading(true);
       
-      const result = await createLicense(data).unwrap();
+      // Map form data to API command format
+      const command = mapFormDataToCommand(data);
+      console.log('Sending command:', command);
+      
+      // Create the license first
+      const result = await createLicense(command as any).unwrap();
+      
+      // Clear draft after successful submission
+      localStorage.removeItem('license_draft');
+      
+      // If there are attachments, upload them
+      if (attachments.length > 0) {
+        try {
+          console.log(`Uploading ${attachments.length} attachments to license ${result.id}`);
+          
+          // Upload each attachment
+          for (const file of attachments) {
+            await uploadAttachment({
+              licenseId: result.id,
+              file: file,
+              attachmentType: 'SupportingDocument', // Default type for now
+              description: `Uploaded during license creation: ${file.name}`
+            }).unwrap();
+          }
+          
+          console.log('All attachments uploaded successfully');
+        } catch (uploadError) {
+          console.error('Error uploading attachments:', uploadError);
+          // Continue even if attachment upload fails - the license was created successfully
+          setErrorMessage('License created successfully, but some attachments failed to upload. You can add them later from the license details page.');
+        }
+      }
       
       setShowSuccess(true);
       
@@ -220,8 +459,10 @@ const CreateLicense: React.FC = () => {
     } catch (error: any) {
       console.error('Error creating license:', error);
       setErrorMessage(error?.data?.detail || error?.data?.title || 'Failed to create license. Please try again.');
+    } finally {
+      setUploading(false);
     }
-  }, [createLicense, navigate]);
+  }, [createLicense, navigate, attachments, mapFormDataToCommand]);
 
   // Add condition
   const handleAddCondition = useCallback(() => {
@@ -269,6 +510,32 @@ const CreateLicense: React.FC = () => {
             <div className="d-flex align-items-center">
               <FontAwesomeIcon icon={LICENSE_ICONS.license} size="lg" className="me-2 text-primary" />
               <h4 className="mb-0">Create New License</h4>
+              {autoSaveStatus && (
+                <CBadge
+                  color={
+                    autoSaveStatus === 'saved'
+                      ? 'success'
+                      : autoSaveStatus === 'saving'
+                        ? 'info'
+                        : 'danger'
+                  }
+                  className="d-flex align-items-center ms-3"
+                >
+                  {autoSaveStatus === 'saving' && (
+                    <CSpinner size="sm" className="me-1" />
+                  )}
+                  <FontAwesomeIcon
+                    icon={autoSaveStatus === 'saved' ? faCheck : faInfoCircle}
+                    size="sm"
+                    className="me-1"
+                  />
+                  {autoSaveStatus === 'saved'
+                    ? 'Auto-saved'
+                    : autoSaveStatus === 'saving'
+                      ? 'Saving...'
+                      : 'Save failed'}
+                </CBadge>
+              )}
             </div>
             <CButton
               variant="outline"
@@ -462,7 +729,7 @@ const CreateLicense: React.FC = () => {
                             invalid={!!errors.department}
                           >
                             <option value="">Select Department</option>
-                            {departments?.map((dept: any) => (
+                            {DEPARTMENTS.map((dept) => (
                               <option key={dept.id} value={dept.name}>
                                 {dept.name}
                               </option>
@@ -870,6 +1137,95 @@ const CreateLicense: React.FC = () => {
                   </CAccordionBody>
                 </CAccordionItem>
 
+                {/* Attachments */}
+                <CAccordionItem itemKey="attachments">
+                  <CAccordionHeader>
+                    <FontAwesomeIcon icon={LICENSE_ICONS.attachments} className="me-2" />
+                    Document Attachments ({attachments.length})
+                  </CAccordionHeader>
+                  <CAccordionBody>
+                    <div className="mb-3">
+                      <CFormLabel htmlFor="attachments">Upload Supporting Documents</CFormLabel>
+                      <CInputGroup>
+                        <CFormInput
+                          type="file"
+                          id="attachments"
+                          multiple
+                          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.txt"
+                          onChange={handleFileSelect}
+                          disabled={uploading}
+                        />
+                        <CButton
+                          color="primary"
+                          variant="outline"
+                          disabled={uploading}
+                          onClick={() => document.getElementById('attachments')?.click()}
+                        >
+                          <FontAwesomeIcon icon={LICENSE_ICONS.upload} className="me-1" />
+                          {uploading ? 'Uploading...' : 'Select Files'}
+                        </CButton>
+                      </CInputGroup>
+                      <small className="text-muted">
+                        Supported formats: PDF, Word, Excel, Images (JPG, PNG, GIF), Text files. Maximum size: 10MB per file.
+                      </small>
+                    </div>
+
+                    {attachments.length > 0 && (
+                      <div className="mt-3">
+                        <h6>Selected Files:</h6>
+                        <CTable responsive>
+                          <CTableHead>
+                            <CTableRow>
+                              <CTableHeaderCell>File Name</CTableHeaderCell>
+                              <CTableHeaderCell>Size</CTableHeaderCell>
+                              <CTableHeaderCell>Type</CTableHeaderCell>
+                              <CTableHeaderCell>Actions</CTableHeaderCell>
+                            </CTableRow>
+                          </CTableHead>
+                          <CTableBody>
+                            {attachments.map((file, index) => (
+                              <CTableRow key={index}>
+                                <CTableDataCell>
+                                  <div className="d-flex align-items-center">
+                                    <FontAwesomeIcon icon={LICENSE_ICONS.file} className="me-2 text-muted" />
+                                    <span>{file.name}</span>
+                                  </div>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                  <small className="text-muted">{formatFileSize(file.size)}</small>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                  <CBadge color="info" className="text-uppercase">
+                                    {file.type.split('/')[1] || 'Unknown'}
+                                  </CBadge>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                  <CButton
+                                    color="danger"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => removeAttachment(index)}
+                                    disabled={uploading}
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                  </CButton>
+                                </CTableDataCell>
+                              </CTableRow>
+                            ))}
+                          </CTableBody>
+                        </CTable>
+                      </div>
+                    )}
+
+                    {attachments.length === 0 && (
+                      <CAlert color="info">
+                        <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+                        No documents attached. You can add supporting documents to help with the license application process.
+                      </CAlert>
+                    )}
+                  </CAccordionBody>
+                </CAccordionItem>
+
                 {/* Review and Submit */}
                 <CAccordionItem itemKey="reviewSubmit">
                   <CAccordionHeader>
@@ -886,13 +1242,13 @@ const CreateLicense: React.FC = () => {
                       <CButton
                         type="submit"
                         color="primary"
-                        disabled={isLoading}
+                        disabled={isLoading || uploading}
                         className="me-2"
                       >
-                        {isLoading ? (
+                        {isLoading || uploading ? (
                           <>
                             <CSpinner size="sm" className="me-2" />
-                            Creating License...
+                            {uploading ? 'Uploading Attachments...' : 'Creating License...'}
                           </>
                         ) : (
                           <>
@@ -905,7 +1261,7 @@ const CreateLicense: React.FC = () => {
                         variant="outline"
                         color="secondary"
                         onClick={() => navigate('/licenses')}
-                        disabled={isLoading}
+                        disabled={isLoading || uploading}
                       >
                         Cancel
                       </CButton>

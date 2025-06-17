@@ -376,5 +376,44 @@ namespace Harmoni360.Web.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Deletes a license condition
+        /// </summary>
+        [HttpDelete("{id}/conditions/{conditionId}")]
+        [RequireModulePermission(ModuleType.LicenseManagement, PermissionType.Update)]
+        public async Task<IActionResult> DeleteLicenseCondition(int id, int conditionId)
+        {
+            _logger.LogInformation("Deleting condition {ConditionId} from license {LicenseId}", conditionId, id);
+            
+            var command = new DeleteLicenseConditionCommand 
+            { 
+                LicenseId = id, 
+                ConditionId = conditionId 
+            };
+            
+            await _mediator.Send(command);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Gets the audit trail for a license
+        /// </summary>
+        [HttpGet("{id}/audit-trail")]
+        [RequireModulePermission(ModuleType.LicenseManagement, PermissionType.Read)]
+        public async Task<IActionResult> GetLicenseAuditTrail(int id, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            _logger.LogInformation("Retrieving audit trail for license {LicenseId}", id);
+            
+            var query = new GetLicenseAuditTrailQuery 
+            { 
+                LicenseId = id, 
+                Page = page, 
+                PageSize = pageSize 
+            };
+            
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
     }
 }

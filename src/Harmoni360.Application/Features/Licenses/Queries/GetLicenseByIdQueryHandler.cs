@@ -35,7 +35,7 @@ public class GetLicenseByIdQueryHandler : IRequestHandler<GetLicenseByIdQuery, L
                 return null;
             }
 
-            return new LicenseDto
+            var licenseDto = new LicenseDto
             {
                 Id = license.Id,
                 LicenseNumber = license.LicenseNumber,
@@ -93,7 +93,13 @@ public class GetLicenseByIdQueryHandler : IRequestHandler<GetLicenseByIdQuery, L
                 // Status Information
                 StatusNotes = license.StatusNotes,
 
-                // Collections (simplified)
+                // Computed Properties
+                DaysUntilExpiry = (license.ExpiryDate - DateTime.UtcNow).Days,
+                IsExpired = license.ExpiryDate < DateTime.UtcNow,
+                IsExpiringSoon = (license.ExpiryDate - DateTime.UtcNow).TotalDays <= 30,
+                RequiresRenewal = license.RenewalRequired && (license.ExpiryDate - DateTime.UtcNow).TotalDays <= license.RenewalPeriodDays,
+
+                // Collections
                 Attachments = license.Attachments.Select(a => new LicenseAttachmentDto
                 {
                     Id = a.Id,
@@ -150,11 +156,29 @@ public class GetLicenseByIdQueryHandler : IRequestHandler<GetLicenseByIdQuery, L
                 UpdatedAt = license.LastModifiedAt,
                 UpdatedBy = license.LastModifiedBy
             };
+
+            // Calculate permissions based on license status and user context
+            SetLicensePermissions(licenseDto);
+            return licenseDto;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving license with ID {LicenseId}", request.Id);
             throw;
         }
+    }
+
+
+    private void SetLicensePermissions(LicenseDto license)
+    {
+        // Determine permissions based on license status
+        var status = license.Status;
+        
+        license.CanEdit = status == "Draft" || status == "PendingSubmission" || status == "Rejected";
+        license.CanSubmit = status == "Draft" || status == "PendingSubmission";
+        license.CanApprove = status == "Submitted" || status == "UnderReview";
+        license.CanActivate = status == "Approved";
+        license.CanSuspend = status == "Active";
+        license.CanRenew = status == "Active" || status == "Expired" || (status == "Active" && license.RequiresRenewal);
     }
 }

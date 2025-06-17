@@ -38,7 +38,7 @@ export interface LicenseDto {
   // Additional Properties
   scope: string;
   restrictions: string;
-  conditions: string;
+  conditionsText: string;
   statusNotes: string;
 
   // Regulatory Information
@@ -56,7 +56,7 @@ export interface LicenseDto {
   // Collections
   attachments: LicenseAttachmentDto[];
   renewals: LicenseRenewalDto[];
-  licenseConditions: LicenseConditionDto[];
+  conditions: LicenseConditionDto[];
   
   // Audit Information
   createdAt: string;
@@ -65,20 +65,20 @@ export interface LicenseDto {
   updatedBy?: string;
 
   // Computed Properties
-  canEdit: boolean;
-  canSubmit: boolean;
-  canApprove: boolean;
-  canActivate: boolean;
-  canSuspend: boolean;
-  canRenew: boolean;
-  isExpired: boolean;
-  isExpiring: boolean;
-  isActive: boolean;
-  isHighRisk: boolean;
-  hasRequiredInfo: boolean;
-  isRenewalDue: boolean;
-  daysUntilExpiry: number;
-  daysUntilRenewal: number;
+  canEdit?: boolean;
+  canSubmit?: boolean;
+  canApprove?: boolean;
+  canActivate?: boolean;
+  canSuspend?: boolean;
+  canRenew?: boolean;
+  isExpired?: boolean;
+  isExpiring?: boolean;
+  isActive?: boolean;
+  isHighRisk?: boolean;
+  hasRequiredInfo?: boolean;
+  isRenewalDue?: boolean;
+  daysUntilExpiry?: number;
+  daysUntilRenewal?: number;
 }
 
 export interface LicenseAttachmentDto {
@@ -133,6 +133,19 @@ export interface LicenseConditionDto {
   isOverdue: boolean;
   isCompleted: boolean;
   daysUntilDue: number;
+}
+
+export interface LicenseAuditLogDto {
+  id: number;
+  action: string;
+  actionDescription: string;
+  performedAt: string;
+  performedBy: string;
+  ipAddress?: string;
+  userAgent?: string;
+  oldValues?: string;
+  newValues?: string;
+  comments?: string;
 }
 
 export interface LicenseDashboardDto {
