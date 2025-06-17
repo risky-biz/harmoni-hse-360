@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Licenses.DTOs;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Licenses.Commands;
 
@@ -35,19 +36,35 @@ public class CompleteLicenseConditionCommandHandler : IRequestHandler<CompleteLi
                 throw new UnauthorizedAccessException("User not found.");
             }
 
-            // Get the license condition
-            var condition = await _context.LicenseConditions
-                .FirstOrDefaultAsync(c => c.Id == request.ConditionId && c.LicenseId == request.LicenseId, cancellationToken);
+            // Get the license with conditions for audit trail
+            var license = await _context.Licenses
+                .Include(l => l.LicenseConditions)
+                .FirstOrDefaultAsync(l => l.Id == request.LicenseId, cancellationToken);
 
+            if (license == null)
+            {
+                throw new KeyNotFoundException($"License with ID {request.LicenseId} not found.");
+            }
+
+            var condition = license.LicenseConditions.FirstOrDefault(c => c.Id == request.ConditionId);
             if (condition == null)
             {
                 throw new KeyNotFoundException($"License condition with ID {request.ConditionId} not found for license {request.LicenseId}.");
             }
 
+            // Store condition details for audit
+            var conditionDetails = $"Type: {condition.ConditionType}, Description: {condition.Description}";
+            
             // Complete the condition
             condition.Complete(currentUser.Name, request.ComplianceEvidence, request.Notes);
             condition.LastModifiedAt = DateTime.UtcNow;
             condition.LastModifiedBy = currentUser.Name;
+
+            // Add audit log
+            license.LogAuditAction(
+                LicenseAuditAction.ConditionUpdated,
+                $"Completed condition: {conditionDetails}. Evidence: {request.ComplianceEvidence ?? "None provided"}",
+                currentUser.Name);
 
             await _context.SaveChangesAsync(cancellationToken);
 

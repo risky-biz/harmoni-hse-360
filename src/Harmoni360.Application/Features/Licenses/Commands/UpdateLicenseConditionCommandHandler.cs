@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Licenses.DTOs;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Licenses.Commands;
 
@@ -35,14 +36,24 @@ public class UpdateLicenseConditionCommandHandler : IRequestHandler<UpdateLicens
                 throw new UnauthorizedAccessException("User not found.");
             }
 
-            // Get the license condition
-            var condition = await _context.LicenseConditions
-                .FirstOrDefaultAsync(c => c.Id == request.ConditionId && c.LicenseId == request.LicenseId, cancellationToken);
+            // Get the license with conditions for audit trail
+            var license = await _context.Licenses
+                .Include(l => l.LicenseConditions)
+                .FirstOrDefaultAsync(l => l.Id == request.LicenseId, cancellationToken);
 
+            if (license == null)
+            {
+                throw new KeyNotFoundException($"License with ID {request.LicenseId} not found.");
+            }
+
+            var condition = license.LicenseConditions.FirstOrDefault(c => c.Id == request.ConditionId);
             if (condition == null)
             {
                 throw new KeyNotFoundException($"License condition with ID {request.ConditionId} not found for license {request.LicenseId}.");
             }
+
+            // Store original condition details for audit
+            var originalConditionDetails = $"Type: {condition.ConditionType}, Description: {condition.Description}, Status: {condition.Status}";
 
             // Update condition properties
             condition.ConditionType = request.ConditionType;
@@ -62,6 +73,15 @@ public class UpdateLicenseConditionCommandHandler : IRequestHandler<UpdateLicens
             {
                 condition.Notes = request.Notes;
             }
+
+            // Create updated condition details for audit
+            var updatedConditionDetails = $"Type: {condition.ConditionType}, Description: {condition.Description}, Status: {condition.Status}";
+            
+            // Add audit log
+            license.LogAuditAction(
+                LicenseAuditAction.ConditionUpdated,
+                $"Updated condition from [{originalConditionDetails}] to [{updatedConditionDetails}]",
+                currentUser.Name);
 
             await _context.SaveChangesAsync(cancellationToken);
 

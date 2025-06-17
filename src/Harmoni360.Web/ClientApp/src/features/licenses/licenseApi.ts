@@ -3,7 +3,8 @@ import {
   LicenseDto,
   LicenseDashboardDto,
   LicenseFormData,
-  LicenseAttachmentDto
+  LicenseAttachmentDto,
+  LicenseAuditLogDto
 } from '../../types/license';
 import { PagedList } from '../../types/common';
 
@@ -146,11 +147,14 @@ export const licenseApi = createApi({
     }),
 
     // Update license
-    updateLicense: builder.mutation<LicenseDto, { id: number; data: Partial<LicenseFormData> }>({
+    updateLicense: builder.mutation<LicenseDto, { id: number; data: any }>({
       query: ({ id, data }) => ({
         url: `/${id}`,
         method: 'PUT',
-        body: { id, ...data },
+        body: data,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'License', id },
@@ -429,6 +433,36 @@ export const licenseApi = createApi({
         'License',
       ],
     }),
+
+    // Delete license condition
+    deleteLicenseCondition: builder.mutation<void, {
+      licenseId: number;
+      conditionId: number;
+    }>({
+      query: ({ licenseId, conditionId }) => ({
+        url: `/${licenseId}/conditions/${conditionId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { licenseId }) => [
+        { type: 'License', id: licenseId },
+        'License',
+      ],
+    }),
+
+    // Get license audit trail
+    getLicenseAuditTrail: builder.query<PagedList<LicenseAuditLogDto>, {
+      licenseId: number;
+      page?: number;
+      pageSize?: number;
+    }>({
+      query: ({ licenseId, page = 1, pageSize = 20 }) => ({
+        url: `/${licenseId}/audit-trail`,
+        params: { page, pageSize },
+      }),
+      providesTags: (result, error, { licenseId }) => [
+        { type: 'License', id: licenseId },
+      ],
+    }),
   }),
 });
 
@@ -455,4 +489,6 @@ export const {
   useAddLicenseConditionMutation,
   useUpdateLicenseConditionMutation,
   useCompleteLicenseConditionMutation,
+  useDeleteLicenseConditionMutation,
+  useGetLicenseAuditTrailQuery,
 } = licenseApi;

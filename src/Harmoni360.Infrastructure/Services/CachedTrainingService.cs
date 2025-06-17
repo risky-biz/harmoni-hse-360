@@ -132,7 +132,7 @@ public class CachedTrainingService : ICachedTrainingService
             .AverageAsync(t => t.AverageRating, cancellationToken);
 
         var overdueCount = await _context.Trainings
-            .CountAsync(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.Now, cancellationToken);
+            .CountAsync(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.UtcNow, cancellationToken);
 
         var typeStatistics = await _context.Trainings
             .GroupBy(t => t.Type)
@@ -198,7 +198,7 @@ public class CachedTrainingService : ICachedTrainingService
                 IsK3MandatoryTraining = t.IsK3MandatoryTraining,
                 RequiresGovernmentCertification = t.RequiresGovernmentCertification,
                 AverageRating = t.AverageRating,
-                IsOverdue = t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.Now,
+                IsOverdue = t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate < DateTime.UtcNow,
                 CanEdit = t.Status == TrainingStatus.Draft || t.Status == TrainingStatus.Scheduled,
                 CanStart = t.Status == TrainingStatus.Scheduled && t.Participants.Count >= t.MinParticipants,
                 CanEnroll = t.Status == TrainingStatus.Scheduled && t.Participants.Count < t.MaxParticipants,
@@ -211,7 +211,7 @@ public class CachedTrainingService : ICachedTrainingService
     private async Task<IEnumerable<TrainingSummaryDto>> LoadUpcomingTrainingsAsync(int count, CancellationToken cancellationToken)
     {
         return await _context.Trainings
-            .Where(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate > DateTime.Now)
+            .Where(t => t.Status == TrainingStatus.Scheduled && t.ScheduledStartDate > DateTime.UtcNow)
             .OrderBy(t => t.ScheduledStartDate)
             .Take(count)
             .Include(t => t.Participants)

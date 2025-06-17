@@ -87,11 +87,14 @@ import {
   useRevokeLicenseMutation,
   useRenewLicenseMutation,
   useUploadAttachmentMutation,
-  useDeleteAttachmentMutation
+  useDeleteAttachmentMutation,
+  useGetLicenseAuditTrailQuery
 } from '../../features/licenses/licenseApi';
+import LicenseAuditTrail from '../../components/common/LicenseAuditTrail';
 import { 
   LicenseDto,
   LicenseAttachmentDto,
+  LicenseAuditLogDto,
   getStatusColor,
   getPriorityColor,
   getRiskLevelColor
@@ -267,10 +270,10 @@ const LicenseDetail: React.FC = () => {
 
   // Calculate compliance progress
   const calculateComplianceProgress = useCallback(() => {
-    if (!license?.licenseConditions.length) return 100;
+    if (!license?.conditions?.length) return 100;
     
-    const completed = license.licenseConditions.filter(c => c.isCompleted).length;
-    return Math.round((completed / license.licenseConditions.length) * 100);
+    const completed = license.conditions.filter(c => c.isCompleted).length;
+    return Math.round((completed / license.conditions.length) * 100);
   }, [license]);
 
   // Get status-based action buttons
@@ -431,16 +434,16 @@ const LicenseDetail: React.FC = () => {
                     {license.title}
                   </h4>
                   <div className="text-muted">
-                    License #{license.licenseNumber} • {license.typeDisplay}
+                    License #{license.licenseNumber} • {license.typeDisplay || license.type}
                   </div>
                 </div>
               </div>
               <div className="d-flex align-items-center gap-2">
                 <CBadge color={getStatusColor(license.status)}>
-                  {license.statusDisplay}
+                  {license.statusDisplay || license.status}
                 </CBadge>
                 <CBadge color={getPriorityColor(license.priority)}>
-                  {license.priorityDisplay}
+                  {license.priorityDisplay || license.priority}
                 </CBadge>
                 {license.isCriticalLicense && (
                   <CBadge color="danger">
@@ -457,21 +460,21 @@ const LicenseDetail: React.FC = () => {
               {license.isExpired && (
                 <CAlert color="danger" className="mb-3">
                   <FontAwesomeIcon icon={LICENSE_ICONS.warning} className="me-2" />
-                  This license expired {Math.abs(license.daysUntilExpiry)} days ago on {format(new Date(license.expiryDate), 'MMM dd, yyyy')}
+                  This license expired {Math.abs(license.daysUntilExpiry || 0)} days ago on {license.expiryDate ? format(new Date(license.expiryDate), 'MMM dd, yyyy') : 'Unknown date'}
                 </CAlert>
               )}
               
               {license.isExpiring && !license.isExpired && (
                 <CAlert color="warning" className="mb-3">
                   <FontAwesomeIcon icon={LICENSE_ICONS.clock} className="me-2" />
-                  This license will expire in {license.daysUntilExpiry} days on {format(new Date(license.expiryDate), 'MMM dd, yyyy')}
+                  This license will expire in {license.daysUntilExpiry || 0} days on {license.expiryDate ? format(new Date(license.expiryDate), 'MMM dd, yyyy') : 'Unknown date'}
                 </CAlert>
               )}
 
               {license.isRenewalDue && (
                 <CAlert color="info" className="mb-3">
                   <FontAwesomeIcon icon={LICENSE_ICONS.renew} className="me-2" />
-                  Renewal is due in {license.daysUntilRenewal} days
+                  Renewal is due in {license.daysUntilRenewal || 0} days
                 </CAlert>
               )}
 
@@ -504,7 +507,7 @@ const LicenseDetail: React.FC = () => {
                     style={{ cursor: 'pointer' }}
                   >
                     <FontAwesomeIcon icon={LICENSE_ICONS.clipboard} className="me-1" />
-                    Conditions ({license.licenseConditions.length})
+                    Conditions ({license.conditions.length})
                   </CNavLink>
                 </CNavItem>
                 <CNavItem>
@@ -563,27 +566,27 @@ const LicenseDetail: React.FC = () => {
                               </div>
                               <div className="mb-3">
                                 <strong>Type:</strong><br />
-                                <CBadge color="info">{license.typeDisplay}</CBadge>
+                                <CBadge color="info">{license.typeDisplay || license.type}</CBadge>
                               </div>
                             </CCol>
                             <CCol md={6}>
                               <div className="mb-3">
                                 <strong>Status:</strong><br />
                                 <CBadge color={getStatusColor(license.status)}>
-                                  {license.statusDisplay}
+                                  {license.statusDisplay || license.status}
                                 </CBadge>
                               </div>
                               <div className="mb-3">
                                 <strong>Priority:</strong><br />
                                 <CBadge color={getPriorityColor(license.priority)}>
-                                  {license.priorityDisplay}
+                                  {license.priorityDisplay || license.priority}
                                 </CBadge>
                               </div>
                               <div className="mb-3">
                                 <strong>Risk Level:</strong><br />
                                 <CBadge color={getRiskLevelColor(license.riskLevel)}>
                                   <FontAwesomeIcon icon={LICENSE_ICONS.shield} className="me-1" />
-                                  {license.riskLevelDisplay}
+                                  {license.riskLevelDisplay || license.riskLevel}
                                 </CBadge>
                               </div>
                             </CCol>
@@ -650,17 +653,17 @@ const LicenseDetail: React.FC = () => {
                           <div className="mb-3">
                             <strong>Issued Date:</strong><br />
                             <FontAwesomeIcon icon={LICENSE_ICONS.calendar} className="me-1" />
-                            {format(new Date(license.issuedDate), 'MMM dd, yyyy')}
+                            {license.issuedDate ? format(new Date(license.issuedDate), 'MMM dd, yyyy') : 'Not specified'}
                           </div>
                           <div className="mb-3">
                             <strong>Expiry Date:</strong><br />
                             <FontAwesomeIcon icon={LICENSE_ICONS.calendar} className="me-1" />
-                            {format(new Date(license.expiryDate), 'MMM dd, yyyy')}
+                            {license.expiryDate ? format(new Date(license.expiryDate), 'MMM dd, yyyy') : 'Not specified'}
                             <br />
                             <small className={`text-${license.isExpired ? 'danger' : license.isExpiring ? 'warning' : 'success'}`}>
-                              {license.daysUntilExpiry > 0 
-                                ? `${license.daysUntilExpiry} days remaining`
-                                : `Expired ${Math.abs(license.daysUntilExpiry)} days ago`
+                              {(license.daysUntilExpiry || 0) > 0 
+                                ? `${license.daysUntilExpiry || 0} days remaining`
+                                : `Expired ${Math.abs(license.daysUntilExpiry || 0)} days ago`
                               }
                             </small>
                           </div>
@@ -668,13 +671,13 @@ const LicenseDetail: React.FC = () => {
                             <div className="mb-3">
                               <strong>Next Renewal:</strong><br />
                               <FontAwesomeIcon icon={LICENSE_ICONS.renew} className="me-1" />
-                              {format(new Date(license.nextRenewalDate), 'MMM dd, yyyy')}
+                              {license.nextRenewalDate ? format(new Date(license.nextRenewalDate), 'MMM dd, yyyy') : 'Not specified'}
                             </div>
                           )}
                         </CCardBody>
                       </CCard>
 
-                      {license.licenseConditions.length > 0 && (
+                      {license.conditions.length > 0 && (
                         <CCard>
                           <CCardHeader>
                             <FontAwesomeIcon icon={LICENSE_ICONS.clipboard} className="me-2" />
@@ -690,7 +693,7 @@ const LicenseDetail: React.FC = () => {
                               className="mb-3"
                             />
                             <small className="text-muted">
-                              {license.licenseConditions.filter(c => c.isCompleted).length} of {license.licenseConditions.length} conditions completed
+                              {license.conditions.filter(c => c.isCompleted).length} of {license.conditions.length} conditions completed
                             </small>
                           </CCardBody>
                         </CCard>
@@ -721,10 +724,10 @@ const LicenseDetail: React.FC = () => {
                               <div className="text-muted">{license.restrictions}</div>
                             </div>
                           )}
-                          {license.conditions && (
+                          {license.conditionsText && (
                             <div className="mb-3">
                               <strong>General Conditions:</strong><br />
-                              <div className="text-muted">{license.conditions}</div>
+                              <div className="text-muted">{license.conditionsText}</div>
                             </div>
                           )}
                         </CCardBody>
@@ -832,7 +835,7 @@ const LicenseDetail: React.FC = () => {
 
                 {/* Conditions Tab */}
                 <CTabPane visible={activeTab === 'conditions'}>
-                  {license.licenseConditions.length === 0 ? (
+                  {license.conditions.length === 0 ? (
                     <CAlert color="info">
                       <FontAwesomeIcon icon={LICENSE_ICONS.info} className="me-2" />
                       No specific conditions have been added to this license.
@@ -850,7 +853,7 @@ const LicenseDetail: React.FC = () => {
                         </CTableRow>
                       </CTableHead>
                       <CTableBody>
-                        {license.licenseConditions.map((condition) => (
+                        {license.conditions.map((condition) => (
                           <CTableRow key={condition.id}>
                             <CTableDataCell>
                               <CBadge color="info">
@@ -1019,7 +1022,7 @@ const LicenseDetail: React.FC = () => {
                             <div className="d-flex justify-content-between">
                               <span>{calculateComplianceProgress()}% Complete</span>
                               <span className="text-muted">
-                                {license.licenseConditions.filter(c => c.isCompleted).length}/{license.licenseConditions.length}
+                                {license.conditions.filter(c => c.isCompleted).length}/{license.conditions.length}
                               </span>
                             </div>
                           </div>
@@ -1028,7 +1031,7 @@ const LicenseDetail: React.FC = () => {
                             <strong>Risk Assessment:</strong><br />
                             <CBadge color={getRiskLevelColor(license.riskLevel)}>
                               <FontAwesomeIcon icon={LICENSE_ICONS.shield} className="me-1" />
-                              {license.riskLevelDisplay} Risk
+                              {license.riskLevelDisplay || license.riskLevel} Risk
                             </CBadge>
                           </div>
 
@@ -1056,7 +1059,7 @@ const LicenseDetail: React.FC = () => {
                                 Completed Conditions
                               </span>
                               <CBadge color="success">
-                                {license.licenseConditions.filter(c => c.isCompleted).length}
+                                {license.conditions.filter(c => c.isCompleted).length}
                               </CBadge>
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -1065,7 +1068,7 @@ const LicenseDetail: React.FC = () => {
                                 Pending Conditions
                               </span>
                               <CBadge color="warning">
-                                {license.licenseConditions.filter(c => !c.isCompleted && !c.isOverdue).length}
+                                {license.conditions.filter(c => !c.isCompleted && !c.isOverdue).length}
                               </CBadge>
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -1074,7 +1077,7 @@ const LicenseDetail: React.FC = () => {
                                 Overdue Conditions
                               </span>
                               <CBadge color="danger">
-                                {license.licenseConditions.filter(c => c.isOverdue).length}
+                                {license.conditions.filter(c => c.isOverdue).length}
                               </CBadge>
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -1083,7 +1086,7 @@ const LicenseDetail: React.FC = () => {
                                 Mandatory Conditions
                               </span>
                               <CBadge color="info">
-                                {license.licenseConditions.filter(c => c.isMandatory).length}
+                                {license.conditions.filter(c => c.isMandatory).length}
                               </CBadge>
                             </CListGroupItem>
                           </CListGroup>
@@ -1095,10 +1098,7 @@ const LicenseDetail: React.FC = () => {
 
                 {/* History Tab */}
                 <CTabPane visible={activeTab === 'history'}>
-                  <CAlert color="info">
-                    <FontAwesomeIcon icon={LICENSE_ICONS.info} className="me-2" />
-                    Audit trail and history tracking will be implemented in the next phase.
-                  </CAlert>
+                  <LicenseAuditTrail licenseId={license.id} />
                 </CTabPane>
               </CTabContent>
             </CCardBody>

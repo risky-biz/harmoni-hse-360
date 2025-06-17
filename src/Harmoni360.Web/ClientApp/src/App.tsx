@@ -462,6 +462,30 @@ const LicenseDetail = React.lazy(() =>
     };
   })
 );
+const EditLicense = React.lazy(() =>
+  import('./pages/licenses/EditLicense').catch((err) => {
+    console.error('Failed to load EditLicense:', err);
+    return {
+      default: () => <div>Error loading Edit License. Please refresh.</div>,
+    };
+  })
+);
+const MyLicenses = React.lazy(() =>
+  import('./pages/licenses/MyLicenses').catch((err) => {
+    console.error('Failed to load MyLicenses:', err);
+    return {
+      default: () => <div>Error loading My Licenses. Please refresh.</div>,
+    };
+  })
+);
+const ExpiringLicenses = React.lazy(() =>
+  import('./pages/licenses/ExpiringLicenses').catch((err) => {
+    console.error('Failed to load ExpiringLicenses:', err);
+    return {
+      default: () => <div>Error loading Expiring Licenses. Please refresh.</div>,
+    };
+  })
+);
 
 // Audit Management Pages
 const AuditDashboard = React.lazy(() =>
@@ -991,7 +1015,10 @@ function App() {
                 <Route path="/licenses" element={<LicenseList />} />
                 <Route path="/licenses/dashboard" element={<LicenseDashboard />} />
                 <Route path="/licenses/create" element={<CreateLicense />} />
+                <Route path="/licenses/my-licenses" element={<MyLicenses />} />
+                <Route path="/licenses/expiring" element={<ExpiringLicenses />} />
                 <Route path="/licenses/:id" element={<LicenseDetail />} />
+                <Route path="/licenses/:id/edit" element={<EditLicense />} />
 
                 {/* Audit Management */}
                 <Route path="/audits" element={<AuditList />} />

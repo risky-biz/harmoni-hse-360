@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Licenses.DTOs;
 using Harmoni360.Domain.Entities;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.Licenses.Commands;
 
@@ -77,6 +78,14 @@ public class UploadLicenseAttachmentCommandHandler : IRequestHandler<UploadLicen
             );
 
             _context.LicenseAttachments.Add(attachment);
+
+            // Add audit log for attachment upload
+            var attachmentDetails = $"File: {request.File.FileName}, Type: {request.AttachmentType}, Size: {request.File.Length} bytes";
+            license.LogAuditAction(
+                LicenseAuditAction.AttachmentAdded,
+                $"Uploaded attachment: {attachmentDetails}",
+                currentUser.Name);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("License attachment uploaded successfully. LicenseId: {LicenseId}, AttachmentId: {AttachmentId}, FileName: {FileName}", 

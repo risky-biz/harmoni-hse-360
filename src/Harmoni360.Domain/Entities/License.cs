@@ -272,6 +272,17 @@ public class License : BaseEntity, IAuditableEntity
     public void AddCondition(LicenseCondition condition)
     {
         _licenseConditions.Add(condition);
+        AddDomainEvent(new LicenseConditionAddedEvent(Id, condition.Id, condition.ConditionType, condition.Description));
+    }
+
+    public void RemoveCondition(int conditionId)
+    {
+        var condition = _licenseConditions.FirstOrDefault(c => c.Id == conditionId);
+        if (condition != null)
+        {
+            _licenseConditions.Remove(condition);
+            AddDomainEvent(new LicenseConditionRemovedEvent(Id, condition.Id, condition.ConditionType, condition.Description));
+        }
     }
 
     public void LogAuditAction(LicenseAuditAction action, string actionDescription, string performedBy, string oldValues = "", string newValues = "")
