@@ -29,6 +29,9 @@ $charcoal: #212121;
 @import './dashboard.scss';
 @import './dashboard-responsive.scss';
 
+// Import enhanced login page styles
+@import './login-enhanced.scss';
+
 // Custom styles following Harmoni branding
 :root {
   --harmoni-teal: #{$teal-primary};

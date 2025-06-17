@@ -7,7 +7,6 @@ import {
   CButton,
   CCard,
   CCardBody,
-  CCardGroup,
   CCol,
   CContainer,
   CForm,
@@ -18,11 +17,14 @@ import {
   CAlert,
   CSpinner,
   CFormCheck,
-  CCallout,
-  CAccordion,
-  CAccordionBody,
-  CAccordionHeader,
-  CAccordionItem,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CBadge,
+  CListGroup,
+  CListGroupItem,
 } from '@coreui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ACTION_ICONS, CONTEXT_ICONS } from '../../utils/iconMappings';
@@ -61,7 +63,7 @@ const Login: React.FC = () => {
 
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const { data: demoUsers } = useGetDemoUsersQuery();
-  const [showDemoUsers, setShowDemoUsers] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -107,7 +109,20 @@ const Login: React.FC = () => {
   const fillDemoCredentials = (email: string, password: string) => {
     setValue('email', email);
     setValue('password', password);
-    setShowDemoUsers(false);
+    setShowDemoModal(false);
+  };
+
+  const getRoleBadgeColor = (role: string): string => {
+    const adminRoles = ['Super Admin', 'Developer', 'Admin'];
+    const hseRoles = ['Incident Manager', 'Risk Manager', 'PPE Manager', 'Health Monitor', 'HSE Manager'];
+    const securityRoles = ['Security Manager', 'Security Officer', 'Compliance Officer'];
+    const specialistRoles = ['Safety Officer', 'Department Head', 'Hot Work Specialist', 'Confined Space Specialist', 'Electrical Supervisor', 'Special Work Specialist'];
+    
+    if (adminRoles.includes(role)) return 'danger';
+    if (hseRoles.includes(role)) return 'warning';
+    if (securityRoles.includes(role)) return 'info';
+    if (specialistRoles.includes(role)) return 'primary';
+    return 'secondary';
   };
 
   const handleClearError = () => {
@@ -115,301 +130,260 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div
-      className="bg-light min-vh-100 d-flex flex-row align-items-center"
-      style={{ backgroundColor: 'var(--harmoni-grey)' }}
-    >
+    <div className="harmoni-login-container min-vh-100 d-flex align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={8} lg={6}>
-            <CCardGroup>
-              <CCard className="p-4 shadow-lg" style={{ borderRadius: '12px' }}>
-                <CCardBody>
-                  <CForm onSubmit={handleSubmit(onSubmit)}>
-                    <div className="text-center mb-4">
-                      <div className="mb-3">
-                        <img
-                          src="/Harmoni_360_Logo.png"
-                          alt="Harmoni360 Logo"
-                          style={{
-                            width: '120px',
-                            height: 'auto',
-                            maxHeight: '80px',
-                          }}
-                        />
-                      </div>
-                      <p
-                        className="text-medium-emphasis"
-                        style={{ fontSize: '14px', marginTop: '16px' }}
-                      >
-                        Complete Safety. Seamless Harmony.
-                      </p>
+          <CCol xs={12} sm={10} md={8} lg={6} xl={5}>
+            <CCard className="harmoni-login-card shadow-lg border-0">
+              <CCardBody className="harmoni-login-body">
+                <CForm onSubmit={handleSubmit(onSubmit)}>
+                  {/* Logo and Brand Section */}
+                  <div className="text-center mb-4 mb-md-5">
+                    <div className="mb-3">
+                      <img
+                        src="/Harmoni_360_Logo.png"
+                        alt="Harmoni360 Logo"
+                        className="harmoni-login-logo"
+                      />
                     </div>
-
-                    <h3
-                      className="mb-3"
-                      style={{
-                        color: 'var(--harmoni-charcoal)',
-                        fontFamily: 'Poppins, sans-serif',
-                      }}
-                    >
+                    <h1 className="harmoni-login-title">
                       Welcome Back
-                    </h3>
-                    <p className="text-medium-emphasis mb-4">
-                      Sign in to your account to continue
+                    </h1>
+                    <p className="harmoni-login-subtitle">
+                      Complete Safety. Seamless Harmony.
                     </p>
+                  </div>
 
-                    {auth.error && (
-                      <CAlert
-                        color="danger"
-                        dismissible
-                        onClose={handleClearError}
-                        className="d-flex align-items-center"
-                      >
-                        <FontAwesomeIcon icon={ACTION_ICONS.info} className="flex-shrink-0 me-2" />
-                        <div>{auth.error}</div>
-                      </CAlert>
-                    )}
+                  {/* Error Alert */}
+                  {auth.error && (
+                    <CAlert
+                      color="danger"
+                      dismissible
+                      onClose={handleClearError}
+                      className="harmoni-alert alert-danger d-flex align-items-center"
+                    >
+                      <FontAwesomeIcon 
+                        icon={ACTION_ICONS.info} 
+                        className="flex-shrink-0 me-2" 
+                        aria-hidden="true"
+                      />
+                      <div>{auth.error}</div>
+                    </CAlert>
+                  )}
 
-                    <CInputGroup className="mb-3">
+                  {/* Email Input */}
+                  <div className="harmoni-form-group">
+                    <label htmlFor="email" className="form-label visually-hidden">
+                      Email Address
+                    </label>
+                    <CInputGroup className="harmoni-input-group mb-2">
                       <CInputGroupText>
-                        <FontAwesomeIcon icon={CONTEXT_ICONS.user} />
+                        <FontAwesomeIcon 
+                          icon={CONTEXT_ICONS.user} 
+                          aria-hidden="true"
+                        />
                       </CInputGroupText>
                       <CFormInput
                         {...register('email')}
+                        id="email"
                         type="email"
-                        placeholder="Email"
+                        placeholder="Enter your email address"
                         autoComplete="username"
                         invalid={!!errors.email}
                         disabled={isLoginLoading}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                       />
                     </CInputGroup>
                     {errors.email && (
-                      <div className="text-danger small mb-2">
+                      <div 
+                        id="email-error" 
+                        className="harmoni-error-text"
+                        role="alert"
+                      >
                         {errors.email.message}
                       </div>
                     )}
+                  </div>
 
-                    <CInputGroup className="mb-4">
+                  {/* Password Input */}
+                  <div className="harmoni-form-group">
+                    <label htmlFor="password" className="form-label visually-hidden">
+                      Password
+                    </label>
+                    <CInputGroup className="harmoni-input-group mb-2">
                       <CInputGroupText>
-                        <FontAwesomeIcon icon={CONTEXT_ICONS.security} />
+                        <FontAwesomeIcon 
+                          icon={CONTEXT_ICONS.security} 
+                          aria-hidden="true"
+                        />
                       </CInputGroupText>
                       <CFormInput
                         {...register('password')}
+                        id="password"
                         type="password"
-                        placeholder="Password"
+                        placeholder="Enter your password"
                         autoComplete="current-password"
                         invalid={!!errors.password}
                         disabled={isLoginLoading}
+                        aria-describedby={errors.password ? 'password-error' : undefined}
                       />
                     </CInputGroup>
                     {errors.password && (
-                      <div className="text-danger small mb-3">
+                      <div 
+                        id="password-error" 
+                        className="harmoni-error-text"
+                        role="alert"
+                      >
                         {errors.password.message}
                       </div>
                     )}
+                  </div>
 
+                  {/* Remember Me Checkbox */}
+                  <div className="harmoni-remember-me mb-4">
                     <CFormCheck
                       {...register('rememberMe')}
                       id="rememberMe"
-                      label="Remember me"
-                      className="mb-4"
+                      label="Remember me for 30 days"
                       disabled={isLoginLoading}
                     />
-
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton
-                          className="px-4 py-2"
-                          type="submit"
-                          disabled={isLoginLoading}
-                          style={{
-                            backgroundColor: 'var(--harmoni-teal)',
-                            borderColor: 'var(--harmoni-teal)',
-                            borderRadius: '8px',
-                            fontWeight: '500',
-                            fontSize: '16px',
-                            color: 'white',
-                          }}
-                        >
-                          {isLoginLoading ? (
-                            <>
-                              <CSpinner size="sm" className="me-2" />
-                              Signing in...
-                            </>
-                          ) : (
-                            'Sign In'
-                          )}
-                        </CButton>
-                      </CCol>
-                      <CCol xs={6} className="text-right">
-                        <CButton
-                          className="px-0"
-                          onClick={() => setShowDemoUsers(!showDemoUsers)}
-                          style={{
-                            color: 'var(--harmoni-teal)',
-                            textDecoration: 'none',
-                            background: 'none',
-                            border: 'none',
-                            fontSize: '14px',
-                          }}
-                        >
-                          Demo Users
-                        </CButton>
-                      </CCol>
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-
-              <CCard
-                className="text-white py-5"
-                style={{
-                  width: '44%',
-                  background:
-                    'linear-gradient(135deg, var(--harmoni-teal) 0%, var(--harmoni-blue) 100%)',
-                  borderRadius: '12px',
-                }}
-              >
-                <CCardBody className="text-center">
-                  <div>
-                    <h2
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: '600',
-                      }}
-                    >
-                      Welcome to Harmoni360
-                    </h2>
-                    <p
-                      className="mb-4"
-                      style={{ fontSize: '16px', opacity: '0.9' }}
-                    >
-                      360° Coverage for a Safer School Environment
-                    </p>
-                    <div className="mt-4">
-                      <div className="feature-highlight mb-4">
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              backgroundColor: 'rgba(255,255,255,0.2)',
-                            }}
-                          >
-                            <FontAwesomeIcon icon={CONTEXT_ICONS.security} size="lg" />
-                          </div>
-                          <h5
-                            className="mb-0"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                          >
-                            Safety First
-                          </h5>
-                        </div>
-                        <p className="small" style={{ opacity: '0.8' }}>
-                          Complete incident reporting and management
-                        </p>
-                      </div>
-                      <div className="feature-highlight mb-4">
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              backgroundColor: 'rgba(255,255,255,0.2)',
-                            }}
-                          >
-                            <FontAwesomeIcon icon={CONTEXT_ICONS.analytics} size="lg" />
-                          </div>
-                          <h5
-                            className="mb-0"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                          >
-                            Real-time Analytics
-                          </h5>
-                        </div>
-                        <p className="small" style={{ opacity: '0.8' }}>
-                          Live dashboards and reporting
-                        </p>
-                      </div>
-                      <div className="feature-highlight">
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center me-3"
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              backgroundColor: 'rgba(255,255,255,0.2)',
-                            }}
-                          >
-                            <FontAwesomeIcon icon={CONTEXT_ICONS.department} size="lg" />
-                          </div>
-                          <h5
-                            className="mb-0"
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
-                          >
-                            Environmental Care
-                          </h5>
-                        </div>
-                        <p className="small" style={{ opacity: '0.8' }}>
-                          Sustainable practices tracking
-                        </p>
-                      </div>
-                    </div>
                   </div>
-                </CCardBody>
-              </CCard>
-            </CCardGroup>
 
-            {/* Demo Users Section */}
-            {showDemoUsers && demoUsers && (
-              <CRow className="mt-4">
-                <CCol>
-                  <CCallout color="info">
-                    <h5>Demo User Accounts</h5>
-                    <p>
-                      Click on any user below to auto-fill login credentials:
-                    </p>
+                  {/* Action Buttons */}
+                  <div className="d-grid gap-3">
+                    <CButton
+                      type="submit"
+                      disabled={isLoginLoading}
+                      className="harmoni-btn-primary"
+                    >
+                      {isLoginLoading ? (
+                        <>
+                          <CSpinner size="sm" className="me-2" aria-hidden="true" />
+                          Signing in...
+                        </>
+                      ) : (
+                        <>
+                          <FontAwesomeIcon icon={CONTEXT_ICONS.security} className="me-2" aria-hidden="true" />
+                          Sign In to Harmoni360
+                        </>
+                      )}
+                    </CButton>
+                    
+                    <CButton
+                      variant="outline"
+                      onClick={() => setShowDemoModal(true)}
+                      disabled={isLoginLoading}
+                      className="harmoni-btn-outline"
+                    >
+                      <FontAwesomeIcon icon={CONTEXT_ICONS.user} className="me-2" aria-hidden="true" />
+                      Try Demo Accounts
+                    </CButton>
+                  </div>
+                </CForm>
+              </CCardBody>
+            </CCard>
 
-                    <CAccordion>
-                      {demoUsers.users.map((user: any, index: number) => (
-                        <CAccordionItem key={index} itemKey={index}>
-                          <CAccordionHeader>
-                            <strong>{user.name}</strong> - {user.role}
-                          </CAccordionHeader>
-                          <CAccordionBody>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div>
-                                <p className="mb-1">
-                                  <strong>Email:</strong> {user.email}
-                                </p>
-                                <p className="mb-1">
-                                  <strong>Password:</strong> {user.password}
-                                </p>
-                                <p className="mb-0">
-                                  <strong>Role:</strong> {user.role}
-                                </p>
+            {/* Demo Users Modal */}
+            <CModal
+              visible={showDemoModal}
+              onClose={() => setShowDemoModal(false)}
+              size="lg"
+              scrollable
+              backdrop="static"
+              className="harmoni-demo-modal"
+            >
+              <CModalHeader>
+                <CModalTitle>
+                  <FontAwesomeIcon icon={CONTEXT_ICONS.user} className="me-2" aria-hidden="true" />
+                  Demo User Accounts
+                </CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                <p className="mb-4">
+                  Select any demo account below to automatically fill in the login credentials.
+                  These accounts demonstrate different user roles and permissions within Harmoni360.
+                </p>
+                
+                {demoUsers && (
+                  <CListGroup>
+                    {/* Group users by category */}
+                    {[
+                      {
+                        title: 'System Administration',
+                        users: demoUsers.users.filter((user: any) => 
+                          ['Super Admin', 'Developer', 'Admin'].includes(user.role)
+                        )
+                      },
+                      {
+                        title: 'HSE Management',
+                        users: demoUsers.users.filter((user: any) => 
+                          ['Incident Manager', 'Risk Manager', 'PPE Manager', 'Health Monitor', 'HSE Manager'].includes(user.role)
+                        )
+                      },
+                      {
+                        title: 'Security & Compliance',
+                        users: demoUsers.users.filter((user: any) => 
+                          ['Security Manager', 'Security Officer', 'Compliance Officer'].includes(user.role)
+                        )
+                      },
+                      {
+                        title: 'Work Permit Specialists',
+                        users: demoUsers.users.filter((user: any) => 
+                          ['Safety Officer', 'Department Head', 'Hot Work Specialist', 'Confined Space Specialist', 'Electrical Supervisor', 'Special Work Specialist'].includes(user.role)
+                        )
+                      },
+                      {
+                        title: 'General Users',
+                        users: demoUsers.users.filter((user: any) => 
+                          ['Reporter', 'Viewer'].includes(user.role) || user.email.includes('@bsj.sch.id')
+                        )
+                      }
+                    ].map((category, categoryIndex) => (
+                      category.users.length > 0 && (
+                        <div key={categoryIndex} className="harmoni-demo-category">
+                          <h6 className="category-title">
+                            {category.title}
+                          </h6>
+                          {category.users.map((user: any, index: number) => (
+                            <CListGroupItem
+                              key={`${categoryIndex}-${index}`}
+                              component="button"
+                              onClick={() => fillDemoCredentials(user.email, user.password)}
+                              className="harmoni-demo-user"
+                            >
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div className="user-info text-start">
+                                  <div className="user-name">
+                                    {user.name}
+                                  </div>
+                                  <div className="user-email">
+                                    {user.email}
+                                  </div>
+                                </div>
+                                <CBadge
+                                  color={getRoleBadgeColor(user.role)}
+                                  className="user-badge"
+                                >
+                                  {user.role}
+                                </CBadge>
                               </div>
-                              <CButton
-                                color="primary"
-                                size="sm"
-                                onClick={() =>
-                                  fillDemoCredentials(user.email, user.password)
-                                }
-                              >
-                                Use Credentials
-                              </CButton>
-                            </div>
-                          </CAccordionBody>
-                        </CAccordionItem>
-                      ))}
-                    </CAccordion>
-                  </CCallout>
-                </CCol>
-              </CRow>
-            )}
+                            </CListGroupItem>
+                          ))}
+                        </div>
+                      )
+                    ))}
+                  </CListGroup>
+                )}
+              </CModalBody>
+              <CModalFooter>
+                <CButton
+                  color="secondary"
+                  onClick={() => setShowDemoModal(false)}
+                >
+                  Close
+                </CButton>
+              </CModalFooter>
+            </CModal>
           </CCol>
         </CRow>
       </CContainer>

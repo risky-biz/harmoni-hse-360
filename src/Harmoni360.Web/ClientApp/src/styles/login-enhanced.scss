@@ -1,0 +1,618 @@
+// Enhanced Login Page Styles
+// Responsive, accessible, and modern design for Harmoni360
+// Created: June 2025
+
+// Mobile-First Responsive Design
+.harmoni-login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--harmoni-teal-100) 0%, var(--harmoni-blue-100) 100%);
+  background-color: var(--theme-bg-secondary);
+  padding: 1rem;
+
+  @media (max-width: 575px) {
+    padding: 0.5rem;
+  }
+}
+
+.harmoni-login-card {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.1),
+    0 20px 48px rgba(0, 0, 0, 0.1);
+  
+  // Mobile optimization
+  @media (max-width: 575px) {
+    border-radius: 12px;
+    margin: 0.5rem 0;
+  }
+
+  // Tablet optimization
+  @media (min-width: 576px) and (max-width: 767px) {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  // Desktop optimization
+  @media (min-width: 768px) {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+.harmoni-login-body {
+  padding: 2rem 1.5rem;
+
+  @media (max-width: 575px) {
+    padding: 1.5rem 1rem;
+  }
+
+  @media (min-width: 768px) {
+    padding: 3rem 2.5rem;
+  }
+}
+
+// Logo and Branding
+.harmoni-login-logo {
+  width: 120px;
+  height: auto;
+  max-height: 80px;
+  transition: transform 0.3s ease;
+
+  @media (max-width: 575px) {
+    width: 100px;
+    max-height: 70px;
+  }
+
+  @media (min-width: 768px) {
+    width: 140px;
+    max-height: 90px;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.harmoni-login-title {
+  color: var(--theme-text-primary);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 575px) {
+    font-size: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.harmoni-login-subtitle {
+  color: var(--theme-text-secondary);
+  font-size: 1rem;
+  margin-bottom: 0;
+
+  @media (max-width: 575px) {
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.1rem;
+  }
+}
+
+// Form Controls Enhancement
+.harmoni-form-group {
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 575px) {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    font-weight: 500;
+    color: var(--theme-text-primary);
+    margin-bottom: 0.5rem;
+  }
+}
+
+.harmoni-input-group {
+  .input-group-text {
+    background-color: var(--theme-bg-secondary);
+    border-color: var(--theme-border);
+    color: var(--theme-text-muted);
+    border-right: none;
+    
+    // Ensure proper icon sizing
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .form-control {
+    background-color: var(--theme-bg-primary);
+    border-color: var(--theme-border);
+    color: var(--theme-text-primary);
+    border-left: none;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+
+    @media (max-width: 575px) {
+      font-size: 16px; // Prevents zoom on iOS
+      padding: 0.875rem 1rem;
+    }
+
+    &:focus {
+      background-color: var(--theme-bg-primary);
+      border-color: var(--harmoni-teal-500);
+      color: var(--theme-text-primary);
+      box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25);
+    }
+
+    &.is-invalid {
+      border-color: var(--theme-risk-critical);
+      
+      &:focus {
+        border-color: var(--theme-risk-critical);
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+
+    &::placeholder {
+      color: var(--theme-text-muted);
+      opacity: 0.8;
+    }
+  }
+}
+
+// Error Messages
+.harmoni-error-text {
+  color: var(--theme-risk-critical);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 0.25rem;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+// Remember Me Checkbox
+.harmoni-remember-me {
+  .form-check-input {
+    &:checked {
+      background-color: var(--harmoni-teal-500);
+      border-color: var(--harmoni-teal-500);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25);
+    }
+  }
+
+  .form-check-label {
+    color: var(--theme-text-secondary);
+    font-size: 0.9rem;
+    user-select: none;
+  }
+}
+
+// Action Buttons
+.harmoni-btn-primary {
+  background-color: var(--harmoni-teal-500);
+  border-color: var(--harmoni-teal-500);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 151, 167, 0.2);
+  transition: all 0.2s ease;
+  width: 100%;
+
+  @media (max-width: 575px) {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--harmoni-teal-600);
+    border-color: var(--harmoni-teal-600);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 151, 167, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 151, 167, 0.2);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  svg {
+    margin-right: 0.5rem;
+  }
+}
+
+.harmoni-btn-outline {
+  border: 2px solid var(--harmoni-teal-500);
+  color: var(--harmoni-teal-500);
+  background-color: transparent;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background-color: var(--harmoni-teal-500);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25);
+  }
+
+  svg {
+    margin-right: 0.5rem;
+  }
+}
+
+// Demo Modal Enhancements
+.harmoni-demo-modal {
+  // Mobile-specific modal positioning and centering
+  @media (max-width: 575px) {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    
+    .modal-dialog {
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: calc(100vh - 2rem);
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    // Remove transitions on mobile for better performance
+    &.fade .modal-dialog {
+      transition: none;
+      transform: none;
+    }
+    
+    &.show .modal-dialog {
+      transform: none;
+    }
+  }
+  
+  // Extra small screens (very small phones)
+  @media (max-width: 375px) {
+    padding: 0.5rem;
+    
+    .modal-dialog {
+      max-height: calc(100vh - 1rem);
+    }
+  }
+  
+  // Mobile landscape optimization
+  @media (max-width: 767px) and (orientation: landscape) {
+    padding: 0.5rem;
+    
+    .modal-dialog {
+      max-height: calc(100vh - 1rem);
+    }
+  }
+
+  @media (min-width: 576px) and (max-width: 767px) {
+    .modal-dialog {
+      margin: 1.5rem auto;
+      max-height: calc(100vh - 3rem);
+    }
+  }
+
+  .modal-content {
+    background-color: var(--theme-bg-primary);
+    border: 1px solid var(--theme-border);
+    border-radius: 12px;
+    width: 100%;
+
+    @media (max-width: 575px) {
+      border-radius: 8px;
+      height: auto;
+      max-height: calc(100vh - 2rem);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      flex: 1;
+    }
+    
+    // Landscape mode adjustments
+    @media (max-width: 767px) and (orientation: landscape) {
+      max-height: calc(100vh - 1rem);
+      border-radius: 6px;
+    }
+
+    @media (min-width: 576px) and (max-width: 767px) {
+      max-height: calc(100vh - 3rem);
+    }
+  }
+
+  .modal-header {
+    background-color: var(--theme-bg-secondary);
+    border-bottom: 1px solid var(--theme-border);
+    padding: 1.5rem;
+    flex-shrink: 0;
+
+    @media (max-width: 575px) {
+      padding: 1rem;
+      // Ensure close button is touch-friendly
+      .btn-close {
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.5rem -0.5rem auto;
+      }
+    }
+
+    .modal-title {
+      color: var(--theme-text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1.25rem;
+
+      @media (max-width: 575px) {
+        font-size: 1.1rem;
+      }
+
+      svg {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .modal-body {
+    background-color: var(--theme-bg-primary);
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    flex: 1;
+
+    @media (max-width: 575px) {
+      padding: 1rem;
+      max-height: none;
+      flex: 1;
+      overflow-y: auto;
+      // Ensure the modal body takes available space but allows scrolling
+      min-height: 0;
+    }
+
+    @media (min-width: 576px) and (max-width: 767px) {
+      max-height: calc(70vh - 6rem); // Account for header and footer
+    }
+
+    p {
+      color: var(--theme-text-secondary);
+      line-height: 1.6;
+    }
+  }
+
+  .modal-footer {
+    background-color: var(--theme-bg-secondary);
+    border-top: 1px solid var(--theme-border);
+    padding: 1rem 1.5rem;
+    flex-shrink: 0; // Prevent footer from shrinking
+
+    @media (max-width: 575px) {
+      padding: 1rem;
+      // Ensure footer button is properly sized for touch
+      .btn {
+        min-height: 44px;
+        padding: 0.75rem 1.5rem;
+      }
+    }
+  }
+}
+
+// Demo User Categories
+.harmoni-demo-category {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .category-title {
+    color: var(--theme-text-muted);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--theme-border);
+
+    @media (max-width: 575px) {
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+  }
+}
+
+// Demo User List Items
+.harmoni-demo-user {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-primary);
+  transition: all 0.2s ease;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+
+  @media (max-width: 575px) {
+    padding: 0.875rem;
+  }
+
+  &:hover {
+    background-color: var(--theme-bg-secondary);
+    border-color: var(--harmoni-teal-500);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 151, 167, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .user-info {
+    .user-name {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+
+      @media (max-width: 575px) {
+        font-size: 0.9rem;
+      }
+    }
+
+    .user-email {
+      color: var(--theme-text-muted);
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+
+      @media (max-width: 575px) {
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .user-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+
+    @media (max-width: 575px) {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.4rem;
+    }
+  }
+}
+
+// Alert Enhancement
+.harmoni-alert {
+  border-radius: 8px;
+  border: 1px solid;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  &.alert-danger {
+    background-color: var(--theme-risk-critical-bg);
+    color: var(--theme-risk-critical);
+    border-color: var(--theme-risk-critical);
+  }
+
+  svg {
+    margin-right: 0.5rem;
+  }
+}
+
+// Touch and Accessibility Improvements
+@media (hover: none) and (pointer: coarse) {
+  // Touch device optimizations
+  .harmoni-btn-primary,
+  .harmoni-btn-outline {
+    min-height: 44px; // Minimum touch target size
+  }
+
+  .harmoni-demo-user {
+    min-height: 60px;
+    padding: 1rem;
+  }
+}
+
+// Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+  .harmoni-login-logo,
+  .harmoni-btn-primary,
+  .harmoni-btn-outline,
+  .harmoni-demo-user,
+  .harmoni-input-group .form-control {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+// High Contrast Mode Support
+@media (prefers-contrast: high) {
+  .harmoni-login-card {
+    border-width: 2px;
+    border-color: var(--theme-text-primary);
+  }
+
+  .harmoni-btn-primary {
+    border-width: 2px;
+  }
+
+  .harmoni-input-group .form-control {
+    border-width: 2px;
+  }
+}
+
+// Dark Mode Specific Enhancements
+[data-theme="dark"] {
+  .harmoni-login-container {
+    background: linear-gradient(135deg, var(--harmoni-teal-900) 0%, var(--harmoni-blue-900) 100%);
+  }
+
+  .harmoni-login-card {
+    box-shadow: 
+      0 10px 25px rgba(0, 0, 0, 0.3),
+      0 20px 48px rgba(0, 0, 0, 0.3);
+  }
+
+  .harmoni-demo-user:hover {
+    box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
+  }
+}
+
+// Print Styles
+@media print {
+  .harmoni-login-container {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .harmoni-btn-outline,
+  .harmoni-demo-modal {
+    display: none !important;
+  }
+}
