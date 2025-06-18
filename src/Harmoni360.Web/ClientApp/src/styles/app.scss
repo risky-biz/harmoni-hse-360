@@ -346,7 +346,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5rem;
 }
 
-// Azure Portal-style Sidebar with Harmoni HSE 360 colors
+// Azure Portal-style Sidebar with Harmoni HSE 360 colors and Hierarchical Navigation
 .sidebar {
   background-color: #2d2d30;
   border-right: none;
@@ -529,7 +529,7 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
 
-  // Section titles (category headers)
+  // Section titles (category headers) - Enhanced for hierarchical navigation
   .nav-title {
     color: #808080; // Consistent muted color for headers
     font-size: 11px;
@@ -539,6 +539,270 @@ h1, h2, h3, h4, h5, h6 {
     padding: 16px 16px 8px 16px;
     margin: 0;
     opacity: 0.9;
+    
+    // Module title styling for hierarchical structure
+    &.has-submodules {
+      font-weight: 600;
+      position: relative;
+      
+      &::after {
+        content: "";
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 0;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  // Hierarchical navigation depth indicators
+  .depth-0 {
+    padding-left: 0;
+  }
+  
+  .depth-1 {
+    padding-left: 0rem;
+    
+    .nav-icon {
+      opacity: 0.9;
+    }
+  }
+  
+  .depth-2 {
+    padding-left: 0.5rem;
+    
+    .nav-icon {
+      opacity: 0.8;
+    }
+  }
+  
+  // Visual hierarchy indicators for navigation groups
+  .nav-group {
+    &.module-subgroup {
+      border-left: 2px solid rgba(255, 255, 255, 0.1);
+      margin-left: 0.5rem;
+      
+      &.active {
+        border-left-color: var(--harmoni-teal);
+      }
+    }
+  }
+
+  // Module wrapper structure for hierarchical navigation
+  .nav-module-wrapper {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    
+    // Module title styling
+    .nav-module-title {
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 16px 16px 8px 16px;
+      opacity: 0.9;
+      position: relative;
+      margin-top: 0.15rem;
+
+      &::after {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 0;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+    
+    // Module content container
+    .nav-module-content {
+      padding: 0;
+      margin: 0;
+    }
+    
+    // Module status indicators
+    &.module-disabled {
+      opacity: 0.6;
+      
+      .nav-module-title::after {
+        content: " (Disabled)";
+        font-size: 0.75rem;
+        color: var(--harmoni-yellow);
+        text-transform: none;
+        letter-spacing: normal;
+      }
+    }
+
+    &.module-maintenance {
+      .nav-module-title::after {
+        content: " (Maintenance)";
+        font-size: 0.75rem;
+        color: #17a2b8;
+        text-transform: none;
+        letter-spacing: normal;
+      }
+    }
+
+    &.module-coming-soon {
+      .nav-module-title::after {
+        content: " (Coming Soon)";
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: none;
+        letter-spacing: normal;
+      }
+    }
+    
+    // Hide entire module when disabled (for non-SuperAdmin users)
+    &.module-hidden {
+      display: none;
+    }
+    
+    // Visual hierarchy with border
+    &.depth-0 {
+      border-left: 0px solid transparent;
+      
+      &:hover {
+        border-left-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  // Sidebar search styling
+  .sidebar-search {
+    background-color: #252526;
+    border-bottom: 1px solid #3a3a3c;
+    
+    .form-control {
+      background-color: #1e1e1e;
+      border: 1px solid #3a3a3c;
+      color: #ffffff;
+      font-size: 0.875rem;
+      padding-left: 2.5rem; // Ensure enough space for icon
+      
+      &::placeholder {
+        color: #808080;
+      }
+      
+      &:focus {
+        background-color: #252526;
+        border-color: var(--harmoni-teal);
+        color: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25);
+      }
+    }
+    
+    // Position the search icon properly
+    .fa-search {
+      left: 0.75rem !important;
+      pointer-events: none;
+    }
+    
+    .btn-link {
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s ease-in-out;
+      
+      &:hover {
+        opacity: 1;
+      }
+      
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    
+    .text-muted {
+      color: #808080 !important;
+    }
+  }
+
+  // Search highlighting for navigation items
+  .search-highlight {
+    background-color: var(--harmoni-yellow) !important;
+    color: var(--harmoni-charcoal) !important;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+    animation: highlightFadeIn 0.3s ease-in-out;
+  }
+
+  // Animation for search highlights
+  @keyframes highlightFadeIn {
+    from {
+      background-color: transparent;
+      transform: scale(1);
+    }
+    to {
+      background-color: var(--harmoni-yellow);
+      transform: scale(1.02);
+    }
+  }
+
+  // Custom expanded nav group styling for search
+  .nav-group-expanded {
+    .nav-group-toggler-expanded {
+      color: #ffffff !important;
+      background-color: #3a3a3c;
+      border: none;
+      padding: 12px 16px;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease-in-out;
+      border-left: 3px solid transparent;
+      margin: 1px 0;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+
+      .nav-icon {
+        color: inherit;
+        margin-right: 12px;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .nav-group-toggle-icon {
+        margin-left: auto;
+        font-size: 12px;
+        transform: rotate(180deg);
+        transition: transform 0.2s ease-in-out;
+      }
+    }
+
+    .nav-group-items.show {
+      background-color: #252526;
+      border-left: 3px solid #3a3a3c;
+      margin-left: 0;
+      display: block !important;
+
+      .nav-item {
+        .nav-link {
+          padding-left: 44px;
+          font-size: 13px;
+          color: #999999 !important;
+          border-left: 3px solid transparent;
+          margin: 1px 0;
+          transition: all 0.2s ease-in-out;
+          font-weight: 400;
+
+          &:hover {
+            color: #ffffff !important;
+            background-color: #3a3a3c;
+          }
+
+          &.active {
+            color: #ffffff !important;
+            background-color: #3a3a3c;
+            border-left-color: var(--harmoni-teal);
+            font-weight: 500;
+          }
+        }
+      }
+    }
   }
 
   // Toggler button styling
@@ -895,7 +1159,6 @@ h1, h2, h3, h4, h5, h6 {
 // Firefox scrollbar styling
 * {
   scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 // Dark containers get darker scrollbars
