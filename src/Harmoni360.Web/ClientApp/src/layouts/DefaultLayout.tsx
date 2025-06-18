@@ -51,8 +51,10 @@ import {
   isNavGroup,
   isNavItem,
   hasSubmodules,
-  hasItems
+  hasItems,
+  getModuleClassName
 } from '../utils/navigationUtils';
+import { useModuleState } from '../contexts/ModuleStateContext';
 
 import { useAppDispatch } from '../store/hooks';
 import { useAuth } from '../hooks/useAuth';
@@ -155,42 +157,47 @@ const DefaultLayout: React.FC = () => {
   // Get dynamic company configuration
   const companyName = useCompanyName();
   const websiteUrl = useWebsiteUrl();
+  
+  // Module state context
+  const { moduleStates } = useModuleState();
 
-  // Helper function to get module status class
+  // Helper function to get module status class using React state
   const getModuleStatusClass = (item: NavigationItem): string => {
-    const classes = [`depth-${0}`]; // Module level is always depth 0
+    const baseClasses = [`depth-${0}`]; // Module level is always depth 0
     
-    // Add module status classes based on item properties or future module status
+    // Get module state from context if module is defined
+    if (item.module && moduleStates[item.module]) {
+      const moduleState = moduleStates[item.module];
+      return getModuleClassName(moduleState, baseClasses.join(' '));
+    }
+    
+    // Fallback to existing className-based approach for backward compatibility
     if (item.className?.includes('disabled')) {
-      classes.push('module-disabled');
+      baseClasses.push('module-disabled');
     }
     if (item.className?.includes('maintenance')) {
-      classes.push('module-maintenance');
+      baseClasses.push('module-maintenance');
     }
     if (item.className?.includes('coming-soon')) {
-      classes.push('module-coming-soon');
+      baseClasses.push('module-coming-soon');
     }
     
-    return classes.join(' ');
+    return baseClasses.join(' ');
   };
 
-  // Search filter function with auto-expand tracking
+  // Search filter function without side effects
   const filterBySearch = useCallback((items: NavigationItem[], query: string): NavigationItem[] => {
     if (!query.trim()) {
-      // Clear expanded groups when search is cleared
-      setExpandedGroups(new Set());
       return items;
     }
     
     const lowerQuery = query.toLowerCase();
-    const newExpandedGroups = new Set<string>();
     
     const filterRecursive = (items: NavigationItem[], parentKey?: string): NavigationItem[] => {
       return items.reduce((filtered: NavigationItem[], item) => {
         let matchFound = false;
         let hasChildMatches = false;
         let filteredItem = { ...item };
-        const itemKey = parentKey ? `${parentKey}-${item.name}` : item.name;
         
         // Check if the item name matches
         if (item.name.toLowerCase().includes(lowerQuery)) {
@@ -199,24 +206,17 @@ const DefaultLayout: React.FC = () => {
         
         // For CNavTitle with submodules, search recursively
         if (hasSubmodules(item)) {
-          const filteredSubmodules = filterRecursive(item.submodules!, itemKey);
+          const filteredSubmodules = filterRecursive(item.submodules!, parentKey ? `${parentKey}-${item.name}` : item.name);
           if (filteredSubmodules.length > 0) {
             matchFound = true;
             hasChildMatches = true;
             filteredItem.submodules = filteredSubmodules;
-            
-            // Mark any groups within submodules for expansion
-            filteredSubmodules.forEach(submodule => {
-              if (isNavGroup(submodule)) {
-                newExpandedGroups.add(`${itemKey}-${submodule.name}`);
-              }
-            });
           }
         }
         
         // For CNavGroup with items, search recursively
         if (hasItems(item)) {
-          const filteredItems = filterRecursive(item.items!, itemKey);
+          const filteredItems = filterRecursive(item.items!, parentKey ? `${parentKey}-${item.name}` : item.name);
           if (filteredItems.length > 0) {
             matchFound = true;
             hasChildMatches = true;
@@ -224,30 +224,84 @@ const DefaultLayout: React.FC = () => {
           }
         }
         
-        // Mark group for expansion if it has child matches (regardless of self match)
-        if (isNavGroup(item) && hasChildMatches) {
-          newExpandedGroups.add(itemKey);
-        }
-        
         if (matchFound) {
           filtered.push(filteredItem);
         }
         
         return filtered;
-      }, []);
+      }, []);;
     };
     
-    const result = filterRecursive(items);
-    
-    // Debug logging
-    console.log('Search query:', query);
-    console.log('Expanded groups:', Array.from(newExpandedGroups));
-    
-    // Update expanded groups state
-    setExpandedGroups(newExpandedGroups);
-    
-    return result;
+    return filterRecursive(items);
   }, []);
+
+  // Function to compute expanded groups based on search results
+  const computeExpandedGroups = useCallback((items: NavigationItem[], query: string): Set<string> => {
+    if (!query.trim()) {
+      return new Set();
+    }
+    
+    const lowerQuery = query.toLowerCase();
+    const expandedGroups = new Set<string>();
+    
+    const processItems = (items: NavigationItem[], parentKey?: string): void => {
+      items.forEach(item => {
+        const itemKey = parentKey ? `${parentKey}-${item.name}` : item.name;
+        let hasMatchingChild = false;
+        
+        // Check submodules for matches
+        if (hasSubmodules(item)) {
+          item.submodules!.forEach(submodule => {
+            if (submodule.name.toLowerCase().includes(lowerQuery)) {
+              hasMatchingChild = true;
+            }
+            if (isNavGroup(submodule) && hasItems(submodule)) {
+              const hasDeepMatch = checkForDeepMatches(submodule.items!, lowerQuery);
+              if (hasDeepMatch) {
+                hasMatchingChild = true;
+                expandedGroups.add(`${itemKey}-${submodule.name}`);
+              }
+            }
+          });
+          if (hasMatchingChild || hasSubmodules(item)) {
+            processItems(item.submodules!, itemKey);
+          }
+        }
+        
+        // Check items for matches
+        if (hasItems(item)) {
+          const hasDeepMatch = checkForDeepMatches(item.items!, lowerQuery);
+          if (hasDeepMatch) {
+            hasMatchingChild = true;
+          }
+          processItems(item.items!, itemKey);
+        }
+        
+        // Expand group if it has matching children
+        if (isNavGroup(item) && hasMatchingChild) {
+          expandedGroups.add(itemKey);
+        }
+      });
+    };
+    
+    const checkForDeepMatches = (items: NavigationItem[], query: string): boolean => {
+      return items.some(item => {
+        if (item.name.toLowerCase().includes(query)) {
+          return true;
+        }
+        if (hasItems(item)) {
+          return checkForDeepMatches(item.items!, query);
+        }
+        if (hasSubmodules(item)) {
+          return checkForDeepMatches(item.submodules!, query);
+        }
+        return false;
+      });
+    };
+    
+    processItems(items);
+    return expandedGroups;
+  }, []);;
 
   // Hierarchical navigation rendering function with proper module wrapping and highlighting
   const renderNavigationItems = (items: NavigationItem[], depth: number = 0, parentKey: string = ''): React.ReactNode[] => {
@@ -259,7 +313,7 @@ const DefaultLayout: React.FC = () => {
         const moduleClasses = `nav-module-wrapper ${getModuleStatusClass(item)}`;
         
         return (
-          <li key={index} className={moduleClasses} data-module={item.module || item.name}>
+          <li key={itemKey} className={moduleClasses} data-module={item.module || item.name}>
             <CNavTitle className={`nav-module-title depth-${depth}`}>
               <HighlightedText text={item.name} searchQuery={searchQuery} />
             </CNavTitle>
@@ -274,15 +328,11 @@ const DefaultLayout: React.FC = () => {
       if (isNavGroup(item)) {
         const isExpanded = expandedGroups.has(itemKey);
         
-        // Debug logging
-        if (searchQuery && item.name.toLowerCase().includes('permit')) {
-          console.log(`CNavGroup: ${item.name}, itemKey: ${itemKey}, isExpanded: ${isExpanded}, expandedGroups:`, Array.from(expandedGroups));
-        }
         
         // Force expansion by conditionally rendering different components
         if (isExpanded) {
           return (
-            <div key={`${index}-expanded-${searchQuery}`} className={`nav-group depth-${depth} nav-group-expanded`}>
+            <div key={itemKey} className={`nav-group depth-${depth} nav-group-expanded`}>
               <div className="nav-group-toggler nav-group-toggler-expanded">
                 {item.icon}
                 <HighlightedText text={item.name} searchQuery={searchQuery} />
@@ -298,7 +348,7 @@ const DefaultLayout: React.FC = () => {
         } else {
           return (
             <CNavGroup
-              key={`${index}-collapsed-${searchQuery}`}
+              key={itemKey}
               toggler={
                 <>
                   {item.icon}
@@ -316,7 +366,7 @@ const DefaultLayout: React.FC = () => {
       // Handle CNavItem
       if (isNavItem(item) && item.to) {
         return (
-          <CNavItem key={index} className={`nav-item depth-${depth}`}>
+          <CNavItem key={itemKey} className={`nav-item depth-${depth}`}>
             <NavLink 
               to={item.to} 
               className="nav-link" 
@@ -354,6 +404,14 @@ const DefaultLayout: React.FC = () => {
     // Apply search filter
     return filterBySearch(withIcons, searchQuery);
   }, [permissions, searchQuery, filterBySearch]);
+
+  // Update expanded groups state based on search results
+  useEffect(() => {
+    const baseNavigation = createNavigationConfig();
+    const permissionFiltered = filterNavigationByPermissions(baseNavigation, permissions);
+    const newExpandedGroups = computeExpandedGroups(permissionFiltered, searchQuery);
+    setExpandedGroups(newExpandedGroups);
+  }, [searchQuery, permissions, computeExpandedGroups]);
 
   const handleLogout = async () => {
     try {

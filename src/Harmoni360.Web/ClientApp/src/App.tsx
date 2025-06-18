@@ -25,6 +25,9 @@ import { ThemeProvider } from './contexts/ThemeContext';
 // Company Configuration Provider
 import { CompanyConfigurationProvider } from './contexts/CompanyConfigurationContext';
 
+// Module State Provider
+import { ModuleStateProvider } from './contexts/ModuleStateContext';
+
 // Layouts
 import DefaultLayout from './layouts/DefaultLayout';
 import AuthLayout from './layouts/AuthLayout';
@@ -941,7 +944,9 @@ function App() {
               <Route
                 element={
                   <PrivateRoute>
-                    <DefaultLayout />
+                    <ModuleStateProvider>
+                      <DefaultLayout />
+                    </ModuleStateProvider>
                   </PrivateRoute>
                 }
               >

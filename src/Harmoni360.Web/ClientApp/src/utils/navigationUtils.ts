@@ -1,4 +1,5 @@
 import { ModuleType, PermissionType, UserPermissions } from '../types/permissions';
+import { ModuleState } from '../contexts/ModuleStateContext';
 
 export interface NavigationItem {
   component: 'CNavTitle' | 'CNavGroup' | 'CNavItem';
@@ -134,6 +135,48 @@ export const findNavigationItemByPath = (
 /**
  * Apply module status to navigation items (for future module configuration)
  */
+/**
+ * Get the string key for a module, handling both string and numeric enum values
+ */
+const getModuleKey = (module: ModuleType): string => {
+  // For string enums, module should already be a string
+  if (typeof module === 'string') {
+    return module;
+  }
+  
+  // For numeric values (from backend), find the corresponding enum key
+  const numericValue = Number(module);
+  if (!isNaN(numericValue)) {
+    // Map numeric values to enum keys based on backend ModuleType enum
+    const numericToStringMap: Record<number, string> = {
+      1: 'Dashboard',
+      2: 'IncidentManagement', 
+      3: 'RiskManagement',
+      4: 'PPEManagement',
+      5: 'InspectionManagement',
+      6: 'AuditManagement',
+      7: 'TrainingManagement',
+      8: 'LicenseManagement',
+      9: 'WasteManagement',
+      10: 'HealthMonitoring',
+      11: 'WorkPermitManagement',
+      12: 'PhysicalSecurity',
+      13: 'InformationSecurity',
+      14: 'PersonnelSecurity',
+      15: 'SecurityIncidentManagement',
+      16: 'ComplianceManagement',
+      17: 'Reporting',
+      18: 'UserManagement',
+      19: 'ApplicationSettings'
+    };
+    
+    return numericToStringMap[numericValue] || String(module);
+  }
+  
+  // Fallback to string conversion
+  return String(module);
+};
+
 export const applyModuleStatus = (
   items: NavigationItem[],
   moduleStatusMap?: Record<string, { enabled: boolean; status?: 'disabled' | 'maintenance' | 'coming-soon' }>,
@@ -141,7 +184,7 @@ export const applyModuleStatus = (
 ): NavigationItem[] => {
   return items.map(item => {
     if (isNavTitle(item) && item.module && moduleStatusMap) {
-      const moduleKey = item.module.toString();
+      const moduleKey = getModuleKey(item.module);
       const moduleStatus = moduleStatusMap[moduleKey];
       
       if (moduleStatus) {
@@ -191,9 +234,62 @@ export const getModuleSelector = (moduleType: ModuleType): string => {
 };
 
 /**
- * Utility functions for module management
+ * Generate CSS class names based on module state
  */
-export const ModuleManager = {
+export const getModuleClassName = (moduleState: ModuleState, existingClassName?: string): string => {
+  const classNames: string[] = [];
+  
+  if (existingClassName) {
+    classNames.push(existingClassName);
+  }
+  
+  if (!moduleState.isVisible) {
+    classNames.push('module-hidden');
+  }
+  
+  if (moduleState.status) {
+    classNames.push(`module-${moduleState.status}`);
+  }
+  
+  return classNames.join(' ').trim();
+};
+
+/**
+ * React-based utility functions for module management
+ * These functions return state-based operations instead of direct DOM manipulation
+ */
+export const createModuleManager = (
+  hideModule: (moduleType: ModuleType) => void,
+  showModule: (moduleType: ModuleType) => void,
+  toggleModule: (moduleType: ModuleType) => void,
+  setModuleStatus: (moduleType: ModuleType, status: 'disabled' | 'maintenance' | 'coming-soon' | null) => void
+) => ({
+  /**
+   * Hide a specific module using React state
+   */
+  hideModule,
+
+  /**
+   * Show a specific module using React state
+   */
+  showModule,
+
+  /**
+   * Toggle module visibility using React state
+   */
+  toggleModule,
+
+  /**
+   * Set module status using React state
+   */
+  setModuleStatus
+});
+
+/**
+ * @deprecated Use createModuleManager with React context instead
+ * Legacy DOM-based module management - kept for backward compatibility
+ */
+export const LegacyModuleManager = {
   /**
    * Hide a specific module by adding the module-hidden class
    */
