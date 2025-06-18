@@ -229,7 +229,7 @@ const DefaultLayout: React.FC = () => {
         }
         
         return filtered;
-      }, []);;
+      }, []);
     };
     
     return filterRecursive(items);
@@ -301,7 +301,7 @@ const DefaultLayout: React.FC = () => {
     
     processItems(items);
     return expandedGroups;
-  }, []);;
+      }, []);
 
   // Hierarchical navigation rendering function with proper module wrapping and highlighting
   const renderNavigationItems = (items: NavigationItem[], depth: number = 0, parentKey: string = ''): React.ReactNode[] => {
