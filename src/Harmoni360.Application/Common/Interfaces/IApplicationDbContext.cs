@@ -69,6 +69,8 @@ public interface IApplicationDbContext
     DbSet<WorkPermitApproval> WorkPermitApprovals { get; }
     DbSet<WorkPermitHazard> WorkPermitHazards { get; }
     DbSet<WorkPermitPrecaution> WorkPermitPrecautions { get; }
+    DbSet<WorkPermitSettings> WorkPermitSettings { get; }
+    DbSet<WorkPermitSafetyVideo> WorkPermitSafetyVideos { get; }
     
     // Inspection Management
     DbSet<Inspection> Inspections { get; }

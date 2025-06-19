@@ -87,6 +87,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WorkPermitApproval> WorkPermitApprovals => Set<WorkPermitApproval>();
     public DbSet<WorkPermitHazard> WorkPermitHazards => Set<WorkPermitHazard>();
     public DbSet<WorkPermitPrecaution> WorkPermitPrecautions => Set<WorkPermitPrecaution>();
+    public DbSet<WorkPermitSettings> WorkPermitSettings => Set<WorkPermitSettings>();
+    public DbSet<WorkPermitSafetyVideo> WorkPermitSafetyVideos => Set<WorkPermitSafetyVideo>();
     
     // Inspection Management
     public DbSet<Inspection> Inspections => Set<Inspection>();
