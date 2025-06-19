@@ -1,6 +1,7 @@
 using Harmoni360.Application.Features.WorkPermitSettings.Commands;
 using Harmoni360.Application.Features.WorkPermitSettings.DTOs;
 using Harmoni360.Application.Features.WorkPermitSettings.Queries;
+using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Services;
 using Harmoni360.Domain.Enums;
 using Harmoni360.Web.Authorization;
@@ -26,17 +27,20 @@ public class WorkPermitSettingsController : ControllerBase
     private readonly ILogger<WorkPermitSettingsController> _logger;
     private readonly IVideoValidationService _videoValidationService;
     private readonly IConfiguration _configuration;
+    private readonly IFileStorageService _fileStorageService;
 
     public WorkPermitSettingsController(
         IMediator mediator, 
         ILogger<WorkPermitSettingsController> logger,
         IVideoValidationService videoValidationService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IFileStorageService fileStorageService)
     {
         _mediator = mediator;
         _logger = logger;
         _videoValidationService = videoValidationService;
         _configuration = configuration;
+        _fileStorageService = fileStorageService;
     }
 
     /// <summary>
@@ -238,31 +242,31 @@ public class WorkPermitSettingsController : ControllerBase
                 return BadRequest(new { message = "Video validation failed", errors = validationResult.Errors });
             }
 
-            // Create proper storage directory structure
-            var uploadsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "safety-videos");
-            Directory.CreateDirectory(uploadsDirectory);
-            
-            var fileName = Path.GetFileNameWithoutExtension(videoFile.FileName) + "_" + Guid.NewGuid() + Path.GetExtension(videoFile.FileName);
-            var filePath = Path.Combine(uploadsDirectory, fileName);
-            
+            // Save the file using the file storage service
+            FileUploadResult uploadResult;
             try
             {
-                // Save uploaded file to permanent location
-                await using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await videoFile.CopyToAsync(stream);
-                }
+                await using var videoStream = videoFile.OpenReadStream();
+                uploadResult = await _fileStorageService.UploadAsync(videoStream, videoFile.FileName, videoFile.ContentType, "safety-videos");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save video file");
+                return BadRequest(new { message = "Failed to save video file" });
+            }
 
+            try
+            {
                 // Use the extracted metadata from validation
                 var metadata = validationResult.Metadata!;
 
                 var command = new UploadSafetyVideoCommand
                 {
                     WorkPermitSettingsId = settingId,
-                    FileName = fileName,
+                    FileName = Path.GetFileName(uploadResult.FilePath),
                     OriginalFileName = videoFile.FileName,
-                    FilePath = filePath,
-                    FileSize = videoFile.Length,
+                    FilePath = uploadResult.FilePath,
+                    FileSize = uploadResult.Size,
                     ContentType = videoFile.ContentType,
                     Duration = metadata.Duration,
                     Description = description,
@@ -277,16 +281,13 @@ public class WorkPermitSettingsController : ControllerBase
             catch (Exception ex)
             {
                 // Clean up file if database save fails
-                if (System.IO.File.Exists(filePath))
+                try
                 {
-                    try
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                    catch (Exception deleteEx)
-                    {
-                        _logger.LogWarning(deleteEx, "Failed to delete file after upload failure: {FilePath}", filePath);
-                    }
+                    await _fileStorageService.DeleteAsync(uploadResult.FilePath);
+                }
+                catch (Exception deleteEx)
+                {
+                    _logger.LogWarning(deleteEx, "Failed to delete file after upload failure: {FilePath}", uploadResult.FilePath);
                 }
                 throw;
             }
@@ -348,13 +349,13 @@ public class WorkPermitSettingsController : ControllerBase
                 return NotFound(new { message = "Video not found" });
             }
 
-            if (!System.IO.File.Exists(video.FilePath))
+            if (!await _fileStorageService.ExistsAsync(video.FilePath))
             {
                 _logger.LogWarning("Video file not found at path: {FilePath}", video.FilePath);
                 return NotFound(new { message = "Video file not found on disk" });
             }
 
-            var fileStream = new FileStream(video.FilePath, FileMode.Open, FileAccess.Read);
+            var fileStream = await _fileStorageService.DownloadAsync(video.FilePath);
             return File(fileStream, video.ContentType, video.OriginalFileName, enableRangeProcessing: true);
         }
         catch (Exception ex)

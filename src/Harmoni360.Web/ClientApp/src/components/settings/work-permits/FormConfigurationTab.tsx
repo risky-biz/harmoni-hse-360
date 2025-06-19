@@ -106,28 +106,23 @@ export const FormConfigurationTab: React.FC<FormConfigurationTabProps> = ({ sett
     if (!validate()) return;
 
     try {
-      // Transform camelCase to PascalCase for backend compatibility
-      const transformedData = {
-        RequireSafetyInduction: formData.requireSafetyInduction ?? false,
-        EnableFormValidation: formData.enableFormValidation ?? true,
-        AllowAttachments: formData.allowAttachments ?? true,
-        MaxAttachmentSizeMB: formData.maxAttachmentSizeMB ?? 10,
-        FormInstructions: formData.formInstructions || '',
-        IsActive: formData.isActive ?? false,
+      // Use consistent camelCase - API layer will handle transformation
+      const requestData = {
+        requireSafetyInduction: formData.requireSafetyInduction ?? false,
+        enableFormValidation: formData.enableFormValidation ?? true,
+        allowAttachments: formData.allowAttachments ?? true,
+        maxAttachmentSizeMB: formData.maxAttachmentSizeMB ?? 10,
+        formInstructions: formData.formInstructions || '',
+        isActive: formData.isActive ?? false,
       };
 
       if (isCreating) {
-        await createSettings(transformedData as any).unwrap();
+        await createSettings(requestData).unwrap();
       } else if (editingId) {
         await updateSettings({
           id: Number(editingId),
-          RequireSafetyInduction: formData.requireSafetyInduction ?? false,
-          EnableFormValidation: formData.enableFormValidation ?? true,
-          AllowAttachments: formData.allowAttachments ?? true,
-          MaxAttachmentSizeMB: formData.maxAttachmentSizeMB ?? 10,
-          FormInstructions: formData.formInstructions || '',
-          IsActive: formData.isActive ?? false,
-        } as any).unwrap();
+          ...requestData
+        }).unwrap();
       }
       handleCancel();
     } catch (error) {
