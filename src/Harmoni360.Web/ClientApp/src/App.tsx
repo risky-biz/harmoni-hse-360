@@ -15,6 +15,7 @@ import '@coreui/coreui/dist/css/coreui.min.css';
 // Custom styles with Harmoni branding
 import './styles/app.scss';
 import './styles/hsse-dashboard.css';
+import './styles/safety-induction-mobile.scss';
 
 // Store
 import { store } from './store';
@@ -792,6 +793,14 @@ const SystemSettings = React.lazy(() =>
     };
   })
 );
+const WorkPermitSettings = React.lazy(() =>
+  import('./pages/settings/WorkPermitSettings').catch((err) => {
+    console.error('Failed to load WorkPermitSettings:', err);
+    return {
+      default: () => <div>Error loading Work Permit Settings. Please refresh.</div>,
+    };
+  })
+);
 const IncidentSettings = React.lazy(() =>
   import('./pages/settings/IncidentSettings').catch((err) => {
     console.error('Failed to load IncidentSettings:', err);
@@ -1098,6 +1107,7 @@ function App() {
                       <Route path="ppe" element={<PPEManagement />} />
                       <Route path="incidents" element={<IncidentSettings />} />
                       <Route path="risks" element={<RiskSettings />} />
+                      <Route path="work-permits" element={<WorkPermitSettings />} />
                       <Route path="users" element={
                         <div className="p-4">
                           <h2>User Management Settings</h2>

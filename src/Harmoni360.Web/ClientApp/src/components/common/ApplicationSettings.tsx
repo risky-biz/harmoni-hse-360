@@ -64,6 +64,12 @@ const ApplicationSettings: React.FC<ApplicationSettingsProps> = ({
       icon: 'faShieldAlt',
     },
     {
+      name: 'Work Permit Management',
+      description: 'Configure work permit settings and safety induction videos',
+      path: '/settings/work-permits',
+      icon: 'faClipboardCheck',
+    },
+    {
       name: 'User Management',
       description: 'Manage users, roles, and permissions',
       path: '/settings/users',

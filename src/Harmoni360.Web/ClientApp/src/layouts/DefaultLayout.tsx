@@ -313,14 +313,14 @@ const DefaultLayout: React.FC = () => {
         const moduleClasses = `nav-module-wrapper ${getModuleStatusClass(item)}`;
         
         return (
-          <li key={itemKey} className={moduleClasses} data-module={item.module || item.name}>
+          <div key={itemKey} className={moduleClasses} data-module={item.module || item.name}>
             <CNavTitle className={`nav-module-title depth-${depth}`}>
               <HighlightedText text={item.name} searchQuery={searchQuery} />
             </CNavTitle>
             <div className="nav-module-content">
               {renderNavigationItems(item.submodules!, depth + 1, itemKey)}
             </div>
-          </li>
+          </div>
         );
       }
 

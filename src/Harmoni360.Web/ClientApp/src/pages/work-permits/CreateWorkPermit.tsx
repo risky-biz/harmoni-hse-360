@@ -52,6 +52,7 @@ import {
 
 import { useCreateWorkPermitMutation, useUploadAttachmentMutation } from '../../features/work-permits/workPermitApi';
 import { useGetDepartmentsQuery } from '../../api/configurationApi';
+import { useActiveWorkPermitSettings } from '../../services/workPermitSettingsApi';
 import {
   WorkPermitFormData,
   WORK_PERMIT_TYPES,
@@ -63,6 +64,7 @@ import {
   WorkPermitPrecautionDto
 } from '../../types/workPermit';
 import { WorkPermitAttachmentManager } from '../../components/work-permits';
+import { SafetyInductionVideo } from '../../components/work-permits/SafetyInductionVideo';
 import { format, addDays } from 'date-fns';
 
 // Validation schema
@@ -129,6 +131,7 @@ const CreateWorkPermit: React.FC = () => {
   const { data: departments } = useGetDepartmentsQuery({});
   const [createWorkPermit, { isLoading }] = useCreateWorkPermitMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
+  const { settings: activeSettings, requiresSafetyVideo, safetyVideos } = useActiveWorkPermitSettings();
 
   // Form state
   const {
@@ -181,6 +184,7 @@ const CreateWorkPermit: React.FC = () => {
   // Additional state for complex data
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pendingAttachments, setPendingAttachments] = useState<any[]>([]); // For file attachments in create mode
+  const [safetyVideoCompleted, setSafetyVideoCompleted] = useState(false);
   const [currentHazard, setCurrentHazard] = useState<Partial<WorkPermitHazardDto>>({
     hazardDescription: '',
     category: 'Physical',
@@ -1267,8 +1271,30 @@ const CreateWorkPermit: React.FC = () => {
                   </CAccordionBody>
                 </CAccordionItem>
 
-                {/* Section 7: Review & Submit */}
-                <CAccordionItem itemKey={7}>
+                {/* Section 7: Safety Induction Video (if required) */}
+                {requiresSafetyVideo && safetyVideos.length > 0 && (
+                  <CAccordionItem itemKey={7}>
+                    <CAccordionHeader>
+                      <div className="d-flex align-items-center">
+                        <FontAwesomeIcon icon={WORKPERMIT_ICONS.basicInformation} className="me-2 text-warning" />
+                        <strong>Safety Induction Video</strong>
+                        {safetyVideoCompleted && (
+                          <FontAwesomeIcon icon={faCheck} className="ms-2 text-success" />
+                        )}
+                      </div>
+                    </CAccordionHeader>
+                    <CAccordionBody>
+                      <SafetyInductionVideo
+                        videos={safetyVideos}
+                        requiredCompletionPercentage={100}
+                        onComplete={() => setSafetyVideoCompleted(true)}
+                      />
+                    </CAccordionBody>
+                  </CAccordionItem>
+                )}
+
+                {/* Section 8: Review & Submit */}
+                <CAccordionItem itemKey={requiresSafetyVideo ? 8 : 7}>
                   <CAccordionHeader>
                     <div className="d-flex align-items-center">
                       <FontAwesomeIcon icon={WORKPERMIT_ICONS.reviewSubmit} className="me-2 text-success" />
@@ -1360,7 +1386,15 @@ const CreateWorkPermit: React.FC = () => {
               {/* Form Footer */}
               <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                 <div className="text-muted">
-                  <small>All required fields must be completed</small>
+                  <small>
+                    All required fields must be completed
+                    {requiresSafetyVideo && !safetyVideoCompleted && (
+                      <span className="text-warning d-block">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="me-1" />
+                        Complete safety induction video to enable submission
+                      </span>
+                    )}
+                  </small>
                 </div>
                 <div className="d-flex gap-2">
                   <CButton 
@@ -1374,7 +1408,7 @@ const CreateWorkPermit: React.FC = () => {
                   <CButton 
                     type="submit" 
                     color="success" 
-                    disabled={isLoading}
+                    disabled={isLoading || (requiresSafetyVideo && !safetyVideoCompleted)}
                     onClick={() => console.log('🔘 Submit button clicked')}
                   >
                     {isLoading ? (

@@ -1,5 +1,6 @@
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.Trainings.Services;
+using Harmoni360.Application.Services;
 using Harmoni360.Domain.Interfaces;
 using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Infrastructure.Persistence.Repositories;
@@ -61,6 +62,7 @@ public static class DependencyInjection
         services.AddSingleton<IAntivirusScanner, NullAntivirusScanner>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
+        services.AddScoped<IVideoValidationService, VideoValidationService>();
         
         // Add data seeders
         services.AddScoped<IDataSeeder, DataSeeder>();
