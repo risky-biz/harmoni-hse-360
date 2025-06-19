@@ -70,7 +70,15 @@ export const workPermitSettingsApi = createApi({
       query: (settings) => ({
         url: '',
         method: 'POST',
-        body: settings
+        body: {
+          // Transform camelCase frontend properties to PascalCase backend properties
+          RequireSafetyInduction: settings.requireSafetyInduction,
+          EnableFormValidation: settings.enableFormValidation,
+          AllowAttachments: settings.allowAttachments,
+          MaxAttachmentSizeMB: settings.maxAttachmentSizeMB,
+          FormInstructions: settings.formInstructions,
+          IsActive: settings.isActive
+        }
       }),
       invalidatesTags: ['WorkPermitSettings']
     }),
@@ -80,7 +88,16 @@ export const workPermitSettingsApi = createApi({
       query: ({ id, ...settings }) => ({
         url: `/${id}`,
         method: 'PUT',
-        body: settings
+        body: {
+          // Transform camelCase frontend properties to PascalCase backend properties
+          Id: id,
+          RequireSafetyInduction: settings.requireSafetyInduction,
+          EnableFormValidation: settings.enableFormValidation,
+          AllowAttachments: settings.allowAttachments,
+          MaxAttachmentSizeMB: settings.maxAttachmentSizeMB,
+          FormInstructions: settings.formInstructions,
+          IsActive: settings.isActive
+        }
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'WorkPermitSettings', id },
