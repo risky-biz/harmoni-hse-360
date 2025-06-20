@@ -36,6 +36,7 @@ import AuthLayout from './layouts/AuthLayout';
 // Guards
 import PrivateRoute from './components/auth/PrivateRoute';
 import AdminRoute from './components/auth/AdminRoute';
+import DynamicRouteGuard from './components/auth/DynamicRouteGuard';
 import AuthErrorBoundary from './components/common/AuthErrorBoundary';
 
 // Hooks
@@ -970,7 +971,9 @@ function App() {
                 element={
                   <PrivateRoute>
                     <ModuleStateProvider>
-                      <DefaultLayout />
+                      <DynamicRouteGuard>
+                        <DefaultLayout />
+                      </DynamicRouteGuard>
                     </ModuleStateProvider>
                   </PrivateRoute>
                 }
