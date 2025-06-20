@@ -111,5 +111,10 @@ public interface IApplicationDbContext
     DbSet<WasteComment> WasteComments { get; }
     DbSet<WasteCompliance> WasteCompliances { get; }
 
+    // Module Configuration Management
+    DbSet<ModuleConfiguration> ModuleConfigurations { get; }
+    DbSet<ModuleDependency> ModuleDependencies { get; }
+    DbSet<ModuleConfigurationAuditLog> ModuleConfigurationAuditLogs { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

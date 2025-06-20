@@ -70,6 +70,12 @@ const ApplicationSettings: React.FC<ApplicationSettingsProps> = ({
       icon: 'faClipboardCheck',
     },
     {
+      name: 'Module Configuration',
+      description: 'Enable/disable modules and configure module settings',
+      path: '/settings/modules',
+      icon: 'faCog',
+    },
+    {
       name: 'User Management',
       description: 'Manage users, roles, and permissions',
       path: '/settings/users',

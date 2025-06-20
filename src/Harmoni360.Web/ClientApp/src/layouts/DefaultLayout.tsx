@@ -52,9 +52,12 @@ import {
   isNavItem,
   hasSubmodules,
   hasItems,
-  getModuleClassName
+  getModuleClassName,
+  hasNavigationAccess
 } from '../utils/navigationUtils';
+import { RoleType } from '../types/permissions';
 import { useModuleState } from '../contexts/ModuleStateContext';
+import { useGetEnabledModuleConfigurationsQuery } from '../services/moduleConfigurationApi';
 
 import { useAppDispatch } from '../store/hooks';
 import { useAuth } from '../hooks/useAuth';
@@ -149,10 +152,15 @@ const DefaultLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const permissions = usePermissions();
+  
+  // Extract stable values from permissions for dependency arrays
+  const userRoles = permissions?.roles || [];
+  const userRoleString = userRoles.join(',');
+  const hasHighestPriority = userRoles.includes(RoleType.SuperAdmin) || userRoles.includes(RoleType.Developer);
   const [logoutApi] = useLogoutMutation();
   const [sidebarShow, setSidebarShow] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  // Removed state for expandedGroups to prevent infinite updates
   
   // Get dynamic company configuration
   const companyName = useCompanyName();
@@ -160,6 +168,131 @@ const DefaultLayout: React.FC = () => {
   
   // Module state context
   const { moduleStates } = useModuleState();
+  
+  // Get enabled modules from backend
+  const { data: enabledModules = [] } = useGetEnabledModuleConfigurationsQuery();
+  
+  // Create a set of enabled module types for quick lookup
+  const enabledModuleTypes = useMemo(() => {
+    return new Set(enabledModules.map(module => module.moduleType));
+  }, [enabledModules]);
+
+  // Stable reference for enabled module types as array to avoid Set recreation issues
+  const enabledModuleTypesArray = useMemo(() => {
+    return enabledModules.map(module => module.moduleType);
+  }, [enabledModules]);
+
+  // Mapping from frontend string-based ModuleType to backend numeric ModuleType
+  const mapFrontendToBackendModuleType = useCallback((frontendModuleType: string): number | null => {
+    const mapping: Record<string, number> = {
+      'Dashboard': 1,
+      'IncidentManagement': 2,
+      'RiskManagement': 3,
+      'PPEManagement': 4,
+      'HealthMonitoring': 5,
+      'PhysicalSecurity': 6,
+      'InformationSecurity': 7,
+      'PersonnelSecurity': 8,
+      'SecurityIncidentManagement': 9,
+      'ComplianceManagement': 10,
+      'Reporting': 11,
+      'UserManagement': 12,
+      'WorkPermitManagement': 14,
+      'InspectionManagement': 15,
+      'AuditManagement': 16,
+      'TrainingManagement': 17,
+      'LicenseManagement': 18,
+      'WasteManagement': 19,
+      'ApplicationSettings': 20
+    };
+    return mapping[frontendModuleType] || null;
+  }, []);
+
+  // Filter navigation items based on both permissions and module enabled status
+  const filterNavigationByPermissionsAndModuleStatus = useCallback((
+    navigation: NavigationItem[],
+    permissions: any,
+    enabledModuleTypes: Set<number>
+  ): NavigationItem[] => {
+    const filterItem = (item: NavigationItem): NavigationItem | null => {
+      // First check if user has SuperAdmin or Developer role - they bypass module status filtering
+      const hasHighestPriority = permissions.roles && (
+        permissions.roles.includes(RoleType.SuperAdmin) || 
+        permissions.roles.includes(RoleType.Developer)
+      );
+
+      // If not SuperAdmin/Developer, check module status - if module is disabled, hide it completely
+      if (!hasHighestPriority && item.module !== undefined) {
+        // Inline mapping to avoid dependency issues
+        const mapping: Record<string, number> = {
+          'Dashboard': 1,
+          'IncidentManagement': 2,
+          'RiskManagement': 3,
+          'PPEManagement': 4,
+          'HealthMonitoring': 5,
+          'PhysicalSecurity': 6,
+          'InformationSecurity': 7,
+          'PersonnelSecurity': 8,
+          'SecurityIncidentManagement': 9,
+          'ComplianceManagement': 10,
+          'Reporting': 11,
+          'UserManagement': 12,
+          'WorkPermitManagement': 14,
+          'InspectionManagement': 15,
+          'AuditManagement': 16,
+          'TrainingManagement': 17,
+          'LicenseManagement': 18,
+          'WasteManagement': 19,
+          'ApplicationSettings': 20
+        };
+        const backendModuleType = mapping[item.module] || null;
+        if (backendModuleType !== null && !enabledModuleTypes.has(backendModuleType)) {
+          return null;
+        }
+      }
+
+      // Then check permissions
+      if (!hasNavigationAccess(item, permissions)) {
+        return null;
+      }
+
+      let filteredItem = { ...item };
+
+      // Filter submodules (for CNavTitle)
+      if (item.submodules && item.submodules.length > 0) {
+        const filteredSubmodules = item.submodules
+          .map((submodule) => filterItem(submodule))
+          .filter((submodule): submodule is NavigationItem => submodule !== null);
+
+        // If no submodules are accessible and it's a CNavTitle, hide the parent
+        if (filteredSubmodules.length === 0 && item.component === 'CNavTitle') {
+          return null;
+        }
+
+        filteredItem.submodules = filteredSubmodules;
+      }
+
+      // Filter items (for CNavGroup)
+      if (item.items && item.items.length > 0) {
+        const filteredItems = item.items
+          .map((childItem) => filterItem(childItem))
+          .filter((childItem): childItem is NavigationItem => childItem !== null);
+
+        // If no children are accessible, hide the parent (unless it has its own route)
+        if (filteredItems.length === 0 && !item.to) {
+          return null;
+        }
+
+        filteredItem.items = filteredItems;
+      }
+
+      return filteredItem;
+    };
+
+    return navigation
+      .map((item) => filterItem(item))
+      .filter((item): item is NavigationItem => item !== null);
+  }, []); // Remove dependencies to prevent circular updates
 
   // Helper function to get module status class using React state
   const getModuleStatusClass = (item: NavigationItem): string => {
@@ -384,10 +517,19 @@ const DefaultLayout: React.FC = () => {
   };
 
 
-  // Generate filtered navigation based on user permissions and search
+  // Generate filtered navigation based on user permissions, module status, and search
   const filteredNavigation = useMemo(() => {
     const baseNavigation = createNavigationConfig();
-    const permissionFiltered = filterNavigationByPermissions(baseNavigation, permissions);
+    
+    // Create enabledModuleTypes Set from the stable array
+    const enabledModuleTypesSet = new Set(enabledModuleTypesArray);
+    
+    // Filter by both permissions and module enabled status
+    const permissionAndModuleFiltered = filterNavigationByPermissionsAndModuleStatus(
+      baseNavigation, 
+      permissions, 
+      enabledModuleTypesSet
+    );
     
     // Add icons to the filtered navigation recursively
     const addIcons = (items: NavigationItem[]): NavigationItem[] => {
@@ -399,19 +541,31 @@ const DefaultLayout: React.FC = () => {
       }));
     };
     
-    const withIcons = addIcons(permissionFiltered);
+    const withIcons = addIcons(permissionAndModuleFiltered);
     
     // Apply search filter
     return filterBySearch(withIcons, searchQuery);
-  }, [permissions, searchQuery, filterBySearch]);
+  }, [userRoleString, hasHighestPriority, enabledModuleTypesArray, searchQuery]); // Use stable dependencies
 
-  // Update expanded groups state based on search results
-  useEffect(() => {
+  // Compute expanded groups directly based on search results (no useEffect to prevent loops)
+  const expandedGroups = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return new Set<string>();
+    }
+    
     const baseNavigation = createNavigationConfig();
-    const permissionFiltered = filterNavigationByPermissions(baseNavigation, permissions);
-    const newExpandedGroups = computeExpandedGroups(permissionFiltered, searchQuery);
-    setExpandedGroups(newExpandedGroups);
-  }, [searchQuery, permissions, computeExpandedGroups]);
+    
+    // Create enabledModuleTypes Set from the stable array
+    const enabledModuleTypesSet = new Set(enabledModuleTypesArray);
+    
+    const permissionAndModuleFiltered = filterNavigationByPermissionsAndModuleStatus(
+      baseNavigation, 
+      permissions, 
+      enabledModuleTypesSet
+    );
+    
+    return computeExpandedGroups(permissionAndModuleFiltered, searchQuery);
+  }, [searchQuery, enabledModuleTypesArray, userRoleString]); // Include userRoleString for stable dependencies
 
   const handleLogout = async () => {
     try {
