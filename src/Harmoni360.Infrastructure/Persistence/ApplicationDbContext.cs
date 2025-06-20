@@ -130,6 +130,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WasteComment> WasteComments => Set<WasteComment>();
     public DbSet<WasteCompliance> WasteCompliances => Set<WasteCompliance>();
 
+    // Module Configuration Management
+    public DbSet<ModuleConfiguration> ModuleConfigurations => Set<ModuleConfiguration>();
+    public DbSet<ModuleDependency> ModuleDependencies => Set<ModuleDependency>();
+    public DbSet<ModuleConfigurationAuditLog> ModuleConfigurationAuditLogs => Set<ModuleConfigurationAuditLog>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Apply all entity configurations

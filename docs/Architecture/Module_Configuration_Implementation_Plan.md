@@ -1,58 +1,218 @@
 # HarmoniHSE360 Module Configuration System - Implementation Plan
 
-**Status: ✅ 95% Complete** | **Last Updated: 2025-01-17**
+**Status: ⚠️ 25% Complete - Requires Fresh Start** | **Last Updated: 2025-12-20**
 
 ## Executive Summary
 
 This document outlines the comprehensive implementation plan for adding a Module Configuration system to the HarmoniHSE360 application. The system will allow administrators to dynamically enable/disable modules and sub-modules, providing flexible system configuration while maintaining security and role-based access control.
 
-### Implementation Status Overview
-- ✅ **Backend Infrastructure**: Complete
-- ✅ **Frontend Components**: Complete
-- ✅ **Database Layer**: Complete
-- ✅ **Security & Authorization**: Complete
-- ✅ **Real-time Updates**: Complete
-- ✅ **Module Discovery**: Complete
-- ✅ **Caching System**: Complete
-- ✅ **Unit & Integration Tests**: Complete
-- ⏳ **E2E Tests**: Pending
-- ⏳ **Documentation**: Partial
+### **CRITICAL UPDATE - Current Implementation Reality**
+
+**Previous Status Was Incorrect**: The document previously claimed 95% completion, but **actual analysis reveals only 25% implementation**.
+
+### **Actual Implementation Status Overview**
+- ❌ **Backend Infrastructure**: Not Implemented
+- 🔄 **Frontend Components**: Partial (State Management Only)
+- ❌ **Database Layer**: Not Implemented  
+- ✅ **Security & Authorization**: Complete (Role-Based)
+- ❌ **Real-time Updates**: Not Implemented
+- ❌ **Module Discovery**: Not Implemented
+- ❌ **Caching System**: Not Implemented
+- ❌ **Unit & Integration Tests**: Not Implemented
+- ❌ **E2E Tests**: Not Implemented
+- ❌ **Documentation**: Incomplete
+
+### **What Actually Exists vs What's Missing**
+
+#### ✅ **Currently Implemented (25%)**
+1. **Role-Based Authorization System**: Complete module permission mapping
+2. **Module Type Definitions**: 20 functional modules defined in enum
+3. **Frontend State Management**: Basic React Context for module visibility
+4. **Navigation Integration**: Hierarchical navigation with permission filtering
+5. **Permission Framework**: Comprehensive role-to-module permission matrix
+
+#### ❌ **Missing Core Components (75%)**
+1. **Backend API**: No ModuleConfiguration endpoints
+2. **Database Schema**: No module configuration tables
+3. **Domain Entities**: No ModuleConfiguration entity
+4. **Admin UI**: No configuration management interface
+5. **Persistence**: Module states are client-side only
+6. **Real-time Updates**: No cross-client synchronization
 
 ## Table of Contents
 
-1. [System Overview](#system-overview)
-2. [Architecture Design](#architecture-design)
-3. [Database Design](#database-design)
-4. [Backend Implementation](#backend-implementation)
-5. [Frontend Implementation](#frontend-implementation)
-6. [Security Considerations](#security-considerations)
-7. [Testing Strategy](#testing-strategy)
-8. [Deployment Plan](#deployment-plan)
-9. [Timeline and Milestones](#timeline-and-milestones)
+1. [Current State Analysis](#current-state-analysis)
+2. [System Overview](#system-overview)
+3. [Architecture Design](#architecture-design)
+4. [Role Behaviors and Module Applications](#role-behaviors-and-module-applications)
+5. [Database Design](#database-design)
+6. [Backend Implementation](#backend-implementation)
+7. [Frontend Implementation](#frontend-implementation)
+8. [Security Considerations](#security-considerations)
+9. [Implementation Roadmap](#implementation-roadmap)
+10. [Testing Strategy](#testing-strategy)
+
+## Current State Analysis
+
+### **Existing Authorization Infrastructure ✅**
+
+The system has a robust **role-based permission system** that provides the foundation for module configuration:
+
+#### **Role Hierarchy (11 Roles)**
+1. **SuperAdmin** - Complete system access including ALL modules + application settings + user management
+2. **Developer** - Complete system access including ALL modules + application settings + user management
+3. **Admin** - Access to ALL functional modules but EXCLUDED from application settings/configuration
+4. **IncidentManager** - RESTRICTED access ONLY to Incident Management module
+5. **RiskManager** - RESTRICTED access ONLY to Risk Management module  
+6. **PPEManager** - RESTRICTED access ONLY to PPE Management module
+7. **HealthMonitor** - RESTRICTED access ONLY to Health Monitoring module
+8. **InspectionManager** - RESTRICTED access ONLY to Inspection Management module
+9. **SecurityManager** - COMPREHENSIVE access to ALL Security modules
+10. **SecurityOfficer** - OPERATIONAL access to day-to-day Security operations
+11. **ComplianceOfficer** - ENHANCED access to HSSE compliance management across ALL domains
+12. **Reporter** - READ-ONLY access to reporting functionality across modules
+13. **Viewer** - READ-ONLY access to basic dashboard and summary information
+
+#### **Module Structure (20 Modules)**
+1. **Dashboard** - System overview and analytics
+2. **IncidentManagement** - Incident CRUD, reporting, analytics, corrective actions  
+3. **RiskManagement** - Risk assessment, reporting, analytics, hazard identification
+4. **PPEManagement** - PPE tracking, inventory, maintenance, compliance
+5. **HealthMonitoring** - Health data tracking, medical surveillance, vaccination compliance
+6. **PhysicalSecurity** - Access control, visitor management, asset security
+7. **InformationSecurity** - Security policies, vulnerability management, ISMS compliance
+8. **PersonnelSecurity** - Background verification, security training, insider threat management
+9. **SecurityIncidentManagement** - Security-specific incident handling, threat response
+10. **ComplianceManagement** - Regulatory compliance, audit management
+11. **Reporting** - Cross-module reporting, analytics dashboards, data export
+12. **UserManagement** - User CRUD, role assignments, access control (Admin+ only)
+13. **WorkPermitManagement** - Work permit creation, approval workflow, safety oversight
+14. **InspectionManagement** - Safety, environmental, equipment inspections
+15. **AuditManagement** - HSSE audit management with checklist-based assessments
+16. **TrainingManagement** - HSSE training management with participant tracking
+17. **LicenseManagement** - License, permit, certification management with renewal tracking
+18. **WasteManagement** - Waste reporting, classification, disposal tracking
+19. **ApplicationSettings** - System configuration, module settings (SuperAdmin/Developer only)
+
+#### **Permission Types (8 Permissions)**
+- **Read** - View data and information
+- **Create** - Add new records and entries
+- **Update** - Modify existing data
+- **Delete** - Remove records (with audit trail)
+- **Export** - Export data to external formats
+- **Configure** - Modify settings and configurations
+- **Approve** - Approve workflows and processes
+- **Assign** - Assign tasks and responsibilities
+
+### **Frontend Implementation Status 🔄**
+
+#### **What Exists**
+1. **ModuleStateContext.tsx** - React Context for module visibility management
+2. **useModuleManager.ts** - Hook for module state operations (hide/show/toggle)
+3. **navigationUtils.ts** - Hierarchical navigation with permission filtering
+4. **Permission System** - Complete frontend permission checking hooks
+5. **Role-Based Navigation** - Automatic menu filtering based on user roles
+
+#### **What's Missing**
+1. **Admin UI Components** - No interface for module configuration management
+2. **API Integration** - No backend service calls for module configuration
+3. **Real-time Updates** - No SignalR integration for configuration changes
+4. **Persistence** - Module states reset on browser refresh
+
+### **Backend Implementation Status ❌**
+
+#### **What Exists**
+1. **ModulePermission Entity** - Basic permission storage
+2. **RoleModulePermission Entity** - Role-permission junction table  
+3. **ModulePermissionMap** - Static role-to-module permission mapping
+4. **Authorization Handlers** - Permission-based access control
+
+#### **What's Missing**
+1. **ModuleConfiguration Entity** - No entity for module settings
+2. **Configuration Tables** - No database schema for module configurations
+3. **Configuration Service** - No service for managing module states
+4. **API Controller** - No REST endpoints for module configuration
+5. **Real-time Hub** - No SignalR hub for configuration updates
 
 ## System Overview
 
-### Goals ✅
-- ✅ Enable dynamic module enable/disable functionality
+### Goals
+- ✅ Enable dynamic module enable/disable functionality  
 - ✅ Maintain hierarchical control (parent modules control sub-modules)
 - ✅ Integrate seamlessly with existing RBAC system
-- ✅ Provide intuitive UI for configuration management
-- ✅ Ensure SuperAdmin override capabilities
-- ✅ Implement comprehensive audit logging
+- ❌ Provide intuitive UI for configuration management
+- ❌ Ensure SuperAdmin override capabilities  
+- ❌ Implement comprehensive audit logging
 
-### Key Features ✅
-1. ✅ **Hierarchical Module Management**: Parent-child relationship enforcement
-2. ✅ **Real-time Updates**: No application restart required
+### Key Features Required
+1. ❌ **Hierarchical Module Management**: Parent-child relationship enforcement
+2. ❌ **Real-time Updates**: No application restart required
 3. ✅ **Permission Integration**: Works alongside existing role-based permissions
-4. ✅ **Access Protection**: Prevents direct URL access to disabled modules
-5. ✅ **Audit Trail**: Complete history of configuration changes
+4. ❌ **Access Protection**: Prevents direct URL access to disabled modules
+5. ❌ **Audit Trail**: Complete history of configuration changes
+6. ❌ **Module Discovery System**: Automatic detection and registration of new modules
+7. ❌ **Advanced Caching**: Multi-level caching with distributed cache support
+8. ❌ **Performance Monitoring**: Cache metrics and health checks
+9. ❌ **SignalR Integration**: Real-time configuration updates across all clients
+10. ❌ **Dependency Management**: Module dependency validation and enforcement
 
-### Additional Implemented Features 🚀
-6. ✅ **Module Discovery System**: Automatic detection and registration of new modules
-7. ✅ **Advanced Caching**: Multi-level caching with distributed cache support
-8. ✅ **Performance Monitoring**: Cache metrics and health checks
-9. ✅ **SignalR Integration**: Real-time configuration updates across all clients
-10. ✅ **Dependency Management**: Module dependency validation and enforcement
+## Role Behaviors and Module Applications
+
+### **Configuration Access Matrix**
+
+| Role | Module Configuration Access | Application Settings Access | User Management Access |
+|------|---------------------------|----------------------------|------------------------|
+| **SuperAdmin** | ✅ Full Configure | ✅ Full Configure | ✅ Full Configure |
+| **Developer** | ✅ Full Configure | ✅ Full Configure | ✅ Full Configure |
+| **Admin** | ❌ No Access | ❌ No Access | ✅ CRUD Only |
+| **All Others** | ❌ No Access | ❌ No Access | ❌ No Access |
+
+### **Module Configuration Behavior by Role**
+
+#### **SuperAdmin & Developer**
+- **Module Access**: Can access ALL modules regardless of enabled/disabled status
+- **Configuration Rights**: Can enable/disable any module for all users
+- **Override Capability**: Can access disabled modules with warning indicators
+- **Audit Visibility**: Full audit trail access for all configuration changes
+- **UI Behavior**: Shows disabled modules with "Disabled" badges in navigation
+
+#### **Admin**  
+- **Module Access**: Affected by module configuration (cannot access disabled modules)
+- **Configuration Rights**: No access to module configuration management
+- **UI Behavior**: Disabled modules completely hidden from navigation
+- **Functional Impact**: Cannot perform admin functions in disabled modules
+
+#### **Specialized Managers (IncidentManager, RiskManager, etc.)**
+- **Module Access**: Limited to their specific domain modules + affected by configuration
+- **Configuration Rights**: No access to module configuration
+- **UI Behavior**: If their primary module is disabled, effectively locked out of system
+- **Functional Impact**: Role becomes non-functional if their module is disabled
+
+#### **Operational Roles (SecurityOfficer, ComplianceOfficer, Reporter, Viewer)**
+- **Module Access**: Read-only or operational access + affected by configuration  
+- **Configuration Rights**: No access to module configuration
+- **UI Behavior**: See filtered navigation based on enabled modules + permissions
+- **Functional Impact**: Workflow disrupted if dependent modules are disabled
+
+### **Module Application Strategies**
+
+#### **Critical Modules (Cannot be Disabled)**
+- **Dashboard** - Core system navigation
+- **UserManagement** - Essential for system administration
+- **ApplicationSettings** - Required for system configuration
+
+#### **Feature Modules (Can be Disabled)**
+- **All HSSE Modules** - Can be disabled for phased rollouts or maintenance
+- **Reporting** - Can be disabled for performance or licensing reasons
+
+#### **Module Dependencies**
+```
+UserManagement → ApplicationSettings (Both required for SuperAdmin/Developer roles)
+Dashboard → All Modules (Core navigation dependency)
+Reporting → All Functional Modules (Data source dependency)
+ComplianceManagement → AuditManagement, TrainingManagement (Compliance oversight)
+SecurityManager → All Security Modules (Domain management)
+```
 
 ## Architecture Design
 
@@ -60,26 +220,28 @@ This document outlines the comprehensive implementation plan for adding a Module
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                           Frontend                               │
+│                    Frontend (25% Complete)                      │
 ├─────────────────────────────────────────────────────────────────┤
-│  Module Config UI │ Navigation Filter │ Route Protection        │
+│  ✅ Module State  │ ✅ Navigation   │ ❌ Module Config │ ❌ Route │
+│  Context          │ Filter          │ UI Component    │ Protection│
 ├─────────────────────────────────────────────────────────────────┤
-│                        Backend API                               │
+│                    Backend API (0% Complete)                    │
 ├─────────────────────────────────────────────────────────────────┤
-│  Module Config    │ Enhanced Auth    │ Audit Service           │
-│  Service          │ Handler          │                         │
+│  ❌ Module Config │ ✅ Enhanced     │ ❌ Audit        │ ❌ SignalR│
+│  Service          │ Auth Handler    │ Service         │ Hub      │
 ├─────────────────────────────────────────────────────────────────┤
-│                         Database                                 │
+│                   Database (10% Complete)                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  Module Config    │ Module Dependencies │ Audit Logs          │
+│  ❌ Module Config │ ❌ Module       │ ❌ Audit Logs   │ ✅ Module │
+│  Table            │ Dependencies    │ Table           │ Permissions│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Data Flow
+### Data Flow (Target Architecture)
 
 1. **Configuration Update Flow**:
    - Admin modifies module status via UI
-   - API validates and persists changes
+   - API validates and persists changes  
    - Real-time notification to all connected clients
    - Navigation and permissions updated dynamically
 
@@ -89,11 +251,11 @@ This document outlines the comprehensive implementation plan for adding a Module
    - SuperAdmin bypasses module status check
    - Access granted/denied accordingly
 
-## Database Design ✅
+## Database Design
 
-### New Tables ✅
+### New Tables Required
 
-#### 1. ModuleConfigurations ✅
+#### 1. ModuleConfigurations
 ```sql
 CREATE TABLE ModuleConfigurations (
     Id INT PRIMARY KEY IDENTITY(1,1),
@@ -115,7 +277,7 @@ CREATE TABLE ModuleConfigurations (
 );
 ```
 
-#### 2. ModuleDependencies ✅
+#### 2. ModuleDependencies
 ```sql
 CREATE TABLE ModuleDependencies (
     Id INT PRIMARY KEY IDENTITY(1,1),
@@ -130,7 +292,7 @@ CREATE TABLE ModuleDependencies (
 );
 ```
 
-#### 3. ModuleConfigurationAuditLogs ✅
+#### 3. ModuleConfigurationAuditLogs
 ```sql
 CREATE TABLE ModuleConfigurationAuditLogs (
     Id INT PRIMARY KEY IDENTITY(1,1),
@@ -146,34 +308,45 @@ CREATE TABLE ModuleConfigurationAuditLogs (
 );
 ```
 
-### Data Migration Script ✅
+### Data Migration Script
 ```sql
 -- Insert all existing modules with default enabled state
 INSERT INTO ModuleConfigurations (ModuleType, IsEnabled, DisplayName, Description, DisplayOrder, CreatedByUserId)
-SELECT 
-    ModuleType = 1, -- Dashboard
-    IsEnabled = 1,
-    DisplayName = 'Dashboard',
-    Description = 'System overview and analytics dashboard',
-    DisplayOrder = 1,
-    CreatedByUserId = 1 -- System user
-UNION ALL
-SELECT 2, 1, 'Work Permit Management', 'Manage work permits and approvals', 2, 1
-UNION ALL
-SELECT 3, 1, 'Incident Management', 'Report and track incidents', 3, 1
--- ... continue for all modules
+VALUES 
+    (1, 1, 'Dashboard', 'System overview and analytics dashboard', 1, 1),
+    (2, 1, 'Incident Management', 'Incident CRUD operations, reporting, and analytics', 2, 1),
+    (3, 1, 'Risk Management', 'Risk assessment, reporting, and hazard identification', 3, 1),
+    (4, 1, 'PPE Management', 'PPE tracking, inventory, and compliance monitoring', 4, 1),
+    (5, 1, 'Health Monitoring', 'Health data tracking and medical surveillance', 5, 1),
+    (6, 1, 'Physical Security', 'Access control and visitor management', 6, 1),
+    (7, 1, 'Information Security', 'Security policies and vulnerability management', 7, 1),
+    (8, 1, 'Personnel Security', 'Background verification and security training', 8, 1),
+    (9, 1, 'Security Incident Management', 'Security-specific incident handling', 9, 1),
+    (10, 1, 'Compliance Management', 'Regulatory compliance and audit management', 10, 1),
+    (11, 1, 'Reporting', 'Cross-module reporting and analytics', 11, 1),
+    (12, 1, 'User Management', 'User CRUD and role management', 12, 1),
+    (14, 1, 'Work Permit Management', 'Work permit creation and approval workflow', 14, 1),
+    (15, 1, 'Inspection Management', 'Safety and compliance inspections', 15, 1),
+    (16, 1, 'Audit Management', 'HSSE audit management and tracking', 16, 1),
+    (17, 1, 'Training Management', 'HSSE training and certification management', 17, 1),
+    (18, 1, 'License Management', 'License and certification tracking', 18, 1),
+    (19, 1, 'Waste Management', 'Waste reporting and disposal tracking', 19, 1),
+    (20, 1, 'Application Settings', 'System configuration and settings', 20, 1);
 
--- Insert sub-module relationships
-UPDATE ModuleConfigurations 
-SET ParentModuleType = 2 -- Work Permit Management
-WHERE DisplayName IN ('Submit Work Permit', 'View Work Permits', 'My Work Permits');
+-- Insert module dependencies
+INSERT INTO ModuleDependencies (ModuleType, DependsOnModuleType, IsRequired)
+VALUES
+    (12, 20, 1), -- UserManagement depends on ApplicationSettings
+    (11, 1, 1),  -- Reporting depends on Dashboard
+    (10, 16, 0), -- ComplianceManagement soft-depends on AuditManagement
+    (10, 17, 0); -- ComplianceManagement soft-depends on TrainingManagement
 ```
 
-## Backend Implementation ✅
+## Backend Implementation
 
-### 1. Domain Entities ✅
+### 1. Domain Entities Required
 
-#### ModuleConfiguration.cs ✅
+#### ModuleConfiguration.cs
 ```csharp
 namespace Harmoni360.Domain.Entities
 {
@@ -193,13 +366,56 @@ namespace Harmoni360.Domain.Entities
         public virtual ICollection<ModuleConfiguration> SubModules { get; set; }
         public virtual ICollection<ModuleDependency> Dependencies { get; set; }
         public virtual ICollection<ModuleDependency> DependentModules { get; set; }
+        
+        // Business logic
+        public bool CanBeDisabled()
+        {
+            // Critical modules cannot be disabled
+            return ModuleType != ModuleType.Dashboard &&
+                   ModuleType != ModuleType.UserManagement &&
+                   ModuleType != ModuleType.ApplicationSettings;
+        }
+        
+        public List<string> GetDisableWarnings()
+        {
+            var warnings = new List<string>();
+            
+            if (SubModules?.Any() == true)
+            {
+                warnings.Add($"This will disable {SubModules.Count} sub-modules");
+            }
+            
+            if (DependentModules?.Any() == true)
+            {
+                warnings.Add($"This may affect {DependentModules.Count} dependent modules");
+            }
+            
+            return warnings;
+        }
     }
 }
 ```
 
-### 2. Application Layer ✅
+#### ModuleDependency.cs
+```csharp
+namespace Harmoni360.Domain.Entities
+{
+    public class ModuleDependency : BaseEntity
+    {
+        public ModuleType ModuleType { get; set; }
+        public ModuleType DependsOnModuleType { get; set; }
+        public bool IsRequired { get; set; }
+        
+        // Navigation properties
+        public virtual ModuleConfiguration Module { get; set; }
+        public virtual ModuleConfiguration DependsOnModule { get; set; }
+    }
+}
+```
 
-#### DTOs ✅
+### 2. Application Layer
+
+#### DTOs
 ```csharp
 public class ModuleConfigurationDto
 {
@@ -225,7 +441,7 @@ public class UpdateModuleConfigurationCommand
 }
 ```
 
-#### IModuleConfigurationService.cs ✅
+#### IModuleConfigurationService.cs
 ```csharp
 public interface IModuleConfigurationService
 {
@@ -238,14 +454,12 @@ public interface IModuleConfigurationService
 }
 ```
 
-### 3. Enhanced Authorization ✅
-
-#### EnhancedModulePermissionHandler.cs ✅
+### 3. Enhanced Authorization Handler
 ```csharp
 public class EnhancedModulePermissionHandler : AuthorizationHandler<ModulePermissionRequirement>
 {
     private readonly IModuleConfigurationService _moduleConfigService;
-    private readonly IModulePermissionService _permissionService;
+    private readonly ModulePermissionMap _permissionMap;
 
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
@@ -254,7 +468,7 @@ public class EnhancedModulePermissionHandler : AuthorizationHandler<ModulePermis
         var user = context.User;
         
         // SuperAdmin always has access
-        if (user.IsInRole("SuperAdmin"))
+        if (user.IsInRole("SuperAdmin") || user.IsInRole("Developer"))
         {
             context.Succeed(requirement);
             return;
@@ -268,9 +482,14 @@ public class EnhancedModulePermissionHandler : AuthorizationHandler<ModulePermis
             return;
         }
 
-        // Check user permissions
-        var hasPermission = await _permissionService.UserHasPermissionAsync(
-            user, requirement.Module, requirement.Permission);
+        // Check user permissions using existing ModulePermissionMap
+        var userRoles = user.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => Enum.Parse<RoleType>(c.Value))
+            .ToList();
+
+        var hasPermission = userRoles.Any(role => 
+            ModulePermissionMap.HasPermission(role, requirement.Module, requirement.Permission));
             
         if (hasPermission)
         {
@@ -280,9 +499,7 @@ public class EnhancedModulePermissionHandler : AuthorizationHandler<ModulePermis
 }
 ```
 
-### 4. API Endpoints ✅
-
-#### ModuleConfigurationController.cs ✅
+### 4. API Controller
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
@@ -292,6 +509,7 @@ public class ModuleConfigurationController : ControllerBase
     private readonly IModuleConfigurationService _service;
     private readonly ILogger<ModuleConfigurationController> _logger;
     private readonly IAuditService _auditService;
+    private readonly IHubContext<ModuleConfigurationHub> _hubContext;
 
     [HttpGet]
     [RequireModulePermission(ModuleType.ApplicationSettings, PermissionType.Read)]
@@ -340,24 +558,9 @@ public class ModuleConfigurationController : ControllerBase
 }
 ```
 
-### 5. Additional Backend Features ✅
+## Frontend Implementation
 
-#### Module Discovery Service ✅
-- Reflection-based module discovery
-- Automatic registration of new modules
-- Sync between discovered and configured modules
-
-#### Caching Implementation ✅
-- Multi-level caching (Memory + Distributed)
-- Cache warmup service for performance
-- Cache invalidation strategies
-- Performance metrics and monitoring
-
-## Frontend Implementation ✅
-
-### 1. Redux State Management ✅
-
-#### moduleConfigSlice.ts ✅
+### 1. Redux State Management
 ```typescript
 interface ModuleConfig {
   moduleType: ModuleType;
@@ -398,9 +601,7 @@ const moduleConfigSlice = createSlice({
 });
 ```
 
-### 2. Module Configuration UI Component ✅
-
-#### ModuleConfiguration.tsx ✅
+### 2. Module Configuration UI Component
 ```tsx
 import React, { useState, useEffect } from 'react';
 import {
@@ -416,12 +617,6 @@ import {
   Space,
   Tag
 } from 'antd';
-import {
-  SettingOutlined,
-  WarningOutlined,
-  SearchOutlined,
-  LockOutlined
-} from '@ant-design/icons';
 
 interface ModuleConfigurationProps {
   onConfigurationChange?: () => void;
@@ -486,63 +681,15 @@ const ModuleConfiguration: React.FC<ModuleConfigurationProps> = ({
     }
   };
 
-  const renderTreeNode = (module: ModuleConfig) => {
-    const isSuperAdmin = user?.roles?.includes('SuperAdmin');
-    const isDisabledByParent = module.parentModuleType && 
-      !configurations.find(m => m.moduleType === module.parentModuleType)?.isEnabled;
-
-    return {
-      key: module.moduleType.toString(),
-      title: (
-        <div className="module-tree-node">
-          <Space>
-            <span className={module.isEnabled ? '' : 'text-muted'}>
-              {module.displayName}
-            </span>
-            {!module.canBeDisabled && (
-              <Tooltip title="Required module">
-                <LockOutlined style={{ color: '#faad14' }} />
-              </Tooltip>
-            )}
-            {module.subModules.length > 0 && (
-              <Tag size="small">{module.subModules.length} sub-modules</Tag>
-            )}
-          </Space>
-          <Switch
-            checked={module.isEnabled}
-            disabled={!module.canBeDisabled || isDisabledByParent || loading}
-            onChange={() => handleToggleModule(module)}
-            checkedChildren="ON"
-            unCheckedChildren="OFF"
-          />
-        </div>
-      ),
-      children: module.subModules.map(renderTreeNode),
-      disabled: !module.isEnabled
-    };
-  };
-
-  const treeData = configurations
-    .filter(m => !m.parentModuleType)
-    .map(renderTreeNode);
-
+  // Component implementation continues...
+  
   return (
-    <Card
-      title="Module Configuration"
-      extra={
-        <Input
-          placeholder="Search modules..."
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-          style={{ width: 250 }}
-        />
-      }
-    >
+    <Card title="Module Configuration">
       <Alert
         message="Module Configuration Guidelines"
         description={
           <ul>
+            <li>Only SuperAdmin and Developer roles can configure modules</li>
             <li>Disabling a parent module automatically disables all sub-modules</li>
             <li>SuperAdmin users have access to all modules regardless of configuration</li>
             <li>Changes take effect immediately without requiring application restart</li>
@@ -552,16 +699,7 @@ const ModuleConfiguration: React.FC<ModuleConfigurationProps> = ({
         showIcon
         style={{ marginBottom: 16 }}
       />
-
-      <Tree
-        treeData={treeData}
-        expandedKeys={expandedKeys}
-        onExpand={setExpandedKeys}
-        defaultExpandAll
-        showLine
-        showIcon={false}
-        className="module-configuration-tree"
-      />
+      {/* Tree component implementation */}
     </Card>
   );
 };
@@ -569,9 +707,7 @@ const ModuleConfiguration: React.FC<ModuleConfigurationProps> = ({
 export default ModuleConfiguration;
 ```
 
-### 3. Enhanced Navigation Filtering ✅
-
-#### navigationUtils.ts (Enhanced) ✅
+### 3. Enhanced Navigation Filtering
 ```typescript
 export const filterNavigationByPermissions = (
   navigation: NavigationItem[],
@@ -579,7 +715,7 @@ export const filterNavigationByPermissions = (
   userRoles: string[],
   moduleStatusMap: Record<ModuleType, boolean>
 ): NavigationItem[] => {
-  const isSuperAdmin = userRoles.includes('SuperAdmin');
+  const isSuperAdmin = userRoles.includes('SuperAdmin') || userRoles.includes('Developer');
 
   return navigation
     .map(item => {
@@ -606,26 +742,10 @@ export const filterNavigationByPermissions = (
         return null;
       }
 
-      // Check permissions as before
+      // Check permissions using existing permission system
       const hasPermission = checkUserPermission(item, permissions, userRoles);
       if (!hasPermission) {
         return null;
-      }
-
-      // Recursively filter children
-      if (item.children) {
-        const filteredChildren = filterNavigationByPermissions(
-          item.children,
-          permissions,
-          userRoles,
-          moduleStatusMap
-        );
-        
-        if (filteredChildren.length === 0) {
-          return null;
-        }
-
-        return { ...item, children: filteredChildren };
       }
 
       return item;
@@ -634,114 +754,12 @@ export const filterNavigationByPermissions = (
 };
 ```
 
-### 4. Route Protection Enhancement ✅
+## Security Considerations
 
-#### ModuleRouteGuard.tsx ✅
-```tsx
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Result, Spin } from 'antd';
+### 1. Access Control Matrix
 
-interface ModuleRouteProps {
-  moduleType: ModuleType;
-  children: React.ReactNode;
-}
-
-const ModuleRoute: React.FC<ModuleRouteProps> = ({ moduleType, children }) => {
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { statusMap, loading } = useSelector((state: RootState) => state.moduleConfig);
-  const { hasModuleAccess } = usePermissions();
-
-  if (loading) {
-    return <Spin size="large" className="page-loader" />;
-  }
-
-  const isSuperAdmin = user?.roles?.includes('SuperAdmin');
-  const isModuleEnabled = statusMap[moduleType] ?? true;
-
-  // SuperAdmin can access disabled modules
-  if (isSuperAdmin) {
-    return <>{children}</>;
-  }
-
-  // Check module status
-  if (!isModuleEnabled) {
-    return (
-      <Result
-        status="403"
-        title="Module Disabled"
-        subTitle="This module has been disabled by the system administrator."
-        extra={
-          <Button type="primary" onClick={() => navigate('/')}>
-            Back to Dashboard
-          </Button>
-        }
-      />
-    );
-  }
-
-  // Check user permissions
-  if (!hasModuleAccess(moduleType)) {
-    return (
-      <Result
-        status="403"
-        title="Access Denied"
-        subTitle="You do not have permission to access this module."
-        extra={
-          <Button type="primary" onClick={() => navigate('/')}>
-            Back to Dashboard
-          </Button>
-        }
-      />
-    );
-  }
-
-  return <>{children}</>;
-};
-
-// Enhanced App.tsx route setup
-const App: React.FC = () => {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<PrivateRoute><DefaultLayout /></PrivateRoute>}>
-        <Route index element={<Navigate to="/dashboard" />} />
-        <Route path="dashboard" element={
-          <ModuleRoute moduleType={ModuleType.Dashboard}>
-            <Dashboard />
-          </ModuleRoute>
-        } />
-        <Route path="work-permits/*" element={
-          <ModuleRoute moduleType={ModuleType.WorkPermitManagement}>
-            <WorkPermitRoutes />
-          </ModuleRoute>
-        } />
-        {/* ... other module routes */}
-      </Route>
-    </Routes>
-  );
-};
-```
-
-### 5. Additional Frontend Features ✅
-
-#### SignalR Integration ✅
-- Real-time module configuration updates
-- Automatic UI refresh on configuration changes
-- Connection management and reconnection logic
-
-#### Module Discovery Panel ✅
-- Display discovered modules
-- Sync functionality with backend
-- Visual indicators for new modules
-
-## Security Considerations ✅
-
-### 1. Access Control Matrix ✅
-
-| Scenario | Module Status | User Permission | SuperAdmin | Access Result |
-|----------|--------------|-----------------|------------|---------------|
+| Scenario | Module Status | User Permission | SuperAdmin/Developer | Access Result |
+|----------|--------------|-----------------|---------------------|---------------|
 | 1 | Enabled | Has Permission | No | ✅ Allowed |
 | 2 | Enabled | No Permission | No | ❌ Denied (403) |
 | 3 | Disabled | Has Permission | No | ❌ Denied (Module Disabled) |
@@ -749,7 +767,7 @@ const App: React.FC = () => {
 | 5 | Enabled | Any | Yes | ✅ Allowed |
 | 6 | Disabled | Any | Yes | ✅ Allowed (with warning) |
 
-### 2. API Security ✅
+### 2. Role-Based Configuration Security
 
 ```csharp
 // Secure configuration endpoint
@@ -759,9 +777,9 @@ const App: React.FC = () => {
 public async Task<IActionResult> UpdateConfiguration(...)
 {
     // Additional validation
-    if (!User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
+    if (!User.IsInRole("SuperAdmin") && !User.IsInRole("Developer"))
     {
-        return Forbid("Only administrators can modify module configuration");
+        return Forbid("Only SuperAdmin and Developer can modify module configuration");
     }
     
     // Prevent disabling critical modules
@@ -770,39 +788,117 @@ public async Task<IActionResult> UpdateConfiguration(...)
         return BadRequest("Critical modules cannot be disabled");
     }
     
+    // Validate dependencies
+    if (!command.IsEnabled && HasDependentModules(moduleType))
+    {
+        return BadRequest("Cannot disable module with active dependencies");
+    }
+    
     // ... rest of implementation
 }
 ```
 
-### 3. Frontend Security ✅
+## Implementation Roadmap
 
-```typescript
-// Prevent client-side tampering
-const useModuleAccess = () => {
-  const { statusMap } = useSelector((state: RootState) => state.moduleConfig);
-  const { user } = useSelector((state: RootState) => state.auth);
-  
-  const checkAccess = useCallback((moduleType: ModuleType) => {
-    // Always verify on server side - this is just for UI
-    const isSuperAdmin = user?.roles?.includes('SuperAdmin');
-    const isEnabled = statusMap[moduleType] ?? true;
-    
-    if (isSuperAdmin) return true;
-    if (!isEnabled) return false;
-    
-    // Additional permission check
-    return hasPermissionForModule(user, moduleType);
-  }, [statusMap, user]);
-  
-  return { checkAccess };
-};
-```
+### Phase 1: Foundation (Week 1) - **CRITICAL PATH**
+**Priority: HIGH | Dependencies: None**
+
+#### 1.1 Database Infrastructure
+- [ ] Create ModuleConfigurations table migration
+- [ ] Create ModuleDependencies table migration  
+- [ ] Create ModuleConfigurationAuditLogs table migration
+- [ ] Generate and apply EF Core migrations
+- [ ] Seed initial module configuration data
+
+#### 1.2 Domain Layer
+- [ ] Create ModuleConfiguration entity
+- [ ] Create ModuleDependency entity
+- [ ] Create ModuleConfigurationAuditLog entity
+- [ ] Add domain events for configuration changes
+- [ ] Implement business logic for hierarchy rules
+
+#### 1.3 Application Layer
+- [ ] Create ModuleConfigurationDto and command classes
+- [ ] Implement IModuleConfigurationService interface
+- [ ] Create CQRS commands and queries
+- [ ] Add validation rules and business logic
+
+### Phase 2: Backend Services (Week 1-2) - **CRITICAL PATH**
+**Priority: HIGH | Dependencies: Phase 1**
+
+#### 2.1 Service Implementation
+- [ ] Implement ModuleConfigurationService
+- [ ] Add caching layer (memory + distributed)
+- [ ] Implement module discovery service
+- [ ] Create audit service integration
+
+#### 2.2 API Controller
+- [ ] Create ModuleConfigurationController
+- [ ] Implement all endpoints (GET, PUT, status-map)
+- [ ] Add authorization attributes
+- [ ] Integrate with existing auth system
+
+#### 2.3 Enhanced Authorization
+- [ ] Update ModulePermissionHandler for module state checks
+- [ ] Integrate with existing ModulePermissionMap
+- [ ] Add SuperAdmin bypass logic
+
+#### 2.4 SignalR Integration
+- [ ] Add ModuleConfigurationHub
+- [ ] Implement real-time configuration updates
+- [ ] Update client connection management
+
+### Phase 3: Frontend Implementation (Week 2) - **HIGH PRIORITY**
+**Priority: HIGH | Dependencies: Phase 2**
+
+#### 3.1 Redux Integration
+- [ ] Create moduleConfigSlice
+- [ ] Add RTK Query endpoints for module configuration API
+- [ ] Update existing ModuleStateContext integration
+- [ ] Implement cache invalidation strategies
+
+#### 3.2 Admin UI Components
+- [ ] Create ModuleConfiguration.tsx component
+- [ ] Build tree view with enable/disable switches
+- [ ] Add confirmation dialogs for critical modules
+- [ ] Implement search and filtering functionality
+- [ ] Add bulk operations support
+
+#### 3.3 Navigation Integration
+- [ ] Update DefaultLayout to use Redux state
+- [ ] Connect SignalR for real-time updates
+- [ ] Add module status badges to navigation
+- [ ] Implement SuperAdmin override indicators
+
+#### 3.4 Route Protection
+- [ ] Create ModuleRouteGuard component
+- [ ] Update App.tsx routing with guards
+- [ ] Add proper error pages for disabled modules
+
+### Phase 4: Testing & Documentation (Week 3) - **MEDIUM PRIORITY**
+**Priority: MEDIUM | Dependencies: Phase 3**
+
+#### 4.1 Testing
+- [ ] Unit tests for all services and handlers
+- [ ] Integration tests for API endpoints
+- [ ] Frontend component tests for module configuration
+- [ ] E2E test scenarios for complete workflows
+
+#### 4.2 Documentation
+- [ ] API documentation for module configuration endpoints
+- [ ] Admin user guide for module management
+- [ ] Developer documentation for extending the system
+- [ ] Migration guide for existing installations
+
+### Timeline Summary
+- **Week 1**: Backend infrastructure and services (Phases 1-2)
+- **Week 2**: Frontend implementation and integration (Phase 3)
+- **Week 3**: Testing, documentation, and deployment prep (Phase 4)
+- **Total Duration**: 3 weeks (15 business days)
 
 ## Testing Strategy
 
-### 1. Unit Tests ✅
-
-#### Backend Tests ✅
+### 1. Unit Tests
 ```csharp
 [TestClass]
 public class ModuleConfigurationServiceTests
@@ -812,7 +908,7 @@ public class ModuleConfigurationServiceTests
     {
         // Arrange
         var service = new ModuleConfigurationService(/* dependencies */);
-        var parentModule = ModuleType.WorkPermitManagement;
+        var parentModule = ModuleType.SecurityManager;
         
         // Act
         await service.UpdateModuleConfigurationAsync(new UpdateModuleConfigurationCommand
@@ -829,32 +925,18 @@ public class ModuleConfigurationServiceTests
     [TestMethod]
     public async Task SuperAdmin_ShouldAccessDisabledModules()
     {
-        // Test implementation
+        // Test SuperAdmin bypass functionality
+    }
+    
+    [TestMethod]
+    public async Task CriticalModules_CannotBeDisabled()
+    {
+        // Test that Dashboard, UserManagement, ApplicationSettings cannot be disabled
     }
 }
 ```
 
-#### Frontend Tests ✅
-```typescript
-describe('ModuleConfiguration Component', () => {
-  it('should disable sub-modules when parent is disabled', async () => {
-    const { getByTestId } = render(<ModuleConfiguration />);
-    
-    // Disable parent module
-    const parentSwitch = getByTestId('module-switch-2'); // Work Permits
-    fireEvent.click(parentSwitch);
-    
-    // Verify sub-modules are disabled
-    await waitFor(() => {
-      const subModuleSwitch = getByTestId('module-switch-2-1'); // Submit Work Permit
-      expect(subModuleSwitch).toBeDisabled();
-    });
-  });
-});
-```
-
-### 2. Integration Tests ✅
-
+### 2. Integration Tests
 ```csharp
 [TestClass]
 public class ModuleConfigurationIntegrationTests
@@ -862,167 +944,65 @@ public class ModuleConfigurationIntegrationTests
     [TestMethod]
     public async Task ModuleConfiguration_EndToEnd_Test()
     {
-        // 1. Admin disables a module
+        // 1. SuperAdmin disables a module
         // 2. Regular user cannot access the module
-        // 3. SuperAdmin can still access
+        // 3. SuperAdmin can still access with warning
         // 4. Module re-enabled
         // 5. Regular user can access again
     }
 }
 ```
 
-### 3. E2E Tests ⏳ (Pending)
-
+### 3. Frontend Tests
 ```typescript
-describe('Module Configuration E2E', () => {
-  it('should prevent access to disabled modules', () => {
-    // Login as admin
-    cy.login('admin', 'password');
+describe('ModuleConfiguration Component', () => {
+  it('should disable sub-modules when parent is disabled', async () => {
+    const { getByTestId } = render(<ModuleConfiguration />);
     
-    // Navigate to module configuration
-    cy.visit('/settings/module-configuration');
+    // Disable parent module
+    const parentSwitch = getByTestId('module-switch-SecurityManager');
+    fireEvent.click(parentSwitch);
     
-    // Disable Work Permits module
-    cy.get('[data-testid="module-WorkPermitManagement"]')
-      .find('.ant-switch')
-      .click();
-    
-    // Confirm dialog
-    cy.get('.ant-modal-confirm-btns')
-      .contains('OK')
-      .click();
-    
-    // Logout and login as regular user
-    cy.logout();
-    cy.login('user', 'password');
-    
-    // Verify Work Permits is not in sidebar
-    cy.get('.ant-menu')
-      .should('not.contain', 'Work Permit Management');
-    
-    // Try direct URL access
-    cy.visit('/work-permits', { failOnStatusCode: false });
-    cy.contains('Module Disabled');
+    // Verify sub-modules are disabled
+    await waitFor(() => {
+      const subModuleSwitch = getByTestId('module-switch-SecurityOfficer');
+      expect(subModuleSwitch).toBeDisabled();
+    });
+  });
+  
+  it('should show warning for modules with dependencies', async () => {
+    // Test dependency warning system
   });
 });
 ```
 
-## Deployment Plan
-
-### Phase 1: Backend Infrastructure ✅ (Completed)
-1. ✅ Create database schema and migrations
-2. ✅ Implement domain entities and services
-3. ✅ Create API endpoints
-4. ✅ Update authorization handlers
-5. ✅ Deploy to development environment
-
-### Phase 2: Frontend Implementation ✅ (Completed)
-1. ✅ Create Redux state management
-2. ✅ Build Module Configuration UI
-3. ✅ Update navigation filtering
-4. ✅ Implement route protection
-5. ✅ Add real-time updates via SignalR
-
-### Phase 3: Testing & Refinement 🔄 (90% Complete)
-1. ✅ Complete unit and integration tests
-2. ✅ Perform security testing
-3. ⏳ User acceptance testing
-4. ✅ Performance optimization
-5. ⏳ Documentation updates
-
-### Phase 4: Production Deployment ⏳ (Pending)
-1. ⏳ Create deployment scripts
-2. ⏳ Prepare rollback plan
-3. ⏳ Deploy to staging environment
-4. ⏳ Final testing and sign-off
-5. ⏳ Production deployment with monitoring
-
-### Rollback Strategy ⏳ (To be implemented)
-
-```sql
--- Rollback script
--- 1. Backup current configuration
-SELECT * INTO ModuleConfigurations_Backup_[timestamp] 
-FROM ModuleConfigurations;
-
--- 2. If needed, restore all modules to enabled state
-UPDATE ModuleConfigurations SET IsEnabled = 1;
-
--- 3. Or restore from backup
-TRUNCATE TABLE ModuleConfigurations;
-INSERT INTO ModuleConfigurations 
-SELECT * FROM ModuleConfigurations_Backup_[timestamp];
-```
-
-## Timeline and Milestones
-
-### Sprint 1 (Weeks 1-2): Foundation ✅
-- ✅ Database schema design and implementation
-- ✅ Backend domain models and services
-- ✅ Basic API endpoints
-- ✅ Enhanced authorization system
-
-### Sprint 2 (Weeks 3-4): UI Development ✅
-- ✅ Module Configuration UI component
-- ✅ Redux state management
-- ✅ Navigation integration
-- ✅ Route protection
-- ✅ Module discovery system
-- ✅ SignalR real-time updates
-
-### Sprint 3 (Week 5): Testing & Polish 🔄
-- ✅ Comprehensive unit test suite
-- ✅ Integration tests
-- ✅ Security audit
-- ✅ Performance optimization with caching
-- ⏳ E2E test suite
-- ⏳ Complete documentation
-
-### Sprint 4 (Week 6): Deployment ⏳
-- ⏳ Staging deployment
-- ⏳ User training materials
-- ⏳ Production deployment
-- ⏳ Post-deployment monitoring
-
 ## Success Metrics
 
-### Achieved ✅
-1. ✅ **Functionality**: All modules can be enabled/disabled with proper cascade effects
-2. ✅ **Performance**: Configuration changes apply in < 1 second (exceeds target)
-3. ✅ **Security**: No unauthorized access to disabled modules
-4. ✅ **Real-time Updates**: Instant synchronization across all connected clients
-5. ✅ **Caching**: Multi-level caching reduces database load by 95%
+### Target Metrics
+1. **Functionality**: All modules can be enabled/disabled with proper cascade effects
+2. **Performance**: Configuration changes apply in < 1 second
+3. **Security**: No unauthorized access to disabled modules
+4. **Real-time Updates**: Instant synchronization across all connected clients
+5. **User Experience**: 90%+ user satisfaction in configuration management
+6. **Reliability**: Zero critical bugs in production after 30 days
 
-### To Be Measured ⏳
-1. ⏳ **Usability**: 90%+ user satisfaction in configuration management
-2. ⏳ **Reliability**: Zero critical bugs in production after 30 days
-
-## Remaining Tasks
-
-1. **Documentation** (Priority: High)
-   - User guide for module configuration
-   - API documentation
-   - System administrator guide
-
-2. **E2E Testing** (Priority: High)
-   - Complete user workflow tests
-   - Cross-browser compatibility tests
-   - Performance under load tests
-
-3. **Deployment Preparation** (Priority: Critical)
-   - Production deployment scripts
-   - Rollback procedures
-   - Monitoring setup
+### Business Value
+- **Operational Flexibility**: Enable/disable modules without deployment
+- **Risk Mitigation**: Quickly disable problematic modules
+- **Cost Optimization**: License modules independently
+- **User Experience**: Simplified interface based on available modules
 
 ## Conclusion
 
-The Module Configuration system implementation is 95% complete with all core functionality successfully implemented and tested. The system exceeds the original performance targets and includes additional features like module discovery and advanced caching that were not in the original plan.
+The Module Configuration system requires a **complete fresh start** with proper backend infrastructure. The current authorization system provides an excellent foundation, but the configuration layer must be built from scratch.
 
-The implementation demonstrates:
-- **Robust Architecture**: Clean separation of concerns across all layers
-- **Performance Excellence**: Sub-second response times with efficient caching
-- **Security First**: Comprehensive authorization and audit logging
-- **User Experience**: Intuitive UI with real-time updates and clear feedback
-- **Extensibility**: Module discovery system allows easy addition of new modules
+**Key Deliverables for Success:**
+1. ✅ Robust role-based permission system (already exists)
+2. ❌ Backend configuration API and persistence (needs implementation)
+3. ❌ Admin UI for module management (needs implementation)  
+4. ❌ Real-time synchronization (needs implementation)
+5. ❌ Comprehensive testing (needs implementation)
 
-The remaining 5% consists primarily of documentation, E2E testing, and deployment preparation. Once these tasks are complete, the system will be ready for production deployment, providing HarmoniHSE360 with a powerful, flexible module management capability.
+**Recommended Approach:** Start with Phase 1 (Database Infrastructure) and work systematically through each phase. The existing authorization system should be preserved and integrated with the new configuration system.
+
+**Timeline**: 3 weeks for complete implementation, with the first functional version available after 2 weeks.

@@ -401,7 +401,7 @@ const filterNavigationItem = (
 /**
  * Check if user has access to a navigation item
  */
-const hasNavigationAccess = (
+export const hasNavigationAccess = (
   item: NavigationItem,
   permissions: UserPermissions
 ): boolean => {

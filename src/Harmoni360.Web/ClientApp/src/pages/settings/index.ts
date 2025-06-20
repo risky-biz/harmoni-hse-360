@@ -1,6 +1,8 @@
 export { default as SystemSettings } from './SystemSettings';
 export { default as IncidentSettings } from './IncidentSettings';
 export { default as RiskSettings } from './RiskSettings';
+export { default as ModuleSettings } from './ModuleSettings';
+export { default as ModuleDashboard } from './ModuleDashboard';
 export { default as DepartmentManagement } from './components/DepartmentManagement';
 export { default as CategoryManagement } from './components/CategoryManagement';
 export { default as LocationManagement } from './components/LocationManagement';

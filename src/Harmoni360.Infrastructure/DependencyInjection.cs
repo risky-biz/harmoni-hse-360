@@ -82,6 +82,7 @@ public static class DependencyInjection
         services.AddScoped<TrainingDataSeeder>();
         services.AddScoped<LicenseDataSeeder>();
         services.AddScoped<WasteDataSeeder>();
+        services.AddScoped<ModuleConfigurationDataSeeder>();
         
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();
@@ -100,6 +101,12 @@ public static class DependencyInjection
         // Add security services
         services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
         services.AddScoped<ISecurityAuditService, SecurityAuditService>();
+
+        // Add module configuration service
+        services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
+        
+        // Add module discovery service
+        services.AddScoped<IModuleDiscoveryService, ModuleDiscoveryService>();
 
         // Add application mode service
         services.AddSingleton<IApplicationModeService, ApplicationModeService>();

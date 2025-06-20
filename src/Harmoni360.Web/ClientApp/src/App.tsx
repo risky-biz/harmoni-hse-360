@@ -817,6 +817,22 @@ const RiskSettings = React.lazy(() =>
     };
   })
 );
+const ModuleSettings = React.lazy(() =>
+  import('./pages/settings/ModuleSettings').catch((err) => {
+    console.error('Failed to load ModuleSettings:', err);
+    return {
+      default: () => <div>Error loading Module Settings. Please refresh.</div>,
+    };
+  })
+);
+const ModuleDashboard = React.lazy(() =>
+  import('./pages/settings/ModuleDashboard').catch((err) => {
+    console.error('Failed to load ModuleDashboard:', err);
+    return {
+      default: () => <div>Error loading Module Dashboard. Please refresh.</div>,
+    };
+  })
+);
 
 // Loading component
 const Loading = () => (
@@ -1108,6 +1124,8 @@ function App() {
                       <Route path="incidents" element={<IncidentSettings />} />
                       <Route path="risks" element={<RiskSettings />} />
                       <Route path="work-permits" element={<WorkPermitSettings />} />
+                      <Route path="modules" element={<ModuleSettings />} />
+                      <Route path="modules/dashboard" element={<ModuleDashboard />} />
                       <Route path="users" element={
                         <div className="p-4">
                           <h2>User Management Settings</h2>

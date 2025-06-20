@@ -23,6 +23,7 @@ import { configurationApi } from '../api/configurationApi';
 import { companyConfigurationApi } from '../services/companyConfigurationService';
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
+import { moduleConfigurationApi } from '../services/moduleConfigurationApi';
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +50,7 @@ export const store = configureStore({
     [companyConfigurationApi.reducerPath]: companyConfigurationApi.reducer,
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
+    [moduleConfigurationApi.reducerPath]: moduleConfigurationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -77,7 +79,8 @@ export const store = configureStore({
       configurationApi.middleware,
       companyConfigurationApi.middleware,
       hazardConfigurationApi.middleware,
-      applicationModeApi.middleware
+      applicationModeApi.middleware,
+      moduleConfigurationApi.middleware
     ),
 });
 

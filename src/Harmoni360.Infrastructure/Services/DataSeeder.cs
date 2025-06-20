@@ -31,6 +31,7 @@ public class DataSeeder : IDataSeeder
     private readonly TrainingDataSeeder _trainingDataSeeder;
     private readonly LicenseDataSeeder _licenseDataSeeder;
     private readonly WasteDataSeeder _wasteDataSeeder;
+    private readonly ModuleConfigurationDataSeeder _moduleConfigurationDataSeeder;
 
     public DataSeeder(
         ApplicationDbContext context, 
@@ -51,7 +52,8 @@ public class DataSeeder : IDataSeeder
         AuditDataSeeder auditDataSeeder,
         TrainingDataSeeder trainingDataSeeder,
         LicenseDataSeeder licenseDataSeeder,
-        WasteDataSeeder wasteDataSeeder)
+        WasteDataSeeder wasteDataSeeder,
+        ModuleConfigurationDataSeeder moduleConfigurationDataSeeder)
     {
         _context = context;
         _logger = logger;
@@ -73,6 +75,7 @@ public class DataSeeder : IDataSeeder
         _trainingDataSeeder = trainingDataSeeder;
         _licenseDataSeeder = licenseDataSeeder;
         _wasteDataSeeder = wasteDataSeeder;
+        _moduleConfigurationDataSeeder = moduleConfigurationDataSeeder;
     }
 
     public async Task SeedAsync()
@@ -134,7 +137,11 @@ public class DataSeeder : IDataSeeder
                 await _configurationDataSeeder.SeedAsync(forceReseed);
                 await _context.SaveChangesAsync();
 
-                // 2.1. Waste Management Configuration Data
+                // 2.1. Module Configuration Data (for dynamic module enable/disable)
+                await _moduleConfigurationDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                // 2.2. Waste Management Configuration Data
                 await _wasteDataSeeder.SeedAsync();
                 await _context.SaveChangesAsync();
 
@@ -602,6 +609,26 @@ public class DataSeeder : IDataSeeder
             // 2. Remove configuration data
             _logger.LogInformation("Removing configuration data...");
             
+            // Remove module configuration data (dependencies first)
+            if (await _context.ModuleDependencies.AnyAsync())
+            {
+                _context.ModuleDependencies.RemoveRange(_context.ModuleDependencies);
+                await _context.SaveChangesAsync();
+            }
+            
+            if (await _context.ModuleConfigurations.AnyAsync())
+            {
+                _context.ModuleConfigurations.RemoveRange(_context.ModuleConfigurations);
+                await _context.SaveChangesAsync();
+            }
+            
+            // Remove module configuration audit logs (must be removed before users due to UserId FK)
+            if (await _context.ModuleConfigurationAuditLogs.AnyAsync())
+            {
+                _context.ModuleConfigurationAuditLogs.RemoveRange(_context.ModuleConfigurationAuditLogs);
+                await _context.SaveChangesAsync();
+            }
+            
             if (await _context.HazardTypes.AnyAsync())
             {
                 _context.HazardTypes.RemoveRange(_context.HazardTypes);
@@ -698,6 +725,7 @@ public class DataSeeder : IDataSeeder
         var tables = new[]
         {
             "Users", "Roles", "ModulePermissions", "RoleModulePermissions",
+            "ModuleConfigurations", "ModuleDependencies", "ModuleConfigurationAuditLogs",
             "Departments", "IncidentCategories", "IncidentLocations", 
             "HazardCategories", "HazardTypes", "PPECategories", "PPESizes", "PPEStorageLocations",
             "Incidents", "Hazards", "PPEItems", "PPEAssignments", "PPEInspections", "PPERequests", 
