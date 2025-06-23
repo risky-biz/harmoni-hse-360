@@ -11,8 +11,34 @@ public class UserDto
     public string Department { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+    public UserStatus Status { get; set; }
+    
+    // HSSE-specific fields
+    public string? PhoneNumber { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactPhone { get; set; }
+    public string? SupervisorEmployeeId { get; set; }
+    public DateTime? HireDate { get; set; }
+    public string? WorkLocation { get; set; }
+    public string? CostCenter { get; set; }
+    
+    // Security fields
+    public bool RequiresMFA { get; set; }
+    public DateTime? LastPasswordChange { get; set; }
+    public DateTime? LastLoginAt { get; set; }
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? AccountLockedUntil { get; set; }
+    
+    // User preferences
+    public string? PreferredLanguage { get; set; }
+    public string? TimeZone { get; set; }
+    
+    // Audit fields
     public DateTime CreatedAt { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
     public DateTime? LastModifiedAt { get; set; }
+    public string? LastModifiedBy { get; set; }
+    
     public List<UserRoleDto> Roles { get; set; } = new();
 }
 
@@ -33,6 +59,18 @@ public class CreateUserDto
     public string Department { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+    
+    // HSSE-specific fields
+    public string? PhoneNumber { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactPhone { get; set; }
+    public string? SupervisorEmployeeId { get; set; }
+    public DateTime? HireDate { get; set; }
+    public string? WorkLocation { get; set; }
+    public string? CostCenter { get; set; }
+    public string? PreferredLanguage { get; set; }
+    public string? TimeZone { get; set; }
+    
     public List<int> RoleIds { get; set; } = new();
 }
 
@@ -42,6 +80,20 @@ public class UpdateUserDto
     public string Department { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+    public UserStatus Status { get; set; }
+    
+    // HSSE-specific fields
+    public string? PhoneNumber { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactPhone { get; set; }
+    public string? SupervisorEmployeeId { get; set; }
+    public DateTime? HireDate { get; set; }
+    public string? WorkLocation { get; set; }
+    public string? CostCenter { get; set; }
+    public string? PreferredLanguage { get; set; }
+    public string? TimeZone { get; set; }
+    public bool RequiresMFA { get; set; }
+    
     public List<int> RoleIds { get; set; } = new();
 }
 

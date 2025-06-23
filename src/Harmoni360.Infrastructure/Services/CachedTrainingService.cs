@@ -42,7 +42,7 @@ public class CachedTrainingService : ICachedTrainingService
                 
                 _logger.LogInformation("Computing training statistics for cache");
                 return await ComputeStatisticsAsync(cancellationToken);
-            });
+            }) ?? new TrainingStatisticsDto();
     }
 
     public async Task<IEnumerable<TrainingSummaryDto>> GetCachedRecentTrainingsAsync(int count = 5, CancellationToken cancellationToken = default)
@@ -58,7 +58,7 @@ public class CachedTrainingService : ICachedTrainingService
                 
                 _logger.LogInformation("Loading recent trainings for cache (count: {Count})", count);
                 return await LoadRecentTrainingsAsync(count, cancellationToken);
-            });
+            }) ?? new List<TrainingSummaryDto>();
     }
 
     public async Task<IEnumerable<TrainingSummaryDto>> GetCachedUpcomingTrainingsAsync(int count = 10, CancellationToken cancellationToken = default)
@@ -74,7 +74,7 @@ public class CachedTrainingService : ICachedTrainingService
                 
                 _logger.LogInformation("Loading upcoming trainings for cache (count: {Count})", count);
                 return await LoadUpcomingTrainingsAsync(count, cancellationToken);
-            });
+            }) ?? new List<TrainingSummaryDto>();
     }
 
     public Task InvalidateStatisticsCacheAsync()

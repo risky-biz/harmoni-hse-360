@@ -289,6 +289,7 @@ public class WorkPermitSettingsController : ControllerBase
                 {
                     _logger.LogWarning(deleteEx, "Failed to delete file after upload failure: {FilePath}", uploadResult.FilePath);
                 }
+                _logger.LogError(ex, "Error uploading safety video for Work Permit Setting {SettingId}", settingId);
                 throw;
             }
         }

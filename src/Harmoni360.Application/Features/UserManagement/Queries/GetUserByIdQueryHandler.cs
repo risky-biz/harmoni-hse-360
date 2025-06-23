@@ -43,8 +43,34 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
             Department = user.Department,
             Position = user.Position,
             IsActive = user.IsActive,
+            Status = user.Status,
+            
+            // HSSE-specific fields
+            PhoneNumber = user.PhoneNumber,
+            EmergencyContactName = user.EmergencyContactName,
+            EmergencyContactPhone = user.EmergencyContactPhone,
+            SupervisorEmployeeId = user.SupervisorEmployeeId,
+            HireDate = user.HireDate,
+            WorkLocation = user.WorkLocation,
+            CostCenter = user.CostCenter,
+            
+            // Security fields
+            RequiresMFA = user.RequiresMFA,
+            LastPasswordChange = user.LastPasswordChange,
+            LastLoginAt = user.LastLoginAt,
+            FailedLoginAttempts = user.FailedLoginAttempts,
+            AccountLockedUntil = user.AccountLockedUntil,
+            
+            // User preferences
+            PreferredLanguage = user.PreferredLanguage,
+            TimeZone = user.TimeZone,
+            
+            // Audit fields
             CreatedAt = user.CreatedAt,
+            CreatedBy = user.CreatedBy,
             LastModifiedAt = user.LastModifiedAt,
+            LastModifiedBy = user.LastModifiedBy,
+            
             Roles = user.UserRoles.Select(ur => new UserRoleDto
             {
                 RoleId = ur.Role.Id,

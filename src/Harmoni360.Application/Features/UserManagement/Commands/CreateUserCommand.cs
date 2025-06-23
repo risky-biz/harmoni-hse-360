@@ -11,5 +11,17 @@ public record CreateUserCommand : IRequest<UserDto>
     public string Department { get; init; } = string.Empty;
     public string Position { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
+    
+    // HSSE-specific fields
+    public string? PhoneNumber { get; init; }
+    public string? EmergencyContactName { get; init; }
+    public string? EmergencyContactPhone { get; init; }
+    public string? SupervisorEmployeeId { get; init; }
+    public DateTime? HireDate { get; init; }
+    public string? WorkLocation { get; init; }
+    public string? CostCenter { get; init; }
+    public string? PreferredLanguage { get; init; }
+    public string? TimeZone { get; init; }
+    
     public List<int> RoleIds { get; init; } = new();
 }
