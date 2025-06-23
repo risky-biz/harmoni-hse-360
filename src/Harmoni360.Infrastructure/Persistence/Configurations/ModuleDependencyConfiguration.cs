@@ -67,11 +67,9 @@ public class ModuleDependencyConfiguration : IEntityTypeConfiguration<ModuleDepe
         // Configure relationships are handled in ModuleConfigurationConfiguration
         // to avoid circular references
 
-        // Configure table name
-        builder.ToTable("ModuleDependencies");
-
-        // Add check constraint to prevent self-dependency
-        builder.HasCheckConstraint("CK_ModuleDependency_NoSelfDependency", 
-            "\"ModuleType\" != \"DependsOnModuleType\"");
+        // Configure table name and constraints
+        builder.ToTable("ModuleDependencies", t => 
+            t.HasCheckConstraint("CK_ModuleDependency_NoSelfDependency", 
+                "\"ModuleType\" != \"DependsOnModuleType\""));
     }
 }

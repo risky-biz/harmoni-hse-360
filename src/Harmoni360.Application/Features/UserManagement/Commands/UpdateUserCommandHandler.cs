@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.UserManagement.DTOs;
 using Harmoni360.Domain.Authorization;
+using Harmoni360.Domain.Enums;
 
 namespace Harmoni360.Application.Features.UserManagement.Commands;
 
@@ -50,26 +51,47 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             throw new InvalidOperationException("Current user not found");
         }
 
-        // Update user profile
-        user.UpdateProfile(request.Name, request.Department, request.Position);
+        // Update user profile with HSSE fields
+        user.UpdateProfile(
+            request.Name, 
+            request.Department, 
+            request.Position,
+            request.PhoneNumber,
+            request.WorkLocation,
+            request.CostCenter);
 
-        // Update active status
-        if (request.IsActive != user.IsActive)
-        {
-            if (request.IsActive)
-                user.Activate();
-            else
-                user.Deactivate();
-        }
+        // Update emergency contact
+        user.UpdateEmergencyContact(request.EmergencyContactName, request.EmergencyContactPhone);
+        
+        // Update supervisor
+        user.UpdateSupervisor(request.SupervisorEmployeeId);
+        
+        // Update preferences
+        user.UpdatePreferences(request.PreferredLanguage, request.TimeZone);
+        
+        // Update hire date
+        user.UpdateHireDate(request.HireDate);
+
+        // Update MFA requirement
+        if (request.RequiresMFA)
+            user.EnableMFA();
+        else
+            user.DisableMFA();
+
+        // Update status
+        user.ChangeStatus(request.Status);
 
         // Handle role assignments
         if (request.RoleIds.Any())
         {
+            _logger.LogInformation("Updating roles for user {UserId}. New roles: {RoleIds}", 
+                request.UserId, string.Join(", ", request.RoleIds));
+
             // Remove existing roles (we'll reassign them)
             var existingUserRoles = user.UserRoles.ToList();
             foreach (var existingRole in existingUserRoles)
             {
-                _context.UserRoles.Remove(existingRole);
+                user.RemoveRole(existingRole.RoleId);
             }
 
             // Get new roles
@@ -77,19 +99,26 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
                 .Where(r => request.RoleIds.Contains(r.Id) && r.IsActive)
                 .ToListAsync(cancellationToken);
 
+            _logger.LogInformation("Found {NewRoleCount} active roles to assign", newRoles.Count);
+
             // Assign new roles (with permission validation)
+            var currentUserRoleTypes = currentUser.UserRoles.Select(ur => ur.Role.RoleType).ToList();
+            var isCurrentUserSuperAdmin = currentUserRoleTypes.Contains(RoleType.SuperAdmin);
+
             foreach (var role in newRoles)
             {
-                // Check if the current user can assign this role
-                var currentUserRoleTypes = currentUser.UserRoles.Select(ur => ur.Role.RoleType);
-                var canAssign = false;
+                // SuperAdmin can assign any role, others need permission checks
+                var canAssign = isCurrentUserSuperAdmin;
 
-                foreach (var currentRoleType in currentUserRoleTypes)
+                if (!canAssign)
                 {
-                    if (ModulePermissionMap.CanAssignRole(currentRoleType, role.RoleType))
+                    foreach (var currentRoleType in currentUserRoleTypes)
                     {
-                        canAssign = true;
-                        break;
+                        if (ModulePermissionMap.CanAssignRole(currentRoleType, role.RoleType))
+                        {
+                            canAssign = true;
+                            break;
+                        }
                     }
                 }
 
@@ -100,6 +129,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
                     continue; // Skip this role assignment
                 }
 
+                _logger.LogInformation("Assigning role {RoleName} (ID: {RoleId}) to user {UserId}", 
+                    role.Name, role.Id, request.UserId);
                 user.AssignRole(role);
             }
         }
@@ -123,8 +154,34 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             Department = user.Department,
             Position = user.Position,
             IsActive = user.IsActive,
+            Status = user.Status,
+            
+            // HSSE-specific fields
+            PhoneNumber = user.PhoneNumber,
+            EmergencyContactName = user.EmergencyContactName,
+            EmergencyContactPhone = user.EmergencyContactPhone,
+            SupervisorEmployeeId = user.SupervisorEmployeeId,
+            HireDate = user.HireDate,
+            WorkLocation = user.WorkLocation,
+            CostCenter = user.CostCenter,
+            
+            // Security fields
+            RequiresMFA = user.RequiresMFA,
+            LastPasswordChange = user.LastPasswordChange,
+            LastLoginAt = user.LastLoginAt,
+            FailedLoginAttempts = user.FailedLoginAttempts,
+            AccountLockedUntil = user.AccountLockedUntil,
+            
+            // User preferences
+            PreferredLanguage = user.PreferredLanguage,
+            TimeZone = user.TimeZone,
+            
+            // Audit fields
             CreatedAt = user.CreatedAt,
+            CreatedBy = user.CreatedBy,
             LastModifiedAt = user.LastModifiedAt,
+            LastModifiedBy = user.LastModifiedBy,
+            
             Roles = updatedUser?.UserRoles.Select(ur => new UserRoleDto
             {
                 RoleId = ur.Role.Id,

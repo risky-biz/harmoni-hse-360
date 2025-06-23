@@ -39,8 +39,15 @@ public class UserController : ControllerBase
         [FromQuery] int pageSize = 20,
         [FromQuery] string? searchTerm = null,
         [FromQuery] string? department = null,
+        [FromQuery] string? workLocation = null,
         [FromQuery] bool? isActive = null,
+        [FromQuery] UserStatus? status = null,
         [FromQuery] int? roleId = null,
+        [FromQuery] bool? requiresMFA = null,
+        [FromQuery] bool? isLocked = null,
+        [FromQuery] DateTime? hiredAfter = null,
+        [FromQuery] DateTime? hiredBefore = null,
+        [FromQuery] string? supervisorEmployeeId = null,
         [FromQuery] string sortBy = "name",
         [FromQuery] bool sortDescending = false)
     {
@@ -52,8 +59,15 @@ public class UserController : ControllerBase
                 PageSize = Math.Min(pageSize, 100), // Limit max page size
                 SearchTerm = searchTerm,
                 Department = department,
+                WorkLocation = workLocation,
                 IsActive = isActive,
+                Status = status,
                 RoleId = roleId,
+                RequiresMFA = requiresMFA,
+                IsLocked = isLocked,
+                HiredAfter = hiredAfter,
+                HiredBefore = hiredBefore,
+                SupervisorEmployeeId = supervisorEmployeeId,
                 SortBy = sortBy,
                 SortDescending = sortDescending
             };
@@ -111,6 +125,15 @@ public class UserController : ControllerBase
                 Department = createUserDto.Department,
                 Position = createUserDto.Position,
                 Password = createUserDto.Password,
+                PhoneNumber = createUserDto.PhoneNumber,
+                EmergencyContactName = createUserDto.EmergencyContactName,
+                EmergencyContactPhone = createUserDto.EmergencyContactPhone,
+                SupervisorEmployeeId = createUserDto.SupervisorEmployeeId,
+                HireDate = createUserDto.HireDate,
+                WorkLocation = createUserDto.WorkLocation,
+                CostCenter = createUserDto.CostCenter,
+                PreferredLanguage = createUserDto.PreferredLanguage,
+                TimeZone = createUserDto.TimeZone,
                 RoleIds = createUserDto.RoleIds
             };
 
@@ -149,6 +172,17 @@ public class UserController : ControllerBase
                 Department = updateUserDto.Department,
                 Position = updateUserDto.Position,
                 IsActive = updateUserDto.IsActive,
+                Status = updateUserDto.Status,
+                PhoneNumber = updateUserDto.PhoneNumber,
+                EmergencyContactName = updateUserDto.EmergencyContactName,
+                EmergencyContactPhone = updateUserDto.EmergencyContactPhone,
+                SupervisorEmployeeId = updateUserDto.SupervisorEmployeeId,
+                HireDate = updateUserDto.HireDate,
+                WorkLocation = updateUserDto.WorkLocation,
+                CostCenter = updateUserDto.CostCenter,
+                PreferredLanguage = updateUserDto.PreferredLanguage,
+                TimeZone = updateUserDto.TimeZone,
+                RequiresMFA = updateUserDto.RequiresMFA,
                 RoleIds = updateUserDto.RoleIds
             };
 
@@ -281,6 +315,169 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// Change user status (activate, deactivate, suspend, terminate)
+    /// </summary>
+    [HttpPatch("{id}/status")]
+    [RequireModulePermission(ModuleType.UserManagement, PermissionType.Update)]
+    public async Task<ActionResult<UserDto>> ChangeUserStatus(int id, [FromBody] ChangeUserStatusRequest request)
+    {
+        try
+        {
+            var command = new ChangeUserStatusCommand
+            {
+                UserId = id,
+                Status = request.Status,
+                Reason = request.Reason
+            };
+
+            var result = await _mediator.Send(command);
+            
+            _logger.LogInformation("User status changed successfully for ID: {UserId} to {Status} by {CurrentUser}", 
+                id, request.Status, _currentUserService.Email);
+
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Invalid operation while changing status for user {UserId}", id);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while changing status for user {UserId}", id);
+            return StatusCode(500, "An error occurred while changing user status");
+        }
+    }
+
+    /// <summary>
+    /// Unlock a user account
+    /// </summary>
+    [HttpPost("{id}/unlock")]
+    [RequireModulePermission(ModuleType.UserManagement, PermissionType.Update)]
+    public async Task<ActionResult<UserDto>> UnlockUserAccount(int id, [FromBody] UnlockAccountRequest request)
+    {
+        try
+        {
+            var command = new UnlockUserAccountCommand
+            {
+                UserId = id,
+                Reason = request.Reason
+            };
+
+            var result = await _mediator.Send(command);
+            
+            _logger.LogInformation("User account unlocked successfully for ID: {UserId} by {CurrentUser}", 
+                id, _currentUserService.Email);
+
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Invalid operation while unlocking user {UserId}", id);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while unlocking user {UserId}", id);
+            return StatusCode(500, "An error occurred while unlocking user account");
+        }
+    }
+
+    /// <summary>
+    /// Reset user password
+    /// </summary>
+    [HttpPost("{id}/reset-password")]
+    [RequireModulePermission(ModuleType.UserManagement, PermissionType.Update)]
+    public async Task<ActionResult> ResetPassword(int id, [FromBody] ResetPasswordRequest request)
+    {
+        try
+        {
+            var command = new ResetPasswordCommand
+            {
+                UserId = id,
+                NewPassword = request.NewPassword,
+                RequirePasswordChange = request.RequirePasswordChange
+            };
+
+            var result = await _mediator.Send(command);
+            
+            if (result)
+            {
+                _logger.LogInformation("Password reset successfully for user ID: {UserId} by {CurrentUser}", 
+                    id, _currentUserService.Email);
+                return Ok(new { message = "Password reset successfully" });
+            }
+
+            return BadRequest("Failed to reset password");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Invalid operation while resetting password for user {UserId}", id);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while resetting password for user {UserId}", id);
+            return StatusCode(500, "An error occurred while resetting password");
+        }
+    }
+
+    /// <summary>
+    /// Get user activity logs
+    /// </summary>
+    [HttpGet("{id}/activity")]
+    [RequireModulePermission(ModuleType.UserManagement, PermissionType.Read)]
+    public async Task<ActionResult<List<UserActivityLogDto>>> GetUserActivity(
+        int id,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        [FromQuery] string? activityType = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null)
+    {
+        try
+        {
+            var query = new GetUserActivityQuery
+            {
+                UserId = id,
+                Page = page,
+                PageSize = Math.Min(pageSize, 100),
+                ActivityType = activityType,
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while getting activity for user {UserId}", id);
+            return StatusCode(500, "An error occurred while retrieving user activity");
+        }
+    }
+
+    /// <summary>
+    /// Get user management statistics
+    /// </summary>
+    [HttpGet("statistics")]
+    [RequireModulePermission(ModuleType.UserManagement, PermissionType.Read)]
+    public async Task<ActionResult<UserStatisticsDto>> GetUserStatistics()
+    {
+        try
+        {
+            var query = new GetUserStatisticsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while getting user statistics");
+            return StatusCode(500, "An error occurred while retrieving user statistics");
+        }
+    }
+
+    /// <summary>
     /// Get all available roles
     /// </summary>
     [HttpGet("roles")]
@@ -299,4 +496,22 @@ public class UserController : ControllerBase
             return StatusCode(500, "An error occurred while retrieving roles");
         }
     }
+}
+
+// Request DTOs for new endpoints
+public class ChangeUserStatusRequest
+{
+    public UserStatus Status { get; set; }
+    public string? Reason { get; set; }
+}
+
+public class UnlockAccountRequest
+{
+    public string? Reason { get; set; }
+}
+
+public class ResetPasswordRequest
+{
+    public string NewPassword { get; set; } = string.Empty;
+    public bool RequirePasswordChange { get; set; } = true;
 }

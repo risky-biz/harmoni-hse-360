@@ -62,7 +62,7 @@ public class SubmitLicenseCommandHandler : IRequestHandler<SubmitLicenseCommand,
                 license.Id, license.LicenseNumber, currentUser.Name);
 
             // Return DTO using the same mapping logic
-            return await MapToDto(license);
+            return MapToDto(license);
         }
         catch (Exception ex)
         {
@@ -71,7 +71,7 @@ public class SubmitLicenseCommandHandler : IRequestHandler<SubmitLicenseCommand,
         }
     }
 
-    private async Task<LicenseDto> MapToDto(Domain.Entities.License license)
+    private LicenseDto MapToDto(Domain.Entities.License license)
     {
         // Simple mapping using only properties that exist in the License entity
         return new LicenseDto

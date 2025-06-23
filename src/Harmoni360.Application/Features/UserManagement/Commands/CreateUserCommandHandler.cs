@@ -63,8 +63,28 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             request.Name,
             request.EmployeeId,
             request.Department,
-            request.Position
+            request.Position,
+            request.PhoneNumber,
+            request.WorkLocation,
+            request.CostCenter,
+            request.HireDate
         );
+        
+        // Set additional HSSE fields
+        if (!string.IsNullOrWhiteSpace(request.EmergencyContactName) || !string.IsNullOrWhiteSpace(request.EmergencyContactPhone))
+        {
+            user.UpdateEmergencyContact(request.EmergencyContactName, request.EmergencyContactPhone);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(request.SupervisorEmployeeId))
+        {
+            user.UpdateSupervisor(request.SupervisorEmployeeId);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(request.PreferredLanguage) || !string.IsNullOrWhiteSpace(request.TimeZone))
+        {
+            user.UpdatePreferences(request.PreferredLanguage, request.TimeZone);
+        }
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync(cancellationToken);
@@ -132,8 +152,25 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             Department = user.Department,
             Position = user.Position,
             IsActive = user.IsActive,
+            Status = user.Status,
+            PhoneNumber = user.PhoneNumber,
+            EmergencyContactName = user.EmergencyContactName,
+            EmergencyContactPhone = user.EmergencyContactPhone,
+            SupervisorEmployeeId = user.SupervisorEmployeeId,
+            HireDate = user.HireDate,
+            WorkLocation = user.WorkLocation,
+            CostCenter = user.CostCenter,
+            RequiresMFA = user.RequiresMFA,
+            LastPasswordChange = user.LastPasswordChange,
+            LastLoginAt = user.LastLoginAt,
+            FailedLoginAttempts = user.FailedLoginAttempts,
+            AccountLockedUntil = user.AccountLockedUntil,
+            PreferredLanguage = user.PreferredLanguage,
+            TimeZone = user.TimeZone,
             CreatedAt = user.CreatedAt,
+            CreatedBy = user.CreatedBy,
             LastModifiedAt = user.LastModifiedAt,
+            LastModifiedBy = user.LastModifiedBy,
             Roles = userWithRoles?.UserRoles.Select(ur => new UserRoleDto
             {
                 RoleId = ur.Role.Id,

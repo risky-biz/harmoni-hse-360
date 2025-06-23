@@ -86,8 +86,34 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, UserListDto>
             Department = u.Department,
             Position = u.Position,
             IsActive = u.IsActive,
+            Status = u.Status,
+            
+            // HSSE-specific fields
+            PhoneNumber = u.PhoneNumber,
+            EmergencyContactName = u.EmergencyContactName,
+            EmergencyContactPhone = u.EmergencyContactPhone,
+            SupervisorEmployeeId = u.SupervisorEmployeeId,
+            HireDate = u.HireDate,
+            WorkLocation = u.WorkLocation,
+            CostCenter = u.CostCenter,
+            
+            // Security fields
+            RequiresMFA = u.RequiresMFA,
+            LastPasswordChange = u.LastPasswordChange,
+            LastLoginAt = u.LastLoginAt,
+            FailedLoginAttempts = u.FailedLoginAttempts,
+            AccountLockedUntil = u.AccountLockedUntil,
+            
+            // User preferences
+            PreferredLanguage = u.PreferredLanguage,
+            TimeZone = u.TimeZone,
+            
+            // Audit fields
             CreatedAt = u.CreatedAt,
+            CreatedBy = u.CreatedBy,
             LastModifiedAt = u.LastModifiedAt,
+            LastModifiedBy = u.LastModifiedBy,
+            
             Roles = u.UserRoles.Select(ur => new UserRoleDto
             {
                 RoleId = ur.Role.Id,
