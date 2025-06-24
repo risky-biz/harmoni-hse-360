@@ -85,11 +85,12 @@ export const ROUTE_PROTECTION_MAP: Record<string, RouteProtectionRule> = {
   '/trainings/my-trainings': { module: ModuleType.TrainingManagement, permission: PermissionType.Read },
 
   // Waste Management
-  '/waste-management': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
-  '/waste-management/dashboard': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
-  '/waste-management/create': { module: ModuleType.WasteManagement, permission: PermissionType.Create },
-  '/waste-management/my-reports': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
-  '/waste-management/providers': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
+  '/waste': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
+  '/waste/reports': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
+  '/waste/dashboard': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
+  '/waste/reports/create': { module: ModuleType.WasteManagement, permission: PermissionType.Create },
+  '/waste/reports/my-reports': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
+  '/waste/providers': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
 
   // User Management (Admin only)
   '/admin/users': { module: ModuleType.UserManagement, permission: PermissionType.Read },
@@ -162,8 +163,8 @@ export const DYNAMIC_ROUTE_PATTERNS: Array<{
   { pattern: /^\/trainings\/[^/]+\/enroll$/, rule: { module: ModuleType.TrainingManagement, permission: PermissionType.Update } },
 
   // Waste Management dynamic routes
-  { pattern: /^\/waste-management\/[^/]+$/, rule: { module: ModuleType.WasteManagement, permission: PermissionType.Read } },
-  { pattern: /^\/waste-management\/[^/]+\/edit$/, rule: { module: ModuleType.WasteManagement, permission: PermissionType.Update } },
+  { pattern: /^\/waste\/reports\/[^/]+$/, rule: { module: ModuleType.WasteManagement, permission: PermissionType.Read } },
+  { pattern: /^\/waste\/reports\/edit\/[^/]+$/, rule: { module: ModuleType.WasteManagement, permission: PermissionType.Update } },
 ];
 
 /**

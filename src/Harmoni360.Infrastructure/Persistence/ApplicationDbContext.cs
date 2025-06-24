@@ -5,6 +5,7 @@ using Harmoni360.Domain.Entities.Security;
 using Harmoni360.Domain.Entities.Inspections;
 using Harmoni360.Domain.Entities.Audits;
 using Harmoni360.Domain.Entities.Waste;
+using Harmoni360.Infrastructure.Services.DataSeeders;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -130,11 +131,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<WasteDisposalRecord> WasteDisposalRecords => Set<WasteDisposalRecord>();
     public DbSet<WasteComment> WasteComments => Set<WasteComment>();
     public DbSet<WasteCompliance> WasteCompliances => Set<WasteCompliance>();
+    public DbSet<WasteAuditLog> WasteAuditLogs => Set<WasteAuditLog>();
 
     // Module Configuration Management
     public DbSet<ModuleConfiguration> ModuleConfigurations => Set<ModuleConfiguration>();
     public DbSet<ModuleDependency> ModuleDependencies => Set<ModuleDependency>();
     public DbSet<ModuleConfigurationAuditLog> ModuleConfigurationAuditLogs => Set<ModuleConfigurationAuditLog>();
+
+    // HSSE KPI and Performance Management
+    // Note: KPI records are calculated dynamically from existing data
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

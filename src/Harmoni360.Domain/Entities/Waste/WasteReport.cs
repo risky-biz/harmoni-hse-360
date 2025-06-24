@@ -14,6 +14,18 @@ public class WasteReport : BaseEntity, IAuditableEntity
 
     public int? ReporterId { get; private set; }
     public User? Reporter { get; private set; }
+    
+    // Additional fields for comprehensive waste reporting
+    public decimal? EstimatedQuantity { get; private set; }
+    public string? QuantityUnit { get; private set; }
+    public string? DisposalMethod { get; private set; }
+    public DateTime? DisposalDate { get; private set; }
+    public string? DisposedBy { get; private set; }
+    public decimal? DisposalCost { get; private set; }
+    public string? ContractorName { get; private set; }
+    public string? ManifestNumber { get; private set; }
+    public string? Treatment { get; private set; }
+    public string? Notes { get; private set; }
 
     private readonly List<WasteAttachment> _attachments = new();
     public IReadOnlyCollection<WasteAttachment> Attachments => _attachments.AsReadOnly();
@@ -25,7 +37,9 @@ public class WasteReport : BaseEntity, IAuditableEntity
 
     protected WasteReport() { }
 
-    public static WasteReport Create(string title, string description, WasteCategory category, DateTime generatedDate, string location, int? reporterId, string createdBy)
+    public static WasteReport Create(string title, string description, WasteCategory category, DateTime generatedDate, string location, int? reporterId, string createdBy,
+        decimal? estimatedQuantity = null, string? quantityUnit = null, string? disposalMethod = null, DateTime? disposalDate = null,
+        decimal? disposalCost = null, string? contractorName = null, string? manifestNumber = null, string? treatment = null, string? notes = null, string? disposedBy = null)
     {
         return new WasteReport
         {
@@ -35,6 +49,16 @@ public class WasteReport : BaseEntity, IAuditableEntity
             GeneratedDate = generatedDate,
             Location = location,
             ReporterId = reporterId,
+            EstimatedQuantity = estimatedQuantity,
+            QuantityUnit = quantityUnit,
+            DisposalMethod = disposalMethod,
+            DisposalDate = disposalDate,
+            DisposalCost = disposalCost,
+            ContractorName = contractorName,
+            ManifestNumber = manifestNumber,
+            Treatment = treatment,
+            Notes = notes,
+            DisposedBy = disposedBy,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = createdBy
         };

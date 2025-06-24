@@ -29,6 +29,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { useGetWasteReportsQuery } from '../../api/wasteManagementApi';
 import { useNavigate } from 'react-router-dom';
+import { formatDateOnly } from '../../utils/dateUtils';
 
 const WasteReportList: React.FC = () => {
   const navigate = useNavigate();
@@ -50,13 +51,18 @@ const WasteReportList: React.FC = () => {
     sortDescending,
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: any) => {
+    if (!status || typeof status !== 'string') {
+      return 'secondary';
+    }
     switch (status.toLowerCase()) {
       case 'pending': return 'warning';
       case 'disposed': return 'success';
       case 'intransit': return 'info';
       case 'approved': return 'primary';
       case 'rejected': return 'danger';
+      case 'draft': return 'secondary';
+      case 'underreview': return 'warning';
       default: return 'secondary';
     }
   };
@@ -91,7 +97,7 @@ const WasteReportList: React.FC = () => {
             <strong>Waste Reports</strong>
             <CButton
               color="primary"
-              onClick={() => navigate('/waste-management/create')}
+              onClick={() => navigate('/waste/reports/create')}
             >
               <FontAwesomeIcon icon={faPlus} className="me-2" />
               New Report
@@ -239,23 +245,23 @@ const WasteReportList: React.FC = () => {
                         </CTableDataCell>
                         <CTableDataCell>
                           <CBadge color="info" shape="rounded-pill">
-                            {report.category}
+                            {report.classificationDisplay || 'Unknown'}
                           </CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color={getStatusColor(report.status)}>
-                            {report.status}
+                          <CBadge color={getStatusColor(report.statusDisplay)}>
+                            {report.statusDisplay || 'Unknown'}
                           </CBadge>
                         </CTableDataCell>
                         <CTableDataCell>{report.location}</CTableDataCell>
-                        <CTableDataCell>{report.reporterName || 'Unknown'}</CTableDataCell>
+                        <CTableDataCell>{report.reportedBy || 'Unknown'}</CTableDataCell>
                         <CTableDataCell>
-                          {new Date(report.generatedDate).toLocaleDateString()}
+                          {formatDateOnly(report.reportDate)}
                         </CTableDataCell>
                         <CTableDataCell>
-                          {report.attachmentsCount > 0 && (
+                          {report.commentsCount > 0 && (
                             <CBadge color="secondary">
-                              {report.attachmentsCount} files
+                              {report.commentsCount} comments
                             </CBadge>
                           )}
                         </CTableDataCell>
@@ -264,7 +270,7 @@ const WasteReportList: React.FC = () => {
                             color="primary"
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/waste-management/${report.id}`)}
+                            onClick={() => navigate(`/waste/reports/${report.id}`)}
                           >
                             View
                           </CButton>
@@ -317,7 +323,7 @@ const WasteReportList: React.FC = () => {
                     <p>No waste reports found.</p>
                     <CButton
                       color="primary"
-                      onClick={() => navigate('/waste-management/create')}
+                      onClick={() => navigate('/waste/reports/create')}
                     >
                       Create First Report
                     </CButton>

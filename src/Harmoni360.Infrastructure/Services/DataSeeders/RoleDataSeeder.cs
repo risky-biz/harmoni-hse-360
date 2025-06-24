@@ -24,7 +24,13 @@ public class RoleDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var roleCount = await _context.Roles.CountAsync();
-        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        
+        // Get seeding configuration
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
+        
         _logger.LogInformation("Current role count: {RoleCount}, ForceReseed: {ForceReseed}", roleCount, forceReseed);
 
         if (!forceReseed && roleCount > 0)

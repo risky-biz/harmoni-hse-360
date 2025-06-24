@@ -84,11 +84,34 @@ public static class DependencyInjection
         services.AddScoped<WasteDataSeeder>();
         services.AddScoped<ModuleConfigurationDataSeeder>();
         
+        // Enhanced comprehensive HSSE seeders
+        services.AddScoped<HSSEHistoricalDataSeeder>();
+        services.AddScoped<HSSECrossModuleDataBuilder>();
+        services.AddScoped<HSSEKPIBaselineCalculator>();
+        
+        // Operational data seeders
+        services.AddScoped<PPEOperationalDataSeeder>();
+        services.AddScoped<WasteOperationalDataSeeder>();
+        services.AddScoped<SecurityOperationalDataSeeder>();
+        services.AddScoped<HealthOperationalDataSeeder>();
+        
         services.AddScoped<IIncidentAuditService, IncidentAuditService>();
         services.AddScoped<IHazardAuditService, HazardAuditService>();
+        services.AddScoped<IWasteAuditService, WasteAuditService>();
         
         // Add training services
         services.AddScoped<ICachedTrainingService, CachedTrainingService>();
+        
+        // Add HSSE cache service
+        services.AddScoped<IHSSECacheService, HSSECacheService>();
+        
+        // Add materialized view refresh service
+        services.AddScoped<IMaterializedViewRefreshService, MaterializedViewRefreshService>();
+        
+        // Add background service for materialized view refresh (with graceful handling of missing views)
+        services.AddHostedService<HSSEMaterializedViewBackgroundService>();
+        
+        // Note: HSSENotificationService has been moved to Web project to avoid circular dependency
         
         // Add performance monitoring
         services.AddSingleton<IPerformanceMetricsService, PerformanceMetricsService>();

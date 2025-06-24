@@ -111,6 +111,7 @@ public interface IApplicationDbContext
     DbSet<WasteDisposalRecord> WasteDisposalRecords { get; }
     DbSet<WasteComment> WasteComments { get; }
     DbSet<WasteCompliance> WasteCompliances { get; }
+    DbSet<WasteAuditLog> WasteAuditLogs { get; }
 
     // Module Configuration Management
     DbSet<ModuleConfiguration> ModuleConfigurations { get; }

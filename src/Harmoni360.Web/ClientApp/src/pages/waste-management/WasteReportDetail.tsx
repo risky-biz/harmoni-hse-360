@@ -1,37 +1,24 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-} from '@coreui/react';
+import { PermissionGuard } from '../../components/auth/PermissionGuard';
+import WasteReportDetailComponent from '../../components/waste/WasteReportDetail';
+import { ModuleType, PermissionType } from '../../types/permissions';
 
 const WasteReportDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
+  if (!id) {
+    return <div>Invalid waste report ID</div>;
+  }
+
   return (
-    <>
-      <CRow>
-        <CCol>
-          <CCard className="mb-4">
-            <CCardHeader>
-              <strong>Waste Report Details - #{id}</strong>
-            </CCardHeader>
-            <CCardBody>
-              <p>
-                Detailed view for waste report ID: {id}
-              </p>
-              
-              <div className="text-muted">
-                Full waste report details, status tracking, and attachment management coming soon...
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </>
+    <PermissionGuard 
+      module={ModuleType.WasteManagement} 
+      permission={PermissionType.Read}
+      fallback={<div>You do not have permission to view waste reports.</div>}
+    >
+      <WasteReportDetailComponent reportId={parseInt(id, 10)} />
+    </PermissionGuard>
   );
 };
 

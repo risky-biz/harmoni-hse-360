@@ -61,7 +61,7 @@ const MyWasteReports: React.FC = () => {
       ? data.items.filter(report => 
           report.title.toLowerCase().includes(search.toLowerCase()) ||
           report.description?.toLowerCase().includes(search.toLowerCase()) ||
-          report.category.toLowerCase().includes(search.toLowerCase())
+          (report.classificationDisplay && report.classificationDisplay.toLowerCase().includes(search.toLowerCase()))
         )
       : data.items;
     
@@ -72,7 +72,10 @@ const MyWasteReports: React.FC = () => {
     };
   }, [data, search]);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: any) => {
+    if (!status || typeof status !== 'string') {
+      return 'secondary';
+    }
     switch (status.toLowerCase()) {
       case 'pending': return 'warning';
       case 'disposed': return 'success';
@@ -102,11 +105,11 @@ const MyWasteReports: React.FC = () => {
   };
 
   const handleView = (reportId: number) => {
-    navigate(`/waste-management/reports/${reportId}`);
+    navigate(`/waste/reports/${reportId}`);
   };
 
   const handleEdit = (reportId: number) => {
-    navigate(`/waste-management/reports/${reportId}/edit`);
+    navigate(`/waste/reports/edit/${reportId}`);
   };
 
   if (error) {
@@ -148,7 +151,7 @@ const MyWasteReports: React.FC = () => {
               </div>
               <CButton
                 color="primary"
-                onClick={() => navigate('/waste-management/create')}
+                onClick={() => navigate('/waste/reports/create')}
               >
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 New Report
@@ -243,19 +246,19 @@ const MyWasteReports: React.FC = () => {
                               </div>
                             </CTableDataCell>
                             <CTableDataCell>
-                              <CBadge color="info">{report.category}</CBadge>
+                              <CBadge color="info">{report.classificationDisplay || 'Unknown'}</CBadge>
                             </CTableDataCell>
                             <CTableDataCell>
-                              <CBadge color={getStatusColor(report.status)}>
-                                {report.status}
+                              <CBadge color={getStatusColor(report.statusDisplay)}>
+                                {report.statusDisplay || 'Unknown'}
                               </CBadge>
                             </CTableDataCell>
                             <CTableDataCell>
                               <div className="small">
-                                {format(new Date(report.generatedDate), 'MMM dd, yyyy')}
+                                {format(new Date(report.reportDate), 'MMM dd, yyyy')}
                               </div>
                               <div className="small text-muted">
-                                {format(new Date(report.generatedDate), 'HH:mm')}
+                                {format(new Date(report.reportDate), 'HH:mm')}
                               </div>
                             </CTableDataCell>
                             <CTableDataCell>
@@ -332,7 +335,7 @@ const MyWasteReports: React.FC = () => {
                     </p>
                     <CButton
                       color="primary"
-                      onClick={() => navigate('/waste-management/create')}
+                      onClick={() => navigate('/waste/reports/create')}
                     >
                       <FontAwesomeIcon icon={faPlus} className="me-2" />
                       Create Your First Report

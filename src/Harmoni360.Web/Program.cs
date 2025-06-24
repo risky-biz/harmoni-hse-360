@@ -139,6 +139,7 @@ builder.Services.AddSignalR(options =>
 
 // Add SignalR notification services
 builder.Services.AddScoped<ISecurityNotificationHub, SecurityNotificationHub>();
+builder.Services.AddScoped<IHSSENotificationService, Harmoni360.Web.Services.HSSENotificationService>();
 
 // Add Response Compression
 builder.Services.AddResponseCompression(options =>
@@ -369,6 +370,7 @@ app.MapHub<IncidentHub>("/hubs/incidents");
 app.MapHub<NotificationHub>("/hubs/notifications");
 app.MapHub<HealthHub>("/hubs/health");
 app.MapHub<SecurityHub>("/hubs/security");
+app.MapHub<HSSEHub>("/hubs/hsse");
 
 // Health checks
 app.MapHealthChecks("/health");

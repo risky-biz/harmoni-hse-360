@@ -75,15 +75,16 @@ public class GetWasteDashboardQueryHandler : IRequestHandler<GetWasteDashboardQu
                 Id = w.Id,
                 Title = w.Title,
                 Description = w.Description,
-                Category = w.Category.ToString(),
-                Status = w.DisposalStatus.ToString(),
-                GeneratedDate = w.GeneratedDate,
+                Classification = (Domain.Enums.WasteClassification)(int)w.Category,
+                ClassificationDisplay = w.Category.ToString(),
+                Status = Domain.Enums.WasteReportStatus.Draft,
+                StatusDisplay = w.DisposalStatus.ToString(),
+                ReportDate = w.GeneratedDate,
+                ReportedBy = w.Reporter != null ? w.Reporter.Name : "Unknown",
                 Location = w.Location,
-                ReporterId = w.ReporterId,
-                ReporterName = w.Reporter != null ? w.Reporter.Name : null,
-                AttachmentsCount = w.Attachments.Count,
                 CreatedAt = w.CreatedAt,
-                CreatedBy = w.CreatedBy
+                CreatedBy = w.CreatedBy,
+                Comments = new List<DTOs.WasteCommentDto>()
             })
             .ToListAsync(cancellationToken);
 

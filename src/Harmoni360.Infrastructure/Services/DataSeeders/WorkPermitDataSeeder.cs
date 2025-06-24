@@ -2,6 +2,7 @@ using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Domain.Entities;
 using Harmoni360.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Harmoni360.Infrastructure.Services.DataSeeders;
@@ -10,6 +11,7 @@ public class WorkPermitDataSeeder : IDataSeeder
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<WorkPermitDataSeeder> _logger;
+    private readonly IConfiguration _configuration;
     private readonly Random _random = new();
 
     // Work locations
@@ -147,18 +149,22 @@ public class WorkPermitDataSeeder : IDataSeeder
         null, null, null // Some permits won't have contractors
     };
 
-    public WorkPermitDataSeeder(IApplicationDbContext context, ILogger<WorkPermitDataSeeder> logger)
+    public WorkPermitDataSeeder(IApplicationDbContext context, ILogger<WorkPermitDataSeeder> logger, IConfiguration configuration)
     {
         _context = context;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task SeedAsync()
     {
         try
         {
-            // Check for force reseed environment variable
-            var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+            // Check for force reseed configuration
+            var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+            var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                             string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                             (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
             
             // Check if we already have work permits (skip if not force reseeding)
             if (!forceReseed && await _context.WorkPermits.AnyAsync())

@@ -55,15 +55,14 @@ const AuditDashboard: React.FC = () => {
   const { isDemoMode } = useApplicationMode();
   const [timeRange, setTimeRange] = useState<string>('last30days');
 
+  // For now, we'll fetch dashboard data without date filters to fix the infinite loading issue
+  // The backend should handle default date ranges
   const {
     data: dashboardData,
     error,
     isLoading,
     refetch
-  } = useGetAuditDashboardQuery({
-    startDate: timeRange === 'last30days' ? new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-    endDate: new Date().toISOString()
-  });
+  } = useGetAuditDashboardQuery({});
 
   const handleCreateAudit = () => {
     navigate('/audits/create');
@@ -143,6 +142,16 @@ const AuditDashboard: React.FC = () => {
           Retry
         </CButton>
       </CAlert>
+    );
+  }
+
+  // RTK Query might still be loading even if isLoading is false
+  // This can happen during revalidation or background refetching
+  if (!dashboardData && !error) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <CSpinner color="primary" />
+      </div>
     );
   }
 

@@ -1,21 +1,32 @@
+using AutoMapper;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Application.Features.WasteReports.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Harmoni360.Application.Features.WasteReports.Queries;
 
 public class GetWasteReportByIdQueryHandler : IRequestHandler<GetWasteReportByIdQuery, WasteReportDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly ILogger<GetWasteReportByIdQueryHandler> _logger;
 
-    public GetWasteReportByIdQueryHandler(IApplicationDbContext context)
+    public GetWasteReportByIdQueryHandler(
+        IApplicationDbContext context,
+        IMapper mapper,
+        ILogger<GetWasteReportByIdQueryHandler> logger)
     {
         _context = context;
+        _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<WasteReportDto> Handle(GetWasteReportByIdQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Getting waste report with ID: {Id}", request.Id);
+
         var wasteReport = await _context.WasteReports
             .Include(w => w.Attachments)
             .Include(w => w.Reporter)
@@ -23,23 +34,13 @@ public class GetWasteReportByIdQueryHandler : IRequestHandler<GetWasteReportById
 
         if (wasteReport == null)
         {
-            throw new InvalidOperationException($"Waste report with ID {request.Id} not found");
+            _logger.LogWarning("Waste report with ID {Id} not found", request.Id);
+            throw new KeyNotFoundException($"Waste report with ID {request.Id} not found.");
         }
 
-        return new WasteReportDto
-        {
-            Id = wasteReport.Id,
-            Title = wasteReport.Title,
-            Description = wasteReport.Description,
-            Category = wasteReport.Category.ToString(),
-            Status = wasteReport.DisposalStatus.ToString(),
-            GeneratedDate = wasteReport.GeneratedDate,
-            Location = wasteReport.Location,
-            ReporterId = wasteReport.ReporterId,
-            ReporterName = wasteReport.Reporter?.Name,
-            AttachmentsCount = wasteReport.Attachments?.Count ?? 0,
-            CreatedAt = wasteReport.CreatedAt,
-            CreatedBy = wasteReport.CreatedBy
-        };
+        var dto = _mapper.Map<WasteReportDto>(wasteReport);
+        
+        _logger.LogInformation("Successfully retrieved waste report with ID: {Id}", request.Id);
+        return dto;
     }
 }

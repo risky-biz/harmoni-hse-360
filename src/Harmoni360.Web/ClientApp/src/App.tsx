@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useParams,
 } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { CSpinner } from '@coreui/react';
@@ -48,6 +49,17 @@ import { initializeOptimizations, addResourceHints, lazy } from './utils/optimiz
 
 // Demo reset service
 import { demoResetService } from './services/demoResetService';
+
+// Redirect components for legacy routes
+const WasteManagementRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/waste/reports/${id}`} replace />;
+};
+
+const WasteManagementEditRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/waste/reports/edit/${id}`} replace />;
+};
 
 // Add UnauthorizedAccess component
 const UnauthorizedAccess = React.lazy(() =>
@@ -743,10 +755,18 @@ const WasteDashboard = React.lazy(() =>
   })
 );
 const WasteReportDetail = React.lazy(() =>
-  import('./pages/waste-management/WasteReportDetail').catch((err) => {
+  import('./components/waste/WasteReportDetail').catch((err) => {
     console.error('Failed to load WasteReportDetail:', err);
     return {
       default: () => <div>Error loading Waste Report Detail. Please refresh.</div>,
+    };
+  })
+);
+const EditWasteReport = React.lazy(() =>
+  import('./components/waste/EditWasteReport').catch((err) => {
+    console.error('Failed to load EditWasteReport:', err);
+    return {
+      default: () => <div>Error loading Edit Waste Report. Please refresh.</div>,
     };
   })
 );
@@ -1090,13 +1110,23 @@ function App() {
                 <Route path="/trainings/:id/edit" element={<EditTraining />} />
                 <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
 		{/* Waste Management */}
-                <Route path="/waste-management" element={<WasteReportList />} />
-                <Route path="/waste-management/dashboard" element={<WasteDashboard />} />
-                <Route path="/waste-management/create" element={<CreateWasteReport />} />
-                <Route path="/waste-management/my-reports" element={<MyWasteReports />} />
-                <Route path="/waste-management/providers" element={<DisposalProviders />} />
-                <Route path="/waste-management/:id" element={<WasteReportDetail />} />
-                <Route path="/waste-management/:id/edit" element={<WasteReportForm />} />
+                <Route path="/waste" element={<Navigate to="/waste/reports" replace />} />
+                <Route path="/waste/reports" element={<WasteReportList />} />
+                <Route path="/waste/dashboard" element={<WasteDashboard />} />
+                <Route path="/waste/reports/create" element={<CreateWasteReport />} />
+                <Route path="/waste/reports/my-reports" element={<MyWasteReports />} />
+                <Route path="/waste/providers" element={<DisposalProviders />} />
+                <Route path="/waste/reports/:id" element={<WasteReportDetail />} />
+                <Route path="/waste/reports/edit/:id" element={<EditWasteReport />} />
+                
+                {/* Legacy waste management routes (redirect to new structure) */}
+                <Route path="/waste-management" element={<Navigate to="/waste/reports" replace />} />
+                <Route path="/waste-management/dashboard" element={<Navigate to="/waste/dashboard" replace />} />
+                <Route path="/waste-management/create" element={<Navigate to="/waste/reports/create" replace />} />
+                <Route path="/waste-management/my-reports" element={<Navigate to="/waste/reports/my-reports" replace />} />
+                <Route path="/waste-management/providers" element={<Navigate to="/waste/providers" replace />} />
+                <Route path="/waste-management/:id" element={<WasteManagementRedirect />} />
+                <Route path="/waste-management/:id/edit" element={<WasteManagementEditRedirect />} />
 
                 {/* Admin Routes - Protected by AdminRoute */}
                 <Route

@@ -8,10 +8,12 @@ namespace Harmoni360.Application.Features.WasteReports.Commands;
 public class AddWasteCommentCommandHandler : IRequestHandler<AddWasteCommentCommand, WasteCommentDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IWasteAuditService _auditService;
 
-    public AddWasteCommentCommandHandler(IApplicationDbContext context)
+    public AddWasteCommentCommandHandler(IApplicationDbContext context, IWasteAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<WasteCommentDto> Handle(AddWasteCommentCommand request, CancellationToken cancellationToken)
@@ -33,6 +35,9 @@ public class AddWasteCommentCommandHandler : IRequestHandler<AddWasteCommentComm
 
         _context.WasteComments.Add(comment);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Log comment addition
+        await _auditService.LogCommentAsync(request.WasteReportId, "Added", request.Comment);
 
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Id == request.CommentedById, cancellationToken);

@@ -9,13 +9,16 @@ namespace Harmoni360.Application.Features.WasteReports.Commands;
 public class UpdateWasteReportCommandHandler : IRequestHandler<UpdateWasteReportCommand, WasteReportDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IWasteAuditService _auditService;
     private readonly ILogger<UpdateWasteReportCommandHandler> _logger;
 
     public UpdateWasteReportCommandHandler(
         IApplicationDbContext context,
+        IWasteAuditService auditService,
         ILogger<UpdateWasteReportCommandHandler> logger)
     {
         _context = context;
+        _auditService = auditService;
         _logger = logger;
     }
 
@@ -31,14 +34,31 @@ public class UpdateWasteReportCommandHandler : IRequestHandler<UpdateWasteReport
             throw new InvalidOperationException($"Waste report with ID {request.Id} not found");
         }
 
-        // Update using reflection or create an Update method in the entity
+        // Capture original values for audit logging
+        var originalTitle = wasteReport.Title;
+        var originalDescription = wasteReport.Description;
+        var originalLocation = wasteReport.Location;
+
+        // Update using reflection (since the entity uses private setters)
         var type = wasteReport.GetType();
         type.GetProperty("Title")?.SetValue(wasteReport, request.Title);
         type.GetProperty("Description")?.SetValue(wasteReport, request.Description);
-        type.GetProperty("Category")?.SetValue(wasteReport, request.Category);
-        type.GetProperty("GeneratedDate")?.SetValue(wasteReport, request.GeneratedDate);
         type.GetProperty("Location")?.SetValue(wasteReport, request.Location);
         type.GetProperty("LastModifiedAt")?.SetValue(wasteReport, DateTime.UtcNow);
+
+        // Log field changes
+        if (originalTitle != request.Title)
+        {
+            await _auditService.LogWasteReportUpdatedAsync(request.Id, "Title", originalTitle, request.Title);
+        }
+        if (originalDescription != request.Description)
+        {
+            await _auditService.LogWasteReportUpdatedAsync(request.Id, "Description", originalDescription, request.Description);
+        }
+        if (originalLocation != request.Location)
+        {
+            await _auditService.LogWasteReportUpdatedAsync(request.Id, "Location", originalLocation, request.Location);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -49,15 +69,16 @@ public class UpdateWasteReportCommandHandler : IRequestHandler<UpdateWasteReport
             Id = wasteReport.Id,
             Title = wasteReport.Title,
             Description = wasteReport.Description,
-            Category = wasteReport.Category.ToString(),
-            Status = wasteReport.DisposalStatus.ToString(),
-            GeneratedDate = wasteReport.GeneratedDate,
+            Classification = (Domain.Enums.WasteClassification)(int)wasteReport.Category,
+            ClassificationDisplay = wasteReport.Category.ToString(),
+            Status = Domain.Enums.WasteReportStatus.Draft,
+            StatusDisplay = wasteReport.DisposalStatus.ToString(),
+            ReportDate = wasteReport.GeneratedDate,
+            ReportedBy = wasteReport.Reporter?.Name ?? "Unknown",
             Location = wasteReport.Location,
-            ReporterId = wasteReport.ReporterId,
-            ReporterName = wasteReport.Reporter?.Name,
-            AttachmentsCount = wasteReport.Attachments?.Count ?? 0,
             CreatedAt = wasteReport.CreatedAt,
-            CreatedBy = wasteReport.CreatedBy
+            CreatedBy = wasteReport.CreatedBy,
+            Comments = new List<DTOs.WasteCommentDto>()
         };
     }
 }
