@@ -136,7 +136,7 @@ public class WasteReportController : ControllerBase
 
     [HttpPost("{id}/comments")]
     [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Create)]
-    public async Task<ActionResult<WasteCommentDto>> AddComment(int id, [FromBody] AddWasteCommentRequest request)
+    public async Task<ActionResult<Harmoni360.Application.Features.WasteReports.DTOs.WasteCommentDto>> AddComment(int id, [FromBody] AddWasteCommentRequest request)
     {
         var userId = GetCurrentUserId();
         var command = new AddWasteCommentCommand(id, request.Comment, request.Type, userId);
@@ -146,7 +146,7 @@ public class WasteReportController : ControllerBase
 
     [HttpGet("{id}/comments")]
     [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Read)]
-    public async Task<ActionResult<List<WasteCommentDto>>> GetComments(int id)
+    public async Task<ActionResult<List<Harmoni360.Application.Features.WasteReports.DTOs.WasteCommentDto>>> GetComments(int id)
     {
         var result = await _mediator.Send(new GetWasteCommentsQuery(id));
         return Ok(result);
@@ -158,6 +158,24 @@ public class WasteReportController : ControllerBase
     {
         await _mediator.Send(new DeleteWasteCommentCommand(commentId));
         return NoContent();
+    }
+
+    [HttpGet("{id}/audit-trail")]
+    [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Read)]
+    public async Task<ActionResult<IEnumerable<Harmoni360.Application.Features.WasteReports.DTOs.WasteAuditLogDto>>> GetAuditTrail(int id)
+    {
+        var result = await _mediator.Send(new GetWasteAuditTrailQuery(id));
+        return Ok(result);
+    }
+
+    [HttpGet("compliance/audit-trail")]
+    [RequireModulePermission(ModuleType.WasteManagement, PermissionType.Read)]
+    public async Task<ActionResult<IEnumerable<Harmoni360.Application.Features.WasteReports.DTOs.WasteAuditLogDto>>> GetComplianceAuditTrail(
+        [FromQuery] DateTime fromDate, 
+        [FromQuery] DateTime toDate)
+    {
+        var result = await _mediator.Send(new GetWasteComplianceAuditTrailQuery(fromDate, toDate));
+        return Ok(result);
     }
 
     private int GetCurrentUserId()

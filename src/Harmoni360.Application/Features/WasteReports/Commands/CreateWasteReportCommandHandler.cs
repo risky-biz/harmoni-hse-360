@@ -13,6 +13,7 @@ public class CreateWasteReportCommandHandler : IRequestHandler<CreateWasteReport
     private readonly ICurrentUserService _currentUserService;
     private readonly IFileStorageService _fileStorageService;
     private readonly IAntivirusScanner _antivirusScanner;
+    private readonly IWasteAuditService _auditService;
     private readonly ILogger<CreateWasteReportCommandHandler> _logger;
 
     public CreateWasteReportCommandHandler(
@@ -20,12 +21,14 @@ public class CreateWasteReportCommandHandler : IRequestHandler<CreateWasteReport
         ICurrentUserService currentUserService,
         IFileStorageService fileStorageService,
         IAntivirusScanner antivirusScanner,
+        IWasteAuditService auditService,
         ILogger<CreateWasteReportCommandHandler> logger)
     {
         _context = context;
         _currentUserService = currentUserService;
         _fileStorageService = fileStorageService;
         _antivirusScanner = antivirusScanner;
+        _auditService = auditService;
         _logger = logger;
     }
 
@@ -45,10 +48,22 @@ public class CreateWasteReportCommandHandler : IRequestHandler<CreateWasteReport
                 request.GeneratedDate, 
                 request.Location, 
                 request.ReporterId, 
-                _currentUserService.Email);
+                _currentUserService.Email,
+                request.EstimatedQuantity,
+                request.QuantityUnit,
+                request.DisposalMethod,
+                request.DisposalDate,
+                request.DisposalCost,
+                request.ContractorName,
+                request.ManifestNumber,
+                request.Treatment,
+                request.Notes);
             
             _context.WasteReports.Add(waste);
             await _context.SaveChangesAsync(cancellationToken);
+
+            // Log waste report creation
+            await _auditService.LogWasteReportCreatedAsync(waste);
 
             if (request.Attachments?.Any() == true)
             {
@@ -65,6 +80,9 @@ public class CreateWasteReportCommandHandler : IRequestHandler<CreateWasteReport
                             file.ContentType,
                             "waste");
                         waste.AddAttachment(file.FileName, upload.FilePath, file.Length, _currentUserService.Email);
+                        
+                        // Log attachment upload
+                        await _auditService.LogAttachmentAsync(waste.Id, "Added", file.FileName);
                         
                         _logger.LogInformation("Attachment {FileName} uploaded successfully", file.FileName);
                     }
@@ -84,15 +102,26 @@ public class CreateWasteReportCommandHandler : IRequestHandler<CreateWasteReport
                 Id = waste.Id,
                 Title = waste.Title,
                 Description = waste.Description,
-                Category = waste.Category.ToString(),
-                Status = waste.DisposalStatus.ToString(),
-                GeneratedDate = waste.GeneratedDate,
+                Classification = (Domain.Enums.WasteClassification)(int)waste.Category,
+                ClassificationDisplay = waste.Category.ToString(),
+                Status = Domain.Enums.WasteReportStatus.Draft,
+                StatusDisplay = waste.DisposalStatus.ToString(),
+                ReportDate = waste.GeneratedDate,
+                ReportedBy = reporter?.Name ?? "Unknown",
                 Location = waste.Location,
-                ReporterId = waste.ReporterId,
-                ReporterName = reporter?.Name,
-                AttachmentsCount = waste.Attachments.Count,
+                EstimatedQuantity = waste.EstimatedQuantity,
+                QuantityUnit = waste.QuantityUnit,
+                DisposalMethod = waste.DisposalMethod,
+                DisposalDate = waste.DisposalDate,
+                DisposedBy = waste.DisposedBy,
+                DisposalCost = waste.DisposalCost,
+                ContractorName = waste.ContractorName,
+                ManifestNumber = waste.ManifestNumber,
+                Treatment = waste.Treatment,
+                Notes = waste.Notes,
                 CreatedAt = waste.CreatedAt,
-                CreatedBy = waste.CreatedBy
+                CreatedBy = waste.CreatedBy,
+                Comments = new List<DTOs.WasteCommentDto>()
             };
         }
         catch (Exception ex)

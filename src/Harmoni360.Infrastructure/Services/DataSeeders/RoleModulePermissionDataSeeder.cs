@@ -25,7 +25,13 @@ public class RoleModulePermissionDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var roleModulePermissionCount = await _context.RoleModulePermissions.CountAsync();
-        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        
+        // Get seeding configuration
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
+        
         _logger.LogInformation("Current role-module permission count: {RoleModulePermissionCount}, ForceReseed: {ForceReseed}", 
             roleModulePermissionCount, forceReseed);
         

@@ -24,6 +24,8 @@ import { companyConfigurationApi } from '../services/companyConfigurationService
 import { hazardConfigurationApi } from '../api/hazardConfigurationApi';
 import { applicationModeApi } from '../api/applicationModeApi';
 import { moduleConfigurationApi } from '../services/moduleConfigurationApi';
+import { hsseApi } from '../services/hsseApi';
+import { wasteReportsApi } from '../services/wasteReportsApi';
 
 export const store = configureStore({
   reducer: {
@@ -51,6 +53,8 @@ export const store = configureStore({
     [hazardConfigurationApi.reducerPath]: hazardConfigurationApi.reducer,
     [applicationModeApi.reducerPath]: applicationModeApi.reducer,
     [moduleConfigurationApi.reducerPath]: moduleConfigurationApi.reducer,
+    [hsseApi.reducerPath]: hsseApi.reducer,
+    [wasteReportsApi.reducerPath]: wasteReportsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -80,7 +84,9 @@ export const store = configureStore({
       companyConfigurationApi.middleware,
       hazardConfigurationApi.middleware,
       applicationModeApi.middleware,
-      moduleConfigurationApi.middleware
+      moduleConfigurationApi.middleware,
+      hsseApi.middleware,
+      wasteReportsApi.middleware
     ),
 });
 

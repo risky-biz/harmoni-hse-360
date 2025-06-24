@@ -7605,6 +7605,10 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ContractorName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -7616,8 +7620,25 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("DisposalCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("DisposalDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisposalMethod")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<int>("DisposalStatus")
                         .HasColumnType("integer");
+
+                    b.Property<string>("DisposedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal?>("EstimatedQuantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("GeneratedDate")
                         .HasColumnType("timestamp with time zone");
@@ -7633,6 +7654,17 @@ namespace Harmoni360.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("ManifestNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("QuantityUnit")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<int?>("ReporterId")
                         .HasColumnType("integer");
 
@@ -7640,6 +7672,10 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Treatment")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.HasKey("Id");
 
@@ -7691,6 +7727,75 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WasteTypes", (string)null);
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WasteAuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ChangeDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ComplianceNotes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("FieldName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<bool>("IsCriticalAction")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("WasteReportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedAt")
+                        .HasDatabaseName("IX_WasteAuditLogs_ChangedAt");
+
+                    b.HasIndex("IsCriticalAction")
+                        .HasDatabaseName("IX_WasteAuditLogs_IsCriticalAction");
+
+                    b.HasIndex("WasteReportId", "ChangedAt")
+                        .HasDatabaseName("IX_WasteAuditLogs_WasteReportId_ChangedAt");
+
+                    b.ToTable("WasteAuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>
@@ -9820,6 +9925,17 @@ namespace Harmoni360.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Reporter");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.WasteAuditLog", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.Waste.WasteReport", "WasteReport")
+                        .WithMany()
+                        .HasForeignKey("WasteReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WasteReport");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.WorkPermit", b =>

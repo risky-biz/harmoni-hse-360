@@ -24,7 +24,13 @@ public class ModulePermissionDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var modulePermissionCount = await _context.ModulePermissions.CountAsync();
-        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        
+        // Get seeding configuration
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
+        
         var reSeedModulePermissions = bool.Parse(_configuration["DataSeeding:ReSeedModulePermissions"] ?? "false");
         _logger.LogInformation("Current module permission count: {ModulePermissionCount}, ForceReseed: {ForceReseed}, ReSeed: {ReSeed}", 
             modulePermissionCount, forceReseed, reSeedModulePermissions);

@@ -28,6 +28,34 @@ public class WasteReportConfiguration : IEntityTypeConfiguration<WasteReport>
         builder.Property(w => w.DisposalStatus)
             .HasConversion<int>();
 
+        // Additional fields for comprehensive waste reporting
+        builder.Property(w => w.EstimatedQuantity)
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(w => w.QuantityUnit)
+            .HasMaxLength(50);
+
+        builder.Property(w => w.DisposalMethod)
+            .HasMaxLength(200);
+
+        builder.Property(w => w.DisposedBy)
+            .HasMaxLength(200);
+
+        builder.Property(w => w.DisposalCost)
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(w => w.ContractorName)
+            .HasMaxLength(200);
+
+        builder.Property(w => w.ManifestNumber)
+            .HasMaxLength(100);
+
+        builder.Property(w => w.Treatment)
+            .HasMaxLength(500);
+
+        builder.Property(w => w.Notes)
+            .HasColumnType("text");
+
         builder.HasOne(w => w.Reporter)
             .WithMany()
             .HasForeignKey(w => w.ReporterId)

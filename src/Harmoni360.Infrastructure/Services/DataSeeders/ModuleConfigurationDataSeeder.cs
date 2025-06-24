@@ -30,7 +30,10 @@ public class ModuleConfigurationDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         var moduleConfigurationCount = await _context.ModuleConfigurations.CountAsync();
-        var forceReseed = Environment.GetEnvironmentVariable("HARMONI_FORCE_RESEED") == "true";
+        var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
+        var forceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
+                         string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
+                         (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
         var reSeedModuleConfigurations = bool.Parse(_configuration["DataSeeding:ReSeedModuleConfigurations"] ?? "false");
         _logger.LogInformation("Current module configuration count: {ModuleConfigurationCount}, ForceReseed: {ForceReseed}, ReSeed: {ReSeed}", 
             moduleConfigurationCount, forceReseed, reSeedModuleConfigurations);

@@ -4,15 +4,39 @@ interface WasteReportDto {
   id: number;
   title: string;
   description: string;
-  category: string;
-  status: string;
-  generatedDate: string;
+  classification: number;
+  classificationDisplay: string;
+  status: number;
+  statusDisplay: string;
+  reportDate: string;
+  reportedBy: string;
   location: string;
-  reporterId?: number;
-  reporterName?: string;
-  attachmentsCount: number;
+  estimatedQuantity?: number;
+  quantityUnit?: string;
+  disposalMethod?: string;
+  disposalDate?: string;
+  disposedBy?: string;
+  disposalCost?: number;
+  contractorName?: string;
+  manifestNumber?: string;
+  treatment?: string;
+  notes?: string;
   createdAt: string;
   createdBy: string;
+  updatedAt?: string;
+  updatedBy?: string;
+  comments: WasteCommentDto[];
+  canEdit: boolean;
+  canDispose: boolean;
+  canApprove: boolean;
+  canReject: boolean;
+  canArchive: boolean;
+  isOverdue: boolean;
+  isHighRisk: boolean;
+  hasComments: boolean;
+  commentsCount: number;
+  daysUntilDisposal: number;
+  daysOverdue: number;
 }
 
 interface PagedList<T> {
@@ -25,6 +49,35 @@ interface PagedList<T> {
   hasPreviousPage: boolean;
 }
 
+interface WasteReportSummaryDto {
+  id: number;
+  title: string;
+  type: string;
+  status: string;
+  reportDate: string;
+  reportedBy: string;
+  location?: string;
+  estimatedQuantity?: number;
+  quantityUnit?: string;
+  disposalDate?: string;
+  disposalCost?: number;
+  commentsCount: number;
+  isOverdue: boolean;
+  canEdit: boolean;
+  canDispose: boolean;
+  createdAt: string;
+}
+
+interface WasteCommentDto {
+  id: number;
+  wasteReportId: number;
+  comment: string;
+  commentedBy: string;
+  commentedAt: string;
+  category?: string;
+  isInternal: boolean;
+}
+
 interface WasteDashboardDto {
   totalReports: number;
   pendingReports: number;
@@ -33,7 +86,7 @@ interface WasteDashboardDto {
   activeDisposalProviders: number;
   categoryStats: WasteCategoryStatsDto[];
   monthlyStats: MonthlyWasteStatsDto[];
-  recentReports: WasteReportDto[];
+  recentReports: WasteReportSummaryDto[];
   expiringProviders: DisposalProviderDto[];
 }
 

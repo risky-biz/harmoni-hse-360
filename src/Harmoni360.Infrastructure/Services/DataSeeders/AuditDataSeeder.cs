@@ -100,22 +100,87 @@ public class AuditDataSeeder : IDataSeeder
             "Certification Maintenance Review",
             "Regulatory Reporting Compliance",
             "Standards Implementation Audit"
+        },
+        [AuditType.Fire] = new[]
+        {
+            "Fire Safety System Audit",
+            "Fire Prevention Program Review",
+            "Emergency Evacuation Procedures Audit",
+            "Fire Protection Equipment Inspection",
+            "Hot Work Permit System Review",
+            "Fire Detection System Testing",
+            "Sprinkler System Compliance Audit",
+            "Fire Emergency Response Training",
+            "Combustible Materials Storage Audit",
+            "Fire Risk Assessment Review"
+        },
+        [AuditType.Chemical] = new[]
+        {
+            "Chemical Management System Audit",
+            "Chemical Storage Compliance Review",
+            "Chemical Handling Procedures Audit",
+            "Material Safety Data Sheet Review",
+            "Chemical Inventory Management Audit",
+            "Chemical Waste Disposal Audit",
+            "Chemical Emergency Response Review",
+            "Personal Protection for Chemical Handling",
+            "Chemical Transport and Logistics Audit",
+            "Chemical Risk Assessment Review"
+        },
+        [AuditType.Ergonomic] = new[]
+        {
+            "Workplace Ergonomics Assessment",
+            "Manual Handling Risk Assessment",
+            "Workstation Ergonomics Audit",
+            "Repetitive Strain Injury Prevention",
+            "Ergonomic Training Program Review",
+            "Display Screen Equipment Assessment",
+            "Lifting and Handling Procedures Audit",
+            "Workplace Design Ergonomics Review",
+            "Employee Ergonomics Health Monitoring",
+            "Ergonomic Equipment Compliance Audit"
+        },
+        [AuditType.Emergency] = new[]
+        {
+            "Emergency Preparedness Audit",
+            "Crisis Management System Review",
+            "Emergency Response Procedures Audit",
+            "Business Continuity Planning Review",
+            "Emergency Communication Systems Audit",
+            "Disaster Recovery Planning Assessment",
+            "Emergency Equipment Readiness Review",
+            "Emergency Training Program Audit",
+            "Emergency Contact Systems Review",
+            "Emergency Shelter and Evacuation Audit"
+        },
+        [AuditType.Management] = new[]
+        {
+            "Management System Effectiveness Audit",
+            "Leadership and Governance Review",
+            "Management Review Process Audit",
+            "Organizational Structure Assessment",
+            "Management Communication Systems Review",
+            "Strategic Planning Process Audit",
+            "Management Performance Review",
+            "Resource Management Assessment",
+            "Management Training and Development",
+            "Management Decision Making Process Review"
         }
     };
 
     // Common audit checklist items by category
     private readonly Dictionary<AuditCategory, string[]> _checklistItems = new()
     {
-        [AuditCategory.Internal] = new[]
+        [AuditCategory.Routine] = new[]
         {
-            "Verify current procedures are available and up-to-date",
-            "Check document control and version management",
-            "Review training records and competency assessments",
-            "Validate record keeping and data integrity",
-            "Confirm regulatory compliance documentation",
-            "Review incident investigation reports",
-            "Check management review meeting minutes",
-            "Verify audit findings and corrective actions tracking"
+            "Review standard operating procedures currency",
+            "Check emergency response procedures",
+            "Verify work permit procedures compliance",
+            "Review incident reporting procedures",
+            "Check change management procedures",
+            "Verify risk assessment procedures",
+            "Review communication procedures",
+            "Check quality control procedures"
         },
         [AuditCategory.Planned] = new[]
         {
@@ -128,6 +193,61 @@ public class AuditDataSeeder : IDataSeeder
             "Review contractor training requirements",
             "Check refresher training schedules"
         },
+        [AuditCategory.Unplanned] = new[]
+        {
+            "Investigate immediate safety concerns raised",
+            "Review incident-triggered audit requirements",
+            "Assess emergency response effectiveness",
+            "Evaluate unscheduled maintenance impacts",
+            "Check reactive safety measures implementation",
+            "Review urgent compliance requirements",
+            "Assess ad-hoc training needs",
+            "Evaluate immediate corrective actions taken"
+        },
+        [AuditCategory.Regulatory] = new[]
+        {
+            "Verify compliance with current regulations",
+            "Check regulatory permit requirements",
+            "Review mandatory reporting compliance",
+            "Assess regulatory inspection readiness",
+            "Verify license and certification currency",
+            "Check regulatory change management",
+            "Review legal requirement documentation",
+            "Assess regulatory risk management"
+        },
+        [AuditCategory.Internal] = new[]
+        {
+            "Verify current procedures are available and up-to-date",
+            "Check document control and version management",
+            "Review training records and competency assessments",
+            "Validate record keeping and data integrity",
+            "Confirm regulatory compliance documentation",
+            "Review incident investigation reports",
+            "Check management review meeting minutes",
+            "Verify audit findings and corrective actions tracking"
+        },
+        [AuditCategory.External] = new[]
+        {
+            "Prepare for third-party auditor requirements",
+            "Review external certification requirements",
+            "Check client-specific audit criteria",
+            "Verify customer compliance requirements",
+            "Review external stakeholder expectations",
+            "Assess public disclosure requirements",
+            "Check external reporting obligations",
+            "Verify third-party verification processes"
+        },
+        [AuditCategory.Incident] = new[]
+        {
+            "Investigate root cause of safety incident",
+            "Review incident response effectiveness",
+            "Assess corrective actions implementation",
+            "Check incident reporting accuracy",
+            "Review lessons learned integration",
+            "Verify incident prevention measures",
+            "Assess emergency response performance",
+            "Review incident communication processes"
+        },
         [AuditCategory.Maintenance] = new[]
         {
             "Inspect safety equipment condition and placement",
@@ -138,17 +258,6 @@ public class AuditDataSeeder : IDataSeeder
             "Verify equipment modification controls",
             "Review equipment retirement procedures",
             "Check spare parts inventory management"
-        },
-        [AuditCategory.Routine] = new[]
-        {
-            "Review standard operating procedures currency",
-            "Check emergency response procedures",
-            "Verify work permit procedures compliance",
-            "Review incident reporting procedures",
-            "Check change management procedures",
-            "Verify risk assessment procedures",
-            "Review communication procedures",
-            "Check quality control procedures"
         }
     };
 
@@ -246,6 +355,9 @@ public class AuditDataSeeder : IDataSeeder
             audit.SetComplianceInfo(standards, isRegulatory, regulatoryRefs[_random.Next(regulatoryRefs.Length)]);
         }
 
+        // Add audit items BEFORE progressing the audit status
+        AddAuditItems(audit, type);
+
         // Progress the audit based on scheduled date
         if (isInProgress)
         {
@@ -262,13 +374,16 @@ public class AuditDataSeeder : IDataSeeder
             audit.CompleteAudit(summary, recommendations);
         }
 
-        // Add audit items
-        AddAuditItems(audit, type);
-
         // Add findings if audit is completed or in progress
         if (audit.Status == AuditStatus.Completed || audit.Status == AuditStatus.InProgress)
         {
             AddAuditFindings(audit, auditor);
+        }
+
+        // Add comments from various stakeholders
+        if (audit.Status != AuditStatus.Scheduled)
+        {
+            AddAuditComments(audit, users);
         }
 
         return audit;
@@ -366,14 +481,84 @@ public class AuditDataSeeder : IDataSeeder
                 auditor.Name
             );
 
-            // Close some findings if they're older
+            // Progress some findings through their lifecycle if audit is completed
             if (_random.NextDouble() > 0.6 && audit.Status == AuditStatus.Completed)
             {
+                // Mark as resolved first
+                finding.MarkAsResolved();
+                
+                // If finding requires verification (Critical/Major), verify it before closing
+                if (finding.RequiresVerification)
+                {
+                    finding.MarkAsVerified(auditor.Name, "Management review and corrective action effectiveness verified");
+                }
+                
+                // Now close the finding
                 finding.Close("Corrective actions completed and verified", auditor.Name);
             }
 
             audit.AddFinding(finding);
         }
+    }
+
+    private void AddAuditComments(Audit audit, List<User> users)
+    {
+        var commentCount = _random.Next(2, 6); // 2-5 comments per audit
+
+        for (var i = 0; i < commentCount; i++)
+        {
+            var commenter = users[_random.Next(users.Count)];
+            var commentDate = audit.ScheduledDate.AddDays(_random.Next(-5, 15));
+            
+            var comment = AuditComment.Create(
+                auditId: audit.Id,
+                comment: GenerateAuditComment(audit.Type, audit.Status),
+                commentedBy: commenter.Name,
+                category: "General",
+                isInternal: _random.NextDouble() < 0.2 // 20% internal comments
+            );
+
+            audit.AddComment(comment);
+        }
+    }
+
+    private string GenerateAuditComment(AuditType auditType, AuditStatus status)
+    {
+        var comments = status switch
+        {
+            AuditStatus.Scheduled => new[]
+            {
+                "Audit scheduled and all preparation materials have been provided to the team.",
+                "Looking forward to this audit as it will help identify improvement opportunities.",
+                "All documentation has been prepared and is ready for review.",
+                "The audit scope and objectives have been clearly communicated to all stakeholders."
+            },
+            AuditStatus.InProgress => new[]
+            {
+                "The audit is progressing well with good cooperation from all departments.",
+                "Initial findings suggest the system is working effectively with minor improvements needed.",
+                "Team is very responsive to questions and providing excellent documentation.",
+                "Some interesting observations that may lead to positive improvements.",
+                "The audit process is revealing both strengths and areas for enhancement."
+            },
+            AuditStatus.Completed => new[]
+            {
+                "Excellent audit process with valuable insights and actionable recommendations.",
+                "The findings will help us improve our systems and processes significantly.",
+                "Comprehensive review that highlighted both strengths and improvement opportunities.",
+                "Thank you to the audit team for their thorough and professional approach.",
+                "The recommendations are practical and will be implemented according to the timeline.",
+                "This audit has provided valuable feedback for our continuous improvement efforts."
+            },
+            _ => new[]
+            {
+                "General comment regarding the audit process and outcomes.",
+                "Feedback on the audit methodology and team performance.",
+                "Observations about the overall audit experience and value."
+            }
+        };
+
+        return comments[_random.Next(comments.Length)];
     }
 
     private string GenerateAuditSummary(AuditType type)
@@ -397,6 +582,48 @@ public class AuditDataSeeder : IDataSeeder
                 "Equipment maintenance programs are robust with some opportunities for predictive maintenance integration.",
                 "Safety-critical equipment is well-maintained with minor documentation improvements needed.",
                 "Equipment inspection procedures are comprehensive with opportunities for digitization."
+            },
+            [AuditType.Process] = new[]
+            {
+                "Process management systems are well-documented with opportunities for continuous improvement integration.",
+                "Operational procedures are consistently followed with minor gaps in documentation currency.",
+                "Process controls are effective with recommendations for enhanced monitoring and measurement."
+            },
+            [AuditType.Compliance] = new[]
+            {
+                "Regulatory compliance framework is robust with strong adherence to applicable standards.",
+                "Compliance monitoring systems are effective with opportunities for automated tracking improvements.",
+                "Legal requirements are well-managed with minor documentation updates needed."
+            },
+            [AuditType.Fire] = new[]
+            {
+                "Fire safety systems are well-maintained with effective emergency response procedures in place.",
+                "Fire prevention measures are comprehensive with opportunities for enhanced training programs.",
+                "Fire protection equipment is properly serviced with minor improvements needed in inspection documentation."
+            },
+            [AuditType.Chemical] = new[]
+            {
+                "Chemical management systems demonstrate strong control over hazardous materials with minor procedural improvements.",
+                "Chemical storage and handling procedures are well-implemented with opportunities for enhanced monitoring.",
+                "Chemical inventory management is effective with recommendations for improved tracking systems."
+            },
+            [AuditType.Ergonomic] = new[]
+            {
+                "Ergonomic assessments show good workplace design with opportunities for employee training enhancement.",
+                "Manual handling procedures are well-established with minor improvements needed in risk assessment documentation.",
+                "Workplace ergonomics demonstrate strong commitment to employee wellbeing with some optimization opportunities."
+            },
+            [AuditType.Emergency] = new[]
+            {
+                "Emergency preparedness systems are comprehensive with effective response procedures and regular training.",
+                "Emergency response capabilities are well-developed with opportunities for communication system improvements.",
+                "Crisis management procedures are robust with minor updates needed for business continuity planning."
+            },
+            [AuditType.Management] = new[]
+            {
+                "Management systems demonstrate strong leadership commitment with effective governance structures in place.",
+                "Management review processes are well-established with opportunities for enhanced performance monitoring.",
+                "Organizational management is effective with recommendations for improved communication and decision-making processes."
             }
         };
 
@@ -426,10 +653,12 @@ public class AuditDataSeeder : IDataSeeder
         {
             [FindingType.NonConformance] = new[] { "Procedure not followed", "Missing documentation", "Regulatory requirement not met" },
             [FindingType.OpportunityForImprovement] = new[] { "Process improvement opportunity", "Efficiency enhancement potential", "Best practice implementation" },
-            [FindingType.Observation] = new[] { "Good practice noted", "Positive trend observed", "Effective control identified" }
+            [FindingType.Observation] = new[] { "Good practice noted", "Positive trend observed", "Effective control identified" },
+            [FindingType.PositiveFinding] = new[] { "Exemplary performance", "Best practice implementation", "Outstanding compliance achievement" },
+            [FindingType.CriticalNonConformance] = new[] { "Critical safety violation", "Immediate risk to personnel", "Major regulatory breach" }
         };
 
-        var typeSpecific = titles[type];
+        var typeSpecific = titles.ContainsKey(type) ? titles[type] : titles[FindingType.NonConformance];
         return $"{severity} - {typeSpecific[_random.Next(typeSpecific.Length)]}";
     }
 
@@ -456,10 +685,12 @@ public class AuditDataSeeder : IDataSeeder
         {
             [FindingType.NonConformance] = new[] { "Update procedures", "Provide additional training", "Implement controls" },
             [FindingType.OpportunityForImprovement] = new[] { "Evaluate improvement options", "Conduct cost-benefit analysis", "Pilot enhancement" },
-            [FindingType.Observation] = new[] { "Share best practice", "Document effective control", "Consider standardization" }
+            [FindingType.Observation] = new[] { "Share best practice", "Document effective control", "Consider standardization" },
+            [FindingType.PositiveFinding] = new[] { "Share best practice across organization", "Document success factors", "Recognize exemplary performance" },
+            [FindingType.CriticalNonConformance] = new[] { "Immediate shutdown and isolation", "Emergency corrective action", "Critical control implementation" }
         };
 
-        var typeSpecific = actions[type];
+        var typeSpecific = actions.ContainsKey(type) ? actions[type] : actions[FindingType.NonConformance];
         return $"{typeSpecific[_random.Next(typeSpecific.Length)]} and verify effectiveness through follow-up assessment.";
     }
 

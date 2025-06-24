@@ -55,3 +55,29 @@ export enum RoleType {
   Reporter = 'Reporter',
   Viewer = 'Viewer',
 }
+
+export enum WasteClassification {
+  NonHazardous = 1,
+  HazardousChemical = 2,
+  HazardousBiological = 3,
+  HazardousRadioactive = 4,
+  Recyclable = 5,
+  Organic = 6,
+  Electronic = 7,
+  Construction = 8,
+  Medical = 9,
+  Universal = 10,
+}
+
+export enum WasteReportStatus {
+  Draft = 1,
+  Submitted = 2,
+  UnderReview = 3,
+  Approved = 4,
+  InStorage = 5,
+  AwaitingPickup = 6,
+  InTransit = 7,
+  Disposed = 8,
+  Rejected = 9,
+  Cancelled = 10,
+}

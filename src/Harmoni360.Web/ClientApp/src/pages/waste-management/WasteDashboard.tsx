@@ -43,7 +43,10 @@ const WasteDashboard: React.FC = () => {
     return null;
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: any) => {
+    if (!status || typeof status !== 'string') {
+      return 'secondary';
+    }
     switch (status.toLowerCase()) {
       case 'pending': return 'warning';
       case 'disposed': return 'success';
@@ -53,7 +56,10 @@ const WasteDashboard: React.FC = () => {
     }
   };
 
-  const getProviderStatusColor = (status: string) => {
+  const getProviderStatusColor = (status: any) => {
+    if (!status || typeof status !== 'string') {
+      return 'secondary';
+    }
     switch (status.toLowerCase()) {
       case 'active': return 'success';
       case 'expired': return 'danger';
@@ -205,15 +211,15 @@ const WasteDashboard: React.FC = () => {
                                 <CTableDataCell>
                                   <strong>{report.title}</strong>
                                 </CTableDataCell>
-                                <CTableDataCell>{report.category}</CTableDataCell>
+                                <CTableDataCell>{report.type || 'Unknown'}</CTableDataCell>
                                 <CTableDataCell>
                                   <CBadge color={getStatusColor(report.status)}>
-                                    {report.status}
+                                    {report.status || 'Unknown'}
                                   </CBadge>
                                 </CTableDataCell>
-                                <CTableDataCell>{report.reporterName || 'Unknown'}</CTableDataCell>
+                                <CTableDataCell>{report.reportedBy || 'Unknown'}</CTableDataCell>
                                 <CTableDataCell>
-                                  {new Date(report.generatedDate).toLocaleDateString()}
+                                  {new Date(report.reportDate).toLocaleDateString()}
                                 </CTableDataCell>
                               </CTableRow>
                             ))}

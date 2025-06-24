@@ -5,16 +5,20 @@ using Harmoni360.Application.Common.Models;
 using Harmoni360.Application.Features.WasteReports.DTOs;
 using System.Linq.Expressions;
 using Harmoni360.Domain.Entities.Waste;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 namespace Harmoni360.Application.Features.WasteReports.Queries;
 
 public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery, PagedList<WasteReportDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public GetWasteReportsQueryHandler(IApplicationDbContext context)
+    public GetWasteReportsQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     public async Task<PagedList<WasteReportDto>> Handle(GetWasteReportsQuery request, CancellationToken cancellationToken)
@@ -37,21 +41,7 @@ public class GetWasteReportsQueryHandler : IRequestHandler<GetWasteReportsQuery,
         var items = await query
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(w => new WasteReportDto
-            {
-                Id = w.Id,
-                Title = w.Title,
-                Description = w.Description,
-                Category = w.Category.ToString(),
-                Status = w.DisposalStatus.ToString(),
-                GeneratedDate = w.GeneratedDate,
-                Location = w.Location,
-                ReporterId = w.ReporterId,
-                ReporterName = w.Reporter != null ? w.Reporter.Name : null,
-                AttachmentsCount = w.Attachments.Count,
-                CreatedAt = w.CreatedAt,
-                CreatedBy = w.CreatedBy
-            })
+            .ProjectTo<WasteReportDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return new PagedList<WasteReportDto>(items, totalCount, request.Page, request.PageSize);

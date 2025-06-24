@@ -21,11 +21,15 @@ public class UpdateWasteReportCommandValidator : AbstractValidator<UpdateWasteRe
             .NotEmpty().WithMessage("Location is required")
             .MaximumLength(500).WithMessage("Location must not exceed 500 characters");
 
-        RuleFor(x => x.Category)
-            .IsInEnum().WithMessage("Invalid waste category");
+        RuleFor(x => x.Classification)
+            .IsInEnum().WithMessage("Invalid waste classification");
 
-        RuleFor(x => x.GeneratedDate)
-            .NotEmpty().WithMessage("Generated date is required")
-            .LessThanOrEqualTo(DateTime.UtcNow.AddDays(1)).WithMessage("Generated date cannot be in the future");
+        RuleFor(x => x.EstimatedQuantity)
+            .GreaterThan(0).When(x => x.EstimatedQuantity.HasValue)
+            .WithMessage("Quantity must be greater than zero when specified");
+
+        RuleFor(x => x.DisposalCost)
+            .GreaterThanOrEqualTo(0).When(x => x.DisposalCost.HasValue)
+            .WithMessage("Disposal cost must be non-negative when specified");
     }
 }

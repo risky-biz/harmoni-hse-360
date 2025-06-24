@@ -32,6 +32,17 @@ public class DataSeeder : IDataSeeder
     private readonly LicenseDataSeeder _licenseDataSeeder;
     private readonly WasteDataSeeder _wasteDataSeeder;
     private readonly ModuleConfigurationDataSeeder _moduleConfigurationDataSeeder;
+    
+    // Enhanced comprehensive HSSE seeders
+    private readonly HSSEHistoricalDataSeeder _hsseHistoricalDataSeeder;
+    private readonly HSSECrossModuleDataBuilder _hsseCrossModuleDataBuilder;
+    private readonly HSSEKPIBaselineCalculator _hsseKPIBaselineCalculator;
+    
+    // Operational data seeders
+    private readonly PPEOperationalDataSeeder _ppeOperationalDataSeeder;
+    private readonly WasteOperationalDataSeeder _wasteOperationalDataSeeder;
+    private readonly SecurityOperationalDataSeeder _securityOperationalDataSeeder;
+    private readonly HealthOperationalDataSeeder _healthOperationalDataSeeder;
 
     public DataSeeder(
         ApplicationDbContext context, 
@@ -53,7 +64,19 @@ public class DataSeeder : IDataSeeder
         TrainingDataSeeder trainingDataSeeder,
         LicenseDataSeeder licenseDataSeeder,
         WasteDataSeeder wasteDataSeeder,
-        ModuleConfigurationDataSeeder moduleConfigurationDataSeeder)
+        ModuleConfigurationDataSeeder moduleConfigurationDataSeeder,
+        
+        // Enhanced comprehensive HSSE seeders
+        HSSEHistoricalDataSeeder hsseHistoricalDataSeeder,
+        HSSECrossModuleDataBuilder hsseCrossModuleDataBuilder,
+        HSSEKPIBaselineCalculator hsseKPIBaselineCalculator,
+        
+        // Operational data seeders
+        PPEOperationalDataSeeder ppeOperationalDataSeeder,
+        WasteOperationalDataSeeder wasteOperationalDataSeeder,
+        SecurityOperationalDataSeeder securityOperationalDataSeeder,
+        HealthOperationalDataSeeder healthOperationalDataSeeder
+        )
     {
         _context = context;
         _logger = logger;
@@ -76,6 +99,17 @@ public class DataSeeder : IDataSeeder
         _licenseDataSeeder = licenseDataSeeder;
         _wasteDataSeeder = wasteDataSeeder;
         _moduleConfigurationDataSeeder = moduleConfigurationDataSeeder;
+        
+        // Enhanced comprehensive HSSE seeders
+        _hsseHistoricalDataSeeder = hsseHistoricalDataSeeder;
+        _hsseCrossModuleDataBuilder = hsseCrossModuleDataBuilder;
+        _hsseKPIBaselineCalculator = hsseKPIBaselineCalculator;
+        
+        // Operational data seeders
+        _ppeOperationalDataSeeder = ppeOperationalDataSeeder;
+        _wasteOperationalDataSeeder = wasteOperationalDataSeeder;
+        _securityOperationalDataSeeder = securityOperationalDataSeeder;
+        _healthOperationalDataSeeder = healthOperationalDataSeeder;
     }
 
     public async Task SeedAsync()
@@ -110,9 +144,6 @@ public class DataSeeder : IDataSeeder
             {
                 _logger.LogInformation("ForceReseed enabled - completely resetting database...");
                 await ResetDatabaseAsync();
-                
-                // Set environment variable to tell other seeders to skip existence checks
-                Environment.SetEnvironmentVariable("HARMONI_FORCE_RESEED", "true");
             }
 
             // ESSENTIAL: Core application settings for ALL modules
@@ -239,37 +270,72 @@ public class DataSeeder : IDataSeeder
                 var licenseCount = await _context.Licenses.CountAsync();
                 _logger.LogInformation("DEBUG: Licenses seeded. Count: {LicenseCount}", licenseCount);
 
-                // TODO: Enable audit data seeding after fixing domain model compatibility
-                // _logger.LogInformation("DEBUG: Calling AuditDataSeeder...");
-                // await _auditDataSeeder.SeedAsync();
-                // await _context.SaveChangesAsync();
-                // var auditCount = await _context.Audits.CountAsync();
-                // _logger.LogInformation("DEBUG: Audits seeded. Count: {AuditCount}", auditCount);
+                _logger.LogInformation("Seeding Audit Management data...");
+                await _auditDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+                var auditCount = await _context.Audits.CountAsync();
+                _logger.LogInformation("Audits seeded. Count: {AuditCount}", auditCount);
                 
                 _logger.LogInformation("Sample data seeding completed");
             }
 
-            _logger.LogInformation("Database seeding completed successfully");
-            
-            // Clear the ForceReseed environment variable
-            if (forceReseed)
+            // ENHANCED HSSE DATA: Historical data, cross-module relationships, and KPI baselines
+            // Note: Enhanced HSSE seeders temporarily disabled due to entity compatibility issues
+            // They can be re-enabled after resolving domain model mismatches
+            if (seedSampleData) // Re-enabled with fixes
             {
-                Environment.SetEnvironmentVariable("HARMONI_FORCE_RESEED", null);
-                _logger.LogInformation("ForceReseed environment variable cleared");
+                _logger.LogInformation("Phase 4: Seeding ENHANCED HSSE DATA (included with SampleData)...");
+                _logger.LogInformation("  - 3-5 years of comprehensive historical data");
+                _logger.LogInformation("  - Cross-module relationships and dependencies");
+                _logger.LogInformation("  - KPI baselines and industry benchmarks");
+                _logger.LogInformation("  - Dashboard-ready metrics and trends");
+
+                // Historical data generation (3-5 years of interconnected data)
+                _logger.LogInformation("Generating comprehensive historical HSSE data...");
+                await _hsseHistoricalDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                // Build cross-module relationships
+                _logger.LogInformation("Building cross-module data relationships...");
+                await _hsseCrossModuleDataBuilder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                // Calculate KPI baselines and targets
+                _logger.LogInformation("Calculating KPI baselines and benchmarks...");
+                await _hsseKPIBaselineCalculator.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                // Seed operational data for all modules
+                _logger.LogInformation("Phase 5: Seeding OPERATIONAL DATA for all modules...");
+                _logger.LogInformation("  - PPE Operations (Assignments, Requests, Inspections, Compliance)");
+                _logger.LogInformation("  - Waste Management Operations (Reports, Disposal Records, Compliance)");
+                _logger.LogInformation("  - Security Management Operations (Incidents, Threat Assessments, Controls)");
+                _logger.LogInformation("  - Health Management Operations (Records, Incidents, Vaccinations, Medical Conditions)");
+
+                _logger.LogInformation("Seeding PPE operational data...");
+                await _ppeOperationalDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Seeding Waste operational data...");
+                await _wasteOperationalDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Seeding Security operational data...");
+                await _securityOperationalDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Seeding Health operational data...");
+                await _healthOperationalDataSeeder.SeedAsync();
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Enhanced HSSE data seeding completed");
             }
+
+            _logger.LogInformation("Database seeding completed successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while seeding database");
-            // Clear the ForceReseed environment variable even if there's an error
-            var forceReseedValue = _configuration["DataSeeding:ForceReseed"];
-            var wasForceReseed = string.Equals(forceReseedValue, "true", StringComparison.OrdinalIgnoreCase) || 
-                                string.Equals(forceReseedValue, "True", StringComparison.OrdinalIgnoreCase) ||
-                                (bool.TryParse(forceReseedValue, out var boolResult) && boolResult);
-            if (wasForceReseed)
-            {
-                Environment.SetEnvironmentVariable("HARMONI_FORCE_RESEED", null);
-            }
             throw;
         }
     }
@@ -471,6 +537,13 @@ public class DataSeeder : IDataSeeder
                 await _context.SaveChangesAsync();
             }
             
+            // Health operational data dependencies (using existing entities only)
+            if (await _context.VaccinationRecords.AnyAsync())
+            {
+                _context.VaccinationRecords.RemoveRange(_context.VaccinationRecords);
+                await _context.SaveChangesAsync();
+            }
+            
             // Health records
             if (await _context.HealthRecords.AnyAsync())
             {
@@ -568,6 +641,12 @@ public class DataSeeder : IDataSeeder
             }
 
             // Waste management dependencies
+            if (await _context.WasteCompliances.AnyAsync())
+            {
+                _context.WasteCompliances.RemoveRange(_context.WasteCompliances);
+                await _context.SaveChangesAsync();
+            }
+            
             if (await _context.Set<WasteComment>().AnyAsync())
             {
                 _context.Set<WasteComment>().RemoveRange(_context.Set<WasteComment>());
@@ -735,7 +814,8 @@ public class DataSeeder : IDataSeeder
             "SecurityIncidents", "SecurityControls", "SecurityIncidentAttachments", "SecurityIncidentInvolvedPersons",
             "SecurityIncidentResponses", "ThreatAssessments", "ThreatIndicators", "SecurityAuditLogs",
             "Audits", "AuditItems", "AuditFindings", "AuditAttachments", "AuditComments", "AuditFindingAttachments",
-            "WasteReports", "WasteTypes", "DisposalProviders", "WasteDisposalRecords", "WasteAttachments", "WasteComments", "WasteCompliances"
+            "WasteReports", "WasteTypes", "DisposalProviders", "WasteDisposalRecords", "WasteAttachments", "WasteComments", "WasteCompliances",
+            "VaccinationRecords"
         };
 
         foreach (var table in tables)
