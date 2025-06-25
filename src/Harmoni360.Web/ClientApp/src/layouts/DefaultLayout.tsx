@@ -503,7 +503,7 @@ const DefaultLayout: React.FC = () => {
             <NavLink 
               to={item.to} 
               className="nav-link" 
-              end={item.to === '/incidents' || item.to === '/ppe' || item.to === '/health' || item.to === '/hazards' || item.to === '/work-permits' || item.to === '/trainings' || item.to === '/inspections' || item.to === '/audits' || item.to === '/licenses' || item.to === '/waste-management'}
+              end={item.to === '/incidents' || item.to === '/ppe' || item.to === '/health' || item.to === '/hazards' || item.to === '/work-permits' || item.to === '/trainings' || item.to === '/inspections' || item.to === '/audits' || item.to === '/licenses' || item.to === '/waste-management' || item.to === '/security/incidents'}
             >
               {depth < 2 && item.icon}
               <HighlightedText text={item.name} searchQuery={searchQuery} />

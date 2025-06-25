@@ -36,7 +36,7 @@ public class HealthRecord : BaseEntity, IAuditableEntity
     public string? LastModifiedBy { get; private set; }
 
     // Navigation properties
-    public User Person { get; private set; } = null!;
+    public Person Person { get; private set; } = null!;
     
     private readonly List<MedicalCondition> _medicalConditions = new();
     public IReadOnlyCollection<MedicalCondition> MedicalConditions => _medicalConditions.AsReadOnly();

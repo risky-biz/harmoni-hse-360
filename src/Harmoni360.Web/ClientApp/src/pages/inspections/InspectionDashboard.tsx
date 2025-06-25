@@ -57,6 +57,7 @@ import { format, formatDistanceToNow, subDays, subMonths } from 'date-fns';
 import { InspectionStatus, InspectionPriority, InspectionType } from '../../types/inspection';
 import { DonutChart, BarChart, LineChart } from '../../components/inspections/charts';
 import { exportDashboardToPDF, exportInspectionsToExcel } from '../../utils/exportUtils';
+import '../../styles/inspection-dashboard.scss';
 
 export const InspectionDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -139,7 +140,7 @@ export const InspectionDashboard: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: InspectionStatus | string) => {
     const statusConfig: Record<string, string> = {
       'Draft': 'secondary',
       'Scheduled': 'info',
@@ -147,20 +148,20 @@ export const InspectionDashboard: React.FC = () => {
       'Completed': 'success',
       'Cancelled': 'danger'
     };
-    return statusConfig[status] || 'secondary';
+    return statusConfig[status.toString()] || 'secondary';
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: InspectionPriority | string) => {
     const priorityConfig: Record<string, string> = {
       'Low': 'success',
       'Medium': 'warning',
       'High': 'danger',
       'Critical': 'dark'
     };
-    return priorityConfig[priority] || 'secondary';
+    return priorityConfig[priority.toString()] || 'secondary';
   };
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type: InspectionType | string) => {
     const typeConfig: Record<string, string> = {
       'Safety': 'danger',
       'Environmental': 'success',
@@ -169,7 +170,7 @@ export const InspectionDashboard: React.FC = () => {
       'Maintenance': 'info',
       'Compliance': 'dark'
     };
-    return typeConfig[type] || 'secondary';
+    return typeConfig[type.toString()] || 'secondary';
   };
 
   if (error) {
@@ -184,6 +185,7 @@ export const InspectionDashboard: React.FC = () => {
   return (
     <PermissionGuard module={ModuleType.InspectionManagement} permission={PermissionType.Read}>
       <DemoModeWrapper>
+        <div className="inspection-dashboard">
         {/* Header */}
         <CRow className="mb-4">
           <CCol>
@@ -389,12 +391,12 @@ export const InspectionDashboard: React.FC = () => {
             <CRow>
               {/* Inspection Status Distribution */}
               <CCol lg={6}>
-                <CCard className="mb-4">
+                <CCard className="mb-4 chart-card status-distribution-chart">
                   <CCardHeader>
                     <FontAwesomeIcon icon={faChartPie} className="me-2" />
                     Status Distribution
                   </CCardHeader>
-                  <CCardBody>
+                  <CCardBody className="chart-container">
                     {dashboardData?.inspectionsByStatus && dashboardData.inspectionsByStatus.length > 0 ? (
                       <DonutChart
                         data={{
@@ -424,12 +426,12 @@ export const InspectionDashboard: React.FC = () => {
 
               {/* Inspection Type Distribution */}
               <CCol lg={6}>
-                <CCard className="mb-4">
+                <CCard className="mb-4 chart-card type-distribution-chart">
                   <CCardHeader>
                     <FontAwesomeIcon icon={faChartBar} className="me-2" />
                     Type Distribution
                   </CCardHeader>
-                  <CCardBody>
+                  <CCardBody className="chart-container">
                     {dashboardData?.inspectionsByType && dashboardData.inspectionsByType.length > 0 ? (
                       <BarChart
                         data={{
@@ -685,12 +687,12 @@ export const InspectionDashboard: React.FC = () => {
             {/* Monthly Trends Chart */}
             <CRow>
               <CCol lg={12}>
-                <CCard className="mb-4">
+                <CCard className="mb-4 chart-card monthly-trends-chart">
                   <CCardHeader>
                     <FontAwesomeIcon icon={faChartLine} className="me-2" />
                     Monthly Inspection Trends
                   </CCardHeader>
-                  <CCardBody>
+                  <CCardBody className="chart-container">
                     {dashboardData?.monthlyTrends && dashboardData.monthlyTrends.length > 0 ? (
                       <LineChart
                         data={{
@@ -743,6 +745,7 @@ export const InspectionDashboard: React.FC = () => {
             </CRow>
           </>
         )}
+        </div>
       </DemoModeWrapper>
     </PermissionGuard>
   );

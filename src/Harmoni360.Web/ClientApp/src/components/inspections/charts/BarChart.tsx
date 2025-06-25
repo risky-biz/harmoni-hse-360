@@ -58,15 +58,17 @@ export const BarChart: React.FC<BarChartProps> = ({
   };
 
   return (
-    <div style={{ height }}>
+    <div className="bar-chart-container" style={{ height }}>
       {title && (
         <h6 className="text-center mb-3 text-muted">{title}</h6>
       )}
-      <CChart
-        type="bar"
-        data={data}
-        options={options}
-      />
+      <div className="chart-wrapper" style={{ height: title ? height - 40 : height }}>
+        <CChart
+          type="bar"
+          data={data}
+          options={options}
+        />
+      </div>
     </div>
   );
 };

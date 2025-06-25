@@ -1,0 +1,100 @@
+// Inspection Dashboard Specific Styles
+
+// Fix for chart hover layout issues
+.inspection-dashboard {
+  // Status Distribution Chart
+  .status-distribution-chart,
+  .type-distribution-chart {
+    position: relative;
+    
+    // Fixed height container to prevent layout shift
+    .chart-wrapper {
+      position: relative;
+      height: 350px;
+      overflow: hidden;
+    }
+    
+    // Ensure canvas doesn't exceed container
+    canvas {
+      max-width: 100% !important;
+      max-height: 100% !important;
+    }
+  }
+  
+  // Card body containing charts
+  .card-body {
+    // Prevent overflow and maintain consistent height
+    &.chart-container {
+      position: relative;
+      min-height: 400px;
+      overflow: hidden;
+    }
+  }
+  
+  // Fix for Chart.js tooltip positioning
+  .chartjs-tooltip {
+    position: absolute !important;
+    z-index: 1000;
+  }
+  
+  // Prevent layout reflow on hover
+  .card {
+    &.chart-card {
+      // Maintain consistent dimensions
+      transition: none;
+      
+      .card-body {
+        // Disable any hover transforms
+        &:hover {
+          transform: none;
+        }
+      }
+    }
+  }
+  
+  // Performance optimization for charts
+  .donut-chart-container,
+  .bar-chart-container,
+  .line-chart-container {
+    // Enable hardware acceleration
+    will-change: transform;
+    transform: translateZ(0);
+    
+    // Prevent layout thrashing
+    contain: layout style paint;
+  }
+}
+
+// Additional fixes for chart rendering performance
+@media (hover: hover) {
+  .inspection-dashboard {
+    // Optimize hover interactions
+    .chart-card {
+      // Reduce repaints on hover
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      
+      // Smooth out any transitions
+      * {
+        transition-duration: 0ms !important;
+      }
+    }
+  }
+}
+
+// Fix for specific chart library issues
+.c-chart-wrapper {
+  position: relative !important;
+  height: 100% !important;
+  
+  // Prevent canvas from expanding beyond container
+  canvas {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}

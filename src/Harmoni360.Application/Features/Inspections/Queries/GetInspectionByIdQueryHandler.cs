@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Harmoni360.Application.Features.Inspections.Queries;
 
-public class GetInspectionByIdQueryHandler : IRequestHandler<GetInspectionByIdQuery, InspectionDetailDto>
+public class GetInspectionByIdQueryHandler : IRequestHandler<GetInspectionByIdQuery, InspectionDetailDto?>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class GetInspectionByIdQueryHandler : IRequestHandler<GetInspectionByIdQu
         _context = context;
     }
 
-    public async Task<InspectionDetailDto> Handle(GetInspectionByIdQuery request, CancellationToken cancellationToken)
+    public async Task<InspectionDetailDto?> Handle(GetInspectionByIdQuery request, CancellationToken cancellationToken)
     {
         var inspection = await _context.Inspections
             .Include(i => i.Inspector)
@@ -35,7 +35,7 @@ public class GetInspectionByIdQueryHandler : IRequestHandler<GetInspectionByIdQu
             .FirstOrDefaultAsync(i => i.Id == request.InspectionId, cancellationToken);
 
         if (inspection == null)
-            throw new ArgumentException($"Inspection with ID {request.InspectionId} not found");
+            return null;
 
         return MapToDetailDto(inspection);
     }

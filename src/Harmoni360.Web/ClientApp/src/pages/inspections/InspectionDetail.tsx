@@ -98,7 +98,7 @@ import {
   useUpdateFindingMutation,
   useCloseFindingMutation
 } from '../../features/inspections/inspectionApi';
-import { InspectionDetailDto, InspectionStatus, InspectionPriority, InspectionType, FindingStatus, FindingSeverity, InspectionAttachmentDto } from '../../types/inspection';
+import { InspectionDetailDto, InspectionStatus, InspectionPriority, InspectionType, FindingStatus, FindingSeverity, InspectionAttachmentDto, InspectionItemType } from '../../types/inspection';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';
@@ -194,16 +194,16 @@ export const InspectionDetail: React.FC = () => {
     return <CBadge color={config.color}>{config.text}</CBadge>;
   };
 
-  const getItemTypeIcon = (type: string) => {
+  const getItemTypeIcon = (type: string | number) => {
     const iconMap: { [key: string]: any } = {
-      'YesNo': faCheck,
-      'Text': faFileAlt,
-      'Number': faRuler,
-      'MultipleChoice': faCheckCircle,
-      'Measurement': faThermometerHalf,
-      'Visual': faEye
+      [InspectionItemType.YesNo]: faCheck,
+      [InspectionItemType.Text]: faFileAlt,
+      [InspectionItemType.Number]: faRuler,
+      [InspectionItemType.MultipleChoice]: faCheckCircle,
+      [InspectionItemType.Checklist]: faCheckCircle,
+      [InspectionItemType.Photo]: faImage
     };
-    return iconMap[type] || faInfoCircle;
+    return iconMap[type.toString()] || faInfoCircle;
   };
 
   if (isLoading) {

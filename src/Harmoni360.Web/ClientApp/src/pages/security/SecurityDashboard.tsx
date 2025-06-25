@@ -70,8 +70,8 @@ const SecurityDashboard: React.FC = () => {
   // Initialize SignalR
   const { connectionState } = useSignalR();
 
-  // Calculate date range based on selection
-  const getDateRange = () => {
+  // Calculate date range based on selection - memoized to prevent infinite re-renders
+  const dateRange = React.useMemo(() => {
     const now = new Date();
     switch (timeRange) {
       case '7d':
@@ -92,7 +92,7 @@ const SecurityDashboard: React.FC = () => {
       default:
         return {};
     }
-  };
+  }, [timeRange]);
 
   const { 
     data: dashboardData, 
@@ -100,7 +100,7 @@ const SecurityDashboard: React.FC = () => {
     error, 
     refetch
   } = useGetSecurityDashboardQuery({
-    ...getDateRange(),
+    ...dateRange,
     includeThreatIntel: true,
     includeTrends: true,
     includeMetrics: true,

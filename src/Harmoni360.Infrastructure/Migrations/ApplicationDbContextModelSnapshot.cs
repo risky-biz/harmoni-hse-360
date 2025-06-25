@@ -4600,6 +4600,84 @@ namespace Harmoni360.Infrastructure.Migrations
                     b.ToTable("Permissions", (string)null);
                 });
 
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("EmployeeId")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("PersonType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Persons_Email");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("EmployeeId", "IsActive")
+                        .HasDatabaseName("IX_Persons_EmployeeId_IsActive")
+                        .HasFilter("\"EmployeeId\" IS NOT NULL");
+
+                    b.HasIndex("PersonType", "IsActive")
+                        .HasDatabaseName("IX_Persons_PersonType_IsActive");
+
+                    b.ToTable("Persons", (string)null);
+                });
+
             modelBuilder.Entity("Harmoni360.Domain.Entities.RiskAssessment", b =>
                 {
                     b.Property<int>("Id")
@@ -8970,10 +9048,10 @@ namespace Harmoni360.Infrastructure.Migrations
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.HealthRecord", b =>
                 {
-                    b.HasOne("Harmoni360.Domain.Entities.User", "Person")
-                        .WithMany()
+                    b.HasOne("Harmoni360.Domain.Entities.Person", "Person")
+                        .WithMany("HealthRecords")
                         .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Person");
@@ -9514,6 +9592,16 @@ namespace Harmoni360.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Person", b =>
+                {
+                    b.HasOne("Harmoni360.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.RiskAssessment", b =>
@@ -10223,6 +10311,11 @@ namespace Harmoni360.Infrastructure.Migrations
             modelBuilder.Entity("Harmoni360.Domain.Entities.PPEStorageLocation", b =>
                 {
                     b.Navigation("PPEItems");
+                });
+
+            modelBuilder.Entity("Harmoni360.Domain.Entities.Person", b =>
+                {
+                    b.Navigation("HealthRecords");
                 });
 
             modelBuilder.Entity("Harmoni360.Domain.Entities.Role", b =>

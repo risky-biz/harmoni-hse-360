@@ -49,9 +49,9 @@ import { ModuleType, PermissionType } from '../../types/permissions';
 const inspectionSchema = yup.object().shape({
   title: yup.string().required('Title is required'),
   description: yup.string().required('Description is required'),
-  type: yup.string().required('Inspection type is required'),
-  category: yup.string().required('Category is required'),
-  priority: yup.string().required('Priority is required'),
+  type: yup.number().required('Inspection type is required'),
+  category: yup.number().required('Category is required'),
+  priority: yup.number().required('Priority is required'),
   scheduledDate: yup.date().required('Scheduled date is required'),
   inspectorId: yup.number().required('Inspector is required'),
   locationId: yup.number().required('Location is required'),
@@ -61,7 +61,7 @@ const inspectionSchema = yup.object().shape({
   checklistItems: yup.array().of(
     yup.object().shape({
       question: yup.string().required('Question is required'),
-      type: yup.string().required('Item type is required'),
+      type: yup.number().required('Item type is required'),
       isRequired: yup.boolean().required(),
       description: yup.string().optional(),
       expectedValue: yup.string().optional(),
@@ -76,38 +76,44 @@ const inspectionSchema = yup.object().shape({
 
 type InspectionFormData = yup.InferType<typeof inspectionSchema>;
 
+import { InspectionType, InspectionCategory, InspectionPriority, InspectionItemType } from '../../types/inspection';
+
 // Mock data - Replace with actual API calls
 const inspectionTypes = [
-  { value: 'Safety', label: 'Safety Inspection' },
-  { value: 'Environmental', label: 'Environmental Inspection' },
-  { value: 'Quality', label: 'Quality Inspection' },
-  { value: 'Security', label: 'Security Inspection' },
-  { value: 'Maintenance', label: 'Maintenance Inspection' },
-  { value: 'Compliance', label: 'Compliance Inspection' }
+  { value: InspectionType.Safety, label: 'Safety Inspection' },
+  { value: InspectionType.Environmental, label: 'Environmental Inspection' },
+  { value: InspectionType.Equipment, label: 'Equipment Inspection' },
+  { value: InspectionType.Compliance, label: 'Compliance Inspection' },
+  { value: InspectionType.Fire, label: 'Fire Inspection' },
+  { value: InspectionType.Chemical, label: 'Chemical Inspection' },
+  { value: InspectionType.Ergonomic, label: 'Ergonomic Inspection' },
+  { value: InspectionType.Emergency, label: 'Emergency Inspection' }
 ];
 
 const inspectionCategories = [
-  { value: 'Routine', label: 'Routine' },
-  { value: 'Scheduled', label: 'Scheduled' },
-  { value: 'Emergency', label: 'Emergency' },
-  { value: 'Incident', label: 'Incident-Based' },
-  { value: 'Audit', label: 'Audit' }
+  { value: InspectionCategory.Routine, label: 'Routine' },
+  { value: InspectionCategory.Planned, label: 'Planned' },
+  { value: InspectionCategory.Unplanned, label: 'Unplanned' },
+  { value: InspectionCategory.Regulatory, label: 'Regulatory' },
+  { value: InspectionCategory.Audit, label: 'Audit' },
+  { value: InspectionCategory.Incident, label: 'Incident-Based' },
+  { value: InspectionCategory.Maintenance, label: 'Maintenance' }
 ];
 
 const priorities = [
-  { value: 'Low', label: 'Low' },
-  { value: 'Medium', label: 'Medium' },
-  { value: 'High', label: 'High' },
-  { value: 'Critical', label: 'Critical' }
+  { value: InspectionPriority.Low, label: 'Low' },
+  { value: InspectionPriority.Medium, label: 'Medium' },
+  { value: InspectionPriority.High, label: 'High' },
+  { value: InspectionPriority.Critical, label: 'Critical' }
 ];
 
 const itemTypes = [
-  { value: 'YesNo', label: 'Yes/No' },
-  { value: 'Text', label: 'Text Input' },
-  { value: 'Number', label: 'Number' },
-  { value: 'MultipleChoice', label: 'Multiple Choice' },
-  { value: 'Measurement', label: 'Measurement' },
-  { value: 'Visual', label: 'Visual Check' }
+  { value: InspectionItemType.YesNo, label: 'Yes/No' },
+  { value: InspectionItemType.Text, label: 'Text Input' },
+  { value: InspectionItemType.Number, label: 'Number' },
+  { value: InspectionItemType.MultipleChoice, label: 'Multiple Choice' },
+  { value: InspectionItemType.Checklist, label: 'Checklist' },
+  { value: InspectionItemType.Photo, label: 'Photo' }
 ];
 
 // Mock departments and locations - Replace with actual API calls
@@ -145,7 +151,7 @@ export const CreateInspection: React.FC = () => {
     {
       question: '',
       description: '',
-      type: 'YesNo',
+      type: InspectionItemType.YesNo,
       isRequired: true,
       expectedValue: '',
       unit: '',
@@ -165,7 +171,7 @@ export const CreateInspection: React.FC = () => {
   } = useForm<InspectionFormData>({
     resolver: yupResolver(inspectionSchema) as any,
     defaultValues: {
-      priority: 'Medium',
+      priority: 2, // Medium = 2
       estimatedDurationMinutes: 60,
       checklistItems: checklistItems
     }
@@ -177,7 +183,7 @@ export const CreateInspection: React.FC = () => {
     const newItem = {
       question: '',
       description: '',
-      type: 'YesNo',
+      type: InspectionItemType.YesNo,
       isRequired: true,
       expectedValue: '',
       unit: '',
@@ -216,18 +222,20 @@ export const CreateInspection: React.FC = () => {
       const inspectionData: CreateInspectionCommand = {
         title: data.title,
         description: data.description,
-        type: data.type,
-        category: data.category,
-        priority: data.priority,
+        type: Number(data.type),
+        category: Number(data.category),
+        priority: Number(data.priority),
         scheduledDate: data.scheduledDate.toISOString(),
         inspectorId: data.inspectorId || 1,
         locationId: data.locationId,
         departmentId: data.departmentId,
         facilityId: data.facilityId,
         estimatedDurationMinutes: data.estimatedDurationMinutes,
-        checklistItems: checklistItems.map((item, index) => ({
+        items: checklistItems.map((item, index) => ({
           ...item,
-          sortOrder: index + 1
+          type: Number(item.type),
+          sortOrder: index + 1,
+          options: item.options ? item.options.split(',').map(o => o.trim()) : []
         }))
       };
 
@@ -302,7 +310,7 @@ export const CreateInspection: React.FC = () => {
                               Inspection Type *
                             </CFormLabel>
                             <CFormSelect
-                              {...register('type')}
+                              {...register('type', { valueAsNumber: true })}
                               id="type"
                               invalid={!!errors.type}
                             >
@@ -327,7 +335,7 @@ export const CreateInspection: React.FC = () => {
                               Category *
                             </CFormLabel>
                             <CFormSelect
-                              {...register('category')}
+                              {...register('category', { valueAsNumber: true })}
                               id="category"
                               invalid={!!errors.category}
                             >
@@ -349,7 +357,7 @@ export const CreateInspection: React.FC = () => {
                               Priority *
                             </CFormLabel>
                             <CFormSelect
-                              {...register('priority')}
+                              {...register('priority', { valueAsNumber: true })}
                               id="priority"
                               invalid={!!errors.priority}
                             >
@@ -579,8 +587,8 @@ export const CreateInspection: React.FC = () => {
                                 <CCol md={4}>
                                   <CFormLabel>Item Type *</CFormLabel>
                                   <CFormSelect
-                                    value={item.type}
-                                    onChange={(e) => updateChecklistItem(index, 'type', e.target.value)}
+                                    value={item.type.toString()}
+                                    onChange={(e) => updateChecklistItem(index, 'type', Number(e.target.value))}
                                   >
                                     {itemTypes.map(type => (
                                       <option key={type.value} value={type.value}>
@@ -603,7 +611,7 @@ export const CreateInspection: React.FC = () => {
                                 </CCol>
                               </CRow>
 
-                              {item.type === 'MultipleChoice' && (
+                              {Number(item.type) === InspectionItemType.MultipleChoice && (
                                 <CRow className="mb-3">
                                   <CCol>
                                     <CFormLabel>Options (comma-separated)</CFormLabel>
@@ -616,7 +624,7 @@ export const CreateInspection: React.FC = () => {
                                 </CRow>
                               )}
 
-                              {(item.type === 'Number' || item.type === 'Measurement') && (
+                              {(Number(item.type) === InspectionItemType.Number || Number(item.type) === InspectionItemType.Checklist) && (
                                 <CRow className="mb-3">
                                   <CCol md={4}>
                                     <CFormLabel>Expected Value</CFormLabel>
@@ -645,7 +653,7 @@ export const CreateInspection: React.FC = () => {
                                 </CRow>
                               )}
 
-                              {item.type === 'Measurement' && (
+                              {Number(item.type) === InspectionItemType.Number && (
                                 <CRow className="mb-3">
                                   <CCol md={6}>
                                     <CFormLabel>Unit</CFormLabel>

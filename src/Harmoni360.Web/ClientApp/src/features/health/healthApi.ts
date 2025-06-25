@@ -186,18 +186,34 @@ export interface GetHealthRecordsParams {
 }
 
 export interface GetHealthRecordsResponse {
-  healthRecords: HealthRecordDto[];
+  records: HealthRecordDto[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
+  activeRecords: number;
+  studentRecords: number;
+  staffRecords: number;
+  criticalConditionsCount: number;
+  expiringVaccinationsCount: number;
 }
 
 export interface CreateHealthRecordCommand {
-  personId: number;
-  personType: string;
+  // Existing person ID (if person already exists)
+  personId?: number;
+  
+  // Person details (for creating new person)
+  personName?: string;
+  personEmail?: string;
+  personPhoneNumber?: string;
+  personDepartment?: string;
+  personPosition?: string;
+  personEmployeeId?: string;
+  personType: number;
+  
+  // Health record details
   dateOfBirth?: string;
-  bloodType?: string;
+  bloodType?: number;
   medicalNotes?: string;
 }
 
@@ -834,7 +850,7 @@ export const healthApi = createApi({
       },
       providesTags: (result) => [
         'HealthRecord',
-        ...(result?.healthRecords.map(({ id }) => ({
+        ...(result?.records?.map(({ id }) => ({
           type: 'HealthRecord' as const,
           id,
         })) ?? []),
@@ -849,7 +865,7 @@ export const healthApi = createApi({
       providesTags: (_, __, { id }) => [{ type: 'HealthRecord' as const, id }],
     }),
 
-    createHealthRecord: builder.mutation<{ id: number }, CreateHealthRecordCommand>({
+    createHealthRecord: builder.mutation<HealthRecordDto, CreateHealthRecordCommand>({
       query: (command) => ({
         url: '/records',
         method: 'POST',

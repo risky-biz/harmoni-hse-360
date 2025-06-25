@@ -63,15 +63,17 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   };
 
   return (
-    <div style={{ height }}>
+    <div className="donut-chart-container" style={{ height }}>
       {title && (
         <h6 className="text-center mb-3 text-muted">{title}</h6>
       )}
-      <CChart
-        type="doughnut"
-        data={chartData}
-        options={options}
-      />
+      <div className="chart-wrapper" style={{ height: title ? height - 40 : height }}>
+        <CChart
+          type="doughnut"
+          data={chartData}
+          options={options}
+        />
+      </div>
     </div>
   );
 };
