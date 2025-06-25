@@ -51,8 +51,8 @@ public static class DependencyInjection
         }
         else
         {
-            // Use in-memory cache as fallback
-            services.AddMemoryCache();
+            // Use in-memory distributed cache as fallback
+            services.AddDistributedMemoryCache();
         }
 
         // Add infrastructure services
