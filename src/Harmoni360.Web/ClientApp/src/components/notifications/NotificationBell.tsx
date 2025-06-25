@@ -78,7 +78,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = '' }) =
 
   const loadUnreadCount = async () => {
     try {
-      const response = await fetch('/api/notifications/unread-count', {
+      const response = await fetch('/api/notification/unread-count', {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'

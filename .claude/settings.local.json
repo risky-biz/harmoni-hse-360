@@ -133,7 +133,11 @@
       "Bash(npm run:*)",
       "Bash(git checkout:*)",
       "Bash(git reset:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(HARMONI_FORCE_RESEED=true dotnet run --project src/Harmoni360.Web --environment Development)",
+      "Bash(sudo kill:*)",
+      "Bash(./test-hsse-seeders.sh:*)",
+      "Bash(HARMONI_FORCE_RESEED=true dotnet run --no-build)"
     ]
   },
   "enableAllProjectMcpServers": false

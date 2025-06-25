@@ -54,4 +54,16 @@ public class IncidentHub : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"location-{location}");
     }
+
+    public async Task JoinGroup(string groupName)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        _logger.LogInformation("User {UserId} joined group: {GroupName}", Context.UserIdentifier, groupName);
+    }
+
+    public async Task LeaveGroup(string groupName)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        _logger.LogInformation("User {UserId} left group: {GroupName}", Context.UserIdentifier, groupName);
+    }
 }

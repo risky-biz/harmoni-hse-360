@@ -60,7 +60,7 @@ import {
   useUpdateInspectionMutation 
 } from '../../features/inspections/inspectionApi';
 import InspectionAttachmentManager from '../../components/inspections/AttachmentManager';
-import { InspectionDetailDto, InspectionStatus, InspectionItemDto, InspectionAttachmentDto } from '../../types/inspection';
+import { InspectionDetailDto, InspectionStatus, InspectionItemDto, InspectionAttachmentDto, InspectionPriority, InspectionItemType } from '../../types/inspection';
 import DemoModeWrapper from '../../components/common/DemoModeWrapper';
 import { PermissionGuard } from '../../components/auth/PermissionGuard';
 import { ModuleType, PermissionType } from '../../types/permissions';
@@ -70,9 +70,9 @@ import { format } from 'date-fns';
 const editInspectionSchema = yup.object().shape({
   title: yup.string().required('Title is required'),
   description: yup.string().required('Description is required'),
-  type: yup.string().required('Inspection type is required'),
-  category: yup.string().required('Category is required'),
-  priority: yup.string().required('Priority is required'),
+  type: yup.number().required('Type is required'),
+  category: yup.number().required('Category is required'),
+  priority: yup.number().required('Priority is required'),
   scheduledDate: yup.date().required('Scheduled date is required'),
   estimatedDurationMinutes: yup.number().min(1, 'Duration must be at least 1 minute').required('Estimated duration is required'),
   locationId: yup.number().required('Location is required'),
@@ -101,10 +101,10 @@ const inspectionCategories = [
 ];
 
 const priorities = [
-  { value: 'Low', label: 'Low' },
-  { value: 'Medium', label: 'Medium' },
-  { value: 'High', label: 'High' },
-  { value: 'Critical', label: 'Critical' }
+  { value: InspectionPriority.Low, label: 'Low' },
+  { value: InspectionPriority.Medium, label: 'Medium' },
+  { value: InspectionPriority.High, label: 'High' },
+  { value: InspectionPriority.Critical, label: 'Critical' }
 ];
 
 const departments = [
@@ -199,25 +199,37 @@ export const EditInspection: React.FC = () => {
     if (!inspection) return;
 
     try {
-      const itemUpdates = Object.entries(itemResponses).map(([itemId, values]) => ({
-        id: Number(itemId),
-        response: values.response,
-        notes: values.notes
-      }));
+      const items = inspection.items.map(item => {
+        const itemResponse = itemResponses[item.id] || { response: '', notes: '' };
+        return {
+          id: item.id,
+          checklistItemId: item.checklistItemId,
+          question: item.question,
+          description: item.description,
+          type: item.type,
+          isRequired: item.isRequired,
+          response: itemResponse.response,
+          notes: itemResponse.notes,
+          sortOrder: item.sortOrder,
+          expectedValue: item.expectedValue,
+          unit: item.unit,
+          minValue: item.minValue,
+          maxValue: item.maxValue,
+          options: item.options || []
+        };
+      });
 
       await updateInspection({
         id: inspection.id,
         title: data.title,
         description: data.description,
-        type: data.type,
-        category: data.category,
         priority: data.priority,
         scheduledDate: data.scheduledDate.toISOString(),
         estimatedDurationMinutes: data.estimatedDurationMinutes,
         locationId: data.locationId,
         departmentId: data.departmentId,
         facilityId: data.facilityId,
-        itemUpdates
+        items
       }).unwrap();
 
       toast.success('Inspection updated successfully!');
@@ -435,7 +447,7 @@ export const EditInspection: React.FC = () => {
                               Priority *
                             </CFormLabel>
                             <CFormSelect
-                              {...register('priority')}
+                              {...register('priority', { valueAsNumber: true })}
                               id="priority"
                               invalid={!!errors.priority}
                               disabled={!canEditBasicInfo()}
@@ -674,7 +686,7 @@ export const EditInspection: React.FC = () => {
                                     <CRow>
                                       <CCol md={6}>
                                         <CFormLabel>Response</CFormLabel>
-                                        {item.type === 'YesNo' ? (
+                                        {item.type === InspectionItemType.YesNo ? (
                                           <CFormSelect
                                             value={itemResponses[item.id]?.response || ''}
                                             onChange={(e) => updateItemResponse(item.id, 'response', e.target.value)}
@@ -684,7 +696,7 @@ export const EditInspection: React.FC = () => {
                                             <option value="No">No</option>
                                             <option value="N/A">N/A</option>
                                           </CFormSelect>
-                                        ) : item.type === 'MultipleChoice' && item.options ? (
+                                        ) : item.type === InspectionItemType.MultipleChoice && item.options ? (
                                           <CFormSelect
                                             value={itemResponses[item.id]?.response || ''}
                                             onChange={(e) => updateItemResponse(item.id, 'response', e.target.value)}
@@ -696,7 +708,7 @@ export const EditInspection: React.FC = () => {
                                           </CFormSelect>
                                         ) : (
                                           <CFormInput
-                                            type={item.type === 'Number' || item.type === 'Measurement' ? 'number' : 'text'}
+                                            type={item.type === InspectionItemType.Number ? 'number' : 'text'}
                                             value={itemResponses[item.id]?.response || ''}
                                             onChange={(e) => updateItemResponse(item.id, 'response', e.target.value)}
                                             placeholder={`Enter ${item.typeName.toLowerCase()}...`}

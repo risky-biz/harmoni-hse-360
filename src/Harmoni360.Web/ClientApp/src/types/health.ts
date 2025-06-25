@@ -1,6 +1,8 @@
 export enum PersonType {
   Student = 'Student',
-  Staff = 'Staff'
+  Staff = 'Staff',
+  Visitor = 'Visitor',
+  Contractor = 'Contractor'
 }
 
 export enum BloodType {

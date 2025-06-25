@@ -380,9 +380,9 @@ const HealthAwareIncidentForm: React.FC<HealthAwareIncidentFormProps> = ({
               <div className="text-center p-3">
                 <CSpinner color="primary" />
               </div>
-            ) : healthRecords && healthRecords.healthRecords.length > 0 ? (
+            ) : healthRecords && healthRecords.records.length > 0 ? (
               <CListGroup>
-                {healthRecords.healthRecords.map((record) => (
+                {healthRecords.records.map((record) => (
                   <CListGroupItem
                     key={record.id}
                     className="cursor-pointer"

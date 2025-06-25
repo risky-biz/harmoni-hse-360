@@ -137,18 +137,15 @@ namespace Harmoni360.Web.Controllers
 
             _logger.LogInformation("Uploading attachment to inspection {Id}", id);
             
-            // TODO: Implement UploadInspectionAttachmentCommand
-            // var command = new UploadInspectionAttachmentCommand 
-            // { 
-            //     InspectionId = id,
-            //     File = file,
-            //     Description = description,
-            //     Category = category
-            // };
-            // var result = await _mediator.Send(command);
-            // return Ok(result);
-            
-            return BadRequest("Upload attachment functionality not yet implemented");
+            var command = new UploadInspectionAttachmentCommand 
+            { 
+                InspectionId = id,
+                File = file,
+                Description = description,
+                Category = category
+            };
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         /// <summary>
@@ -160,16 +157,13 @@ namespace Harmoni360.Web.Controllers
         {
             _logger.LogInformation("Deleting attachment {AttachmentId} from inspection {Id}", attachmentId, id);
             
-            // TODO: Implement DeleteInspectionAttachmentCommand
-            // var command = new DeleteInspectionAttachmentCommand 
-            // { 
-            //     InspectionId = id, 
-            //     AttachmentId = attachmentId 
-            // };
-            // await _mediator.Send(command);
-            // return NoContent();
-            
-            return BadRequest("Delete attachment functionality not yet implemented");
+            var command = new DeleteInspectionAttachmentCommand 
+            { 
+                InspectionId = id, 
+                AttachmentId = attachmentId 
+            };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         /// <summary>
@@ -181,22 +175,19 @@ namespace Harmoni360.Web.Controllers
         {
             _logger.LogInformation("Downloading attachment {AttachmentId} from inspection {Id}", attachmentId, id);
             
-            // TODO: Implement GetInspectionAttachmentQuery
-            // var query = new GetInspectionAttachmentQuery 
-            // { 
-            //     InspectionId = id, 
-            //     AttachmentId = attachmentId 
-            // };
-            // var result = await _mediator.Send(query);
-            // 
-            // if (result?.FileContent == null)
-            // {
-            //     return NotFound();
-            // }
-            // 
-            // return File(result.FileContent, result.ContentType, result.FileName);
+            var query = new GetInspectionAttachmentQuery 
+            { 
+                InspectionId = id, 
+                AttachmentId = attachmentId 
+            };
+            var result = await _mediator.Send(query);
             
-            return BadRequest("Download attachment functionality not yet implemented");
+            if (result?.FileContent == null)
+            {
+                return NotFound();
+            }
+            
+            return File(result.FileContent, result.ContentType, result.FileName);
         }
 
         /// <summary>

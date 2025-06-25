@@ -5,7 +5,7 @@ import type { PagedList } from '../../types/common';
 export const securityApi = createApi({
   reducerPath: 'securityApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/security-incident',
+    baseUrl: '/api/securityincident',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) {

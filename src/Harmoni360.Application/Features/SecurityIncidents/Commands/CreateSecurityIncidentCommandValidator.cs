@@ -84,14 +84,9 @@ public class CreateSecurityIncidentCommandValidator : AbstractValidator<CreateSe
 
         // Detection time validation
         RuleFor(x => x.DetectionDateTime)
-            .LessThanOrEqualTo(DateTime.UtcNow.AddHours(1))
+            .GreaterThanOrEqualTo(x => x.IncidentDateTime)
             .When(x => x.DetectionDateTime.HasValue)
-            .WithMessage("Detection time cannot be more than 1 hour in the future");
-
-        RuleFor(x => x.DetectionDateTime)
-            .LessThanOrEqualTo(x => x.IncidentDateTime.AddDays(30))
-            .When(x => x.DetectionDateTime.HasValue)
-            .WithMessage("Detection time cannot be more than 30 days after incident time");
+            .WithMessage("Detection time cannot be before the incident time");
     }
 
     private static bool IsValidCategoryForType(SecurityIncidentType type, SecurityIncidentCategory category)
@@ -141,8 +136,9 @@ public class CreateSecurityIncidentCommandValidator : AbstractValidator<CreateSe
     private static bool IsInformationSecurityCategory(SecurityIncidentCategory category)
     {
         return category is 
-            SecurityIncidentCategory.DataBreach or 
-            SecurityIncidentCategory.UnauthorizedChange or 
-            SecurityIncidentCategory.PolicyViolation;
+            SecurityIncidentCategory.DataLeak or 
+            SecurityIncidentCategory.ImproperDataHandling or 
+            SecurityIncidentCategory.UnauthorizedDisclosure or 
+            SecurityIncidentCategory.DataClassificationViolation;
     }
 }

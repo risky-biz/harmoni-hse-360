@@ -117,16 +117,16 @@ public class HealthController : ControllerBase
     [HttpPost("records")]
     [RequireModulePermission(ModuleType.HealthMonitoring, PermissionType.Create)]
     [EnableRateLimiting("HealthApi")]
-    public async Task<ActionResult<int>> CreateHealthRecord([FromBody] CreateHealthRecordCommand command)
+    public async Task<ActionResult<HealthRecordDto>> CreateHealthRecord([FromBody] CreateHealthRecordCommand command)
     {
         try
         {
             var result = await _mediator.Send(command);
             
             // Notify via SignalR
-            await _notificationHub.Clients.All.SendAsync("HealthRecordCreated", new { HealthRecordId = result });
+            await _notificationHub.Clients.All.SendAsync("HealthRecordCreated", new { HealthRecordId = result.Id });
             
-            return CreatedAtAction(nameof(GetHealthRecord), new { id = result }, new { Id = result });
+            return CreatedAtAction(nameof(GetHealthRecord), new { id = result.Id }, result);
         }
         catch (Exception ex)
         {

@@ -6,28 +6,29 @@ import { PagedList } from '../../types/common';
 export interface CreateInspectionCommand {
   title: string;
   description: string;
-  type: string;
-  category: string;
-  priority: string;
+  type: number;
+  category: number;
+  priority: number;
   scheduledDate: string;
   inspectorId: number;
   locationId: number;
   departmentId: number;
   facilityId: number;
   estimatedDurationMinutes: number;
-  checklistItems: CreateInspectionItemCommand[];
+  items: CreateInspectionItemCommand[];
 }
 
 export interface CreateInspectionItemCommand {
+  checklistItemId?: number;
   question: string;
   description?: string;
-  type: string;
+  type: number;
   isRequired: boolean;
   expectedValue?: string;
   unit?: string;
   minValue?: number | null;
   maxValue?: number | null;
-  options?: string;
+  options: string[];
   sortOrder: number;
 }
 
@@ -36,21 +37,30 @@ export interface UpdateInspectionCommand {
   id: number;
   title: string;
   description: string;
-  type: string;
-  category: string;
-  priority: string;
+  priority: number;
   scheduledDate: string;
-  estimatedDurationMinutes: number;
-  locationId: number;
-  departmentId: number;
-  facilityId: number;
-  itemUpdates: InspectionItemUpdateCommand[];
+  estimatedDurationMinutes?: number;
+  locationId?: number;
+  departmentId?: number;
+  facilityId?: number;
+  items: UpdateInspectionItemCommand[];
 }
 
-export interface InspectionItemUpdateCommand {
-  id: number;
+export interface UpdateInspectionItemCommand {
+  id?: number;
+  checklistItemId?: number;
+  question: string;
+  description?: string;
+  type: number;
+  isRequired: boolean;
   response?: string;
   notes?: string;
+  sortOrder: number;
+  expectedValue?: string;
+  unit?: string;
+  minValue?: number;
+  maxValue?: number;
+  options: string[];
 }
 
 // Complete Inspection Command Types
@@ -136,8 +146,8 @@ export const inspectionApi = createApi({
 
     // Update Inspection
     updateInspection: builder.mutation<InspectionDetailDto, UpdateInspectionCommand>({
-      query: ({ id, ...inspection }) => ({
-        url: `/${id}`,
+      query: (inspection) => ({
+        url: `/${inspection.id}`,
         method: 'PUT',
         body: inspection,
       }),

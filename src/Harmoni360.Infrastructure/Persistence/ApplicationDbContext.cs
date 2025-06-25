@@ -67,6 +67,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<HazardAuditLog> HazardAuditLogs => Set<HazardAuditLog>();
     
     // Health Management
+    public DbSet<Person> Persons => Set<Person>();
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
     public DbSet<MedicalCondition> MedicalConditions => Set<MedicalCondition>();
     public DbSet<VaccinationRecord> VaccinationRecords => Set<VaccinationRecord>();

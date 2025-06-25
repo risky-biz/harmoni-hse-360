@@ -48,6 +48,7 @@ public interface IApplicationDbContext
     DbSet<HazardAuditLog> HazardAuditLogs { get; }
     
     // Health Management
+    DbSet<Person> Persons { get; }
     DbSet<HealthRecord> HealthRecords { get; }
     DbSet<MedicalCondition> MedicalConditions { get; }
     DbSet<VaccinationRecord> VaccinationRecords { get; }

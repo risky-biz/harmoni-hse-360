@@ -72,15 +72,17 @@ export const LineChart: React.FC<LineChartProps> = ({
   };
 
   return (
-    <div style={{ height }}>
+    <div className="line-chart-container" style={{ height }}>
       {title && (
         <h6 className="text-center mb-3 text-muted">{title}</h6>
       )}
-      <CChart
-        type="line"
-        data={data}
-        options={options}
-      />
+      <div className="chart-wrapper" style={{ height: title ? height - 40 : height }}>
+        <CChart
+          type="line"
+          data={data}
+          options={options}
+        />
+      </div>
     </div>
   );
 };

@@ -28,28 +28,61 @@ public class CreateHealthRecordCommandHandler : IRequestHandler<CreateHealthReco
 
     public async Task<HealthRecordDto> Handle(CreateHealthRecordCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating health record for person ID: {PersonId} by user {UserEmail}",
-            request.PersonId, _currentUserService.Email);
+        _logger.LogInformation("Creating health record by user {UserEmail}", _currentUserService.Email);
 
-        // Verify the person exists
-        var person = await _context.Users.FindAsync(request.PersonId, cancellationToken);
-        if (person == null)
+        Person person;
+
+        if (request.PersonId.HasValue)
         {
-            throw new ArgumentException($"Person with ID {request.PersonId} not found", nameof(request.PersonId));
+            // Use existing person
+            _logger.LogInformation("Using existing person ID: {PersonId}", request.PersonId.Value);
+            
+            person = await _context.Persons.FindAsync(request.PersonId.Value, cancellationToken);
+            if (person == null)
+            {
+                throw new ArgumentException($"Person with ID {request.PersonId.Value} not found", nameof(request.PersonId));
+            }
+        }
+        else
+        {
+            // Create new person
+            _logger.LogInformation("Creating new person: {PersonName} ({PersonEmail})", request.PersonName, request.PersonEmail);
+            
+            // Check if person with this email already exists
+            var existingPerson = await _context.Persons
+                .FirstOrDefaultAsync(p => p.Email == request.PersonEmail!.ToLowerInvariant(), cancellationToken);
+            
+            if (existingPerson != null)
+            {
+                throw new InvalidOperationException($"Person with email '{request.PersonEmail}' already exists");
+            }
+
+            person = Person.Create(
+                name: request.PersonName!,
+                email: request.PersonEmail!,
+                personType: request.PersonType,
+                phoneNumber: request.PersonPhoneNumber,
+                department: request.PersonDepartment,
+                position: request.PersonPosition,
+                employeeId: request.PersonEmployeeId
+            );
+
+            _context.Persons.Add(person);
+            await _context.SaveChangesAsync(cancellationToken); // Save to get the PersonId
         }
 
         // Check if health record already exists for this person
         var existingRecord = await _context.HealthRecords
-            .FirstOrDefaultAsync(hr => hr.PersonId == request.PersonId, cancellationToken);
+            .FirstOrDefaultAsync(hr => hr.PersonId == person.Id, cancellationToken);
 
         if (existingRecord != null)
         {
-            throw new InvalidOperationException($"Health record already exists for person ID {request.PersonId}");
+            throw new InvalidOperationException($"Health record already exists for person ID {person.Id}");
         }
 
         // Create health record
         var healthRecord = HealthRecord.Create(
-            request.PersonId,
+            person.Id,
             request.PersonType,
             request.DateOfBirth,
             request.BloodType,
@@ -59,7 +92,8 @@ public class CreateHealthRecordCommandHandler : IRequestHandler<CreateHealthReco
         _context.HealthRecords.Add(healthRecord);
         await _context.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Health record created successfully with ID: {HealthRecordId}", healthRecord.Id);
+        _logger.LogInformation("Health record created successfully with ID: {HealthRecordId} for person ID: {PersonId}", 
+            healthRecord.Id, person.Id);
 
         // Invalidate health-related caches
         await InvalidateHealthCaches();

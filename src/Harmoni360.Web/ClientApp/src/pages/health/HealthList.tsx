@@ -95,7 +95,18 @@ const HealthList: React.FC = () => {
   };
 
   const getPersonTypeBadge = (personType: string) => {
-    return personType === 'Student' ? 'info' : 'warning';
+    switch (personType) {
+      case 'Student':
+        return 'info';
+      case 'Staff':
+        return 'warning';
+      case 'Visitor':
+        return 'secondary';
+      case 'Contractor':
+        return 'success';
+      default:
+        return 'secondary';
+    }
   };
 
   const getVaccinationStatusBadge = (record: HealthRecordDto) => {
@@ -173,6 +184,8 @@ const HealthList: React.FC = () => {
                     <option value="">All Types</option>
                     <option value="Student">Students</option>
                     <option value="Staff">Staff</option>
+                    <option value="Visitor">Visitors</option>
+                    <option value="Contractor">Contractors</option>
                   </CFormSelect>
                 </CCol>
                 <CCol md={4}>
@@ -202,7 +215,7 @@ const HealthList: React.FC = () => {
           </CRow>
         </CCardHeader>
         <CCardBody className="p-0">
-          {healthRecordsData?.healthRecords && healthRecordsData.healthRecords.length > 0 ? (
+          {healthRecordsData?.records && healthRecordsData.records.length > 0 ? (
             <>
               <CTable hover responsive>
                 <CTableHead>
@@ -231,7 +244,7 @@ const HealthList: React.FC = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {healthRecordsData.healthRecords.map((record) => (
+                  {healthRecordsData.records.map((record) => (
                     <CTableRow key={record.id} className="cursor-pointer">
                       <CTableDataCell onClick={() => handleViewRecord(record.id.toString())}>
                         <div className="d-flex align-items-center">
@@ -330,17 +343,26 @@ const HealthList: React.FC = () => {
                     </CPaginationItem>
                     
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const pageNum = Math.max(1, Math.min(page - 2 + i, totalPages - 4 + i));
+                      let startPage = Math.max(1, page - 2);
+                      const endPage = Math.min(startPage + 4, totalPages);
+                      
+                      if (endPage - startPage < 4) {
+                        startPage = Math.max(1, endPage - 4);
+                      }
+                      
+                      const pageNum = startPage + i;
+                      if (pageNum > totalPages) return null;
+                      
                       return (
                         <CPaginationItem
-                          key={pageNum}
+                          key={`page-${pageNum}`}
                           active={pageNum === page}
                           onClick={() => setPage(pageNum)}
                         >
                           {pageNum}
                         </CPaginationItem>
                       );
-                    })}
+                    }).filter(Boolean)}
                     
                     <CPaginationItem
                       disabled={page === totalPages}

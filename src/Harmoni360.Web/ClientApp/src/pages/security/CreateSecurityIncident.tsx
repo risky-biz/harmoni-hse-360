@@ -129,16 +129,20 @@ const CreateSecurityIncident: React.FC = () => {
   const [createSecurityIncident, { isLoading: isSubmitting }] =
     useCreateSecurityIncidentMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<
+    'saved' | 'saving' | 'error' | null
+  >(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [selectedIncidentType, setSelectedIncidentType] = useState<SecurityIncidentType | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
     watch,
     reset,
+    getValues,
   } = useForm<SecurityIncidentFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -156,6 +160,44 @@ const CreateSecurityIncident: React.FC = () => {
   useEffect(() => {
     setSelectedIncidentType(watchedIncidentType);
   }, [watchedIncidentType]);
+
+  // Auto-save functionality - save draft every 30 seconds
+  useEffect(() => {
+    if (!isDirty) return;
+
+    const autoSaveTimer = setInterval(() => {
+      const formData = getValues();
+      setAutoSaveStatus('saving');
+
+      setTimeout(() => {
+        try {
+          localStorage.setItem('security_incident_draft', JSON.stringify(formData));
+          setAutoSaveStatus('saved');
+          setTimeout(() => setAutoSaveStatus(null), 2000);
+        } catch (error) {
+          setAutoSaveStatus('error');
+          setTimeout(() => setAutoSaveStatus(null), 3000);
+        }
+      }, 500);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(autoSaveTimer);
+  }, [isDirty, getValues]);
+
+  // Load draft from localStorage on component mount
+  useEffect(() => {
+    const draft = localStorage.getItem('security_incident_draft');
+    if (draft) {
+      try {
+        const parsedDraft = JSON.parse(draft);
+        Object.keys(parsedDraft).forEach((key) => {
+          setValue(key as keyof SecurityIncidentFormData, parsedDraft[key]);
+        });
+      } catch (error) {
+        console.warn('Failed to load security incident draft:', error);
+      }
+    }
+  }, [setValue]);
 
   // Get current location
   const getCurrentLocation = () => {
@@ -208,9 +250,10 @@ const CreateSecurityIncident: React.FC = () => {
         ];
       case SecurityIncidentType.InformationSecurity:
         return [
-          { value: 201, label: 'Data Breach' },
-          { value: 206, label: 'Unauthorized Change' },
-          { value: 304, label: 'Credential Misuse' },
+          { value: 401, label: 'Data Leak' },
+          { value: 402, label: 'Improper Data Handling' },
+          { value: 403, label: 'Unauthorized Disclosure' },
+          { value: 404, label: 'Data Classification Violation' },
         ];
       default:
         return [];
@@ -246,6 +289,9 @@ const CreateSecurityIncident: React.FC = () => {
 
       const result = await createSecurityIncident(request).unwrap();
       
+      // Clear draft after successful submission
+      localStorage.removeItem('security_incident_draft');
+      
       navigate(`/security/incidents/${result.id}`, {
         state: { message: 'Security incident created successfully!' },
       });
@@ -269,9 +315,21 @@ const CreateSecurityIncident: React.FC = () => {
                 <FontAwesomeIcon icon={CONTEXT_ICONS.security} size="lg" className="me-2 text-danger" />
                 Report Security Incident
               </h4>
-              <small className="text-muted">
-                Create a new security incident report
-              </small>
+              <div className="d-flex align-items-center gap-2">
+                <small className="text-muted">
+                  Create a new security incident report
+                </small>
+                {autoSaveStatus && (
+                  <CBadge 
+                    color={autoSaveStatus === 'saved' ? 'success' : autoSaveStatus === 'saving' ? 'info' : 'danger'}
+                    className="ms-2"
+                  >
+                    {autoSaveStatus === 'saved' && '✓ Draft saved'}
+                    {autoSaveStatus === 'saving' && '💾 Saving...'}
+                    {autoSaveStatus === 'error' && '⚠ Save failed'}
+                  </CBadge>
+                )}
+              </div>
             </div>
             <CButton
               color="secondary"

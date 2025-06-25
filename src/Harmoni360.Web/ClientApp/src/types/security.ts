@@ -339,6 +339,12 @@ export enum SecurityIncidentCategory {
   InsiderThreat = 303,
   CredentialMisuse = 304,
   SecurityTrainingFailure = 305,
+  
+  // Information Security
+  DataLeak = 401,
+  ImproperDataHandling = 402,
+  UnauthorizedDisclosure = 403,
+  DataClassificationViolation = 404,
 }
 
 export enum SecuritySeverity {
