@@ -5,6 +5,31 @@
 
 This README provides a structured guide to all documentation related to the Workflow Management Module implementation in the Harmoni360 HSSE system. The documents are organized by implementation priority and reading sequence to ensure logical progression from understanding requirements to technical implementation.
 
+### 📂 Folder Structure
+
+```
+docs/Workflow_Management/
+├── README_Workflow_Management_Module.md          # This guide (start here)
+├── HSE_Workflow_Diagram_Analysis.md             # Client requirements analysis
+├── Detailed_Module_Workflow_Analysis.md         # Current system analysis
+├── Elsa_Core_Implementation_Analysis.md         # Technology decision rationale
+├── Visual_Workflow_Management_System_Design.md  # System architecture design
+├── Workflow_Management_Module_Implementation_Plan.md # Technical implementation specs
+├── Module_Business_Rules_and_Integration_Specs.md   # Business logic specifications
+├── Comprehensive_Workflow_Integration_Plan.md   # Master implementation roadmap
+└── HSE_Workflow/                                # Client workflow diagram references
+    ├── 1. HSE Business Work Flow - Risk Assessment Flow.png
+    ├── 2. HSE Business Work Flow - Inspection Management Flow.png
+    ├── 3. HSE Business Work Flow - Audit Management Flow.png
+    ├── 4. HSE Business Work Flow - Incident Management Flow.png
+    ├── 5. HSE Business Work Flow - Work Permit Management Flow.png
+    ├── 6. HSE Business Work Flow - PPE Management Flow.png
+    ├── 7. HSE Business Work Flow - Training Management Flow.png
+    ├── 8. HSE Business Work Flow - License and Certificate Management Flow.png
+    ├── 9. HSE Business Work Flow - Waste Management Flow.png
+    └── 10. HSE Business Work Flow - HSE Statistic Management Flow.png
+```
+
 ### 🎯 Quick Navigation
 
 **For Project Managers/Stakeholders:** Start with [Priority 1](#priority-1-requirements-and-analysis) documents  
@@ -31,6 +56,24 @@ This README provides a structured guide to all documentation related to the Work
   - Integration requirements between modules
 - **Why Read First:** Establishes the foundation for understanding what workflows the client needs
 - **Implementation Impact:** Defines functional requirements for all subsequent technical decisions
+
+#### 1.1.1 Reference Workflow Diagrams
+**📁 [HSE_Workflow/](./HSE_Workflow/)**
+- **Content:** Original client workflow diagrams that form the basis of requirements analysis
+- **Contains 10 workflow diagrams:**
+  1. **Risk Assessment Flow** - Systematic hazard identification and control assignment workflow
+  2. **Inspection Management Flow** - Inspection lifecycle and compliance tracking
+  3. **Audit Management Flow** - Audit planning, execution, and finding management
+  4. **Incident Management Flow** - Complex incident reporting, investigation, and corrective action workflow
+  5. **Work Permit Management Flow** - Multi-level approval workflow with conditional routing
+  6. **PPE Management Flow** - Equipment tracking and compliance workflow
+  7. **Training Management Flow** - Training delivery and certification tracking
+  8. **License and Certificate Management Flow** - License lifecycle and renewal workflow
+  9. **Waste Management Flow** - Waste disposal and regulatory compliance workflow
+  10. **HSE Statistic Management Flow** - Cross-module reporting and analytics workflow
+- **Format:** PNG images with detailed process flows, decision points, and actor roles
+- **Usage:** Visual reference for understanding client requirements during implementation
+- **Cross-Reference:** All diagrams are analyzed in detail within HSE_Workflow_Diagram_Analysis.md
 
 #### 1.2 Current System Assessment  
 **📄 [Detailed_Module_Workflow_Analysis.md](./Detailed_Module_Workflow_Analysis.md)**
