@@ -1132,4 +1132,33 @@ export const createNavigationConfig = (): NavigationItem[] => [
       },
     ],
   },
+  // Workflow Management Module (Only for SuperAdmin and Developer)
+  {
+    component: 'CNavTitle',
+    name: 'Workflow Management',
+    module: ModuleType.WorkflowManagement,
+    requireAnyPermission: true,
+    systemAdminOnly: true, // Only SuperAdmin and Developer can see this
+    submodules: [
+      {
+        component: 'CNavGroup',
+        name: 'Workflows',
+        to: '#workflows',
+        icon: null,
+        module: ModuleType.WorkflowManagement,
+        requireAnyPermission: true,
+        systemAdminOnly: true,
+        items: [
+          {
+            component: 'CNavItem',
+            name: 'Workflow Studio',
+            to: '/workflows',
+            module: ModuleType.WorkflowManagement,
+            permission: PermissionType.Read,
+            systemAdminOnly: true,
+          },
+        ],
+      },
+    ],
+  },
 ];

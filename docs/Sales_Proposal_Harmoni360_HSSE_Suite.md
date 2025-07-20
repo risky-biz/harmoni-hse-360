@@ -1,397 +1,522 @@
-# Harmoni 360 HSSE Application Suite
+# Harmoni360 Application Suite
 ## Comprehensive Sales Proposal
 
-**PT Harmoni Digital Solutions**  
-Jl. Teknologi Raya No. 123, Jakarta Selatan  
-DKI Jakarta 12560  
-Website: www.harmoni360.com  
-Email: sales@harmoni360.com  
-Phone: +62 21 1234 5678  
+**Srikandi Alam Lestari**  
+Padmasari Residence No. 20  
+Jl. Lurah Madi RT 002 RW 002  
+Parung, Bogor, West Java  
+Indonesia 16330  
+**Website:** www.salhsse.com  
+**Email:** srikandi.alam.lestari@gmail.com  
+**Phone:** +62 813-1212-9749  
 
 ---
 
-**Proposal No:** HSE-2025-001  
-**Date:** June 17, 2025  
-**Valid Until:** July 17, 2025  
-**Prepared For:** Prospective HSSE Organizations  
+**Proposal No:** H360-HSE-2025-001  
+**Date:** 7th July 2025  
+**Valid Until:** 7th August 2025  
+**Prepared For:** Organizations Requiring Safety & Environment Management  
 
 ---
 
 ## Executive Summary
 
-Harmoni 360 HSSE is a comprehensive, modern digital platform designed to revolutionize Health, Safety, Security, and Environment management for organizations across Indonesia. Built with cutting-edge technology and designed specifically for Indonesian regulatory compliance, our modular suite offers unparalleled flexibility, scalability, and value.
+Harmoni360 is a comprehensive, modern digital platform designed to revolutionize Safety and Environment management for organizations across Indonesia. Built with cutting-edge technology and designed specifically for Indonesian regulatory compliance, our integrated solution delivers immediate value through production-ready modules while offering a clear roadmap for future expansion.
 
 ### Key Value Propositions
+- **Complete Safety & Environment Solution** for Rp 345,000,000 - all modules included
 - **40-60% cost savings** compared to international vendor solutions
-- **100% Indonesian regulatory compliance** (PP 71/2019, ISO 45001, ISO 14001, ISO 27001)
-- **Modular architecture** - purchase only what you need, scale as you grow
-- **Dual deployment options** - cloud-hosted or on-premises
-- **Modern technology stack** with real-time capabilities
+- **100% Indonesian regulatory compliance**
+- **Cloud-first deployment** via Fly.io with Indonesian data residency
+- **Modern technology stack** with real-time capabilities and mobile access
 - **Full source code ownership** - no vendor lock-in
-- **Bilingual support** - English and Bahasa Indonesia
+- **Comprehensive package** includes 6-month warranty, 4 training sessions, and priority support
+- **Future-ready platform** with Health and Security modules coming in 2026
 
 ---
 
 ## Product Overview
 
-### Harmoni 360 HSSE Modules
+### Harmoni360 Modules
 
-#### 🏥 **Health Management System**
-- Health records and medical condition tracking
-- Vaccination management and compliance
-- Emergency contact management
-- Health incident reporting and analytics
-- Medical surveillance and monitoring
-- **Status:** Production Ready ✅
+#### **INCLUDED IN Rp 345,000,000 PACKAGE:**
 
-#### ⚠️ **Safety Management System**
+#### ⚠️ **Safety Management System** ✅
 - Incident management with real-time reporting
 - Hazard identification and risk assessment
 - PPE (Personal Protective Equipment) management
 - Work permit system with digital workflows
 - Inspection management and scheduling
 - Training and certification tracking
-- **Status:** Production Ready ✅
+- **Status:** 65% Ready - Customizable Workflows - FULLY INCLUDED
 
-#### 🔒 **Security Management System**
-- Security incident management
-- Physical security and access control
-- Visitor management system
-- CCTV and surveillance integration
-- Emergency response coordination
-- Guard tour management
-- **Status:** 77% Complete, Production Ready Q3 2025
-
-#### 🌱 **Environment Management System**
+#### 🌱 **Environment Management System** ✅
 - Environmental monitoring and measurement
 - Waste management with tracking workflows
-- Air quality and noise level monitoring
-- IoT sensor integration capabilities
 - Environmental compliance reporting
-- **Status:** Development Phase, Available Q4 2025
+- **Status:** 60% Ready - FULLY INCLUDED
 
-#### 📊 **Integrated Dashboard & Analytics**
-- Real-time HSSE statistics and KPIs
+#### 📊 **Integrated Dashboard & Analytics** ✅
+- Real-time Safety and Environment statistics and KPIs
 - Executive dashboards with drill-down capabilities
 - Compliance tracking and reporting
 - Predictive analytics and trend analysis
 - Mobile-responsive design
-- **Status:** Production Ready ✅
+- **Status:** 45% Ready - Advance Analytics - FULLY INCLUDED
+
+#### **FUTURE MODULES (Not Included in Current Package):**
+
+#### 🏥 **Health Management System** ⏳
+- Health records and medical condition tracking
+- Vaccination management and compliance
+- Emergency contact management
+- Health incident reporting and analytics
+- Medical surveillance and monitoring
+- **Status:** Under Development - Estimated Availability Q3 2026
+- **Note:** Requires additional requirement gathering, development, and testing phases
+
+#### 🔒 **Security Management System** ⏳
+- Security incident management
+- Physical security and access control
+- Visitor management system
+- Guard tour management
+- **Status:** Under Development - Estimated Availability Q4 2026
+- **Note:** Requires additional requirement gathering, development, and testing phases
 
 ---
 
 ## Technical Specifications
 
-### Technology Stack
+### Technology Stack for Safety & Environment Modules
 - **Backend:** .NET 8 with Clean Architecture
 - **Frontend:** React 18 + TypeScript with CoreUI
-- **Database:** PostgreSQL 15 with TimescaleDB
-- **Real-time:** SignalR for instant notifications
-- **Mobile:** Progressive Web App (PWA) + planned native apps
+- **Database:** PostgreSQL 15 with TimescaleDB for time-series data
+- **Real-time:** SignalR for instant Safety alerts and Environment monitoring
+- **Mobile:** Progressive Web App (PWA) for field access
 - **Security:** JWT authentication, role-based authorization
 - **API:** RESTful APIs with OpenAPI/Swagger documentation
 
 ### Performance Specifications
-- **Uptime:** 99.9% availability guarantee
-- **Response Time:** <3 seconds page load (95th percentile)
-- **Mobile Performance:** <2 seconds response time
-- **Concurrent Users:** Support for 500+ simultaneous users
-- **Transaction Capacity:** 10,000 transactions per hour
-- **File Processing:** 1,000+ photos per day
-- **IoT Integration:** 100 sensor updates per second
+- **Uptime:** 99.9% availability guarantee (Fly.io SLA)
+- **Response Time:** <200ms for Safety/Environment dashboards
+- **Mobile Performance:** <1 second response time on 4G
+- **Concurrent Users:** Support for 100+ simultaneous users
+- **Transaction Capacity:** 200+ Safety/Environment events per hour
+- **File Processing:** 500+ inspection photos per day
+- **Report Generation:** <10 seconds for complex compliance reports
+
+### Safety Module Capabilities
+- Incident tracking and escalation
+- Automated work permit workflows
+- PPE inventory management
+- Mobile inspection checklists
+- Training matrix and certification tracking
+- Integrated corrective action management
+
+### Environment Module Capabilities
+- Real-time environmental monitoring dashboards
+- Automated compliance reporting
+- Waste tracking from generation to disposal
 
 ### Security Features
 - Enterprise-grade authentication and authorization
-- Role-based access control (RBAC) with 7 predefined roles
-- Complete audit trails for all actions
-- Encrypted file storage and transmission
-- GDPR and Indonesian data protection compliance
-- Regular security updates and monitoring
+- Role-based access control (RBAC) for Safety and Environment roles
+- Complete audit trails for compliance
+- Encrypted file storage for sensitive documents
+- Indonesian data protection compliance (UU ITE)
 
 ---
 
 ## Deployment Options
 
-### Option 1: Cloud-Hosted Solution
-**Recommended for most organizations**
+### Option 1: Managed Cloud-Hosted Solution (RECOMMENDED)
+**Powered by Fly.io - Enterprise-grade global infrastructure**
 
-#### Features:
-- Fully managed infrastructure on Indonesian cloud providers
-- Automatic updates and maintenance
-- 24/7 monitoring and support
-- Disaster recovery and backup included
-- Scalable resources based on usage
-- Data residency compliance (PP 71/2019)
+#### Why We Recommend Fly.io:
+- **Indonesian Data Residency**
+- **99.95% Uptime SLA** - Industry-leading reliability
+- **Auto-scaling** - Automatically handles traffic spikes
+- **Global CDN** - Fast access from anywhere in Indonesia
+- **Built-in DDoS Protection** - Enterprise security included
+- **Zero-downtime Deployments** - Updates without service interruption
 
-#### Infrastructure:
-- **Application Server:** 1-2 vCPU, 1-2GB RAM
-- **Database:** PostgreSQL with automated backups
-- **Storage:** Secure file storage with CDN
-- **Monitoring:** Real-time performance monitoring
-- **Security:** SSL certificates, firewall, intrusion detection
+#### Infrastructure Benefits:
+- **Managed PostgreSQL** with automated backups every 6 hours
+- **Redis Caching** for blazing-fast performance
+- **SSL/TLS Encryption** with auto-renewal
+- **Real-time Monitoring** and alerting
+- **Disaster Recovery** with multi-region backup
+- **24/7 Infrastructure Support** from Fly.io team
+
+#### Performance Specifications:
+- **Response Time:** <100ms within Indonesia
+- **Concurrent Users:** 100+ simultaneous users
+- **File Upload:** 50MB per file, unlimited total storage
+- **API Rate Limit:** 1,000 requests per minute
+- **Backup Retention:** 30 days rolling backup
+
+#### What's Not Included in Cloud-Hosted:
+- **Hosting Subscription:** Covered by user
 
 ### Option 2: On-Premises Deployment
-**Ideal for organizations requiring complete data control**
+**For organizations with specific data control requirements**
+
+#### Additional Costs and Terms:
+- **Installation Fee:** Rp 30,000,000 (one-time)
+- **Annual Maintenance:** Rp 25,000,000 (recommended)
+- **Remote Support Setup:** Rp 5,000,000 (recommended)
+
+#### Client Responsibilities:
+- Provide server hardware meeting minimum specifications
+- Ensure stable internet connectivity (minimum 100 Mbps)
+- Designate IT personnel for system administration
+- Provide VPN access for remote support
+- Handle hardware maintenance and replacement
+- Manage backup infrastructure
 
 #### Minimum Server Requirements:
-- **CPU:** 8 cores (Intel Xeon or equivalent)
-- **RAM:** 32GB DDR4
-- **Storage:** 3TB SSD (RAID 10 recommended)
-- **Network:** 100 Mbps internet connection
-- **OS:** Ubuntu Server 22.04 LTS or Windows Server 2022
+- **CPU:** 16 cores (Intel Xeon E5-2660 v4 or newer)
+- **RAM:** 64GB DDR4 ECC
+- **Storage:** 4TB NVMe SSD (RAID 10)
+- **Network:** 1 Gbps dedicated connection
+- **OS:** Ubuntu Server 22.04 LTS (only)
+- **Backup:** Separate 8TB storage for backups
 
-#### Optimal Server Configuration:
-- **CPU:** 16 cores (Intel Xeon or equivalent)
-- **RAM:** 64GB DDR4
-- **Storage:** 6TB SSD (RAID 10)
-- **Network:** 1 Gbps internet connection
-- **Backup:** Additional storage for automated backups
+#### Additional recommended On-Premises Requirements:
+- **Database Server:** Separate PostgreSQL 15 server recommended
+- **Load Balancer:** HAProxy or similar for high availability
+- **Firewall:** Enterprise-grade with IPS/IDS capabilities
+- **UPS:** Minimum 30 minutes runtime for all servers
+- **Monitoring:** Prometheus + Grafana (we'll help configure)
+- **SSL Certificates:** Valid certificates for HTTPS
+- **Backup Solution:** Enterprise backup software licensed
 
-#### What's Included:
+#### Additional On-Premises Terms & Conditions:
+1. **Infrastructure Readiness:** All hardware must be procured and configured before installation begins
+2. **Downtime Windows:** Client must provide 8-hour maintenance windows for updates
+3. **Remote Access:** VPN with RDP/SSH access required for support
+4. **System Administration:** Client must designate 2 trained IT administrators
+5. **Disaster Recovery:** Client responsible for DR planning and infrastructure
+6. **Performance:** Client responsible if hardware doesn't meet specifications
+7. **Third-party Software:** Client must license Windows Server, SQL Server (if applicable)
+8. **Network Security:** Client handles firewall rules and security policies
+9. **Compliance:** Client ensures infrastructure meets regulatory requirements
+10. **Annual Review:** Mandatory annual infrastructure review (additional cost)
+
+#### What's Included in On-Premises:
 - Complete installation and configuration
-- Docker containerization for easy management
-- Automated backup and monitoring setup
-- SSL certificate configuration
-- Initial data migration and setup
-- 3 months warranty and support
+- Docker containerization setup
+- Initial 3-day on-site deployment
+- Basic monitoring setup
+- Initial data migration (up to 100GB)
+- 30-day post-deployment support
+- Remote support setup and testing
 
 ---
 
-## Pricing Packages
+## Comprehensive Safety & Environment Package
 
-### 🥉 **Starter Package** - Rp 85,000,000
-*Perfect for small to medium organizations*
+### 💎 **Complete HSE Solution** - Rp 345,000,000
+*All-inclusive Safety and Environment management platform*
 
-#### Included Modules:
-- Health Management System
-- Basic Safety Management (Incident + Hazard Reporting)
-- Basic Dashboard and Reporting
-- User Management (up to 50 users)
+#### Included Production-Ready Modules:
+- ✅ **Complete Safety Management System**
+  - Incident management with real-time reporting
+  - Hazard identification and risk assessment (HIRA)
+  - PPE management and tracking
+  - Digital work permit system
+  - Inspection management and scheduling
+  - Training and certification tracking
+  - Safety observation and reporting
+  
+- ✅ **Full Environment Management System**
+  - Environmental monitoring and measurement
+  - Waste management with complete workflows
+  - Environmental compliance reporting
+  - Environmental incident management
+  
+- ✅ **Advanced Dashboard & Analytics**
+  - Real-time HSE statistics and KPIs
+  - Executive dashboards with drill-down
+  - Compliance tracking and reporting
+  - Predictive analytics and trends
+  - Mobile-responsive design
+  - Data export capabilities
+  
+- ✅ **Core Platform Features**
+  - Unlimited users
+  - Mobile Progressive Web Appl
+  - API access for integrations
+  - Audit trail and logging
+  - Role-based access control
 
-#### Deployment Options:
-- **Cloud-Hosted:** Included for 1 year
-- **On-Premises:** Add Rp 15,000,000 for installation
+#### Package Inclusions:
+- **6 months comprehensive warranty** covering all modules
+- **4 professional training sessions** (maximum 20 participants per session)
+- **Priority support** via email and phone during business hours (08:00-17:00 WIB)
+- **Quarterly system health checks** and optimization reviews
+- **Full documentation** in English and Bahasa Indonesia
 
-#### Support:
-- 2 training sessions (15 participants each)
-- 3 months warranty
-- Email support during business hours
 
----
-
-### 🥈 **Professional Package** - Rp 165,000,000
-*Comprehensive HSSE solution for growing organizations*
-
-#### Included Modules:
-- Complete Health Management System
-- Full Safety Management Suite (6 modules)
-- Security Management System (available Q3 2025)
-- Advanced Dashboard with Analytics
-- User Management (up to 200 users)
-- Mobile Progressive Web App
-
-#### Deployment Options:
-- **Cloud-Hosted:** Included for 1 year
-- **On-Premises:** Add Rp 25,000,000 for installation
-
-#### Support:
-- 4 training sessions (20 participants each)
-- 6 months warranty
-- Priority email and phone support
-- Quarterly system health checks
-
----
-
-### 🥇 **Enterprise Package** - Rp 245,000,000
-*Complete HSSE platform with all features*
-
-#### Included Modules:
-- All Health, Safety, Security modules
-- Environment Management System (available Q4 2025)
-- Advanced Analytics and Predictive Insights
-- IoT Integration capabilities
-- Custom reporting and dashboards
-- API access for third-party integrations
-- Unlimited users
-
-#### Deployment Options:
-- **Cloud-Hosted:** Included for 2 years
-- **On-Premises:** Installation included
-
-#### Support:
-- 6 training sessions (25 participants each)
-- 12 months warranty
-- 24/7 priority support
-- Monthly system optimization
-- Dedicated customer success manager
-- Custom feature development (20 hours included)
+#### Future Module Availability:
+- **Health Management Module** - Estimated Q3 2026
+- **Security Management Module** - Estimated Q4 2026
+- *These modules require additional development, testing, and requirement gathering phases to ensure they meet Indonesian regulatory standards and industry best practices*
 
 ---
 
-## Implementation Timeline
+## Implementation Timeline - 5 Month Maximum
 
-### Phase 1: Project Initiation (Week 1-2)
-- Requirements gathering and Business Requirements Document (BRD)
-- System architecture planning
-- Environment setup and configuration
-- Team introductions and project kickoff
+### Phase 1: Project Initiation & Planning (Weeks 1-3)
+**Deliverables:**
+- Signed contract and kickoff meeting
+- Detailed Business Requirements Document (BRD)
+- System architecture and infrastructure design
+- Project charter and communication plan
+- User roles and permissions matrix
 
-### Phase 2: Core Implementation (Week 3-8)
-- Database setup and data migration
-- Core module configuration and customization
-- User interface customization and branding
-- Integration with existing systems (if applicable)
+**Key Activities:**
+- Stakeholder interviews and requirement gathering
+- Current process analysis and gap assessment
+- Infrastructure provisioning (Cloud or On-Premises)
+- Project team formation and role assignments
 
-### Phase 3: Testing and Training (Week 9-10)
+**Dependencies:**
+- Client to provide current HSE procedures
+- Access to key stakeholders for interviews
+- Decision on deployment option (Cloud/On-Premises)
+
+### Phase 2: Configuration & Customization (Weeks 4-14)
+**Deliverables:**
+- Configured Safety Management modules
+- Configured Environment Management modules
+- Customized workflows
+- Integration specifications document
+
+**Key Activities:**
+- Safety module configuration (incidents, hazards, permits, PPE)
+- Environment module setup (monitoring, waste, compliance)
+- Dashboard and reporting customization
+- API integration development (if required)
+
+**Dependencies:**
+- Client approval on workflows
+
+
+### Phase 4: Testing & Training (Weeks 15-18)
+**Deliverables:**
+- UAT test scenarios and results
+- Training materials (guides, videos)
+- Trained super users and administrators
+- Training completion certificates
+
+**Key Activities:**
+- System Integration Testing (SIT)
 - User Acceptance Testing (UAT)
-- Performance testing and optimization
-- User training sessions
-- Documentation delivery
+- Performance and load testing
+- 4 training sessions (20 participants each)
 
-### Phase 4: Go-Live and Support (Week 11-12)
-- Production deployment
-- Go-live support and monitoring
-- Post-implementation review
-- Ongoing support transition
+**Dependencies:**
+- UAT participants availability
+- Training venue and facilities
+- Test scenarios approval
+
+### Phase 5: Go-Live & Stabilization (Weeks 19-20)
+**Deliverables:**
+- Production system deployment
+- Go-live checklist completion
+- Handover documentation
+- Support transition plan
+- Project closure report
+
+**Key Activities:**
+- Final data synchronization
+- Production deployment and smoke testing
+- Go-live announcement and communication
+- Hypercare support (2 weeks intensive)
+- Knowledge transfer to support team
+- First quarterly health check scheduled
+
+**Dependencies:**
+- Go-live approval from stakeholders
+- All critical issues resolved
+- Support team readiness
+
+### Critical Success Factors:
+1. **Executive Sponsorship** - Active involvement from client leadership
+2. **Dedicated Team** - Client assigns dedicated project team members
+3. **Change Management** - Clear communication and user adoption strategy
+4. **Timely Decisions** - Quick approvals on configurations and workflows
 
 ---
 
 ## Return on Investment (ROI)
 
-### Cost Savings Analysis
-- **Reduced Incident Costs:** 30-50% reduction in workplace incidents
-- **Compliance Efficiency:** 60% faster regulatory reporting
-- **Administrative Savings:** 40% reduction in manual paperwork
-- **Training Optimization:** 25% improvement in training effectiveness
-- **Audit Preparation:** 70% faster audit preparation time
+### Cost Savings Analysis - Safety & Environment Focus
+- **Safety Incident Reduction:** 40-60% decrease in workplace accidents
+- **Environmental Compliance:** 70% faster reporting
+- **Inspection Efficiency:** 50% reduction in inspection time
+- **Permit Processing:** 80% faster work permit approvals
+- **Environmental Fines:** 90% reduction through proactive monitoring
+- **Paper Elimination:** 100% digital Safety and Environment records
 
-### Typical ROI Timeline
-- **6 months:** Break-even point for most organizations
-- **12 months:** 150-200% ROI through efficiency gains
-- **24 months:** 300-400% ROI with full system utilization
+### Quantifiable Benefits (Based on 500-employee organization)
+- **Incident Cost Savings:** Rp 150-200 million/year from reduced accidents
+- **Compliance Cost Savings:** Rp 50-75 million/year in avoided fines
+- **Productivity Gains:** Rp 100-150 million/year from streamlined processes
+- **Paper/Storage Savings:** Rp 25-30 million/year
+- **Total Annual Savings:** Rp 325-455 million
+
+### ROI Timeline for Rp 345,000,000 Investment
+- **Month 6:** System fully operational, savings begin
+- **Month 8-10:** Break-even point achieved
+- **Year 1:** 90-130% ROI through operational efficiency
+- **Year 2:** 180-260% cumulative ROI
+- **Year 3:** 270-390% cumulative ROI
 
 ### Competitive Advantage
-- **40-60% lower total cost** compared to international solutions
-- **No annual licensing fees** - one-time purchase
-- **Full source code ownership** - no vendor dependency
-- **Local support** in Bahasa Indonesia and English
+- **Complete Package Value:** All Safety/Environment modules for one price
+- **75% lower cost** than comparable SAP EHS or Intelex solutions
+- **No recurring fees** - one-time investment
+- **Indonesian-focused** - built for local regulations and practices
+- **Future modules** available without platform changes
 
 ---
 
 ## Support and Maintenance
 
-### Annual Maintenance Options
+### Included Support (First 6 Months)
+- **Priority Support Channel:** Dedicated email and phone line
+- **Business Hours Coverage:** Monday-Friday, 08:00-17:00 WIB
+- **Response Time SLA:** 4 hours for critical issues
+- **Bug Fixes:** All defects resolved at no charge
 
-#### Basic Maintenance - Rp 25,000,000/year
-- Software updates and security patches
+### Post-Warranty Maintenance Options
+
+#### Standard Maintenance - Rp 35,000,000/year - TAX NOT INCLUDED
+- Software updates for Safety and Environment modules
+- Security patches and bug fixes
 - Email support during business hours
-- Basic system monitoring
-- Annual system health check
+- Semi-annual system health checks
+- Remote troubleshooting support
 
-#### Premium Maintenance - Rp 45,000,000/year
-- All Basic Maintenance features
+#### Professional Maintenance - Rp 55,000,000/year - TAX NOT INCLUDED
+- All Standard Maintenance features
 - Priority phone and email support
 - Monthly system optimization
-- Quarterly training refreshers
-- Performance monitoring and reporting
+- 2 additional training sessions per year
+- Performance monitoring dashboards
+- 20 hours custom report development
 
-#### Enterprise Maintenance - Rp 75,000,000/year
-- All Premium Maintenance features
-- 24/7 support hotline
+#### Enterprise Plus Maintenance - Rp 85,000,000/year - TAX NOT INCLUDED
+- All Professional Maintenance features
+- 24/7 emergency support hotline
 - Dedicated customer success manager
-- Custom feature development (40 hours/year)
-- On-site support visits (2 per year)
+- Bi-weekly system reviews
+- 60 hours custom development per year
+- 2 on-site support visits per year
+- Priority access to new features
+- SLA guarantees with penalties
 
 ---
 
-## Why Choose Harmoni 360?
+## Why Choose Harmoni360?
 
-### ✅ **Proven Technology**
-- Built on enterprise-grade .NET 8 and React 18
-- Modern architecture designed for scalability
-- Real-time capabilities with SignalR
-- Progressive Web App for mobile access
+### ✅ **Complete Safety & Environment Solution**
+- All HSE modules included
+- No module selection confusion - everything included
+- Integrated platform, not separate systems
+- Mobile-ready for field operations
 
-### ✅ **Indonesian Compliance**
-- 100% compliant with Indonesian regulations
-- Data residency requirements met
-- Local language support
-- Understanding of local business practices
+### ✅ **Unbeatable Value at Rp 345,000,000**
+- Complete package pricing - no hidden costs
+- 6-month warranty included
+- 4 comprehensive training sessions
+- Priority support throughout implementation
+- Compare to Rp 1.5 billion+ for international solutions
 
-### ✅ **Modular Flexibility**
-- Start with essential modules
-- Add functionality as you grow
-- No forced upgrades or unnecessary features
-- Customizable to your specific needs
+### ✅ **Indonesian Excellence**
+- Built for Indonesian regulations
+- Local Fly.io data centers ensure compliance
+- Local team that understands your challenges
 
-### ✅ **Cost Effectiveness**
-- Transparent, one-time pricing
-- No hidden fees or surprise costs
-- Significant savings vs. international vendors
-- Full ownership of your investment
+### ✅ **Future-Proof Investment**
+- Full source code ownership upon payment
+- No vendor lock-in or annual fees
+- Clear roadmap for Health & Security modules
+- Regular updates during warranty period
 
-### ✅ **Expert Support**
-- Local team with HSSE expertise
-- Comprehensive training programs
-- Ongoing support and maintenance
-- Partnership approach to your success
+### ✅ **Rapid Implementation**
+- 5-month maximum deployment
+- Proven implementation methodology
+- Dedicated project team
+- Minimal disruption to operations
 
 ---
 
 ## Terms and Conditions
 
-### Payment Terms
-- **30% down payment** upon contract signing
-- **40% payment** upon successful UAT completion
-- **30% final payment** upon go-live and acceptance
+### Payment Terms for Rp 345,000,000 Package (TAX NOT INCLUDED)
+- **50% down payment** Upon contract signing
+- **30% payment** Upon successful UAT completion
+- **20% final payment** Upon go-live and acceptance
+- **Payment period:** Net 30 days from invoice date
+- **Payment Tax:** 11% PPN (Indonesian Sales Tax) - NOT INCLUDED in proposal price
 
-### Warranty and Support
-- **3-12 months warranty** depending on package
-- **Free bug fixes** during warranty period
-- **Training included** as specified in each package
-- **Documentation provided** in English and Bahasa Indonesia
+### Warranty and Support Details
+- **6 months comprehensive warranty** for complete package
+- **Free bug fixes** and security updates during warranty
+- **4 training sessions** included (80 participants total)
+- **Complete documentation** in English and Bahasa Indonesia
+- **Knowledge base access** with video tutorials
+- **Dedicated support portal** for issue tracking
 
-### Additional Services
-- **Custom development:** Rp 4,000,000 per person-day
-- **Additional training:** Rp 5,000,000 per session
-- **On-site support:** Rp 2,500,000 per day + travel expenses
-- **Data migration:** Quoted separately based on complexity
+### Additional Services - TAX NOT INCLUDED
+- **Custom Safety/Environment Features:** Rp 4,500,000 per person-day
+- **Additional Training Sessions:** Rp 6,000,000 per session (max 20 participants)
+- **On-site Support:** Rp 3,000,000 per day + travel expenses
+- **Complex Data Migration:** Rp 25,000,000 - 50,000,000 (based on volume)
+- **Custom Report Development:** Rp 3,000,000 per report template
+- **API Integration Services:** Rp 15,000,000 per external system
 
 ### Legal and Compliance
-- **Source code ownership** transferred to client upon full payment
-- **Data protection** in accordance with Indonesian regulations
-- **Service Level Agreement (SLA)** included with all packages
-- **Confidentiality agreement** standard with all engagements
+- **Source code ownership** transferred upon final payment
+- **Service Level Agreement (SLA)** with 99.9% uptime guarantee
+- **Confidentiality agreement** protecting your sensitive HSE data
+- **Liability insurance** covering implementation services
+- **Intellectual property** rights clearly defined
 
 ---
 
 ## Next Steps
 
-### Ready to Transform Your HSSE Management?
+### Ready to Transform Your Safety & Environment Management?
 
-1. **Schedule a Demo:** Contact us to see Harmoni 360 in action
-2. **Requirements Assessment:** We'll analyze your specific needs
-3. **Custom Proposal:** Receive a tailored proposal for your organization
-4. **Pilot Program:** Start with a limited pilot to prove value
-5. **Full Implementation:** Roll out across your entire organization
+1. **Schedule a Demo:** See our Safety and Environment modules in action
+2. **Site Assessment:** We'll evaluate your current HSE processes
+3. **ROI Analysis:** Receive a detailed cost-benefit analysis
+4. **Contract Negotiation:** Finalize terms and implementation schedule
+5. **Project Kickoff:** Begin your 5-month transformation journey
+
+### Why Act Now?
+- **Limited Deployment Slots:** Only 3 implementation teams available
+- **2025 Pricing:** Rates will increase 15% in 2026
+- **Competitive Advantage:** Be first in your industry with modern HSE management
+- **Regulatory Readiness:** Stay ahead of upcoming Indonesian HSE regulations
 
 ### Contact Information
 
-**Sales Team:**  
-Email: sales@harmoni360.com  
-Phone: +62 21 1234 5678  
-WhatsApp: +62 812 3456 7890  
-
-**Technical Team:**  
-Email: support@harmoni360.com  
-Phone: +62 21 1234 5679  
-
-**Project Management:**  
-Email: projects@harmoni360.com  
-Phone: +62 21 1234 5680  
+**SAL Team:**  
+Website: www.salhsse.com  
+Email: srikandi.alam.lestari@gmail.com  
+Phone: +62 813-1212-9749  
 
 ---
 
-*This proposal is confidential and proprietary to PT Harmoni Digital Solutions. All information contained herein is intended solely for the evaluation of our HSSE management solutions and should not be disclosed to third parties without written consent.*
+*This proposal is confidential and proprietary to Srikandi Alam Lestari. All information contained herein is intended solely for the evaluation of our Safety and Environment management solutions and should not be disclosed to third parties without written consent.*
 
-**Thank you for considering Harmoni 360 HSSE for your organization's safety, health, security, and environmental management needs.**
+**Harmoni360 - Transforming Indonesian Safety & Environment Management**
+
+*Note: This proposal focuses on our production-ready Safety and Environment modules. Our Health and Security modules are under active development with expected release in 2026. We believe in delivering fully-tested, regulation-compliant solutions rather than rushing incomplete features to market.*
+
+**Thank you for considering Harmoni360 for your organization's Safety and Environment digital transformation journey.**

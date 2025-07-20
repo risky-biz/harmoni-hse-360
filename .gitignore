@@ -202,6 +202,14 @@ src/Harmoni360.Web/wwwroot/uploads/
 **/build/**
 src/Harmoni360.Web/ClientApp/dist/
 
+# Elsa Studio build artifacts
+src/Harmoni360.Web/ClientApp/public/elsa-studio/
+src/Harmoni360.Web/wwwroot/elsa-studio/
+
+# Monaco Editor build artifacts (from BlazorMonaco package)
+src/Harmoni360.Web/ClientApp/public/min/
+src/Harmoni360.Web/ClientApp/public/monaco-editor/
+
 # Large files and media
 *.jpg
 *.jpeg

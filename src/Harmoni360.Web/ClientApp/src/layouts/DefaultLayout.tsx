@@ -41,6 +41,7 @@ import {
   faSearch,
   faTimes,
   faChevronDown,
+  faProjectDiagram,
 } from '@fortawesome/free-solid-svg-icons';
 import { CONTEXT_ICONS, HAZARD_ICONS } from '../utils/iconMappings';
 import { 
@@ -121,6 +122,8 @@ const getNavigationIcon = (name: string) => {
     'User Management': <FontAwesomeIcon icon={faUser} className="nav-icon" />,
     'System Settings': <FontAwesomeIcon icon={faCog} className="nav-icon" />,
     'Reports': <FontAwesomeIcon icon={faChartLine} className="nav-icon" />,
+    'Workflow Management': <FontAwesomeIcon icon={faProjectDiagram} className="nav-icon" />,
+    'Workflows': <FontAwesomeIcon icon={faProjectDiagram} className="nav-icon" />,
   };
   return iconMap[name] || null;
 };
@@ -203,7 +206,8 @@ const DefaultLayout: React.FC = () => {
       'TrainingManagement': 17,
       'LicenseManagement': 18,
       'WasteManagement': 19,
-      'ApplicationSettings': 20
+      'ApplicationSettings': 20,
+      'WorkflowManagement': 21
     };
     return mapping[frontendModuleType] || null;
   }, []);
@@ -243,7 +247,8 @@ const DefaultLayout: React.FC = () => {
           'TrainingManagement': 17,
           'LicenseManagement': 18,
           'WasteManagement': 19,
-          'ApplicationSettings': 20
+          'ApplicationSettings': 20,
+          'WorkflowManagement': 21
         };
         const backendModuleType = mapping[item.module] || null;
         if (backendModuleType !== null && !enabledModuleTypes.has(backendModuleType)) {
@@ -569,7 +574,11 @@ const DefaultLayout: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      // Logout from main app
       await logoutApi().unwrap();
+      
+      // Clear the JWT token cookie used by Elsa Studio
+      document.cookie = 'harmoni360_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict';
     } catch (error) {
       // Even if API call fails, we should still logout locally
       console.warn('Logout API call failed:', error);

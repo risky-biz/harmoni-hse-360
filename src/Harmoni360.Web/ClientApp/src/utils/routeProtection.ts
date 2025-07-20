@@ -84,6 +84,9 @@ export const ROUTE_PROTECTION_MAP: Record<string, RouteProtectionRule> = {
   '/trainings/create': { module: ModuleType.TrainingManagement, permission: PermissionType.Create },
   '/trainings/my-trainings': { module: ModuleType.TrainingManagement, permission: PermissionType.Read },
 
+  // Workflow Management
+  '/workflows': { module: ModuleType.WorkflowManagement, permission: PermissionType.Read },
+
   // Waste Management
   '/waste': { module: ModuleType.WasteManagement, permission: PermissionType.Read },
   '/waste/reports': { module: ModuleType.WasteManagement, permission: PermissionType.Read },

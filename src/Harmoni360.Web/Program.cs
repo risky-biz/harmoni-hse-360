@@ -4,6 +4,7 @@ using Harmoni360.Web.Middleware;
 using Harmoni360.Web.Hubs;
 using Harmoni360.Web.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +19,16 @@ using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Infrastructure.Services;
 using System.Threading.RateLimiting;
 using System.Data.Common;
+using Elsa.Extensions;
+using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Enable static web assets for Development environment to serve _content files from NuGet packages
+if (builder.Environment.IsDevelopment())
+{
+    builder.WebHost.UseStaticWebAssets();
+}
 
 // Log startup information for debugging
 Console.WriteLine($"Starting Harmoni360 application...");
@@ -37,6 +46,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 // Add services
 builder.Services.AddControllers();
+
+// Elsa handles FastEndpoints configuration internally
 
 // Configure file upload size limits
 builder.Services.Configure<IISServerOptions>(options =>
@@ -65,6 +76,13 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Harmoni360 API",
         Version = "v1",
         Description = "HSE Management System API"
+    });
+    
+    // Exclude Elsa endpoints from Swagger to avoid schema conflicts
+    options.DocInclusionPredicate((docName, description) => 
+    {
+        return !description.RelativePath?.StartsWith("elsa/") == true && 
+               !description.RelativePath?.StartsWith("v1/") == true;
     });
 });
 
@@ -99,6 +117,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var accessToken = context.Request.Query["access_token"];
                 var path = context.HttpContext.Request.Path;
 
+                // Support SignalR authentication via access_token query parameter
                 if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
                 {
                     context.Token = accessToken;
@@ -112,12 +131,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add module-based authorization system
 builder.Services.AddModuleBasedAuthorization();
 
+
 // Add CORS for development
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevelopmentCors", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:5000")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:6001")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -131,6 +151,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add memory caching for incident list
 builder.Services.AddMemoryCache();
 
+
 // Add SignalR
 builder.Services.AddSignalR(options =>
 {
@@ -140,6 +161,9 @@ builder.Services.AddSignalR(options =>
 // Add SignalR notification services
 builder.Services.AddScoped<ISecurityNotificationHub, SecurityNotificationHub>();
 builder.Services.AddScoped<IHSSENotificationService, Harmoni360.Web.Services.HSSENotificationService>();
+
+// Add Elsa authentication provider for unified auth
+builder.Services.AddScoped<Harmoni360.Web.Services.ElsaAuthenticationProvider>();
 
 // Add Response Compression
 builder.Services.AddResponseCompression(options =>
@@ -216,6 +240,17 @@ builder.Services.AddRateLimiter(options =>
                 SegmentsPerWindow = 6 // 10-second segments
             }));
 
+    // Elsa Workflow API rate limit policy
+    options.AddPolicy("ElsaApi", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 50,  // Stricter limit for workflow operations
+                Window = TimeSpan.FromMinutes(1)
+            }));
+
     // Default global policy
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
@@ -243,6 +278,8 @@ builder.Services.AddRateLimiter(options =>
     };
 });
 
+// Elsa is configured in Infrastructure layer (DependencyInjection.cs)
+
 // Build app
 var app = builder.Build();
 
@@ -254,7 +291,7 @@ var uploadsPath = app.Environment.IsProduction()
 app.Configuration["FileStorage:UploadsPath"] = uploadsPath;
 
 // Configure pipeline
-// app.UseResponseCompression(); // Temporarily disabled to fix chunked encoding issue
+app.UseResponseCompression();
 
 if (app.Environment.IsDevelopment())
 {
@@ -271,6 +308,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
 app.UseSerilogRequestLogging();
 
 // Add CORS for development
@@ -324,8 +362,6 @@ catch (Exception ex)
 // Always serve SPA static files (including in production)
 app.UseSpaStaticFiles();
 
-app.UseRouting();
-
 // Add custom middleware early in pipeline, but after routing for path detection
 app.Use(async (context, next) =>
 {
@@ -358,48 +394,141 @@ app.Use(async (context, next) =>
     }
 });
 
+app.UseRouting();
+
+
+// Debug middleware to track all requests
+app.Use(async (context, next) =>
+{
+    var debugLogger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    debugLogger.LogInformation("Request: {Method} {Path}{Query} - User-Agent: {UserAgent}", 
+        context.Request.Method, 
+        context.Request.Path,
+        context.Request.QueryString,
+        context.Request.Headers.UserAgent);
+    
+    await next();
+    
+    debugLogger.LogInformation("Response: {Method} {Path} -> {StatusCode}", 
+        context.Request.Method, 
+        context.Request.Path,
+        context.Response.StatusCode);
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Apply custom authorization for Elsa Studio AFTER authentication
+app.UseElsaStudioAuthorization();
+
+// Handle /elsa-studio redirect AFTER authentication
+app.MapWhen(context => context.Request.Path == "/elsa-studio",
+    appBuilder =>
+    {
+        appBuilder.UseRouting();
+        appBuilder.UseEndpoints(endpoints =>
+        {
+            endpoints.MapGet("/elsa-studio", () => Results.Redirect("/elsa-studio/", permanent: false));
+        });
+    });
+
+// Map Elsa Studio AFTER authentication middleware
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/elsa-studio"), 
+    appBuilder =>
+    {
+        // Use Blazor framework files first for WebAssembly runtime files
+        appBuilder.UseBlazorFrameworkFiles("/elsa-studio");
+        
+        // Serve static files for Elsa Studio (including custom CSS and other assets)
+        appBuilder.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                Path.Combine(app.Environment.ContentRootPath, "wwwroot", "elsa-studio")),
+            RequestPath = "/elsa-studio",
+            OnPrepareResponse = ctx =>
+            {
+                // Set cache headers for Elsa Studio static files
+                ctx.Context.Response.Headers["Cache-Control"] = "public, max-age=3600";
+                
+                // Add specific headers for .dat files
+                if (ctx.File.Name.EndsWith(".dat"))
+                {
+                    ctx.Context.Response.Headers["Content-Type"] = "application/octet-stream";
+                }
+                
+                // Add specific headers for CSS files
+                if (ctx.File.Name.EndsWith(".css"))
+                {
+                    ctx.Context.Response.Headers["Content-Type"] = "text/css";
+                }
+                
+                // Add specific headers for JS files
+                if (ctx.File.Name.EndsWith(".js"))
+                {
+                    ctx.Context.Response.Headers["Content-Type"] = "application/javascript";
+                }
+            }
+        });
+        
+        appBuilder.UseRouting();
+        appBuilder.UseEndpoints(endpoints =>
+        {
+            endpoints.MapFallbackToFile("/elsa-studio/{*path:nonfile}", "/elsa-studio/index.html");
+        });
+    });
+
+// Configure Elsa workflows BEFORE rate limiting to ensure endpoints are registered
+app.UseWorkflows();
+
+// Use FastEndpoints with Elsa configuration - register under default /elsa/api path
+app.UseWorkflowsApi();
+
+// Add debug logging to verify Elsa endpoints are registered
+var elsaLogger = app.Services.GetRequiredService<ILogger<Program>>();
+elsaLogger.LogInformation("Elsa workflows and API endpoints have been configured");
+
+// Add rate limiting AFTER Elsa configuration
 app.UseRateLimiter();
 
 // Map endpoints
 app.MapControllers();
-
-// SignalR hubs
 app.MapHub<IncidentHub>("/hubs/incidents");
 app.MapHub<NotificationHub>("/hubs/notifications");
 app.MapHub<HealthHub>("/hubs/health");
 app.MapHub<SecurityHub>("/hubs/security");
 app.MapHub<HSSEHub>("/hubs/hsse");
-
-// Health checks
 app.MapHealthChecks("/health");
 
-// Configure SPA
-app.UseSpa(spa =>
-{
-    spa.Options.SourcePath = "ClientApp";
-    spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+app.MapWhen(context => !context.Request.Path.StartsWithSegments("/elsa/api") &&
+                      !context.Request.Path.StartsWithSegments("/elsa-studio") &&
+                      !context.Request.Path.StartsWithSegments("/_framework") &&
+                      !context.Request.Path.StartsWithSegments("/v1") &&
+                      !context.Request.Path.StartsWithSegments("/api") &&
+                      !context.Request.Path.StartsWithSegments("/hubs") &&
+                      !context.Request.Path.StartsWithSegments("/health"), 
+    appBuilder =>
     {
-        OnPrepareResponse = ctx =>
+        appBuilder.UseSpa(spa =>
         {
-            // Don't cache the default page
-            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-        }
-    };
+            spa.Options.SourcePath = "ClientApp";
+            spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                }
+            };
 
-    if (app.Environment.IsDevelopment())
-    {
-        // Only use SPA proxy if the frontend is not running separately
-        // For separate frontend development, this will be handled by Vite proxy
-        var useViteProxy = app.Configuration.GetValue<bool>("UseSpaProxy", false);
-
-        if (useViteProxy)
-        {
-            spa.UseProxyToSpaDevelopmentServer("http://localhost:5173");
-        }
-    }
-});
+            if (app.Environment.IsDevelopment())
+            {
+                var useViteProxy = app.Configuration.GetValue<bool>("UseSpaProxy", false);
+                if (useViteProxy)
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:5173");
+                }
+            }
+        });
+    });
 
 // Seed database if needed
 using (var scope = app.Services.CreateScope())

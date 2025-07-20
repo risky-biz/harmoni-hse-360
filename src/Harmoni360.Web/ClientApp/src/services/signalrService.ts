@@ -27,7 +27,11 @@ class SignalRService {
     try {
       // Stop existing connection if any
       if (this.hubConnection) {
-        await this.stopConnection();
+        try {
+          await this.stopConnection();
+        } catch (err) {
+          console.warn('Error stopping existing connection:', err);
+        }
       }
 
       this.hubConnection = new signalR.HubConnectionBuilder()
@@ -197,9 +201,18 @@ class SignalRService {
   }
 
   async stopConnection() {
+    this.isConnecting = false;
     if (this.hubConnection) {
-      await this.hubConnection.stop();
-      this.hubConnection = null;
+      try {
+        // Only stop if not already disconnected/disposed
+        if (this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
+          await this.hubConnection.stop();
+        }
+      } catch (err) {
+        console.warn('Error during connection stop:', err);
+      } finally {
+        this.hubConnection = null;
+      }
     }
   }
 

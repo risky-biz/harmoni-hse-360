@@ -10,29 +10,41 @@ export const useSignalR = () => {
   );
 
   useEffect(() => {
+    let cancelled = false;
+    let connectionTimer: NodeJS.Timeout | null = null;
+
     if (isAuthenticated && token) {
       // Delay SignalR connection to avoid conflicts during app initialization
-      const connectionTimer = setTimeout(() => {
-        signalRService.startConnection(token).catch((err) => {
-          console.warn(
-            'SignalR connection failed, but application will continue:',
-            err
-          );
-        });
+      connectionTimer = setTimeout(() => {
+        if (!cancelled) {
+          signalRService.startConnection(token).catch((err) => {
+            if (!cancelled) {
+              console.warn(
+                'SignalR connection failed, but application will continue:',
+                err
+              );
+            }
+          });
+        }
       }, 1000); // 1 second delay
-
-      return () => {
-        clearTimeout(connectionTimer);
-        signalRService.stopConnection().catch((err) => {
-          console.warn('Failed to stop SignalR connection on cleanup:', err);
-        });
-      };
     } else {
       // Stop connection when not authenticated
       signalRService.stopConnection().catch((err) => {
-        console.warn('Failed to stop SignalR connection:', err);
+        if (!cancelled) {
+          console.warn('Failed to stop SignalR connection:', err);
+        }
       });
     }
+
+    return () => {
+      cancelled = true;
+      if (connectionTimer) {
+        clearTimeout(connectionTimer);
+      }
+      signalRService.stopConnection().catch((err) => {
+        console.warn('Failed to stop SignalR connection on cleanup:', err);
+      });
+    };
   }, [isAuthenticated, token]);
 
   return {

@@ -51,6 +51,8 @@ public class JwtTokenService : IJwtTokenService
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+            // Also add as 'role' claim for compatibility with different systems
+            claims.Add(new Claim("role", role));
         }
 
         var expiresAt = DateTime.UtcNow.AddMinutes(_tokenExpirationMinutes);

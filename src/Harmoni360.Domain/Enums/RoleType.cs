@@ -122,5 +122,11 @@ public enum RoleType
     /// <summary>
     /// Viewer - READ-ONLY access to basic dashboard and summary information (no create/update/delete permissions)
     /// </summary>
-    Viewer = 20
+    Viewer = 20,
+
+    /// <summary>
+    /// Workflow Manager - RESTRICTED access ONLY to Workflow Management module and its related features
+    /// (workflow design, workflow instances, process automation, workflow reporting)
+    /// </summary>
+    WorkflowManager = 21
 }

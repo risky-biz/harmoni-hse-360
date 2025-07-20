@@ -10,7 +10,9 @@ COPY ["src/Harmoni360.Web/Harmoni360.Web.csproj", "Harmoni360.Web/"]
 COPY ["src/Harmoni360.Application/Harmoni360.Application.csproj", "Harmoni360.Application/"]
 COPY ["src/Harmoni360.Domain/Harmoni360.Domain.csproj", "Harmoni360.Domain/"]
 COPY ["src/Harmoni360.Infrastructure/Harmoni360.Infrastructure.csproj", "Harmoni360.Infrastructure/"]
+COPY ["src/Harmoni360.ElsaStudio/Harmoni360.ElsaStudio.csproj", "Harmoni360.ElsaStudio/"]
 RUN dotnet restore "Harmoni360.Web/Harmoni360.Web.csproj"
+RUN dotnet restore "Harmoni360.ElsaStudio/Harmoni360.ElsaStudio.csproj"
 
 # Copy everything else
 COPY src/ .
@@ -20,9 +22,17 @@ WORKDIR /src/Harmoni360.Web/ClientApp
 RUN npm ci --legacy-peer-deps
 RUN npm run build
 
+# Build Elsa Studio
+WORKDIR /src/Harmoni360.ElsaStudio
+RUN dotnet publish "Harmoni360.ElsaStudio.csproj" -c Release -o /app/elsa-publish
+
 # Build .NET app
 WORKDIR /src/Harmoni360.Web
 RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:SkipClientBuild=true
+
+# Copy Elsa Studio files to wwwroot
+RUN mkdir -p /app/publish/wwwroot/elsa-studio && \
+    cp -r /app/elsa-publish/wwwroot/* /app/publish/wwwroot/elsa-studio/
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final

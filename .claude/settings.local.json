@@ -137,8 +137,36 @@
       "Bash(HARMONI_FORCE_RESEED=true dotnet run --project src/Harmoni360.Web --environment Development)",
       "Bash(sudo kill:*)",
       "Bash(./test-hsse-seeders.sh:*)",
-      "Bash(HARMONI_FORCE_RESEED=true dotnet run --no-build)"
+      "Bash(HARMONI_FORCE_RESEED=true dotnet run --no-build)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "WebFetch(domain:docs.elsaworkflows.io)",
+      "WebFetch(domain:elsa-workflows.github.io)",
+      "WebFetch(domain:v3.elsaworkflows.io)",
+      "WebFetch(domain:stackoverflow.com)",
+      "Bash(echo:*)",
+      "Bash(claude mcp:*)",
+      "Bash(npx:*)",
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_close",
+      "mcp__playwright__browser_tab_list",
+      "Bash(sudo install:*)",
+      "Bash(sudo apt:*)",
+      "Bash(msedge)",
+      "Bash(microsoft-edge:*)",
+      "mcp__microsoft-docs__microsoft_docs_search",
+      "mcp__github__search_issues",
+      "mcp__github__get_issue",
+      "mcp__github__search_code",
+      "mcp__github__get_file_contents",
+      "Bash(sudo pkill:*)",
+      "mcp__playwright__browser_take_screenshot",
+      "Bash(diff:*)",
+      "Bash(dos2unix:*)"
     ]
   },
-  "enableAllProjectMcpServers": false
+  "enableAllProjectMcpServers": true
 }
