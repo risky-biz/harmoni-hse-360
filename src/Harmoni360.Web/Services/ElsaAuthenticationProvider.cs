@@ -18,7 +18,7 @@ public class ElsaAuthenticationProvider
         _logger = logger;
     }
 
-    public async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
+    public Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
     {
         try
         {
@@ -26,7 +26,7 @@ public class ElsaAuthenticationProvider
             if (string.IsNullOrWhiteSpace(jwtKey))
             {
                 _logger.LogError("JWT signing key is missing");
-                return null;
+                return Task.FromResult<ClaimsPrincipal?>(null);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -49,28 +49,28 @@ public class ElsaAuthenticationProvider
                 !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
                 _logger.LogWarning("Invalid token format");
-                return null;
+                return Task.FromResult<ClaimsPrincipal?>(null);
             }
 
             _logger.LogInformation("Token validated successfully for user: {UserId}", 
                 principal.FindFirst("sub")?.Value ?? "Unknown");
 
-            return principal;
+            return Task.FromResult<ClaimsPrincipal?>(principal);
         }
         catch (SecurityTokenExpiredException)
         {
             _logger.LogWarning("Token has expired");
-            return null;
+            return Task.FromResult<ClaimsPrincipal?>(null);
         }
         catch (SecurityTokenException ex)
         {
             _logger.LogWarning(ex, "Token validation failed");
-            return null;
+            return Task.FromResult<ClaimsPrincipal?>(null);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error during token validation");
-            return null;
+            return Task.FromResult<ClaimsPrincipal?>(null);
         }
     }
 

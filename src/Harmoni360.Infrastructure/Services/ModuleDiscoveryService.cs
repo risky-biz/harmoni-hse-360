@@ -21,7 +21,7 @@ public class ModuleDiscoveryService : IModuleDiscoveryService
         _currentUserService = currentUserService;
     }
 
-    public async Task<IEnumerable<ModuleDiscoveryResult>> DiscoverModulesAsync()
+    public Task<IEnumerable<ModuleDiscoveryResult>> DiscoverModulesAsync()
     {
         _logger.LogInformation("Starting module discovery via assembly scanning...");
         
@@ -74,7 +74,7 @@ public class ModuleDiscoveryService : IModuleDiscoveryService
         
         _logger.LogInformation("Module discovery completed. Found {Count} modules", results.Count);
         
-        return results;
+        return Task.FromResult<IEnumerable<ModuleDiscoveryResult>>(results);
     }
 
     public async Task<IEnumerable<ModuleConfiguration>> GetModuleConfigurationsAsync()

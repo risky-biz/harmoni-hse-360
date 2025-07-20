@@ -84,7 +84,7 @@ public class PPEOperationalDataSeeder
         _logger.LogInformation("Existing PPE operational data cleared");
     }
 
-    private async Task SeedPPEAssignmentsAsync(List<User> users, List<PPEItem> ppeItems, string[] departments)
+    private Task SeedPPEAssignmentsAsync(List<User> users, List<PPEItem> ppeItems, string[] departments)
     {
         _logger.LogInformation("Seeding PPE assignments...");
 
@@ -126,6 +126,7 @@ public class PPEOperationalDataSeeder
 
         _context.PPEAssignments.AddRange(assignments);
         _logger.LogInformation($"Seeded {assignments.Count} PPE assignments");
+        return Task.CompletedTask;
     }
 
     private async Task SeedPPERequestsAsync(List<User> users, List<PPEItem> ppeItems, string[] departments)

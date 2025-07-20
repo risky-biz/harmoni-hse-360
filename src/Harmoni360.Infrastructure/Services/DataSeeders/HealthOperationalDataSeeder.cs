@@ -84,7 +84,7 @@ public class HealthOperationalDataSeeder
         _logger.LogInformation("Existing Health operational data cleared");
     }
 
-    private async Task SeedHealthRecordsAsync(List<User> users)
+    private Task SeedHealthRecordsAsync(List<User> users)
     {
         _logger.LogInformation("Seeding health records...");
 
@@ -110,6 +110,7 @@ public class HealthOperationalDataSeeder
 
         _context.HealthRecords.AddRange(healthRecords);
         _logger.LogInformation($"Seeded {healthRecords.Count} health records");
+        return Task.CompletedTask;
     }
 
     private async Task SeedHealthIncidentsAsync(List<User> users)

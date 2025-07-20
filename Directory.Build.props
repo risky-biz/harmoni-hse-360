@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Suppress MudBlazor analyzer version warning -->
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    <NoWarn>$(NoWarn);CS9057</NoWarn>
+  </PropertyGroup>
+</Project>

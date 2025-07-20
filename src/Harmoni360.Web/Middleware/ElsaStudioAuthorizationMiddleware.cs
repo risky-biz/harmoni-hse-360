@@ -177,7 +177,7 @@ public class ElsaStudioAuthorizationMiddleware
         await _next(context);
     }
 
-    private async Task<(bool isValid, IEnumerable<Claim>? claims)> ValidateJwtToken(string token)
+    private Task<(bool isValid, IEnumerable<Claim>? claims)> ValidateJwtToken(string token)
     {
         try
         {
@@ -185,7 +185,7 @@ public class ElsaStudioAuthorizationMiddleware
             if (string.IsNullOrEmpty(jwtSecretKey))
             {
                 _logger.LogError("JWT SecretKey not configured");
-                return (false, null);
+                return Task.FromResult<(bool isValid, IEnumerable<Claim>? claims)>((false, null));
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -204,12 +204,12 @@ public class ElsaStudioAuthorizationMiddleware
             };
 
             var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-            return (true, principal.Claims);
+            return Task.FromResult((true, (IEnumerable<Claim>?)principal.Claims));
         }
         catch (Exception ex)
         {
             _logger.LogDebug("JWT token validation failed: {Error}", ex.Message);
-            return (false, null);
+            return Task.FromResult<(bool isValid, IEnumerable<Claim>? claims)>((false, null));
         }
     }
 

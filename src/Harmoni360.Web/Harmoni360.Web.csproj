@@ -29,7 +29,6 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.13.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,6 +40,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.6" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.13.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +53,11 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    
+    <!-- Exclude Elsa Studio files from static web assets processing to prevent conflicts -->
+    <Content Remove="wwwroot\elsa-studio\**" />
+    <StaticWebAsset Remove="wwwroot\elsa-studio\**" />
+    <None Include="wwwroot\elsa-studio\**" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -78,7 +83,7 @@
   </Target>
 
   <!-- Copy Elsa Studio WASM files to wwwroot for direct loading -->
-  <Target Name="CopyElsaStudioFiles" AfterTargets="Build" DependsOnTargets="CopyMonacoEditorFiles">
+  <Target Name="CopyElsaStudioFiles" BeforeTargets="GenerateStaticWebAssetsManifest" DependsOnTargets="CopyMonacoEditorFiles">
     <!-- First ensure Elsa Studio is published to get all dependencies -->
     <Message Text="Publishing Elsa Studio to ensure all files are available..." Importance="high" />
     <MSBuild Projects="../Harmoni360.ElsaStudio/Harmoni360.ElsaStudio.csproj" 
@@ -92,13 +97,13 @@
       <ElsaStudioStaticAssets Include="../Harmoni360.ElsaStudio/wwwroot/**/*" />
       <ElsaScopedCssFiles Include="../Harmoni360.ElsaStudio/obj/$(Configuration)/net8.0/scopedcss/bundle/*.css" />
     </ItemGroup>
-    <Copy SourceFiles="@(ElsaStudioFiles)" DestinationFiles="@(ElsaStudioFiles->'wwwroot/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ElsaStudioFiles)" DestinationFiles="@(ElsaStudioFiles->'wwwroot/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" ContinueOnError="true" />
     
     <!-- Copy static assets from Elsa Studio source (CSS, favicon, etc.) -->
-    <Copy SourceFiles="@(ElsaStudioStaticAssets)" DestinationFiles="@(ElsaStudioStaticAssets->'wwwroot/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ElsaStudioStaticAssets)" DestinationFiles="@(ElsaStudioStaticAssets->'wwwroot/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" ContinueOnError="true" />
     
     <!-- Copy scoped CSS files from Elsa Studio -->
-    <Copy SourceFiles="@(ElsaScopedCssFiles)" DestinationFolder="wwwroot/elsa-studio/" SkipUnchangedFiles="true" Condition="'@(ElsaScopedCssFiles)' != ''" />
+    <Copy SourceFiles="@(ElsaScopedCssFiles)" DestinationFolder="wwwroot/elsa-studio/" SkipUnchangedFiles="true" ContinueOnError="true" Condition="'@(ElsaScopedCssFiles)' != ''" />
     
     <!-- Copy static web assets from NuGet packages for Elsa Studio -->
     <ItemGroup>
@@ -186,7 +191,7 @@
     <ItemGroup>
       <ElsaStudioAssetsForVite Include="wwwroot/elsa-studio/**/*" />
     </ItemGroup>
-    <Copy SourceFiles="@(ElsaStudioAssetsForVite)" DestinationFiles="@(ElsaStudioAssetsForVite->'ClientApp/public/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ElsaStudioAssetsForVite)" DestinationFiles="@(ElsaStudioAssetsForVite->'ClientApp/public/elsa-studio/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" ContinueOnError="true" />
     
     <!-- Copy static assets to Vite public directory with correct structure -->
     <Copy SourceFiles="@(MudBlazorDirectAssets)" DestinationFolder="ClientApp/public/elsa-studio/_content/MudBlazor/" SkipUnchangedFiles="true" Condition="'@(MudBlazorDirectAssets)' != ''" />
@@ -206,6 +211,11 @@
           DestinationFiles="@(MonacoEditorPackageFiles->'ClientApp/public/elsa-studio/_content/BlazorMonaco/lib/monaco-editor/%(RecursiveDir)%(Filename)%(Extension)')" 
           SkipUnchangedFiles="true" 
           Condition="'@(MonacoEditorPackageFiles)' != ''" />
+    
+    <!-- Add Elsa Studio files as content for publish, but not as static web assets -->
+    <ItemGroup>
+      <Content Include="wwwroot/elsa-studio/**/*" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
     
     <!-- Update the index.html to have correct base href and fix blazor.boot.json paths -->
     <ItemGroup>

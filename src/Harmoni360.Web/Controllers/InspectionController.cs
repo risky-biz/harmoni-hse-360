@@ -195,7 +195,7 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpPost("{id}/comments")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Update)]
-        public async Task<IActionResult> AddComment(int id, [FromBody] object comment)
+        public Task<IActionResult> AddComment(int id, [FromBody] object comment)
         {
             _logger.LogInformation("Adding comment to inspection {Id}", id);
             
@@ -210,7 +210,7 @@ namespace Harmoni360.Web.Controllers
             // var result = await _mediator.Send(command);
             // return Ok(result);
             
-            return BadRequest("Add comment functionality not yet implemented");
+            return Task.FromResult<IActionResult>(BadRequest("Add comment functionality not yet implemented"));
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpPost("{id}/findings")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Update)]
-        public async Task<IActionResult> AddFinding(int id, [FromBody] object finding)
+        public Task<IActionResult> AddFinding(int id, [FromBody] object finding)
         {
             _logger.LogInformation("Adding finding to inspection {Id}", id);
             
@@ -235,7 +235,7 @@ namespace Harmoni360.Web.Controllers
             // var result = await _mediator.Send(command);
             // return Ok(result);
             
-            return BadRequest("Add finding functionality not yet implemented");
+            return Task.FromResult<IActionResult>(BadRequest("Add finding functionality not yet implemented"));
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpPut("{id}/findings/{findingId}")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Update)]
-        public async Task<IActionResult> UpdateFinding(int id, int findingId, [FromBody] object finding)
+        public Task<IActionResult> UpdateFinding(int id, int findingId, [FromBody] object finding)
         {
             _logger.LogInformation("Updating finding {FindingId} in inspection {Id}", findingId, id);
             
@@ -267,7 +267,7 @@ namespace Harmoni360.Web.Controllers
             // var result = await _mediator.Send(command);
             // return Ok(result);
             
-            return BadRequest("Update finding functionality not yet implemented");
+            return Task.FromResult<IActionResult>(BadRequest("Update finding functionality not yet implemented"));
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace Harmoni360.Web.Controllers
         /// </summary>
         [HttpPost("{id}/findings/{findingId}/close")]
         [RequireModulePermission(ModuleType.InspectionManagement, PermissionType.Update)]
-        public async Task<IActionResult> CloseFinding(int id, int findingId, [FromBody] object closure)
+        public Task<IActionResult> CloseFinding(int id, int findingId, [FromBody] object closure)
         {
             _logger.LogInformation("Closing finding {FindingId} in inspection {Id}", findingId, id);
             
@@ -289,7 +289,7 @@ namespace Harmoni360.Web.Controllers
             // await _mediator.Send(command);
             // return Ok();
             
-            return BadRequest("Close finding functionality not yet implemented");
+            return Task.FromResult<IActionResult>(BadRequest("Close finding functionality not yet implemented"));
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ public class CreateHealthRecordCommandHandler : IRequestHandler<CreateHealthReco
     {
         _logger.LogInformation("Creating health record by user {UserEmail}", _currentUserService.Email);
 
-        Person person;
+        Person? person;
 
         if (request.PersonId.HasValue)
         {

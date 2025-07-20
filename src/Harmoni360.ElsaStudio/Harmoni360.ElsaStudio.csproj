@@ -8,6 +8,8 @@
     <!-- Disable PDB generation for Blazor WASM to avoid authentication/SRI issues -->
     <DebugType>None</DebugType>
     <DebugSymbols>false</DebugSymbols>
+    <!-- Disable problematic package folder resolution on Linux -->
+    <RestoreFallbackFolders></RestoreFallbackFolders>
   </PropertyGroup>
 
   <ItemGroup>

@@ -258,7 +258,7 @@ public class ModuleConfigurationService : IModuleConfigurationService
         return moduleConfiguration?.Settings;
     }
 
-    public async Task LogModuleStateChangeAsync(ModuleType moduleType, bool oldState, bool newState, string? context = null)
+    public Task LogModuleStateChangeAsync(ModuleType moduleType, bool oldState, bool newState, string? context = null)
     {
         var auditLog = newState 
             ? ModuleConfigurationAuditLog.CreateEnabledLog(moduleType, _currentUserService.UserId, GetClientIpAddress(), GetUserAgent())
@@ -269,9 +269,10 @@ public class ModuleConfigurationService : IModuleConfigurationService
 
         _context.ModuleConfigurationAuditLogs.Add(auditLog);
         // Note: SaveChanges should be called by the calling method
+        return Task.CompletedTask;
     }
 
-    public async Task LogModuleSettingsChangeAsync(ModuleType moduleType, string? oldSettings, string? newSettings, string? context = null)
+    public Task LogModuleSettingsChangeAsync(ModuleType moduleType, string? oldSettings, string? newSettings, string? context = null)
     {
         var auditLog = ModuleConfigurationAuditLog.CreateSettingsUpdatedLog(
             moduleType, oldSettings, newSettings, _currentUserService.UserId, GetClientIpAddress(), GetUserAgent());
@@ -281,6 +282,7 @@ public class ModuleConfigurationService : IModuleConfigurationService
 
         _context.ModuleConfigurationAuditLogs.Add(auditLog);
         // Note: SaveChanges should be called by the calling method
+        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<ModuleConfigurationAuditLogDto>> GetModuleAuditTrailAsync(ModuleType moduleType)
