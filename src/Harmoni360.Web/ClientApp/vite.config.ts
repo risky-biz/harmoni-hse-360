@@ -29,6 +29,45 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB - increased for Monaco Editor
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              }
+            }
+          },
+          {
+            urlPattern: /\/monaco-editor\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'monaco-editor-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              }
+            }
+          }
+        ]
+      },
       manifest: {
         name: 'Harmoni360',
         short_name: 'HSE360',
@@ -71,7 +110,46 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         ws: true
+      },
+      // Only proxy Elsa API calls to backend - static assets served by Vite
+      '/elsa/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/v1': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/elsa-studio-test': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      // Proxy entire Elsa Studio to backend
+      '/elsa-studio': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+        // Ensure proper handling of HTML fallback for Blazor SPA
+        bypass: function(req, res, options) {
+          // Don't bypass, always proxy to backend
+          return null;
+        }
       }
+    },
+    // Add fallback for SPA routing, but exclude /elsa-studio paths
+    historyApiFallback: {
+      rewrites: [
+        // Don't rewrite elsa-studio paths - they are proxied to backend
+        { from: /^\/elsa-studio/, to: function(context) {
+          // This won't be reached due to proxy, but kept for clarity
+          return context.parsedUrl.pathname;
+        }},
+        // All other paths fall back to index.html for React Router
+        { from: /.*/, to: '/index.html' }
+      ]
     }
   },
   test: {

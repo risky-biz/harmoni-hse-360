@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Harmoni360.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public partial class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     private readonly ICurrentUserService _currentUserService;
 
@@ -167,7 +167,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         }
 
         base.OnModelCreating(modelBuilder);
+        
+        // Call partial method for additional configurations
+        OnModelCreatingPartial(modelBuilder);
     }
+    
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

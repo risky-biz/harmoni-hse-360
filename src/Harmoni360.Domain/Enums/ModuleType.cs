@@ -101,5 +101,11 @@ public enum ModuleType
     /// Application Settings Module - System configuration, module settings, security settings
     /// (SuperAdmin/Developer only)
     /// </summary>
-    ApplicationSettings = 20
+    ApplicationSettings = 20,
+
+    /// <summary>
+    /// Workflow Management Module - Elsa workflow management, workflow designer, workflow instances, process automation
+    /// (SuperAdmin/Developer/WorkflowManager only)
+    /// </summary>
+    WorkflowManagement = 21
 }

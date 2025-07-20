@@ -19,7 +19,8 @@ export enum ModuleType {
   ComplianceManagement = 'ComplianceManagement',
   Reporting = 'Reporting',
   UserManagement = 'UserManagement',
-  ApplicationSettings = 'ApplicationSettings'
+  ApplicationSettings = 'ApplicationSettings',
+  WorkflowManagement = 'WorkflowManagement'
 }
 
 export enum PermissionType {
@@ -45,7 +46,8 @@ export enum RoleType {
   SecurityOfficer = 'SecurityOfficer',
   ComplianceOfficer = 'ComplianceOfficer',
   Reporter = 'Reporter',
-  Viewer = 'Viewer'
+  Viewer = 'Viewer',
+  WorkflowManager = 'WorkflowManager'
 }
 
 export interface ModulePermission {
@@ -102,7 +104,8 @@ export const MANAGER_ROLES: RoleType[] = [
   RoleType.RiskManager,
   RoleType.PPEManager,
   RoleType.HealthMonitor,
-  RoleType.SecurityManager
+  RoleType.SecurityManager,
+  RoleType.WorkflowManager
 ];
 
 export const READ_ONLY_ROLES: RoleType[] = [
@@ -127,7 +130,8 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
     ModuleType.SecurityIncidentManagement,
     ModuleType.Reporting,
     ModuleType.UserManagement,
-    ModuleType.ApplicationSettings
+    ModuleType.ApplicationSettings,
+    ModuleType.WorkflowManagement
   ],
   [RoleType.Developer]: [
     ModuleType.Dashboard,
@@ -144,7 +148,8 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
     ModuleType.SecurityIncidentManagement,
     ModuleType.Reporting,
     ModuleType.UserManagement,
-    ModuleType.ApplicationSettings
+    ModuleType.ApplicationSettings,
+    ModuleType.WorkflowManagement
   ],
   [RoleType.Admin]: [
     ModuleType.Dashboard,
@@ -224,5 +229,10 @@ export const MODULE_ACCESS_MAP: Record<RoleType, ModuleType[]> = {
   ],
   [RoleType.Viewer]: [
     ModuleType.Dashboard
+  ],
+  [RoleType.WorkflowManager]: [
+    ModuleType.Dashboard,
+    ModuleType.WorkflowManagement,
+    ModuleType.Reporting
   ]
 };

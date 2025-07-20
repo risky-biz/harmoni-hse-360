@@ -1,397 +1,520 @@
-# Harmoni 360 HSSE Application Suite
+# Harmoni360 Application Suite
 ## Proposal Penjualan Komprehensif
 
-**PT Harmoni Digital Solutions**  
-Jl. Teknologi Raya No. 123, Jakarta Selatan  
-DKI Jakarta 12560  
-Website: www.harmoni360.com  
-Email: sales@harmoni360.com  
-Telepon: +62 21 1234 5678  
+**Srikandi Alam Lestari**  
+Padmasari Residence No. 20  
+Jl. Lurah Madi RT 002 RW 002  
+Parung, Bogor, Jawa Barat  
+Indonesia 16330  
+**Website:** www.salhsse.com  
+**Email:** srikandi.alam.lestari@gmail.com  
+**Telepon:** +62 813-1212-9749  
 
 ---
 
-**No. Proposal:** HSE-2025-001  
-**Tanggal:** 17 Juni 2025  
-**Berlaku Hingga:** 17 Juli 2025  
-**Dipersiapkan Untuk:** Organisasi HSSE Prospektif  
+**No. Proposal:** H360-HSE-2025-001  
+**Tanggal:** 7 Juli 2025  
+**Berlaku Hingga:** 7 Agustus 2025  
+**Dipersiapkan Untuk:** Organisasi yang Memerlukan Manajemen Keselamatan & Lingkungan  
 
 ---
 
 ## Ringkasan Eksekutif
 
-Harmoni 360 HSSE adalah platform digital komprehensif dan modern yang dirancang untuk merevolusi manajemen Kesehatan, Keselamatan, Keamanan, dan Lingkungan (K3L) bagi organisasi di seluruh Indonesia. Dibangun dengan teknologi terdepan dan dirancang khusus untuk kepatuhan regulasi Indonesia, suite modular kami menawarkan fleksibilitas, skalabilitas, dan nilai yang tak tertandingi.
+Harmoni360 adalah platform digital komprehensif dan modern yang dirancang untuk merevolusi manajemen Keselamatan dan Lingkungan bagi organisasi di seluruh Indonesia. Dibangun dengan teknologi terdepan dan dirancang khusus untuk kepatuhan regulasi Indonesia, solusi terintegrasi kami memberikan nilai langsung melalui modul siap produksi sambil menawarkan roadmap yang jelas untuk ekspansi masa depan.
 
 ### Proposisi Nilai Utama
+- **Solusi Keselamatan & Lingkungan Lengkap** seharga Rp 345.000.000 - semua modul termasuk
 - **Penghematan biaya 40-60%** dibandingkan solusi vendor internasional
-- **100% kepatuhan regulasi Indonesia** (PP 71/2019, ISO 45001, ISO 14001, ISO 27001)
-- **Arsitektur modular** - beli hanya yang Anda butuhkan, berkembang seiring pertumbuhan
-- **Opsi deployment ganda** - cloud-hosted atau on-premises
-- **Technology stack modern** dengan kemampuan real-time
+- **100% kepatuhan regulasi Indonesia**
+- **Deployment cloud-first** melalui Fly.io dengan residensi data Indonesia
+- **Technology stack modern** dengan kemampuan real-time dan akses mobile
 - **Kepemilikan source code penuh** - tidak ada vendor lock-in
-- **Dukungan dwi-bahasa** - Bahasa Indonesia dan Inggris
+- **Paket komprehensif** termasuk garansi 6 bulan, 4 sesi pelatihan, dan support prioritas
+- **Platform siap masa depan** dengan modul Kesehatan dan Keamanan datang di 2026
 
 ---
 
 ## Gambaran Produk
 
-### Modul Harmoni 360 HSSE
+### Modul Harmoni360
 
-#### 🏥 **Sistem Manajemen Kesehatan**
-- Pencatatan kesehatan dan pelacakan kondisi medis
-- Manajemen vaksinasi dan kepatuhan
-- Manajemen kontak darurat
-- Pelaporan dan analitik insiden kesehatan
-- Pengawasan dan monitoring medis
-- **Status:** Siap Produksi ✅
+#### **TERMASUK DALAM PAKET Rp 345.000.000:**
 
-#### ⚠️ **Sistem Manajemen Keselamatan**
+#### ⚠️ **Sistem Manajemen Keselamatan** ✅
 - Manajemen insiden dengan pelaporan real-time
 - Identifikasi bahaya dan penilaian risiko
 - Manajemen APD (Alat Pelindung Diri)
 - Sistem izin kerja dengan workflow digital
 - Manajemen dan penjadwalan inspeksi
 - Pelacakan pelatihan dan sertifikasi
-- **Status:** Siap Produksi ✅
+- **Status:** 65% Siap - Workflow Dapat Dikustomisasi - TERMASUK SEPENUHNYA
 
-#### 🔒 **Sistem Manajemen Keamanan**
-- Manajemen insiden keamanan
-- Keamanan fisik dan kontrol akses
-- Sistem manajemen pengunjung
-- Integrasi CCTV dan surveillance
-- Koordinasi respons darurat
-- Manajemen patroli keamanan
-- **Status:** 77% Selesai, Siap Produksi Q3 2025
-
-#### 🌱 **Sistem Manajemen Lingkungan**
+#### 🌱 **Sistem Manajemen Lingkungan** ✅
 - Monitoring dan pengukuran lingkungan
 - Manajemen limbah dengan workflow pelacakan
-- Monitoring kualitas udara dan tingkat kebisingan
-- Kemampuan integrasi sensor IoT
 - Pelaporan kepatuhan lingkungan
-- **Status:** Fase Pengembangan, Tersedia Q4 2025
+- **Status:** 60% Siap - TERMASUK SEPENUHNYA
 
-#### 📊 **Dashboard Terintegrasi & Analitik**
-- Statistik dan KPI HSSE real-time
+#### 📊 **Dashboard Terintegrasi & Analitik** ✅
+- Statistik dan KPI Keselamatan dan Lingkungan real-time
 - Dashboard eksekutif dengan kemampuan drill-down
 - Pelacakan kepatuhan dan pelaporan
 - Analitik prediktif dan analisis tren
 - Desain responsif mobile
-- **Status:** Siap Produksi ✅
+- **Status:** 45% Siap - Analitik Lanjutan - TERMASUK SEPENUHNYA
+
+#### **MODUL MASA DEPAN (Tidak Termasuk dalam Paket Saat Ini):**
+
+#### 🏥 **Sistem Manajemen Kesehatan** ⏳
+- Pencatatan kesehatan dan pelacakan kondisi medis
+- Manajemen vaksinasi dan kepatuhan
+- Manajemen kontak darurat
+- Pelaporan dan analitik insiden kesehatan
+- Pengawasan dan monitoring medis
+- **Status:** Dalam Pengembangan - Perkiraan Tersedia Q3 2026
+- **Catatan:** Memerlukan fase tambahan pengumpulan kebutuhan, pengembangan, dan pengujian
+
+#### 🔒 **Sistem Manajemen Keamanan** ⏳
+- Manajemen insiden keamanan
+- Keamanan fisik dan kontrol akses
+- Sistem manajemen pengunjung
+- Manajemen patroli keamanan
+- **Status:** Dalam Pengembangan - Perkiraan Tersedia Q4 2026
+- **Catatan:** Memerlukan fase tambahan pengumpulan kebutuhan, pengembangan, dan pengujian
 
 ---
 
 ## Spesifikasi Teknis
 
-### Technology Stack
+### Technology Stack untuk Modul Keselamatan & Lingkungan
 - **Backend:** .NET 8 dengan Clean Architecture
 - **Frontend:** React 18 + TypeScript dengan CoreUI
-- **Database:** PostgreSQL 15 dengan TimescaleDB
-- **Real-time:** SignalR untuk notifikasi instan
-- **Mobile:** Progressive Web App (PWA) + aplikasi native terencana
+- **Database:** PostgreSQL 15 dengan TimescaleDB untuk data time-series
+- **Real-time:** SignalR untuk peringatan Keselamatan instan dan monitoring Lingkungan
+- **Mobile:** Progressive Web App (PWA) untuk akses lapangan
 - **Keamanan:** Autentikasi JWT, otorisasi berbasis peran
 - **API:** RESTful APIs dengan dokumentasi OpenAPI/Swagger
 
 ### Spesifikasi Performa
-- **Uptime:** Jaminan ketersediaan 99.9%
-- **Response Time:** <3 detik loading halaman (persentil ke-95)
-- **Performa Mobile:** <2 detik response time
-- **Pengguna Bersamaan:** Dukungan untuk 500+ pengguna simultan
-- **Kapasitas Transaksi:** 10.000 transaksi per jam
-- **Pemrosesan File:** 1.000+ foto per hari
-- **Integrasi IoT:** 100 update sensor per detik
+- **Uptime:** Jaminan ketersediaan 99.9% (Fly.io SLA)
+- **Response Time:** <200ms untuk dashboard Keselamatan/Lingkungan
+- **Performa Mobile:** <1 detik response time di 4G
+- **Pengguna Bersamaan:** Dukungan untuk 100+ pengguna simultan
+- **Kapasitas Transaksi:** 200+ event Keselamatan/Lingkungan per jam
+- **Pemrosesan File:** 500+ foto inspeksi per hari
+- **Pembuatan Laporan:** <10 detik untuk laporan kepatuhan kompleks
+
+### Kemampuan Modul Keselamatan
+- Pelacakan dan eskalasi insiden
+- Workflow izin kerja otomatis
+- Manajemen inventori APD
+- Checklist inspeksi mobile
+- Matriks pelatihan dan pelacakan sertifikasi
+- Manajemen tindakan korektif terintegrasi
+
+### Kemampuan Modul Lingkungan
+- Dashboard monitoring lingkungan real-time
+- Pelaporan kepatuhan otomatis
+- Pelacakan limbah dari pembuatan hingga pembuangan
 
 ### Fitur Keamanan
 - Autentikasi dan otorisasi tingkat enterprise
-- Kontrol akses berbasis peran (RBAC) dengan 7 peran yang telah ditentukan
-- Audit trail lengkap untuk semua tindakan
-- Penyimpanan dan transmisi file terenkripsi
-- Kepatuhan GDPR dan perlindungan data Indonesia
-- Update keamanan dan monitoring reguler
+- Kontrol akses berbasis peran (RBAC) untuk peran Keselamatan dan Lingkungan
+- Audit trail lengkap untuk kepatuhan
+- Penyimpanan file terenkripsi untuk dokumen sensitif
+- Kepatuhan perlindungan data Indonesia (UU ITE)
 
 ---
 
 ## Opsi Deployment
 
-### Opsi 1: Solusi Cloud-Hosted
-**Direkomendasikan untuk sebagian besar organisasi**
+### Opsi 1: Solusi Cloud-Hosted Terkelola (DIREKOMENDASIKAN)
+**Didukung oleh Fly.io - Infrastruktur global tingkat enterprise**
 
-#### Fitur:
-- Infrastruktur yang dikelola penuh di penyedia cloud Indonesia
-- Update dan maintenance otomatis
-- Monitoring dan support 24/7
-- Disaster recovery dan backup termasuk
-- Sumber daya yang dapat diskalakan berdasarkan penggunaan
-- Kepatuhan residensi data (PP 71/2019)
+#### Mengapa Kami Merekomendasikan Fly.io:
+- **Residensi Data Indonesia**
+- **99.95% Uptime SLA** - Keandalan terdepan industri
+- **Auto-scaling** - Menangani lonjakan traffic secara otomatis
+- **CDN Global** - Akses cepat dari mana saja di Indonesia
+- **Proteksi DDoS Bawaan** - Keamanan enterprise termasuk
+- **Zero-downtime Deployments** - Update tanpa gangguan layanan
 
-#### Infrastruktur:
-- **Application Server:** 1-2 vCPU, 1-2GB RAM
-- **Database:** PostgreSQL dengan backup otomatis
-- **Storage:** Penyimpanan file aman dengan CDN
-- **Monitoring:** Monitoring performa real-time
-- **Keamanan:** Sertifikat SSL, firewall, deteksi intrusi
+#### Manfaat Infrastruktur:
+- **PostgreSQL Terkelola** dengan backup otomatis setiap 6 jam
+- **Redis Caching** untuk performa sangat cepat
+- **Enkripsi SSL/TLS** dengan pembaruan otomatis
+- **Monitoring Real-time** dan alerting
+- **Disaster Recovery** dengan backup multi-region
+- **Support Infrastruktur 24/7** dari tim Fly.io
+
+#### Spesifikasi Performa:
+- **Response Time:** <100ms dalam Indonesia
+- **Pengguna Bersamaan:** 100+ pengguna simultan
+- **Upload File:** 50MB per file, storage total tidak terbatas
+- **API Rate Limit:** 1.000 request per menit
+- **Retensi Backup:** 30 hari rolling backup
+
+#### Yang Tidak Termasuk dalam Cloud-Hosted:
+- **Langganan Hosting:** Ditanggung oleh pengguna
 
 ### Opsi 2: Deployment On-Premises
-**Ideal untuk organisasi yang memerlukan kontrol data lengkap**
+**Untuk organisasi dengan persyaratan kontrol data spesifik**
+
+#### Biaya dan Ketentuan Tambahan:
+- **Biaya Instalasi:** Rp 30.000.000 (satu kali)
+- **Maintenance Tahunan:** Rp 25.000.000 (direkomendasikan)
+- **Setup Remote Support:** Rp 5.000.000 (direkomendasikan)
+
+#### Tanggung Jawab Klien:
+- Menyediakan hardware server sesuai spesifikasi minimum
+- Memastikan konektivitas internet stabil (minimum 100 Mbps)
+- Menunjuk personel IT untuk administrasi sistem
+- Menyediakan akses VPN untuk remote support
+- Menangani maintenance dan penggantian hardware
+- Mengelola infrastruktur backup
 
 #### Persyaratan Server Minimum:
-- **CPU:** 8 core (Intel Xeon atau setara)
-- **RAM:** 32GB DDR4
-- **Storage:** 3TB SSD (RAID 10 direkomendasikan)
-- **Network:** Koneksi internet 100 Mbps
-- **OS:** Ubuntu Server 22.04 LTS atau Windows Server 2022
+- **CPU:** 16 core (Intel Xeon E5-2660 v4 atau lebih baru)
+- **RAM:** 64GB DDR4 ECC
+- **Storage:** 4TB NVMe SSD (RAID 10)
+- **Network:** Koneksi dedicated 1 Gbps
+- **OS:** Ubuntu Server 22.04 LTS (saja)
+- **Backup:** Storage terpisah 8TB untuk backup
 
-#### Konfigurasi Server Optimal:
-- **CPU:** 16 core (Intel Xeon atau setara)
-- **RAM:** 64GB DDR4
-- **Storage:** 6TB SSD (RAID 10)
-- **Network:** Koneksi internet 1 Gbps
-- **Backup:** Storage tambahan untuk backup otomatis
+#### Persyaratan On-Premises Tambahan yang Direkomendasikan:
+- **Database Server:** Server PostgreSQL 15 terpisah direkomendasikan
+- **Load Balancer:** HAProxy atau serupa untuk high availability
+- **Firewall:** Enterprise-grade dengan kemampuan IPS/IDS
+- **UPS:** Minimum 30 menit runtime untuk semua server
+- **Monitoring:** Prometheus + Grafana (kami akan bantu konfigurasi)
+- **Sertifikat SSL:** Sertifikat valid untuk HTTPS
+- **Solusi Backup:** Software backup enterprise berlisensi
 
-#### Yang Termasuk:
+#### Ketentuan dan Kondisi On-Premises Tambahan:
+1. **Kesiapan Infrastruktur:** Semua hardware harus dibeli dan dikonfigurasi sebelum instalasi dimulai
+2. **Jendela Downtime:** Klien harus menyediakan jendela maintenance 8 jam untuk update
+3. **Remote Access:** VPN dengan akses RDP/SSH diperlukan untuk support
+4. **Administrasi Sistem:** Klien harus menunjuk 2 administrator IT terlatih
+5. **Disaster Recovery:** Klien bertanggung jawab untuk perencanaan dan infrastruktur DR
+6. **Performa:** Klien bertanggung jawab jika hardware tidak memenuhi spesifikasi
+7. **Software Pihak Ketiga:** Klien harus melisensi Windows Server, SQL Server (jika berlaku)
+8. **Keamanan Jaringan:** Klien menangani aturan firewall dan kebijakan keamanan
+9. **Kepatuhan:** Klien memastikan infrastruktur memenuhi persyaratan regulasi
+10. **Review Tahunan:** Review infrastruktur tahunan wajib (biaya tambahan)
+
+#### Yang Termasuk dalam On-Premises:
 - Instalasi dan konfigurasi lengkap
-- Kontainerisasi Docker untuk manajemen mudah
-- Setup backup dan monitoring otomatis
-- Konfigurasi sertifikat SSL
-- Migrasi data awal dan setup
-- Garansi dan support 3 bulan
+- Setup kontainerisasi Docker
+- Deployment on-site awal 3 hari
+- Setup monitoring dasar
+- Migrasi data awal (hingga 100GB)
+- Support pasca-deployment 30 hari
+- Setup dan testing remote support
 
 ---
 
-## Paket Harga
+## Paket Komprehensif Keselamatan & Lingkungan
 
-### 🥉 **Paket Starter** - Rp 85.000.000
-*Sempurna untuk organisasi kecil hingga menengah*
+### 💎 **Solusi HSE Lengkap** - Rp 345.000.000
+*Platform manajemen Keselamatan dan Lingkungan all-inclusive*
 
-#### Modul yang Termasuk:
-- Sistem Manajemen Kesehatan
-- Manajemen Keselamatan Dasar (Insiden + Pelaporan Bahaya)
-- Dashboard dan Pelaporan Dasar
-- Manajemen Pengguna (hingga 50 pengguna)
+#### Modul Siap Produksi yang Termasuk:
+- ✅ **Sistem Manajemen Keselamatan Lengkap**
+  - Manajemen insiden dengan pelaporan real-time
+  - Identifikasi bahaya dan penilaian risiko (HIRA)
+  - Manajemen dan pelacakan APD
+  - Sistem izin kerja digital
+  - Manajemen dan penjadwalan inspeksi
+  - Pelacakan pelatihan dan sertifikasi
+  - Observasi dan pelaporan keselamatan
+  
+- ✅ **Sistem Manajemen Lingkungan Penuh**
+  - Monitoring dan pengukuran lingkungan
+  - Manajemen limbah dengan workflow lengkap
+  - Pelaporan kepatuhan lingkungan
+  - Manajemen insiden lingkungan
+  
+- ✅ **Dashboard & Analitik Lanjutan**
+  - Statistik dan KPI HSE real-time
+  - Dashboard eksekutif dengan drill-down
+  - Pelacakan kepatuhan dan pelaporan
+  - Analitik prediktif dan tren
+  - Desain responsif mobile
+  - Kemampuan ekspor data
+  
+- ✅ **Fitur Platform Inti**
+  - Pengguna tidak terbatas
+  - Progressive Web App Mobile
+  - Akses API untuk integrasi
+  - Audit trail dan logging
+  - Kontrol akses berbasis peran
 
-#### Opsi Deployment:
-- **Cloud-Hosted:** Termasuk untuk 1 tahun
-- **On-Premises:** Tambah Rp 15.000.000 untuk instalasi
+#### Paket Termasuk:
+- **Garansi komprehensif 6 bulan** mencakup semua modul
+- **4 sesi pelatihan profesional** (maksimum 20 peserta per sesi)
+- **Support prioritas** via email dan telepon selama jam kerja (08:00-17:00 WIB)
+- **Pemeriksaan kesehatan sistem triwulanan** dan review optimisasi
+- **Dokumentasi lengkap** dalam Bahasa Indonesia dan Inggris
 
-#### Support:
-- 2 sesi pelatihan (15 peserta masing-masing)
-- Garansi 3 bulan
-- Support email selama jam kerja
-
----
-
-### 🥈 **Paket Professional** - Rp 165.000.000
-*Solusi HSSE komprehensif untuk organisasi yang berkembang*
-
-#### Modul yang Termasuk:
-- Sistem Manajemen Kesehatan Lengkap
-- Suite Manajemen Keselamatan Penuh (6 modul)
-- Sistem Manajemen Keamanan (tersedia Q3 2025)
-- Dashboard Lanjutan dengan Analitik
-- Manajemen Pengguna (hingga 200 pengguna)
-- Progressive Web App Mobile
-
-#### Opsi Deployment:
-- **Cloud-Hosted:** Termasuk untuk 1 tahun
-- **On-Premises:** Tambah Rp 25.000.000 untuk instalasi
-
-#### Support:
-- 4 sesi pelatihan (20 peserta masing-masing)
-- Garansi 6 bulan
-- Support email dan telepon prioritas
-- Pemeriksaan kesehatan sistem triwulanan
-
----
-
-### 🥇 **Paket Enterprise** - Rp 245.000.000
-*Platform HSSE lengkap dengan semua fitur*
-
-#### Modul yang Termasuk:
-- Semua modul Kesehatan, Keselamatan, Keamanan
-- Sistem Manajemen Lingkungan (tersedia Q4 2025)
-- Analitik Lanjutan dan Prediktif Insights
-- Kemampuan integrasi IoT
-- Pelaporan dan dashboard kustom
-- Akses API untuk integrasi pihak ketiga
-- Pengguna tidak terbatas
-
-#### Opsi Deployment:
-- **Cloud-Hosted:** Termasuk untuk 2 tahun
-- **On-Premises:** Instalasi termasuk
-
-#### Support:
-- 6 sesi pelatihan (25 peserta masing-masing)
-- Garansi 12 bulan
-- Support prioritas 24/7
-- Optimisasi sistem bulanan
-- Customer success manager khusus
-- Pengembangan fitur kustom (20 jam termasuk)
+#### Ketersediaan Modul Masa Depan:
+- **Modul Manajemen Kesehatan** - Perkiraan Q3 2026
+- **Modul Manajemen Keamanan** - Perkiraan Q4 2026
+- *Modul-modul ini memerlukan fase tambahan pengembangan, pengujian, dan pengumpulan kebutuhan untuk memastikan mereka memenuhi standar regulasi Indonesia dan praktik terbaik industri*
 
 ---
 
-## Timeline Implementasi
+## Timeline Implementasi - Maksimum 5 Bulan
 
-### Fase 1: Inisiasi Proyek (Minggu 1-2)
-- Pengumpulan kebutuhan dan Business Requirements Document (BRD)
-- Perencanaan arsitektur sistem
-- Setup dan konfigurasi environment
-- Perkenalan tim dan kickoff proyek
+### Fase 1: Inisiasi & Perencanaan Proyek (Minggu 1-3)
+**Deliverables:**
+- Kontrak ditandatangani dan kickoff meeting
+- Business Requirements Document (BRD) detail
+- Desain arsitektur sistem dan infrastruktur
+- Project charter dan rencana komunikasi
+- Matriks peran dan izin pengguna
 
-### Fase 2: Implementasi Inti (Minggu 3-8)
-- Setup database dan migrasi data
-- Konfigurasi dan kustomisasi modul inti
-- Kustomisasi user interface dan branding
-- Integrasi dengan sistem yang ada (jika berlaku)
+**Aktivitas Utama:**
+- Wawancara stakeholder dan pengumpulan kebutuhan
+- Analisis proses saat ini dan gap assessment
+- Provisioning infrastruktur (Cloud atau On-Premises)
+- Pembentukan tim proyek dan penugasan peran
 
-### Fase 3: Testing dan Pelatihan (Minggu 9-10)
+**Dependencies:**
+- Klien menyediakan prosedur HSE saat ini
+- Akses ke stakeholder kunci untuk wawancara
+- Keputusan opsi deployment (Cloud/On-Premises)
+
+### Fase 2: Konfigurasi & Kustomisasi (Minggu 4-14)
+**Deliverables:**
+- Modul Manajemen Keselamatan terkonfigurasi
+- Modul Manajemen Lingkungan terkonfigurasi
+- Workflow terkustomisasi
+- Dokumen spesifikasi integrasi
+
+**Aktivitas Utama:**
+- Konfigurasi modul keselamatan (insiden, bahaya, izin, APD)
+- Setup modul lingkungan (monitoring, limbah, kepatuhan)
+- Kustomisasi dashboard dan pelaporan
+- Pengembangan integrasi API (jika diperlukan)
+
+**Dependencies:**
+- Persetujuan klien untuk workflow
+
+### Fase 4: Testing & Pelatihan (Minggu 15-18)
+**Deliverables:**
+- Skenario UAT dan hasil
+- Materi pelatihan (panduan, video)
+- Super user dan administrator terlatih
+- Sertifikat penyelesaian pelatihan
+
+**Aktivitas Utama:**
+- System Integration Testing (SIT)
 - User Acceptance Testing (UAT)
-- Testing performa dan optimisasi
-- Sesi pelatihan pengguna
-- Penyerahan dokumentasi
+- Testing performa dan beban
+- 4 sesi pelatihan (20 peserta masing-masing)
 
-### Fase 4: Go-Live dan Support (Minggu 11-12)
-- Deployment produksi
-- Support dan monitoring go-live
-- Review pasca-implementasi
-- Transisi support berkelanjutan
+**Dependencies:**
+- Ketersediaan peserta UAT
+- Tempat dan fasilitas pelatihan
+- Persetujuan skenario testing
+
+### Fase 5: Go-Live & Stabilisasi (Minggu 19-20)
+**Deliverables:**
+- Deployment sistem produksi
+- Penyelesaian checklist go-live
+- Dokumentasi serah terima
+- Rencana transisi support
+- Laporan penutupan proyek
+
+**Aktivitas Utama:**
+- Sinkronisasi data final
+- Deployment produksi dan smoke testing
+- Pengumuman dan komunikasi go-live
+- Support hypercare (2 minggu intensif)
+- Transfer pengetahuan ke tim support
+- Penjadwalan pemeriksaan kesehatan triwulanan pertama
+
+**Dependencies:**
+- Persetujuan go-live dari stakeholder
+- Semua masalah kritis terselesaikan
+- Kesiapan tim support
+
+### Faktor Kesuksesan Kritis:
+1. **Sponsorship Eksekutif** - Keterlibatan aktif dari kepemimpinan klien
+2. **Tim Khusus** - Klien menugaskan anggota tim proyek khusus
+3. **Change Management** - Strategi komunikasi dan adopsi pengguna yang jelas
+4. **Keputusan Tepat Waktu** - Persetujuan cepat untuk konfigurasi dan workflow
 
 ---
 
 ## Return on Investment (ROI)
 
-### Analisis Penghematan Biaya
-- **Pengurangan Biaya Insiden:** 30-50% pengurangan insiden tempat kerja
-- **Efisiensi Kepatuhan:** 60% pelaporan regulasi lebih cepat
-- **Penghematan Administratif:** 40% pengurangan paperwork manual
-- **Optimisasi Pelatihan:** 25% peningkatan efektivitas pelatihan
-- **Persiapan Audit:** 70% persiapan audit lebih cepat
+### Analisis Penghematan Biaya - Fokus Keselamatan & Lingkungan
+- **Pengurangan Insiden Keselamatan:** 40-60% penurunan kecelakaan kerja
+- **Kepatuhan Lingkungan:** 70% pelaporan lebih cepat
+- **Efisiensi Inspeksi:** 50% pengurangan waktu inspeksi
+- **Pemrosesan Izin:** 80% persetujuan izin kerja lebih cepat
+- **Denda Lingkungan:** 90% pengurangan melalui monitoring proaktif
+- **Eliminasi Kertas:** 100% catatan Keselamatan dan Lingkungan digital
 
-### Timeline ROI Tipikal
-- **6 bulan:** Titik impas untuk sebagian besar organisasi
-- **12 bulan:** 150-200% ROI melalui peningkatan efisiensi
-- **24 bulan:** 300-400% ROI dengan utilisasi sistem penuh
+### Manfaat Terukur (Berdasarkan organisasi 500 karyawan)
+- **Penghematan Biaya Insiden:** Rp 150-200 juta/tahun dari pengurangan kecelakaan
+- **Penghematan Biaya Kepatuhan:** Rp 50-75 juta/tahun dari denda yang dihindari
+- **Peningkatan Produktivitas:** Rp 100-150 juta/tahun dari proses yang efisien
+- **Penghematan Kertas/Storage:** Rp 25-30 juta/tahun
+- **Total Penghematan Tahunan:** Rp 325-455 juta
+
+### Timeline ROI untuk Investasi Rp 345.000.000
+- **Bulan 6:** Sistem beroperasi penuh, penghematan mulai terlihat
+- **Bulan 8-10:** Titik impas tercapai
+- **Tahun 1:** 90-130% ROI melalui efisiensi operasional
+- **Tahun 2:** 180-260% ROI kumulatif
+- **Tahun 3:** 270-390% ROI kumulatif
 
 ### Keunggulan Kompetitif
-- **40-60% total cost lebih rendah** dibandingkan solusi internasional
-- **Tidak ada biaya lisensi tahunan** - pembelian satu kali
-- **Kepemilikan source code penuh** - tidak ada ketergantungan vendor
-- **Support lokal** dalam Bahasa Indonesia dan Inggris
+- **Nilai Paket Lengkap:** Semua modul Keselamatan/Lingkungan untuk satu harga
+- **75% biaya lebih rendah** dibandingkan solusi SAP EHS atau Intelex
+- **Tidak ada biaya berulang** - investasi satu kali
+- **Fokus Indonesia** - dibangun untuk regulasi dan praktik lokal
+- **Modul masa depan** tersedia tanpa perubahan platform
 
 ---
 
 ## Support dan Maintenance
 
-### Opsi Maintenance Tahunan
+### Support Termasuk (6 Bulan Pertama)
+- **Saluran Support Prioritas:** Jalur email dan telepon khusus
+- **Cakupan Jam Kerja:** Senin-Jumat, 08:00-17:00 WIB
+- **SLA Response Time:** 4 jam untuk masalah kritis
+- **Perbaikan Bug:** Semua defect diselesaikan tanpa biaya
 
-#### Basic Maintenance - Rp 25.000.000/tahun
-- Update software dan security patch
+### Opsi Maintenance Pasca-Garansi
+
+#### Standard Maintenance - Rp 35.000.000/tahun - PAJAK TIDAK TERMASUK
+- Update software untuk modul Keselamatan dan Lingkungan
+- Security patch dan perbaikan bug
 - Support email selama jam kerja
-- Monitoring sistem dasar
-- Pemeriksaan kesehatan sistem tahunan
+- Pemeriksaan kesehatan sistem semi-tahunan
+- Support troubleshooting remote
 
-#### Premium Maintenance - Rp 45.000.000/tahun
-- Semua fitur Basic Maintenance
+#### Professional Maintenance - Rp 55.000.000/tahun - PAJAK TIDAK TERMASUK
+- Semua fitur Standard Maintenance
 - Support telepon dan email prioritas
 - Optimisasi sistem bulanan
-- Refresher pelatihan triwulanan
-- Monitoring dan pelaporan performa
+- 2 sesi pelatihan tambahan per tahun
+- Dashboard monitoring performa
+- 20 jam pengembangan laporan kustom
 
-#### Enterprise Maintenance - Rp 75.000.000/tahun
-- Semua fitur Premium Maintenance
-- Hotline support 24/7
+#### Enterprise Plus Maintenance - Rp 85.000.000/tahun - PAJAK TIDAK TERMASUK
+- Semua fitur Professional Maintenance
+- Hotline support darurat 24/7
 - Customer success manager khusus
-- Pengembangan fitur kustom (40 jam/tahun)
-- Kunjungan support on-site (2 per tahun)
+- Review sistem dua mingguan
+- 60 jam pengembangan kustom per tahun
+- 2 kunjungan support on-site per tahun
+- Akses prioritas ke fitur baru
+- Jaminan SLA dengan penalti
 
 ---
 
 ## Mengapa Memilih Harmoni 360?
 
-### ✅ **Teknologi Terbukti**
-- Dibangun di atas .NET 8 dan React 18 tingkat enterprise
-- Arsitektur modern dirancang untuk skalabilitas
-- Kemampuan real-time dengan SignalR
-- Progressive Web App untuk akses mobile
+### ✅ **Solusi Keselamatan & Lingkungan Lengkap**
+- Semua modul HSE termasuk
+- Tidak ada kebingungan pemilihan modul - semuanya termasuk
+- Platform terintegrasi, bukan sistem terpisah
+- Mobile-ready untuk operasi lapangan
 
-### ✅ **Kepatuhan Indonesia**
-- 100% patuh dengan regulasi Indonesia
-- Persyaratan residensi data terpenuhi
-- Dukungan bahasa lokal
-- Pemahaman praktik bisnis lokal
+### ✅ **Nilai Tak Terkalahkan Rp 345.000.000**
+- Harga paket lengkap - tidak ada biaya tersembunyi
+- Garansi 6 bulan termasuk
+- 4 sesi pelatihan komprehensif
+- Support prioritas sepanjang implementasi
+- Bandingkan dengan Rp 1,5 miliar+ untuk solusi internasional
 
-### ✅ **Fleksibilitas Modular**
-- Mulai dengan modul esensial
-- Tambahkan fungsionalitas seiring pertumbuhan
-- Tidak ada upgrade paksa atau fitur yang tidak perlu
-- Dapat dikustomisasi sesuai kebutuhan spesifik
+### ✅ **Keunggulan Indonesia**
+- Dibangun untuk regulasi Indonesia
+- Data center Fly.io lokal memastikan kepatuhan
+- Tim lokal yang memahami tantangan Anda
 
-### ✅ **Efektivitas Biaya**
-- Harga transparan, satu kali
-- Tidak ada biaya tersembunyi atau biaya kejutan
-- Penghematan signifikan vs vendor internasional
-- Kepemilikan penuh atas investasi Anda
+### ✅ **Investasi Siap Masa Depan**
+- Kepemilikan source code penuh setelah pembayaran
+- Tidak ada vendor lock-in atau biaya tahunan
+- Roadmap jelas untuk modul Kesehatan & Keamanan
+- Update reguler selama periode garansi
 
-### ✅ **Support Ahli**
-- Tim lokal dengan keahlian HSSE
-- Program pelatihan komprehensif
-- Support dan maintenance berkelanjutan
-- Pendekatan kemitraan untuk kesuksesan Anda
+### ✅ **Implementasi Cepat**
+- Deployment maksimum 5 bulan
+- Metodologi implementasi terbukti
+- Tim proyek khusus
+- Gangguan minimal terhadap operasi
 
 ---
 
 ## Syarat dan Ketentuan
 
-### Syarat Pembayaran
-- **30% uang muka** saat penandatanganan kontrak
-- **40% pembayaran** saat penyelesaian UAT yang sukses
-- **30% pembayaran akhir** saat go-live dan penerimaan
+### Syarat Pembayaran untuk Paket Rp 345.000.000 (PAJAK TIDAK TERMASUK)
+- **50% uang muka** Saat penandatanganan kontrak
+- **30% pembayaran** Saat penyelesaian UAT yang sukses
+- **20% pembayaran akhir** Saat go-live dan penerimaan
+- **Periode pembayaran:** Net 30 hari dari tanggal faktur
+- **Pajak Pembayaran:** 11% PPN (Pajak Pertambahan Nilai Indonesia) - TIDAK TERMASUK dalam harga proposal
 
-### Garansi dan Support
-- **Garansi 3-12 bulan** tergantung paket
-- **Perbaikan bug gratis** selama periode garansi
-- **Pelatihan termasuk** sesuai spesifikasi di setiap paket
-- **Dokumentasi disediakan** dalam Bahasa Indonesia dan Inggris
+### Detail Garansi dan Support
+- **Garansi komprehensif 6 bulan** untuk paket lengkap
+- **Perbaikan bug gratis** dan update keamanan selama garansi
+- **4 sesi pelatihan** termasuk (80 peserta total)
+- **Dokumentasi lengkap** dalam Bahasa Indonesia dan Inggris
+- **Akses knowledge base** dengan video tutorial
+- **Portal support khusus** untuk pelacakan masalah
 
-### Layanan Tambahan
-- **Pengembangan kustom:** Rp 4.000.000 per person-day
-- **Pelatihan tambahan:** Rp 5.000.000 per sesi
-- **Support on-site:** Rp 2.500.000 per hari + biaya perjalanan
-- **Migrasi data:** Dikutip terpisah berdasarkan kompleksitas
+### Layanan Tambahan - PAJAK TIDAK TERMASUK
+- **Fitur Keselamatan/Lingkungan Kustom:** Rp 4.500.000 per person-day
+- **Sesi Pelatihan Tambahan:** Rp 6.000.000 per sesi (maks 20 peserta)
+- **Support On-site:** Rp 3.000.000 per hari + biaya perjalanan
+- **Migrasi Data Kompleks:** Rp 25.000.000 - 50.000.000 (berdasarkan volume)
+- **Pengembangan Laporan Kustom:** Rp 3.000.000 per template laporan
+- **Layanan Integrasi API:** Rp 15.000.000 per sistem eksternal
 
 ### Legal dan Kepatuhan
-- **Kepemilikan source code** dialihkan ke klien setelah pembayaran penuh
-- **Perlindungan data** sesuai dengan regulasi Indonesia
-- **Service Level Agreement (SLA)** termasuk dengan semua paket
-- **Perjanjian kerahasiaan** standar dengan semua engagement
+- **Kepemilikan source code** dialihkan setelah pembayaran final
+- **Service Level Agreement (SLA)** dengan jaminan uptime 99.9%
+- **Perjanjian kerahasiaan** melindungi data HSE sensitif Anda
+- **Asuransi kewajiban** mencakup layanan implementasi
+- **Hak kekayaan intelektual** didefinisikan dengan jelas
 
 ---
 
 ## Langkah Selanjutnya
 
-### Siap Mentransformasi Manajemen HSSE Anda?
+### Siap Mentransformasi Manajemen Keselamatan & Lingkungan Anda?
 
-1. **Jadwalkan Demo:** Hubungi kami untuk melihat Harmoni 360 beraksi
-2. **Penilaian Kebutuhan:** Kami akan menganalisis kebutuhan spesifik Anda
-3. **Proposal Kustom:** Terima proposal yang disesuaikan untuk organisasi Anda
-4. **Program Pilot:** Mulai dengan pilot terbatas untuk membuktikan nilai
-5. **Implementasi Penuh:** Roll out di seluruh organisasi Anda
+1. **Jadwalkan Demo:** Lihat modul Keselamatan dan Lingkungan kami beraksi
+2. **Penilaian Lokasi:** Kami akan mengevaluasi proses HSE Anda saat ini
+3. **Analisis ROI:** Terima analisis biaya-manfaat detail
+4. **Negosiasi Kontrak:** Finalisasi persyaratan dan jadwal implementasi
+5. **Kickoff Proyek:** Mulai perjalanan transformasi 5 bulan Anda
+
+### Mengapa Bertindak Sekarang?
+- **Slot Deployment Terbatas:** Hanya 3 tim implementasi tersedia
+- **Harga 2025:** Tarif akan naik 15% di 2026
+- **Keunggulan Kompetitif:** Jadilah yang pertama di industri Anda dengan manajemen HSE modern
+- **Kesiapan Regulasi:** Tetap unggul dari regulasi HSE Indonesia yang akan datang
 
 ### Informasi Kontak
 
-**Tim Penjualan:**  
-Email: sales@harmoni360.com  
-Telepon: +62 21 1234 5678  
-WhatsApp: +62 812 3456 7890  
-
-**Tim Teknis:**  
-Email: support@harmoni360.com  
-Telepon: +62 21 1234 5679  
-
-**Manajemen Proyek:**  
-Email: projects@harmoni360.com  
-Telepon: +62 21 1234 5680  
+**Tim SAL:**  
+Website: www.salhsse.com  
+Email: srikandi.alam.lestari@gmail.com  
+Telepon: +62 813-1212-9749  
 
 ---
 
-*Proposal ini bersifat rahasia dan milik PT Harmoni Digital Solutions. Semua informasi yang terkandung di dalamnya dimaksudkan semata-mata untuk evaluasi solusi manajemen HSSE kami dan tidak boleh diungkapkan kepada pihak ketiga tanpa persetujuan tertulis.*
+*Proposal ini bersifat rahasia dan milik Srikandi Alam Lestari. Semua informasi yang terkandung di dalamnya dimaksudkan semata-mata untuk evaluasi solusi manajemen Keselamatan dan Lingkungan kami dan tidak boleh diungkapkan kepada pihak ketiga tanpa persetujuan tertulis.*
 
-**Terima kasih telah mempertimbangkan Harmoni 360 HSSE untuk kebutuhan manajemen keselamatan, kesehatan, keamanan, dan lingkungan organisasi Anda.**
+**Harmoni360 - Mentransformasi Manajemen Keselamatan & Lingkungan Indonesia**
+
+*Catatan: Proposal ini berfokus pada modul Keselamatan dan Lingkungan kami yang siap produksi. Modul Kesehatan dan Keamanan kami sedang dalam pengembangan aktif dengan perkiraan rilis di 2026. Kami percaya dalam memberikan solusi yang telah diuji penuh dan patuh regulasi daripada terburu-buru merilis fitur yang belum lengkap ke pasar.*
+
+**Terima kasih telah mempertimbangkan Harmoni360 untuk perjalanan transformasi digital Keselamatan dan Lingkungan organisasi Anda.**

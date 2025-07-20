@@ -22,6 +22,7 @@ export const useAuth = () => {
 
   return {
     user: auth.user,
+    token: auth.token,
     isAuthenticated: auth.isAuthenticated,
     isLoading: auth.isLoading,
     error: auth.error,

@@ -729,6 +729,16 @@ const HealthCompliance = React.lazy(() =>
   })
 );
 
+// Workflow Management Pages
+const WorkflowManagement = React.lazy(() =>
+  import('./pages/workflows/WorkflowManagement').catch((err) => {
+    console.error('Failed to load WorkflowManagement:', err);
+    return {
+      default: () => <div>Error loading Workflow Management. Please refresh.</div>,
+    };
+  })
+);
+
 // Waste Management Pages
 const WasteReportList = React.lazy(() =>
   import('./pages/waste-management/WasteReportList').catch((err) => {
@@ -986,6 +996,7 @@ function App() {
               <Route path="/report/anonymous" element={<QuickReport />} />
               <Route path="/report/quick" element={<QuickReport />} />
 
+
               {/* Protected Routes */}
               <Route
                 element={
@@ -1109,6 +1120,9 @@ function App() {
                 <Route path="/trainings/:id" element={<TrainingDetail />} />
                 <Route path="/trainings/:id/edit" element={<EditTraining />} />
                 <Route path="/trainings/:id/enroll" element={<TrainingDetail />} />
+
+                {/* Workflow Management - Elsa Studio Integration */}
+                <Route path="/workflows" element={<WorkflowManagement />} />
 		{/* Waste Management */}
                 <Route path="/waste" element={<Navigate to="/waste/reports" replace />} />
                 <Route path="/waste/reports" element={<WasteReportList />} />
@@ -1193,7 +1207,7 @@ function App() {
                   }
                 />
 
-                {/* Catch all other routes and redirect to dashboard */}
+                {/* Catch all other routes and redirect to dashboard, except /elsa-studio */}
                 <Route
                   path="*"
                   element={<Navigate to="/dashboard" replace />}

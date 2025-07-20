@@ -32,6 +32,12 @@ $charcoal: #212121;
 // Import enhanced login page styles
 @import './login-enhanced.scss';
 
+// Import workflow management styles
+// @import './workflow.scss';
+
+// Import Elsa Tailwind overrides (must come after workflow.scss)
+// @import './elsa-tailwind-overrides.scss';
+
 // Custom styles following Harmoni branding
 :root {
   --harmoni-teal: #{$teal-primary};
@@ -1507,3 +1513,49 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid var(--harmoni-charcoal);
   }
 }
+
+// /* Protect Harmoni360 styles from external CSS resets */
+// /* This should be the last block to ensure highest specificity */
+// html {
+//   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+// }
+
+// body {
+//   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+//   line-height: 1.5 !important;
+//   margin: 0 !important;
+// }
+
+// h1, h2, h3, h4, h5, h6 {
+//   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+//   font-weight: 600 !important;
+// }
+
+// /* Protect button styles */
+// .btn:not(.elsa-studio-container .btn) {
+//   border-radius: 8px !important;
+//   font-weight: 500 !important;
+//   transition: all 0.3s ease !important;
+// }
+
+// /* Protect card styles */
+// .card:not(.elsa-studio-container .card) {
+//   background: #FFFFFF !important;
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+//   border: none !important;
+//   border-radius: 8px !important;
+//   padding: 16px !important;
+// }
+
+// /* Protect form styles */
+// .form-control:not(.elsa-studio-container .form-control), 
+// .form-select:not(.elsa-studio-container .form-select) {
+//   border: 1px solid #CCCCCC !important;
+//   border-radius: 8px !important;
+// }
+
+// .form-control:focus:not(.elsa-studio-container .form-control:focus), 
+// .form-select:focus:not(.elsa-studio-container .form-select:focus) {
+//   border-color: var(--harmoni-teal) !important;
+//   box-shadow: 0 0 0 0.2rem rgba(0, 151, 167, 0.25) !important;
+// }

@@ -10,6 +10,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Elsa.Extensions;
+using Elsa.EntityFrameworkCore.Extensions;
+using Elsa.EntityFrameworkCore.Modules.Management;
+using Elsa.EntityFrameworkCore.Modules.Runtime;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Harmoni360.Infrastructure;
 
@@ -19,7 +26,6 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Add DbContext
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
@@ -27,19 +33,20 @@ public static class DependencyInjection
                 {
                     npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                     npgsqlOptions.UseNodaTime();
+                    npgsqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 3,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorCodesToAdd: null);
                 });
         });
 
-        // Register DbContext interface
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
 
-        // Add repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IIncidentRepository, IncidentRepository>();
         services.AddScoped<IWasteReportRepository, WasteReportRepository>();
 
-        // Add caching
         var redisConnectionString = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrEmpty(redisConnectionString))
         {
@@ -51,11 +58,9 @@ public static class DependencyInjection
         }
         else
         {
-            // Use in-memory distributed cache as fallback
             services.AddDistributedMemoryCache();
         }
 
-        // Add infrastructure services
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
@@ -64,7 +69,6 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<IVideoValidationService, VideoValidationService>();
         
-        // Add data seeders
         services.AddScoped<IDataSeeder, DataSeeder>();
         services.AddScoped<ConfigurationDataSeeder>();
         services.AddScoped<RoleDataSeeder>();
@@ -84,12 +88,10 @@ public static class DependencyInjection
         services.AddScoped<WasteDataSeeder>();
         services.AddScoped<ModuleConfigurationDataSeeder>();
         
-        // Enhanced comprehensive HSSE seeders
         services.AddScoped<HSSEHistoricalDataSeeder>();
         services.AddScoped<HSSECrossModuleDataBuilder>();
         services.AddScoped<HSSEKPIBaselineCalculator>();
         
-        // Operational data seeders
         services.AddScoped<PPEOperationalDataSeeder>();
         services.AddScoped<WasteOperationalDataSeeder>();
         services.AddScoped<SecurityOperationalDataSeeder>();
@@ -99,40 +101,47 @@ public static class DependencyInjection
         services.AddScoped<IHazardAuditService, HazardAuditService>();
         services.AddScoped<IWasteAuditService, WasteAuditService>();
         
-        // Add training services
         services.AddScoped<ICachedTrainingService, CachedTrainingService>();
         
-        // Add HSSE cache service
         services.AddScoped<IHSSECacheService, HSSECacheService>();
         
-        // Add materialized view refresh service
         services.AddScoped<IMaterializedViewRefreshService, MaterializedViewRefreshService>();
         
-        // Add background service for materialized view refresh (with graceful handling of missing views)
         services.AddHostedService<HSSEMaterializedViewBackgroundService>();
         
-        // Note: HSSENotificationService has been moved to Web project to avoid circular dependency
-        
-        // Add performance monitoring
         services.AddSingleton<IPerformanceMetricsService, PerformanceMetricsService>();
 
-        // Add notification and escalation services
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
         services.AddScoped<IEscalationService, EscalationService>();
 
-        // Add security services
         services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
         services.AddScoped<ISecurityAuditService, SecurityAuditService>();
 
-        // Add module configuration service
         services.AddScoped<IModuleConfigurationService, ModuleConfigurationService>();
         
-        // Add module discovery service
         services.AddScoped<IModuleDiscoveryService, ModuleDiscoveryService>();
 
-        // Add application mode service
         services.AddSingleton<IApplicationModeService, ApplicationModeService>();
+
+        // Configure Elsa Workflows
+        services.AddElsa(elsa => elsa
+            .UseWorkflowManagement(management => management.UseEntityFrameworkCore(ef => 
+                ef.UsePostgreSql(configuration.GetConnectionString("DefaultConnection")!)))
+            .UseWorkflowRuntime(runtime => runtime.UseEntityFrameworkCore(ef => 
+                ef.UsePostgreSql(configuration.GetConnectionString("DefaultConnection")!)))
+            .UseScheduling()
+            .UseJavaScript()
+            .UseLiquid()
+            .UseCSharp()
+            .UseHttp()
+            .UseWorkflowsApi()
+            // Note: Not using .UseIdentity() to allow integration with existing auth system
+        );
+        
+        // Disable security for Elsa API endpoints
+        // This allows Elsa to work with our existing authentication system
+        Elsa.EndpointSecurityOptions.DisableSecurity();
 
         return services;
     }

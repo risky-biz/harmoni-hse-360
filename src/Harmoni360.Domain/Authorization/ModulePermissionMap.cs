@@ -37,7 +37,8 @@ public static class ModulePermissionMap
                 [ModuleType.ComplianceManagement] = AllPermissions(),
                 [ModuleType.Reporting] = AllPermissions(),
                 [ModuleType.UserManagement] = AllPermissions(),
-                [ModuleType.ApplicationSettings] = AllPermissions()
+                [ModuleType.ApplicationSettings] = AllPermissions(),
+                [ModuleType.WorkflowManagement] = AllPermissions()
             },
 
             // Developer - Complete system access including ALL modules AND application settings/configuration AND user management
@@ -61,7 +62,8 @@ public static class ModulePermissionMap
                 [ModuleType.ComplianceManagement] = AllPermissions(),
                 [ModuleType.Reporting] = AllPermissions(),
                 [ModuleType.UserManagement] = AllPermissions(),
-                [ModuleType.ApplicationSettings] = AllPermissions()
+                [ModuleType.ApplicationSettings] = AllPermissions(),
+                [ModuleType.WorkflowManagement] = AllPermissions()
             },
 
             // Admin - Access to ALL functional modules BUT EXCLUDED from application settings/configuration
@@ -205,6 +207,15 @@ public static class ModulePermissionMap
                 [ModuleType.ComplianceManagement] = ReadOnlyPermissions(),
                 [ModuleType.Reporting] = ReadOnlyPermissions()
                 // User Management and Application Settings - NO ACCESS
+            },
+
+            // WorkflowManager - RESTRICTED access ONLY to Workflow Management module
+            [RoleType.WorkflowManager] = new Dictionary<ModuleType, List<PermissionType>>
+            {
+                [ModuleType.Dashboard] = ReadOnlyPermissions(),
+                [ModuleType.WorkflowManagement] = AllPermissions(),
+                [ModuleType.Reporting] = ReadOnlyPermissions() // Can view reports for workflows
+                // All other modules - NO ACCESS
             },
 
             // Viewer - READ-ONLY access to basic dashboard and summary information

@@ -62,7 +62,8 @@ const DynamicRouteGuard: React.FC<DynamicRouteGuardProps> = ({ children }) => {
       'TrainingManagement': 17,
       'LicenseManagement': 18,
       'WasteManagement': 19,
-      'ApplicationSettings': 20
+      'ApplicationSettings': 20,
+      'WorkflowManagement': 21
     };
 
     const backendModuleType = moduleMapping[protectionRule.module];

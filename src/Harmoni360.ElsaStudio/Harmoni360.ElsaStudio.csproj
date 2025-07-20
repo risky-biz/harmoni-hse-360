@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Harmoni360.ElsaStudio</RootNamespace>
+    <!-- Disable PDB generation for Blazor WASM to avoid authentication/SRI issues -->
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Elsa.Api.Client" Version="3.4.2" />
+    <PackageReference Include="Elsa.Studio" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Core.BlazorWasm" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Dashboard" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Login.BlazorWasm" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Shell" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Workflows" Version="3.4.0" />
+    <PackageReference Include="Elsa.Studio.Workflows.Designer" Version="3.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.17" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Copy static assets to main web project after publish -->
+  <Target Name="CopyElsaStudioAssets" AfterTargets="Publish">
+    <PropertyGroup>
+      <ElsaStudioDestination>..\Harmoni360.Web\wwwroot\elsa-studio</ElsaStudioDestination>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <!-- Get all files from publish output -->
+      <PublishedElsaStudioAssets Include="$(PublishDir)wwwroot\**\*" />
+    </ItemGroup>
+    
+    <!-- Log start of copy process -->
+    <Message Text="Starting copy of Elsa Studio assets from $(PublishDir)wwwroot to $(ElsaStudioDestination)" Importance="high" />
+    
+    <!-- Clear existing elsa-studio directory first -->
+    <RemoveDir Directories="$(ElsaStudioDestination)" Condition="Exists('$(ElsaStudioDestination)')" />
+    <MakeDir Directories="$(ElsaStudioDestination)" />
+    
+    <!-- Copy all files preserving directory structure using robocopy for better reliability -->
+    <Exec Command="robocopy &quot;$(PublishDir)wwwroot&quot; &quot;$(ElsaStudioDestination)&quot; /E /IS /NP" 
+          IgnoreExitCode="true" 
+          ContinueOnError="true" 
+          Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+    
+    <!-- For non-Windows systems, use cp command -->
+    <Exec Command="cp -r &quot;$(PublishDir)wwwroot/.&quot; &quot;$(ElsaStudioDestination)/&quot;" 
+          ContinueOnError="true" 
+          Condition="!$([MSBuild]::IsOSPlatform('Windows'))" />
+    
+    <!-- Verify copy was successful -->
+    <ItemGroup>
+      <CopiedFiles Include="$(ElsaStudioDestination)\**\*" />
+    </ItemGroup>
+    
+    <Message Text="Successfully copied @(CopiedFiles->Count()) files to Elsa Studio directory" Importance="high" />
+    <Message Text="Elsa Studio assets copied successfully to: $(ElsaStudioDestination)" Importance="high" />
+  </Target>
+  
+  <!-- Ensure this target runs when the main web project builds -->
+  <Target Name="PublishElsaStudio" BeforeTargets="Build" Condition="'$(MSBuildProjectName)' != 'Harmoni360.ElsaStudio'">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Harmoni360.ElsaStudio.csproj" Targets="Publish" Properties="PublishDir=$(MSBuildThisFileDirectory)bin\Debug\net8.0\publish\" />
+  </Target>
+
+</Project>
