@@ -10,6 +10,8 @@ using Elsa.Studio.Contracts;
 using Elsa.Studio.Extensions;
 using Elsa.Studio.Models;
 using Elsa.Studio.Shell;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 // Build the host.
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -19,6 +21,18 @@ var configuration = builder.Configuration;
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.RootComponents.RegisterCustomElsaStudioElements();
+
+// Note: Configuring JSON options to avoid NullabilityInfoContext issues in WebAssembly
+// This will be handled by Elsa's internal configuration
+
+// Configure HTTP client defaults
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.ConfigureHttpClient(client =>
+    {
+        client.DefaultRequestHeaders.Add("User-Agent", "Harmoni360-ElsaStudio/1.0");
+    });
+});
 
 // Register shell services and modules.
 var backendApiConfig = new BackendApiConfig

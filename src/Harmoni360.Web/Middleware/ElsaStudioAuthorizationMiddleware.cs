@@ -36,7 +36,11 @@ public class ElsaStudioAuthorizationMiddleware
                 context.Request.Path.Value?.Contains(".pdb") == true ||
                 context.Request.Path.Value?.Contains(".json") == true ||
                 context.Request.Path.Value?.Contains(".ico") == true ||
-                context.Request.Path.Value?.Contains(".png") == true)
+                context.Request.Path.Value?.Contains(".png") == true ||
+                context.Request.Path.Value?.Contains(".svg") == true ||
+                context.Request.Path.Value?.Contains("favicon") == true ||
+                context.Request.Path.Value?.EndsWith("/favicon.ico") == true ||
+                context.Request.Path.Value?.EndsWith("/favicon.png") == true)
             {
                 await _next(context);
                 return;
