@@ -9,6 +9,7 @@
     <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
     <UserSecretsId>27956cca-ed46-4f3f-b393-cd88f0c18d1a</UserSecretsId>
     <SkipClientBuild>false</SkipClientBuild>
+    <NoWarn>$(NoWarn);ASP0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
