@@ -32,7 +32,13 @@ RUN dotnet publish "Harmoni360.Web.csproj" -c Release -o /app/publish /p:UseAppH
 
 # Copy Elsa Studio files to wwwroot
 RUN mkdir -p /app/publish/wwwroot/elsa-studio && \
-    cp -r /app/elsa-publish/wwwroot/* /app/publish/wwwroot/elsa-studio/
+    cp -r /app/elsa-publish/wwwroot/* /app/publish/wwwroot/elsa-studio/ && \
+    # Ensure favicon.png is explicitly copied
+    if [ -f /src/Harmoni360.ElsaStudio/wwwroot/favicon.png ]; then \
+        cp /src/Harmoni360.ElsaStudio/wwwroot/favicon.png /app/publish/wwwroot/elsa-studio/favicon.png; \
+    fi && \
+    # List files to verify copy
+    ls -la /app/publish/wwwroot/elsa-studio/
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final

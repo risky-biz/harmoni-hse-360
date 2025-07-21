@@ -10,6 +10,10 @@ using Elsa.Studio.Contracts;
 using Elsa.Studio.Extensions;
 using Elsa.Studio.Models;
 using Elsa.Studio.Shell;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using Harmoni360.ElsaStudio.JsonContext;
 
 // Build the host.
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -19,6 +23,38 @@ var configuration = builder.Configuration;
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.RootComponents.RegisterCustomElsaStudioElements();
+
+// Configure JSON serialization to use source generation instead of reflection
+// This avoids the NullabilityInfoContext_NotSupported error in WebAssembly
+var jsonOptions = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    // Use a custom resolver that combines source generation with fallback
+    TypeInfoResolver = JsonTypeInfoResolver.Combine(
+        ElsaStudioJsonContext.Default,
+        new DefaultJsonTypeInfoResolver()
+    )
+};
+
+// Configure all HTTP clients to use the custom JSON options
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.ConfigureHttpClient(client =>
+    {
+        client.DefaultRequestHeaders.Add("User-Agent", "Harmoni360-ElsaStudio/1.0");
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
+});
+
+// Configure JSON options for HTTP clients
+builder.Services.Configure<JsonSerializerOptions>(options =>
+{
+    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.TypeInfoResolver = ElsaStudioJsonContext.Default;
+});
+
 
 // Register shell services and modules.
 var backendApiConfig = new BackendApiConfig
@@ -52,7 +88,7 @@ builder.Services.AddWorkflowsModule();
 // Build the application.
 var app = builder.Build();
 
-// Run each startup task.
+// Run startup tasks
 var startupTaskRunner = app.Services.GetRequiredService<IStartupTaskRunner>();
 await startupTaskRunner.RunStartupTasksAsync();
 
