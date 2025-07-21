@@ -19,6 +19,7 @@ using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Infrastructure.Services;
 using System.Threading.RateLimiting;
 using System.Data.Common;
+using System.Linq;
 using Elsa.Extensions;
 using FastEndpoints;
 
@@ -561,6 +562,35 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Seeding database using configuration...");
             await seeder.SeedAsync();
             logger.LogInformation("Database seeding completed");
+        }
+        
+        // Run Elsa migrations explicitly to ensure tables are created in production
+        try
+        {
+            logger.LogInformation("Running Elsa Workflow migrations...");
+            
+            // Get all registered DbContext types for Elsa
+            var elsaDbContextTypes = scope.ServiceProvider.GetServices<DbContext>()
+                .Where(ctx => ctx.GetType().FullName?.Contains("Elsa") == true)
+                .ToList();
+            
+            if (elsaDbContextTypes.Any())
+            {
+                foreach (var elsaContext in elsaDbContextTypes)
+                {
+                    logger.LogInformation("Migrating Elsa context: {ContextType}", elsaContext.GetType().Name);
+                    await elsaContext.Database.MigrateAsync();
+                }
+                logger.LogInformation("Elsa Workflow migrations completed successfully");
+            }
+            else
+            {
+                logger.LogInformation("No Elsa DbContext found, migrations will be handled automatically by Elsa framework");
+            }
+        }
+        catch (Exception elsaEx)
+        {
+            logger.LogWarning(elsaEx, "Could not run Elsa migrations explicitly, will rely on automatic migration");
         }
     }
     catch (Exception ex)
