@@ -41,7 +41,7 @@ RUN mkdir -p /app/publish/wwwroot/elsa-studio && \
     ls -la /app/publish/wwwroot/elsa-studio/
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
 
 # Install cultures for globalization
