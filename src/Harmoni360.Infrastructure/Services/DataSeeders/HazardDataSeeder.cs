@@ -671,7 +671,7 @@ public class HazardDataSeeder : IDataSeeder
         };
     }
 
-    private async Task<RiskAssessment?> CreateHistoricalRiskAssessment(Hazard hazard, List<User> users, Random random)
+    private Task<RiskAssessment?> CreateHistoricalRiskAssessment(Hazard hazard, List<User> users, Random random)
     {
         try
         {
@@ -701,12 +701,12 @@ public class HazardDataSeeder : IDataSeeder
             // Mark as inactive since this is a historical assessment
             historicalAssessment.Deactivate("Superseded by updated risk assessment");
 
-            return historicalAssessment;
+            return Task.FromResult<RiskAssessment?>(historicalAssessment);
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to create historical risk assessment for hazard {HazardId}", hazard.Id);
-            return null;
+            return Task.FromResult<RiskAssessment?>(null);
         }
     }
 

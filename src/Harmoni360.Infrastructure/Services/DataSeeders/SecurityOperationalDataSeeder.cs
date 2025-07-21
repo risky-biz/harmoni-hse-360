@@ -160,7 +160,7 @@ public class SecurityOperationalDataSeeder
         _logger.LogInformation($"Seeded {incidentCount} security incidents");
     }
 
-    private async Task SeedThreatIndicatorsAsync()
+    private Task SeedThreatIndicatorsAsync()
     {
         _logger.LogInformation("Seeding threat indicators...");
 
@@ -207,9 +207,10 @@ public class SecurityOperationalDataSeeder
 
         _context.ThreatIndicators.AddRange(indicators);
         _logger.LogInformation($"Seeded {indicators.Count} threat indicators (attempted {attempts} times)");
+        return Task.CompletedTask;
     }
 
-    private async Task SeedSecurityControlsAsync(List<User> users, string[] departments)
+    private Task SeedSecurityControlsAsync(List<User> users, string[] departments)
     {
         _logger.LogInformation("Seeding security controls...");
 
@@ -244,6 +245,7 @@ public class SecurityOperationalDataSeeder
 
         _context.SecurityControls.AddRange(controls);
         _logger.LogInformation($"Seeded {controls.Count} security controls");
+        return Task.CompletedTask;
     }
 
     private SecurityIncidentCategory GetCategoryForType(SecurityIncidentType incidentType)

@@ -178,7 +178,7 @@ public class WasteOperationalDataSeeder
         _logger.LogInformation($"Seeded {disposalRecords.Count} waste disposal records");
     }
 
-    private async Task SeedWasteComplianceAsync(string[] departments)
+    private Task SeedWasteComplianceAsync(string[] departments)
     {
         _logger.LogInformation("Seeding waste compliance records...");
 
@@ -208,9 +208,10 @@ public class WasteOperationalDataSeeder
 
         _context.WasteCompliances.AddRange(compliances);
         _logger.LogInformation($"Seeded {compliances.Count} waste compliance records");
+        return Task.CompletedTask;
     }
 
-    private async Task AddWasteCommentsAsync(List<WasteReport> reports, List<User> users)
+    private Task AddWasteCommentsAsync(List<WasteReport> reports, List<User> users)
     {
         var comments = new List<WasteComment>();
 
@@ -238,6 +239,7 @@ public class WasteOperationalDataSeeder
 
         _context.WasteComments.AddRange(comments);
         _logger.LogInformation($"Added {comments.Count} waste comments");
+        return Task.CompletedTask;
     }
 
     private string GetRandomLocation()

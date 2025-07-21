@@ -98,7 +98,7 @@ public class ModuleConfigurationDataSeeder : IDataSeeder
     /// <summary>
     /// Ensures core system modules exist even if not discovered
     /// </summary>
-    private async Task EnsureCoreModulesExist(List<ModuleConfiguration> moduleConfigurations)
+    private Task EnsureCoreModulesExist(List<ModuleConfiguration> moduleConfigurations)
     {
         var coreModules = new[]
         {
@@ -126,6 +126,7 @@ public class ModuleConfigurationDataSeeder : IDataSeeder
                 });
             }
         }
+        return Task.CompletedTask;
     }
 
     /// <summary>

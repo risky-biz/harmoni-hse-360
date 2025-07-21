@@ -61,7 +61,7 @@ public class WasteDataSeeder : IDataSeeder
         _logger.LogInformation("Waste management data seeding completed");
     }
 
-    private async Task SeedWasteCategoriesAsync()
+    private Task SeedWasteCategoriesAsync()
     {
         _logger.LogInformation("Seeding waste categories...");
         
@@ -69,6 +69,7 @@ public class WasteDataSeeder : IDataSeeder
         // we'll seed WasteType entities instead which represent the actual waste categories
         // This matches the current domain model implementation
         _logger.LogInformation("WasteCategory is an enum in current implementation - skipping category seeding");
+        return Task.CompletedTask;
     }
 
     private async Task SeedWasteTypesAsync()

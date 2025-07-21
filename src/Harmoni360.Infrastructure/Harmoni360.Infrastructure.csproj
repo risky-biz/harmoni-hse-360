@@ -24,7 +24,6 @@
     <PackageReference Include="Elsa.Workflows.Management" Version="3.4.2" />
     <PackageReference Include="Elsa.Workflows.Runtime" Version="3.4.2" />
     <!-- Removed old ASP.NET Core 2.2 packages - using implicit references from SDK -->
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.13.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
     <!-- Removed old ASP.NET Core 2.2 packages - using implicit references from SDK -->
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.6" />
@@ -39,6 +38,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="9.0.4" />
     <PackageReference Include="System.Text.Encodings.Web" Version="9.0.6" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.13.0" />
   </ItemGroup>
 
 </Project>

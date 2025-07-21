@@ -208,18 +208,18 @@ public class SecurityIncidentController : ControllerBase
     /// </summary>
     [HttpGet("{id}/threat-assessment/{assessmentId}")]
     [RequireModulePermission(ModuleType.SecurityIncidentManagement, PermissionType.Read)]
-    public async Task<ActionResult<ThreatAssessmentDto>> GetThreatAssessment(int id, int assessmentId)
+    public Task<ActionResult<ThreatAssessmentDto>> GetThreatAssessment(int id, int assessmentId)
     {
         try
         {
             // This would typically be implemented with a specific query
-            // For now, return NotImplemented as placeholder\n            await Task.CompletedTask;
-            return StatusCode(501, "Threat assessment retrieval not yet implemented");
+            // For now, return NotImplemented as placeholder
+            return Task.FromResult<ActionResult<ThreatAssessmentDto>>(StatusCode(501, "Threat assessment retrieval not yet implemented"));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving threat assessment {AssessmentId} for incident {IncidentId}", assessmentId, id);
-            return StatusCode(500, "An error occurred while retrieving the threat assessment");
+            return Task.FromResult<ActionResult<ThreatAssessmentDto>>(StatusCode(500, "An error occurred while retrieving the threat assessment"));
         }
     }
 

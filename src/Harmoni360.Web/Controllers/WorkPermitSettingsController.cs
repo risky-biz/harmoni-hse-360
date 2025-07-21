@@ -366,20 +366,20 @@ public class WorkPermitSettingsController : ControllerBase
         }
     }
 
-    private async Task<bool> IsValidTokenAsync(string? token)
+    private Task<bool> IsValidTokenAsync(string? token)
     {
         try
         {
             // First check if user is already authenticated via headers
             if (User.Identity?.IsAuthenticated == true)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
             // If no token provided, not valid
             if (string.IsNullOrWhiteSpace(token))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             // Validate the JWT token
@@ -387,7 +387,7 @@ public class WorkPermitSettingsController : ControllerBase
             if (string.IsNullOrWhiteSpace(jwtSecretKey))
             {
                 _logger.LogError("JWT Key not configured");
-                return false;
+                return Task.FromResult(false);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -407,18 +407,18 @@ public class WorkPermitSettingsController : ControllerBase
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                return validatedToken != null;
+                return Task.FromResult(validatedToken != null);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Token validation failed");
-                return false;
+                return Task.FromResult(false);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error validating token");
-            return false;
+            return Task.FromResult(false);
         }
     }
 

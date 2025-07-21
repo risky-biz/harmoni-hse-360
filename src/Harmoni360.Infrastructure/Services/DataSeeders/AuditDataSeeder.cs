@@ -321,7 +321,7 @@ public class AuditDataSeeder : IDataSeeder
         }
     }
 
-    private async Task<Audit> CreateAuditAsync(AuditType type, DateTime baseDate, List<User> users, List<Department> departments)
+    private Task<Audit> CreateAuditAsync(AuditType type, DateTime baseDate, List<User> users, List<Department> departments)
     {
         var titles = _auditTitles[type];
         var title = titles[_random.Next(titles.Length)];
@@ -386,7 +386,7 @@ public class AuditDataSeeder : IDataSeeder
             AddAuditComments(audit, users);
         }
 
-        return audit;
+        return Task.FromResult(audit);
     }
 
     private void AddAuditItems(Audit audit, AuditType type)

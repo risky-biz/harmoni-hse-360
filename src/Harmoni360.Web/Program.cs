@@ -396,6 +396,17 @@ app.Use(async (context, next) =>
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map endpoints immediately after UseAuthorization to satisfy ASP.NET Core analyzer
+app.MapControllers();
+app.MapHub<IncidentHub>("/hubs/incidents");
+app.MapHub<NotificationHub>("/hubs/notifications");
+app.MapHub<HealthHub>("/hubs/health");
+app.MapHub<SecurityHub>("/hubs/security");
+app.MapHub<HSSEHub>("/hubs/hsse");
+app.MapHealthChecks("/health");
 
 // Debug middleware to track all requests
 app.Use(async (context, next) =>
@@ -415,11 +426,21 @@ app.Use(async (context, next) =>
         context.Response.StatusCode);
 });
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 // Apply custom authorization for Elsa Studio AFTER authentication
 app.UseElsaStudioAuthorization();
+
+// Configure Elsa workflows BEFORE rate limiting to ensure endpoints are registered
+app.UseWorkflows();
+
+// Use FastEndpoints with Elsa configuration - register under default /elsa/api path
+app.UseWorkflowsApi();
+
+// Add debug logging to verify Elsa endpoints are registered
+var elsaLogger = app.Services.GetRequiredService<ILogger<Program>>();
+elsaLogger.LogInformation("Elsa workflows and API endpoints have been configured");
+
+// Add rate limiting AFTER Elsa configuration
+app.UseRateLimiter();
 
 // Handle /elsa-studio redirect AFTER authentication
 app.MapWhen(context => context.Request.Path == "/elsa-studio",
@@ -476,28 +497,6 @@ app.MapWhen(context => context.Request.Path.StartsWithSegments("/elsa-studio"),
             endpoints.MapFallbackToFile("/elsa-studio/{*path:nonfile}", "/elsa-studio/index.html");
         });
     });
-
-// Configure Elsa workflows BEFORE rate limiting to ensure endpoints are registered
-app.UseWorkflows();
-
-// Use FastEndpoints with Elsa configuration - register under default /elsa/api path
-app.UseWorkflowsApi();
-
-// Add debug logging to verify Elsa endpoints are registered
-var elsaLogger = app.Services.GetRequiredService<ILogger<Program>>();
-elsaLogger.LogInformation("Elsa workflows and API endpoints have been configured");
-
-// Add rate limiting AFTER Elsa configuration
-app.UseRateLimiter();
-
-// Map endpoints
-app.MapControllers();
-app.MapHub<IncidentHub>("/hubs/incidents");
-app.MapHub<NotificationHub>("/hubs/notifications");
-app.MapHub<HealthHub>("/hubs/health");
-app.MapHub<SecurityHub>("/hubs/security");
-app.MapHub<HSSEHub>("/hubs/hsse");
-app.MapHealthChecks("/health");
 
 app.MapWhen(context => !context.Request.Path.StartsWithSegments("/elsa/api") &&
                       !context.Request.Path.StartsWithSegments("/elsa-studio") &&
