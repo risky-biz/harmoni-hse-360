@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Harmoni360.ElsaStudio.JsonContext;
+using Refit;
 
 // Build the host.
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -24,17 +25,14 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.RootComponents.RegisterCustomElsaStudioElements();
 
-// Configure JSON serialization to use source generation instead of reflection
+// Configure JSON serialization to use only source generation
 // This avoids the NullabilityInfoContext_NotSupported error in WebAssembly
 var jsonOptions = new JsonSerializerOptions
 {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    // Use a custom resolver that combines source generation with fallback
-    TypeInfoResolver = JsonTypeInfoResolver.Combine(
-        ElsaStudioJsonContext.Default,
-        new DefaultJsonTypeInfoResolver()
-    )
+    // Use only the source-generated context - no fallback to reflection
+    TypeInfoResolver = ElsaStudioJsonContext.Default
 };
 
 // Configure all HTTP clients to use the custom JSON options
@@ -47,7 +45,8 @@ builder.Services.ConfigureHttpClientDefaults(http =>
     });
 });
 
-// Configure JSON options for HTTP clients
+// Configure JSON serializer options globally
+builder.Services.AddSingleton(jsonOptions);
 builder.Services.Configure<JsonSerializerOptions>(options =>
 {
     options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

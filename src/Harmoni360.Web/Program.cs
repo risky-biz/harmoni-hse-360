@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Harmoni360.Infrastructure.Persistence;
 using Harmoni360.Application.Common.Interfaces;
 using Harmoni360.Infrastructure.Services;
@@ -45,8 +47,14 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .WriteTo.Console()
     .WriteTo.Seq(context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341"));
 
-// Add services
-builder.Services.AddControllers();
+// Add services with JSON configuration
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 // Elsa handles FastEndpoints configuration internally
 

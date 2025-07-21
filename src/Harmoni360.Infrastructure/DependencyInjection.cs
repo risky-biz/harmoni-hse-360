@@ -17,6 +17,8 @@ using Elsa.EntityFrameworkCore.Extensions;
 using Elsa.EntityFrameworkCore.Modules.Management;
 using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Harmoni360.Infrastructure;
 
@@ -123,6 +125,14 @@ public static class DependencyInjection
         services.AddScoped<IModuleDiscoveryService, ModuleDiscoveryService>();
 
         services.AddSingleton<IApplicationModeService, ApplicationModeService>();
+
+        // Configure JSON options for consistency between API and Studio
+        services.Configure<JsonSerializerOptions>(options =>
+        {
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 
         // Configure Elsa Workflows
         services.AddElsa(elsa => elsa
