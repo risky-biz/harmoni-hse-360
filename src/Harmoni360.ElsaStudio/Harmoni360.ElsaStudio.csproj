@@ -10,6 +10,8 @@
     <DebugSymbols>false</DebugSymbols>
     <!-- Disable problematic package folder resolution on Linux -->
     <RestoreFallbackFolders></RestoreFallbackFolders>
+    <!-- Enable NullabilityInfoContext support to fix NullabilityInfoContext_NotSupported error in WebAssembly -->
+    <NullabilityInfoContextSupport>true</NullabilityInfoContextSupport>
   </PropertyGroup>
 
   <ItemGroup>
